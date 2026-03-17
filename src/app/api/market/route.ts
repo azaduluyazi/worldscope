@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cachedFetch, TTL } from "@/lib/cache/redis";
 import { fetchCryptoQuotes } from "@/lib/api/coingecko";
 import { fetchStockQuote, fetchForexQuote } from "@/lib/api/alpha-vantage";
+import { fetchFearGreedIndex } from "@/lib/api/fear-greed";
 import type { MarketQuote } from "@/types/market";
 
 export const runtime = "nodejs";
@@ -38,8 +39,16 @@ export async function GET() {
       TTL.MARKET
     );
 
+    // Fear & Greed Index (separate cache, longer TTL)
+    const fearGreed = await cachedFetch(
+      "market:fear-greed",
+      async () => fetchFearGreedIndex(),
+      TTL.THREAT
+    );
+
     return NextResponse.json({
       quotes,
+      fearGreed,
       lastUpdated: new Date().toISOString(),
     });
   } catch {

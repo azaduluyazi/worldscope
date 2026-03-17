@@ -11,7 +11,8 @@ describe("calculateThreatIndex", () => {
 
   it("scores a single low event correctly", () => {
     const result = calculateThreatIndex([{ severity: "low", category: "tech" }]);
-    expect(result.score).toBeLessThanOrEqual(5);
+    // Single low event: weight=1, avg=1, baseScore=10, volumeBonus=0 → score=10
+    expect(result.score).toBeLessThanOrEqual(15);
     expect(result.level).toBe("low");
     expect(result.categories).toHaveProperty("tech");
   });

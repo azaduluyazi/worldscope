@@ -2,7 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "../styles/tactical.css";
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Google Fonts loaded via <link> in layout.tsx for Turbopack compatibility */
 
 @custom-variant dark (&:is(.dark *));
 
@@ -140,4 +141,48 @@
 @keyframes threatPulse {
   0%, 100% { transform: scale(1); opacity: 1; box-shadow: 0 0 8px currentColor; }
   50% { transform: scale(1.4); opacity: 0.5; box-shadow: 0 0 20px currentColor; }
+}
+
+/* Event ripple animation — expanding rings from new event location */
+@keyframes eventRipple {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; }
+  60% { opacity: 0.3; }
+  100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+}
+@keyframes eventRippleInner {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+}
+
+.event-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: eventRipple 2s ease-out forwards;
+}
+.event-ripple-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: eventRippleInner 1.5s ease-out forwards;
+}
+
+/* Tactical popup override for Mapbox */
+.mapboxgl-popup-content {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+.mapboxgl-popup-tip {
+  border-top-color: #0d2137 !important;
 }

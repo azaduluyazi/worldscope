@@ -18,8 +18,8 @@ export function MapHUD({ eventCount, layerCount, totalLayers }: MapHUDProps) {
       <div className="absolute bottom-2 left-2 w-6 h-6 border-b-2 border-l-2 border-hud-accent/30 pointer-events-none" />
       <div className="absolute bottom-2 right-2 w-6 h-6 border-b-2 border-r-2 border-hud-accent/30 pointer-events-none" />
 
-      {/* Bottom left info */}
-      <div className="absolute bottom-3 left-3 font-mono text-[9px] z-10 pointer-events-none">
+      {/* Bottom left info — positioned above MarketTicker */}
+      <div className="absolute bottom-14 left-3 font-mono text-[9px] z-10 pointer-events-none">
         <span className="text-hud-accent">◆ ACTIVE EVENTS: </span>
         <span className="text-severity-critical">{eventCount}</span>
         <span className="text-hud-muted mx-1.5">|</span>

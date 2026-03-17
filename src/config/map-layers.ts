@@ -12,9 +12,9 @@ export const DEFAULT_LAYERS: MapLayer[] = [
 export const MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
 
 export const MAP_INITIAL_VIEW = {
-  longitude: 30,
-  latitude: 25,
-  zoom: 2.2,
-  pitch: 0,
-  bearing: 0,
+  longitude: 20,
+  latitude: 20,
+  zoom: 1.8,
+  pitch: 40,
+  bearing: -10,
 };

@@ -53,18 +53,85 @@ describe("categorizeFeedItem", () => {
 });
 
 describe("mapSeverity", () => {
-  it("returns critical for breaking/urgent keywords", () => {
-    expect(mapSeverity("BREAKING: Nuclear test detected")).toBe("critical");
-    expect(mapSeverity("URGENT: Tsunami warning issued")).toBe("critical");
+  // ── Critical patterns ──
+  it("returns critical for breaking news", () => {
+    expect(mapSeverity("BREAKING: Nuclear strike launched")).toBe("critical");
+    expect(mapSeverity("Breaking news: Major earthquake")).toBe("critical");
   });
 
-  it("returns high for alert/emergency keywords", () => {
-    expect(mapSeverity("Emergency declared in the region")).toBe("high");
-    expect(mapSeverity("Market crash sends shockwaves")).toBe("high");
+  it("returns critical for nuclear/missile threats", () => {
+    expect(mapSeverity("Nuclear warhead detonation confirmed")).toBe("critical");
+    expect(mapSeverity("Missile launch detected over Pacific")).toBe("critical");
   });
 
-  it("returns medium for normal text", () => {
-    expect(mapSeverity("Trade talks continue in Geneva")).toBe("medium");
-    expect(mapSeverity("Quarterly earnings report released")).toBe("medium");
+  it("returns critical for mass casualty / terror events", () => {
+    expect(mapSeverity("Mass casualty event reported")).toBe("critical");
+    expect(mapSeverity("Terrorist attack in downtown area")).toBe("critical");
+    expect(mapSeverity("War declared between two nations")).toBe("critical");
+  });
+
+  // ── High patterns ──
+  it("returns high for emergency/escalation keywords", () => {
+    expect(mapSeverity("Emergency declared in coastal region")).toBe("high");
+    expect(mapSeverity("Tensions escalating along the border")).toBe("high");
+    expect(mapSeverity("Bombing reported near embassy")).toBe("high");
+  });
+
+  it("returns high for cyberattack and ransomware", () => {
+    expect(mapSeverity("Major cyberattack hits infrastructure")).toBe("high");
+    expect(mapSeverity("Ransomware shuts down hospital network")).toBe("high");
+  });
+
+  // ── Medium patterns ──
+  it("returns medium for conflict/crisis/threat keywords", () => {
+    expect(mapSeverity("Ongoing conflict in the region")).toBe("medium");
+    expect(mapSeverity("Humanitarian crisis deepens")).toBe("medium");
+    expect(mapSeverity("New threat assessment released")).toBe("medium");
+  });
+
+  it("returns medium for breach/vulnerability keywords", () => {
+    expect(mapSeverity("Data breached at major retailer")).toBe("medium");
+    expect(mapSeverity("Critical vulnerability found in Linux kernel")).toBe("medium");
+    expect(mapSeverity("Malware campaign targets government agencies")).toBe("medium");
+  });
+
+  it("returns medium for sanctions and protests", () => {
+    expect(mapSeverity("New sanctions imposed on regime")).toBe("medium");
+    expect(mapSeverity("Protesters gather outside parliament")).toBe("medium");
+  });
+
+  // ── Low (default) ──
+  it("returns low for general news without threat keywords", () => {
+    expect(mapSeverity("Trade talks continue in Geneva")).toBe("low");
+    expect(mapSeverity("New ambassador appointed to London")).toBe("low");
+    expect(mapSeverity("Tourism numbers increase this quarter")).toBe("low");
+  });
+
+  // ── DOWNGRADE patterns (two-pass system) ──
+  it("downgrades press releases containing threat keywords", () => {
+    // "chemical weapon" matches HIGH, but "press release" triggers downgrade
+    expect(mapSeverity("Press release: chemical weapons convention update")).not.toBe("critical");
+    expect(mapSeverity("Press release: chemical weapons convention update")).not.toBe("high");
+  });
+
+  it("downgrades reports and commemorations", () => {
+    expect(mapSeverity("OPCW releases landmark report on chemical weapons destruction")).not.toBe("critical");
+    expect(mapSeverity("Commemorating 10th anniversary of nuclear disarmament treaty")).not.toBe("critical");
+    expect(mapSeverity("Annual report on conflict resolution published")).not.toBe("critical");
+  });
+
+  it("downgrades training programs and academic content", () => {
+    expect(mapSeverity("Training series on emergency response techniques")).not.toBe("high");
+    expect(mapSeverity("Young professionals help bridge the skills gap in cybersecurity")).not.toBe("critical");
+  });
+
+  it("downgrades funding/contribution announcements", () => {
+    expect(mapSeverity("EU provides €5M to strengthen OPCW activities")).not.toBe("critical");
+    expect(mapSeverity("Germany contributes nearly €2M to chemical weapons destruction")).not.toBe("critical");
+  });
+
+  it("still allows medium for downgraded items with medium keywords", () => {
+    // Downgraded items can still be medium if they match MEDIUM_PATTERNS
+    expect(mapSeverity("Annual report on conflict resolution published")).toBe("medium");
   });
 });

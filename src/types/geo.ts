@@ -19,3 +19,15 @@ export interface MapLayer {
   color: string;
   enabled: boolean;
 }
+
+/** Active map filter state shared between sidebar and map */
+export interface MapFilters {
+  /** Active category filters — empty = show all */
+  categories: Set<string>;
+  /** Active severity filters — empty = show all */
+  severities: Set<string>;
+  /** Show heatmap overlay */
+  heatmap: boolean;
+  /** Show cluster grouping */
+  clusters: boolean;
+}

@@ -102,3 +102,70 @@
   text-transform: uppercase;
   opacity: 0.8;
 }
+
+/* ─── Mapbox Popup Overrides ─── */
+.mapboxgl-popup-content {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 1px rgba(0, 229, 255, 0.3) !important;
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: #0a1222 !important;
+  border-bottom-color: #0a1222 !important;
+}
+
+.mapboxgl-popup-close-button {
+  color: #5a7a9a !important;
+  font-size: 16px !important;
+  right: 4px !important;
+  top: 4px !important;
+}
+.mapboxgl-popup-close-button:hover {
+  color: #00e5ff !important;
+  background: transparent !important;
+}
+
+/* Remove default Mapbox attribution overlap */
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-attrib {
+  opacity: 0.3;
+}
+.mapboxgl-ctrl-bottom-left:hover,
+.mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-attrib:hover {
+  opacity: 0.8;
+}
+
+/* ─── Globe & Navigation Controls ─── */
+.mapboxgl-ctrl-group {
+  background: rgba(5, 10, 18, 0.85) !important;
+  border: 1px solid rgba(0, 229, 255, 0.15) !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+.mapboxgl-ctrl-group button {
+  background: transparent !important;
+  border-color: rgba(0, 229, 255, 0.1) !important;
+}
+.mapboxgl-ctrl-group button:hover {
+  background: rgba(0, 229, 255, 0.1) !important;
+}
+.mapboxgl-ctrl-group button + button {
+  border-top: 1px solid rgba(0, 229, 255, 0.1) !important;
+}
+.mapboxgl-ctrl-compass .mapboxgl-ctrl-icon {
+  filter: invert(1) brightness(0.7) sepia(1) saturate(3) hue-rotate(155deg);
+}
+
+/* ─── Marker Breathe Animation ─── */
+@keyframes markerBreathe {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.3; transform: translate(-50%, -50%) scale(1.3); }
+}
+
+/* ─── Event Count Badge Pulse ─── */
+@keyframes countPulse {
+  0%, 100% { text-shadow: 0 0 4px currentColor; }
+  50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; }
+}

@@ -1,0 +1,64 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import { ADSENSE_PUB_ID } from "@/config/ads";
+
+interface AdSenseUnitProps {
+  slot: string;
+  format?: "horizontal" | "rectangle" | "vertical" | "auto";
+  className?: string;
+}
+
+/**
+ * Google AdSense display unit.
+ * Only renders when ADSENSE_PUB_ID is configured and consent is given.
+ */
+export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUnitProps) {
+  const adRef = useRef<HTMLModElement>(null);
+  const pushed = useRef(false);
+
+  useEffect(() => {
+    if (!ADSENSE_PUB_ID || pushed.current) return;
+
+    // Check consent
+    if (typeof window !== "undefined" && !window.localStorage.getItem("ws-ad-consent")) {
+      return;
+    }
+
+    try {
+      const adsbygoogle = (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle;
+      if (adsbygoogle) {
+        adsbygoogle.push({});
+        pushed.current = true;
+      }
+    } catch {
+      // AdSense not loaded
+    }
+  }, []);
+
+  if (!ADSENSE_PUB_ID) return null;
+
+  const style: React.CSSProperties = {
+    display: "block",
+    ...(format === "horizontal" && { width: "100%", height: "90px" }),
+    ...(format === "rectangle" && { width: "300px", height: "250px" }),
+    ...(format === "vertical" && { width: "160px", height: "600px" }),
+  };
+
+  return (
+    <div className={`ad-unit ${className}`}>
+      <div className="font-mono text-[7px] text-hud-muted mb-1 text-center tracking-wider">
+        ADVERTISEMENT
+      </div>
+      <ins
+        ref={adRef}
+        className="adsbygoogle"
+        style={style}
+        data-ad-client={ADSENSE_PUB_ID}
+        data-ad-slot={slot}
+        data-ad-format={format === "auto" ? "auto" : undefined}
+        data-full-width-responsive={format === "horizontal" ? "true" : undefined}
+      />
+    </div>
+  );
+}
