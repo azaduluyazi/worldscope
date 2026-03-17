@@ -3,6 +3,8 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit, AdConsentBanner } from "@/components/ads";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Intelligence Reports — WorldScope",
   description:

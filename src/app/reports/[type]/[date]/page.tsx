@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit, CarbonAd, AdConsentBanner } from "@/components/ads";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 3600; // ISR: revalidate every hour
 
 interface ReportRow {

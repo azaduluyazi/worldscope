@@ -12,6 +12,9 @@ export async function generateStaticParams() {
   return COUNTRIES.map((c) => ({ code: c.code.toLowerCase() }));
 }
 
+// Force dynamic rendering — Supabase queries need runtime env vars
+export const dynamic = "force-dynamic";
+
 /* ── Dynamic metadata per country ── */
 export async function generateMetadata({
   params,
