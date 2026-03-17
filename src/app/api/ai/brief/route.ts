@@ -29,7 +29,7 @@ Keep total response under 250 words.`,
       prompt: `Analyze these current intelligence reports and provide a strategic briefing:\n\n${headlines}`,
     });
 
-    return result.toDataStreamResponse();
+    return result.toTextStreamResponse();
   } catch {
     return new Response("AI service unavailable", { status: 503 });
   }

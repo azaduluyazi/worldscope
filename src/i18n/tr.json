@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "WORLDSCOPE",
+    "live": "CANLI",
+    "loading": "İSTİHBARAT AKIŞI YÜKLENİYOR..."
+  },
+  "variants": {
+    "world": "DÜNYA",
+    "tech": "TEKNOLOJİ",
+    "finance": "FİNANS"
+  },
+  "intel": {
+    "title": "İSTİHBARAT AKIŞI",
+    "analysis": "ANALİZ",
+    "aiBrief": "AI BRİFİNG",
+    "streaming": "CANLI AKIŞ",
+    "eventsTracked": "{count} olay takip ediliyor"
+  },
+  "threat": {
+    "title": "Küresel Tehdit Endeksi",
+    "critical": "KRİTİK",
+    "high": "YÜKSEK",
+    "elevated": "YÜKSELMİŞ",
+    "low": "DÜŞÜK"
+  },
+  "ai": {
+    "title": "AI Stratejik Brifing",
+    "generate": "OLUŞTUR",
+    "analyzing": "ANALİZ EDİLİYOR...",
+    "placeholder": "AI destekli stratejik istihbarat brifingini oluşturmak için OLUŞTUR butonuna tıklayın"
+  },
+  "sidebar": {
+    "map": "Harita",
+    "news": "Haberler",
+    "markets": "Piyasalar",
+    "conflicts": "Çatışmalar",
+    "tech": "Teknoloji",
+    "aviation": "Havacılık",
+    "cyber": "Siber",
+    "settings": "Ayarlar"
+  }
+}

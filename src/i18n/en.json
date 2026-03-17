@@ -1,0 +1,42 @@
+{
+  "app": {
+    "name": "WORLDSCOPE",
+    "live": "LIVE",
+    "loading": "LOADING INTEL STREAM..."
+  },
+  "variants": {
+    "world": "WORLD",
+    "tech": "TECH",
+    "finance": "FINANCE"
+  },
+  "intel": {
+    "title": "INTEL FEED",
+    "analysis": "ANALYSIS",
+    "aiBrief": "AI BRIEF",
+    "streaming": "STREAMING",
+    "eventsTracked": "{count} events tracked"
+  },
+  "threat": {
+    "title": "Global Threat Index",
+    "critical": "CRITICAL",
+    "high": "HIGH",
+    "elevated": "ELEVATED",
+    "low": "LOW"
+  },
+  "ai": {
+    "title": "AI Strategic Brief",
+    "generate": "GENERATE",
+    "analyzing": "ANALYZING...",
+    "placeholder": "Click GENERATE for an AI-powered strategic intelligence briefing"
+  },
+  "sidebar": {
+    "map": "Map",
+    "news": "News",
+    "markets": "Markets",
+    "conflicts": "Conflicts",
+    "tech": "Tech",
+    "aviation": "Aviation",
+    "cyber": "Cyber",
+    "settings": "Settings"
+  }
+}
