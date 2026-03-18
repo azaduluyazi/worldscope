@@ -11,6 +11,7 @@ import { SearchBar } from "./SearchBar";
 import { NotificationBell } from "./NotificationBell";
 import { QuickNav } from "./QuickNav";
 import { FullscreenToggle } from "./FullscreenToggle";
+import { ThemeToggle } from "./ThemeToggle";
 
 const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "world", href: "/" },
@@ -94,6 +95,7 @@ export function TopBar({ variant = "world" }: TopBarProps) {
         <div className="hidden md:flex items-center gap-1.5">
           <SearchBar />
           <NotificationBell />
+          <ThemeToggle />
           <FullscreenToggle />
           <QuickNav />
         </div>

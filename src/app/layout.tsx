@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { WebVitals } from "@/components/shared/WebVitals";
+import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { ADSENSE_PUB_ID } from "@/config/ads";
 import "./globals.css";
 
@@ -119,6 +120,7 @@ export default async function RootLayout({
             <main id="main-content">
               {children}
             </main>
+            <ScrollToTop />
             <div className="scanlines" aria-hidden="true" />
           </ThemeProvider>
         </NextIntlClientProvider>

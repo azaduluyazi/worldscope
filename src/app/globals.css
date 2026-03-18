@@ -114,6 +114,37 @@
   --sidebar-ring: #00e5ff;
 }
 
+/* Light mode overrides */
+.light-mode {
+  --background: #f0f4f8;
+  --foreground: #1a2a3a;
+  --card: #ffffff;
+  --card-foreground: #1a2a3a;
+  --popover: #ffffff;
+  --popover-foreground: #1a2a3a;
+  --primary: #0077b6;
+  --primary-foreground: #ffffff;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #1a2a3a;
+  --muted: #e2e8f0;
+  --muted-foreground: #64748b;
+  --accent: #0077b6;
+  --accent-foreground: #ffffff;
+  --border: #cbd5e1;
+  --input: #e2e8f0;
+  --ring: #0077b6;
+}
+
+.light-mode .bg-hud-base { background-color: #f0f4f8 !important; }
+.light-mode .bg-hud-surface { background-color: #ffffff !important; }
+.light-mode .bg-hud-panel { background-color: #f8fafc !important; }
+.light-mode .text-hud-text { color: #1a2a3a !important; }
+.light-mode .text-hud-muted { color: #64748b !important; }
+.light-mode .text-hud-accent { color: #0077b6 !important; }
+.light-mode .border-hud-border { border-color: #cbd5e1 !important; }
+.light-mode .hud-label { color: #0077b6 !important; }
+.light-mode .scanlines { display: none !important; }
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

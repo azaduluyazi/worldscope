@@ -12,6 +12,7 @@ import { LiveWebcams } from "./LiveWebcams";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
 import { KeyboardHelp } from "./KeyboardHelp";
 import { StatusFooter } from "./StatusFooter";
+import { ConnectionStatus } from "./ConnectionStatus";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
@@ -265,6 +266,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
       {/* Keyboard Shortcuts Help — press ? to toggle */}
       <KeyboardHelp />
+      {/* Offline indicator */}
+      <ConnectionStatus />
     </div>
   );
 }
