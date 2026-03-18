@@ -9,6 +9,7 @@ import { useLocaleSwitcher } from "@/hooks/useLocale";
 import { locales } from "@/i18n/config";
 import { SearchBar } from "./SearchBar";
 import { NotificationBell } from "./NotificationBell";
+import { QuickNav } from "./QuickNav";
 
 const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "world", href: "/" },
@@ -88,10 +89,11 @@ export function TopBar({ variant = "world" }: TopBarProps) {
 
       {/* Right section — search + locale + live + clock */}
       <div className="flex items-center gap-1.5 md:gap-3 font-mono text-[8px] md:text-[9px]">
-        {/* Search + Notifications */}
+        {/* Search + Notifications + Nav */}
         <div className="hidden md:flex items-center gap-1.5">
           <SearchBar />
           <NotificationBell />
+          <QuickNav />
         </div>
         {/* Locale switcher */}
         <div className="flex border border-hud-border rounded overflow-hidden">
