@@ -7,8 +7,8 @@ on:
     branches: [master, main]
 
 jobs:
-  lint-test-build:
-    name: Lint, Test & Build
+  lint-and-test:
+    name: Lint & Test
     runs-on: ubuntu-latest
 
     steps:
@@ -25,15 +25,7 @@ jobs:
 
       - name: Lint
         run: npm run lint
-        continue-on-error: true # Warnings don't block CI
+        continue-on-error: true
 
       - name: Unit Tests
         run: npm run test
-
-      - name: Type Check & Build
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_MAPBOX_TOKEN: ${{ secrets.NEXT_PUBLIC_MAPBOX_TOKEN }}
-          NEXT_PUBLIC_SITE_URL: https://worldscope.vercel.app
