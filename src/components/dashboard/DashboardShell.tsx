@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, memo, Suspense } from "react";
+import { useState, useCallback, useMemo, useEffect, memo, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { TopBar } from "./TopBar";
 import { IconSidebar } from "./IconSidebar";
@@ -16,6 +16,7 @@ import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcut
 import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { VARIANTS, type VariantId } from "@/config/variants";
 import type { MapFilters } from "@/types/geo";
+import { loadPreferences, savePreferences } from "@/lib/user-preferences";
 
 const PANEL_ORDER: MobilePanel[] = ["map", "feed", "live", "alerts"];
 
@@ -47,9 +48,27 @@ interface DashboardShellProps {
 }
 
 export function DashboardShell({ variant = "world" }: DashboardShellProps) {
-  const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
+  const [filters, setFilters] = useState<MapFilters>(() => {
+    const prefs = loadPreferences();
+    return { ...DEFAULT_FILTERS, ...prefs.mapLayers, categories: new Set(prefs.categoryFilters), severities: new Set() };
+  });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const variantConfig = VARIANTS[variant];
+
+  // Persist filter changes to localStorage
+  useEffect(() => {
+    savePreferences({
+      mapLayers: {
+        heatmap: filters.heatmap,
+        clusters: filters.clusters,
+        flights: filters.flights,
+        vessels: filters.vessels,
+        gpsJamming: filters.gpsJamming,
+        cables: filters.cables,
+      },
+      categoryFilters: [...filters.categories],
+    });
+  }, [filters]);
 
   // Swipe left/right to cycle mobile panels
   const swipeRef = useSwipeGesture<HTMLDivElement>({
