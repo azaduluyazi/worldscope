@@ -11,7 +11,9 @@
   "variants": {
     "world": "WORLD",
     "tech": "TECH",
-    "finance": "FINANCE"
+    "finance": "FINANCE",
+    "commodity": "COMMODITY",
+    "happy": "GOOD NEWS"
   },
   "intel": {
     "title": "INTEL FEED",

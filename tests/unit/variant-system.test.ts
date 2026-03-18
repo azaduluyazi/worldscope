@@ -10,8 +10,8 @@ import {
 describe("Variant System", () => {
   // ── Variant Config ──
   describe("VARIANTS config", () => {
-    it("defines exactly 3 variants: world, tech, finance", () => {
-      expect(Object.keys(VARIANTS)).toEqual(["world", "tech", "finance"]);
+    it("defines 5 variants including commodity and happy", () => {
+      expect(Object.keys(VARIANTS)).toEqual(["world", "tech", "finance", "commodity", "happy"]);
     });
 
     it("default variant is world", () => {

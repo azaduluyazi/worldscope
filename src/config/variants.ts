@@ -10,7 +10,7 @@ import type { Category } from "@/types/intel";
  * - Finance: Markets, crypto, commodities, central banks
  */
 
-export type VariantId = "world" | "tech" | "finance";
+export type VariantId = "world" | "tech" | "finance" | "commodity" | "happy";
 
 export interface Variant {
   id: VariantId;
@@ -69,6 +69,32 @@ export const VARIANTS: Record<VariantId, Variant> = {
     accent: "#ffd000",
     icon: "📊",
     keywords: ["markets", "finance", "crypto", "commodities", "forex"],
+  },
+
+  commodity: {
+    id: "commodity",
+    name: "CommodityScope",
+    tagline: "Commodity & Energy Intelligence",
+    description: "Oil, gas, metals, agriculture, and energy infrastructure monitoring.",
+    primaryCategories: ["energy", "finance"],
+    secondaryCategories: ["conflict", "natural", "diplomacy"],
+    defaultLayers: ["markets"],
+    accent: "#ff9f43",
+    icon: "⚡",
+    keywords: ["oil", "gas", "commodities", "energy", "metals", "agriculture"],
+  },
+
+  happy: {
+    id: "happy",
+    name: "GoodScope",
+    tagline: "Positive Global Intelligence",
+    description: "Breakthroughs, peace agreements, innovations, and positive developments worldwide.",
+    primaryCategories: ["tech", "health", "diplomacy"],
+    secondaryCategories: ["finance", "natural"],
+    defaultLayers: ["natural"],
+    accent: "#00ff88",
+    icon: "🌟",
+    keywords: ["positive", "innovation", "peace", "breakthrough", "progress"],
   },
 };
 

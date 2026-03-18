@@ -11,7 +11,9 @@
   "variants": {
     "world": "DÜNYA",
     "tech": "TEKNOLOJİ",
-    "finance": "FİNANS"
+    "finance": "FİNANS",
+    "commodity": "EMTİA",
+    "happy": "İYİ HABER"
   },
   "intel": {
     "title": "İSTİHBARAT AKIŞI",

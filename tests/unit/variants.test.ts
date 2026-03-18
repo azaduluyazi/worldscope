@@ -7,8 +7,8 @@ import {
 } from "@/config/variants";
 
 describe("VARIANTS config", () => {
-  it("has exactly 3 variants: world, tech, finance", () => {
-    expect(Object.keys(VARIANTS)).toEqual(["world", "tech", "finance"]);
+  it("has 5 variants including commodity and happy", () => {
+    expect(Object.keys(VARIANTS)).toEqual(["world", "tech", "finance", "commodity", "happy"]);
   });
 
   it("default variant is world", () => {
