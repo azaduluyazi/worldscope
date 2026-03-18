@@ -11,6 +11,7 @@ import { LiveBroadcasts } from "./LiveBroadcasts";
 import { LiveWebcams } from "./LiveWebcams";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
 import { KeyboardHelp } from "./KeyboardHelp";
+import { StatusFooter } from "./StatusFooter";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
@@ -248,6 +249,11 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </ErrorBoundary>
           </div>
         </div>
+      </div>
+
+      {/* Status Footer — desktop only */}
+      <div className="hidden md:block">
+        <StatusFooter />
       </div>
 
       {/* Mobile Bottom Navigation */}

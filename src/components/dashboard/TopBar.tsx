@@ -10,6 +10,7 @@ import { locales } from "@/i18n/config";
 import { SearchBar } from "./SearchBar";
 import { NotificationBell } from "./NotificationBell";
 import { QuickNav } from "./QuickNav";
+import { FullscreenToggle } from "./FullscreenToggle";
 
 const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "world", href: "/" },
@@ -93,6 +94,7 @@ export function TopBar({ variant = "world" }: TopBarProps) {
         <div className="hidden md:flex items-center gap-1.5">
           <SearchBar />
           <NotificationBell />
+          <FullscreenToggle />
           <QuickNav />
         </div>
         {/* Locale switcher */}

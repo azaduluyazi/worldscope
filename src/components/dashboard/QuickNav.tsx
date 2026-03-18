@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/country/us", icon: "🌍", label: "Countries" },
   { href: "/search?q=", icon: "🔍", label: "Search" },
   { href: "/reports", icon: "📄", label: "Reports" },
+  { href: "/bookmarks", icon: "🔖", label: "Bookmarks" },
 ];
 
 export function QuickNav() {
