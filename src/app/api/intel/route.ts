@@ -18,6 +18,14 @@ import { fetchAllCyberThreats } from "@/lib/api/cyber-threats";
 import { fetchTelegramOSINT } from "@/lib/api/telegram-osint";
 import { fetchFireHotspots } from "@/lib/api/nasa-firms";
 import { fetchSafecastReadings, radiationToIntelItems } from "@/lib/api/radiation";
+import { fetchOpenMeteoAlerts } from "@/lib/api/open-meteo";
+import { fetchNWSAlerts } from "@/lib/api/nws";
+import { fetchDiseaseOutbreaks } from "@/lib/api/disease-sh";
+import { fetchFederalRegister } from "@/lib/api/federal-register";
+import { fetchHackerNews } from "@/lib/api/hackernews";
+import { fetchGDACSAlerts } from "@/lib/api/gdacs";
+import { fetchIFRCEmergencies } from "@/lib/api/ifrc";
+import { fetchSpaceXLaunches, fetchLaunchLibrary } from "@/lib/api/spacex";
 import { createServerClient } from "@/lib/db/supabase";
 import { persistEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
@@ -93,6 +101,7 @@ export async function GET(request: Request) {
           quakesMajor, quakesRecent, nasaEvents, nvdCves, whoOutbreaks,
           reliefWeb, acledEvents, weatherAlerts, spaceNews, aviationInc, newsData,
           cyberThreats, telegramOsint, fireHotspots, radiationData,
+          meteoAlerts, nwsAlerts, diseaseData, fedRegister, hnStories, gdacsAlerts, ifrcOps, spacexLaunches, launchLib,
         ] = await Promise.allSettled([
             fetchNewsApi(),
             fetchGNews(),
@@ -115,6 +124,16 @@ export async function GET(request: Request) {
             fetchTelegramOSINT(),
             fetchFireHotspots(30),
             fetchSafecastReadings(),
+            // Tier 1 free APIs (no key)
+            fetchOpenMeteoAlerts(),
+            fetchNWSAlerts(),
+            fetchDiseaseOutbreaks(),
+            fetchFederalRegister(),
+            fetchHackerNews(10),
+            fetchGDACSAlerts(),
+            fetchIFRCEmergencies(),
+            fetchSpaceXLaunches(),
+            fetchLaunchLibrary(),
           ]);
 
         const allItems: IntelItem[] = [];
@@ -139,6 +158,15 @@ export async function GET(request: Request) {
         if (telegramOsint.status === "fulfilled") allItems.push(...telegramOsint.value);
         if (fireHotspots.status === "fulfilled") allItems.push(...fireHotspots.value);
         if (radiationData.status === "fulfilled") allItems.push(...radiationToIntelItems(radiationData.value));
+        if (meteoAlerts.status === "fulfilled") allItems.push(...meteoAlerts.value);
+        if (nwsAlerts.status === "fulfilled") allItems.push(...nwsAlerts.value);
+        if (diseaseData.status === "fulfilled") allItems.push(...diseaseData.value);
+        if (fedRegister.status === "fulfilled") allItems.push(...fedRegister.value);
+        if (hnStories.status === "fulfilled") allItems.push(...hnStories.value);
+        if (gdacsAlerts.status === "fulfilled") allItems.push(...gdacsAlerts.value);
+        if (ifrcOps.status === "fulfilled") allItems.push(...ifrcOps.value);
+        if (spacexLaunches.status === "fulfilled") allItems.push(...spacexLaunches.value);
+        if (launchLib.status === "fulfilled") allItems.push(...launchLib.value);
 
         // Geo-enrich items that lack coordinates
         const enriched = enrichGeoData(allItems);
