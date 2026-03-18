@@ -4,12 +4,12 @@
  */
 import type { IntelItem } from "@/types/intel";
 
-export async function fetchCurrentsNews(limit = 15): Promise<IntelItem[]> {
+export async function fetchCurrentsNews(limit = 15, lang = "en"): Promise<IntelItem[]> {
   const apiKey = process.env.CURRENTS_API_KEY;
   if (!apiKey) return [];
   try {
     const res = await fetch(
-      `https://api.currentsapi.services/v1/latest-news?apiKey=${apiKey}&language=en&page_size=${limit}`,
+      `https://api.currentsapi.services/v1/latest-news?apiKey=${apiKey}&language=${lang}&page_size=${limit}`,
       { signal: AbortSignal.timeout(10000) }
     );
     if (!res.ok) return [];

@@ -42,17 +42,23 @@ function mapSeverity(sentiment?: string): Severity {
   return "medium";
 }
 
-export async function fetchNewsData(limit = 20): Promise<IntelItem[]> {
+export async function fetchNewsData(limit = 20, lang = "en"): Promise<IntelItem[]> {
   const apiKey = process.env.NEWSDATA_API_KEY;
   if (!apiKey) return [];
 
+  // Map locale to NewsData language codes
+  const langMap: Record<string, string> = {
+    en: "en", tr: "tr", ar: "ar", de: "de", es: "es", fr: "fr", ja: "ja", ko: "ko", ru: "ru", zh: "zh",
+  };
+  const newsLang = langMap[lang] || "en";
+
   return cachedFetch<IntelItem[]>(
-    `newsdata:latest:${limit}`,
+    `newsdata:latest:${limit}:${newsLang}`,
     async () => {
       try {
         const params = new URLSearchParams({
           apikey: apiKey,
-          language: "en,tr",
+          language: newsLang,
           size: String(limit),
         });
 

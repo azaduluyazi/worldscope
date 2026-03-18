@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import useSWR from "swr";
+import { useLocale } from "next-intl";
 import type { IntelFeedResponse, IntelItem } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
 import { useRealtimeEvents } from "./useRealtimeEvents";
@@ -15,8 +16,9 @@ interface UseCountryEventsOptions {
 }
 
 export function useCountryEvents({ countryCode, categories, severities }: UseCountryEventsOptions) {
+  const locale = useLocale();
   const { data, error, isLoading, mutate } = useSWR<IntelFeedResponse>(
-    `/api/intel?country=${countryCode.toUpperCase()}`,
+    `/api/intel?country=${countryCode.toUpperCase()}&lang=${locale}`,
     fetcher,
     {
       refreshInterval: 60_000,

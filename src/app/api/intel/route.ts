@@ -77,10 +77,11 @@ export async function GET(request: Request) {
       ? (rawCategory as Category)
       : null;
     const limit = Math.min(Number(searchParams.get("limit") || 200), 500);
+    const lang = searchParams.get("lang") || "en";
 
     const cacheKey = category
-      ? `intel:feed:${category}`
-      : "intel:feed:all";
+      ? `intel:feed:${category}:${lang}`
+      : `intel:feed:all:${lang}`;
 
     const items = await cachedFetch<IntelItem[]>(
       cacheKey,
@@ -109,8 +110,8 @@ export async function GET(request: Request) {
           meteoAlerts, nwsAlerts, diseaseData, fedRegister, hnStories, gdacsAlerts, ifrcOps, spacexLaunches, launchLib,
           guardianNews, nytStories, currentsNews, airQuality, shodanAlerts,
         ] = await Promise.allSettled([
-            fetchNewsApi(),
-            fetchGNews(),
+            fetchNewsApi(undefined, lang),
+            fetchGNews(undefined, lang),
             fetchFeedsInBatches(activeFeeds),
             fetchGdeltArticles(),
             fetchGdeltGeo(undefined, 150),
@@ -124,7 +125,7 @@ export async function GET(request: Request) {
             fetchWeatherAlerts(),
             fetchSpaceflightNews(),
             fetchAviationIncidents(),
-            fetchNewsData(),
+            fetchNewsData(20, lang),
             // New sources (WM parity)
             fetchAllCyberThreats(),
             fetchTelegramOSINT(),
@@ -143,7 +144,7 @@ export async function GET(request: Request) {
             // Tier 2: key-based APIs
             fetchGuardianNews(10),
             fetchNYTTopStories("world"),
-            fetchCurrentsNews(10),
+            fetchCurrentsNews(10, lang),
             fetchAirQualityAlerts(),
             fetchShodanAlerts(),
           ]);

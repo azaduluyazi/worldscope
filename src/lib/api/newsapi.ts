@@ -25,13 +25,16 @@ export function mapNewsApiToIntel(article: NewsApiArticle): IntelItem {
   };
 }
 
-export async function fetchNewsApi(query?: string): Promise<IntelItem[]> {
+// NewsAPI supported languages
+const NEWSAPI_LANGS = new Set(["ar", "de", "en", "es", "fr", "it", "nl", "no", "pt", "ru", "sv", "zh"]);
+
+export async function fetchNewsApi(query?: string, lang = "en"): Promise<IntelItem[]> {
   const apiKey = process.env.NEWSAPI_KEY;
   if (!apiKey) return [];
 
   const params = new URLSearchParams({
     apiKey,
-    language: "en",
+    language: NEWSAPI_LANGS.has(lang) ? lang : "en",
     pageSize: "20",
     sortBy: "publishedAt",
   });

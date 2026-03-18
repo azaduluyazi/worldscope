@@ -10,13 +10,16 @@ interface GNewsArticle {
   image: string | null;
 }
 
-export async function fetchGNews(topic?: string): Promise<IntelItem[]> {
+// GNews supported languages
+const GNEWS_LANGS = new Set(["ar", "de", "en", "es", "fr", "it", "ja", "ko", "nl", "no", "pt", "ru", "sv", "zh"]);
+
+export async function fetchGNews(topic?: string, lang = "en"): Promise<IntelItem[]> {
   const apiKey = process.env.GNEWS_API_KEY;
   if (!apiKey) return [];
 
   const params = new URLSearchParams({
     token: apiKey,
-    lang: "en",
+    lang: GNEWS_LANGS.has(lang) ? lang : "en",
     max: "20",
   });
 
