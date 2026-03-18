@@ -6,6 +6,9 @@ import { IconSidebar } from "./IconSidebar";
 import { TacticalMap } from "./TacticalMap";
 import { MarketTicker } from "./MarketTicker";
 import { IntelFeed } from "./IntelFeed";
+import { BreakingAlerts } from "./BreakingAlerts";
+import { LiveEvents } from "./LiveEvents";
+import { TrendingPanel } from "./TrendingPanel";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
@@ -79,20 +82,38 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
           onToggleClusters={toggleClusters}
         />
 
-        {/* Map Area */}
-        <div className="flex-1 relative overflow-hidden">
-          <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-            <Suspense fallback={<MapSkeleton />}>
-              <TacticalMap filters={filters} />
-            </Suspense>
+        {/* Center Content — 2×2 Grid */}
+        <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-1.5 p-1.5 overflow-hidden">
+          {/* Top-left: Compact Map */}
+          <div className="relative overflow-hidden rounded-lg border border-hud-border">
+            <ErrorBoundary section="map" fallback={<MapSkeleton />}>
+              <Suspense fallback={<MapSkeleton />}>
+                <TacticalMap filters={filters} />
+              </Suspense>
+            </ErrorBoundary>
+            <ErrorBoundary section="ticker">
+              <MarketTicker />
+            </ErrorBoundary>
+          </div>
+
+          {/* Top-right: Breaking Alerts */}
+          <ErrorBoundary section="alerts">
+            <BreakingAlerts />
           </ErrorBoundary>
-          <ErrorBoundary section="ticker">
-            <MarketTicker />
+
+          {/* Bottom-left: Live Event Stream */}
+          <ErrorBoundary section="live-events">
+            <LiveEvents />
+          </ErrorBoundary>
+
+          {/* Bottom-right: Trending & Market Overview */}
+          <ErrorBoundary section="trending">
+            <TrendingPanel />
           </ErrorBoundary>
         </div>
 
-        {/* Right Panel */}
-        <div className="hidden lg:block w-[360px]">
+        {/* Right Panel — Intel Feed */}
+        <div className="hidden lg:block w-[340px]">
           <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
             <Suspense fallback={<IntelFeedSkeleton />}>
               <IntelFeed variant={variant} />
