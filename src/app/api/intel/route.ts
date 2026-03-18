@@ -98,6 +98,11 @@ export async function GET(request: Request) {
           query = query.eq("category", category);
         }
 
+        // Filter feeds by language when not English
+        if (lang !== "en") {
+          query = query.or(`language.eq.${lang},language.eq.multi,language.eq.en`);
+        }
+
         const { data: feeds } = await query;
         const activeFeeds = feeds || [];
 
@@ -113,8 +118,8 @@ export async function GET(request: Request) {
             fetchNewsApi(undefined, lang),
             fetchGNews(undefined, lang),
             fetchFeedsInBatches(activeFeeds),
-            fetchGdeltArticles(),
-            fetchGdeltGeo(undefined, 150),
+            fetchGdeltArticles(undefined, 30, lang),
+            fetchGdeltGeo(undefined, 150, lang),
             fetchEarthquakes("4.5_week"),
             fetchEarthquakes("2.5_day"),
             fetchNasaEonet(30, 60),
@@ -131,22 +136,22 @@ export async function GET(request: Request) {
             fetchTelegramOSINT(),
             fetchFireHotspots(30),
             fetchSafecastReadings(),
-            // Tier 1 free APIs (no key)
+            // Tier 1 free APIs (no key) — some EN-only
             fetchOpenMeteoAlerts(),
-            fetchNWSAlerts(),
+            lang === "en" ? fetchNWSAlerts() : Promise.resolve([]),
             fetchDiseaseOutbreaks(),
-            fetchFederalRegister(),
-            fetchHackerNews(10),
+            lang === "en" ? fetchFederalRegister() : Promise.resolve([]),
+            lang === "en" ? fetchHackerNews(10) : Promise.resolve([]),
             fetchGDACSAlerts(),
             fetchIFRCEmergencies(),
             fetchSpaceXLaunches(),
             fetchLaunchLibrary(),
-            // Tier 2: key-based APIs
-            fetchGuardianNews(10),
-            fetchNYTTopStories("world"),
+            // Tier 2: key-based APIs — EN-only sources skipped for other langs
+            lang === "en" ? fetchGuardianNews(10) : Promise.resolve([]),
+            lang === "en" ? fetchNYTTopStories("world") : Promise.resolve([]),
             fetchCurrentsNews(10, lang),
             fetchAirQualityAlerts(),
-            fetchShodanAlerts(),
+            lang === "en" ? fetchShodanAlerts() : Promise.resolve([]),
           ]);
 
         const allItems: IntelItem[] = [];

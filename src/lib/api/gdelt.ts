@@ -61,16 +61,25 @@ function mapGdeltCategory(title: string): Category {
  * Fetch latest articles from GDELT Doc API
  * Returns global news with metadata (no coordinates from this endpoint)
  */
+// GDELT language codes
+const GDELT_LANGS: Record<string, string> = {
+  en: "English", tr: "Turkish", ar: "Arabic", de: "German", es: "Spanish",
+  fr: "French", ja: "Japanese", ko: "Korean", ru: "Russian", zh: "Chinese",
+};
+
 export async function fetchGdeltArticles(
   query = "conflict OR crisis OR attack OR military",
-  maxRecords = 30
+  maxRecords = 30,
+  lang = "en"
 ): Promise<IntelItem[]> {
+  const sourceLang = GDELT_LANGS[lang] || "English";
   const params = new URLSearchParams({
     query,
     mode: "ArtList",
     maxrecords: String(maxRecords),
     format: "json",
     sort: "DateDesc",
+    sourcelang: sourceLang,
   });
 
   try {
@@ -105,13 +114,16 @@ export async function fetchGdeltArticles(
  */
 export async function fetchGdeltGeo(
   query = "conflict OR attack OR protest OR disaster",
-  maxPoints = 50
+  maxPoints = 50,
+  lang = "en"
 ): Promise<IntelItem[]> {
+  const sourceLang = GDELT_LANGS[lang] || "English";
   const params = new URLSearchParams({
     query,
     format: "GeoJSON",
     maxpoints: String(maxPoints),
     timespan: "24h",
+    sourcelang: sourceLang,
   });
 
   try {
