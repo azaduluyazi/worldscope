@@ -7,8 +7,8 @@ import { TacticalMap } from "./TacticalMap";
 import { MarketTicker } from "./MarketTicker";
 import { IntelFeed } from "./IntelFeed";
 import { BreakingAlerts } from "./BreakingAlerts";
-import { LiveEvents } from "./LiveEvents";
-import { TrendingPanel } from "./TrendingPanel";
+import { LiveBroadcasts } from "./LiveBroadcasts";
+import { LiveWebcams } from "./LiveWebcams";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
@@ -82,43 +82,56 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
           onToggleClusters={toggleClusters}
         />
 
-        {/* Center Content — 2×2 Grid */}
-        <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-1.5 p-1.5 overflow-hidden">
-          {/* Top-left: Compact Map */}
-          <div className="relative overflow-hidden rounded-lg border border-hud-border">
-            <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-              <Suspense fallback={<MapSkeleton />}>
-                <TacticalMap filters={filters} />
-              </Suspense>
-            </ErrorBoundary>
-            <ErrorBoundary section="ticker">
-              <MarketTicker />
-            </ErrorBoundary>
+        {/* ═══ Layout C: 3 Column Balanced ═══ */}
+        <div className="flex-1 flex gap-1 p-1 overflow-hidden">
+
+          {/* ── Column 1: Map + Webcams ── */}
+          <div className="flex-[3.5] flex flex-col gap-1 min-w-0">
+            {/* Tactical Map */}
+            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0">
+              <ErrorBoundary section="map" fallback={<MapSkeleton />}>
+                <Suspense fallback={<MapSkeleton />}>
+                  <TacticalMap filters={filters} />
+                </Suspense>
+              </ErrorBoundary>
+              <ErrorBoundary section="ticker">
+                <MarketTicker />
+              </ErrorBoundary>
+            </div>
+
+            {/* Live Webcams */}
+            <div className="flex-[4.5] min-h-0">
+              <ErrorBoundary section="webcams">
+                <LiveWebcams />
+              </ErrorBoundary>
+            </div>
           </div>
 
-          {/* Top-right: Breaking Alerts */}
-          <ErrorBoundary section="alerts">
-            <BreakingAlerts />
-          </ErrorBoundary>
+          {/* ── Column 2: Live TV + Breaking ── */}
+          <div className="flex-[3.5] flex flex-col gap-1 min-w-0">
+            {/* Live Broadcasts */}
+            <div className="flex-[5] min-h-0">
+              <ErrorBoundary section="broadcasts">
+                <LiveBroadcasts />
+              </ErrorBoundary>
+            </div>
 
-          {/* Bottom-left: Live Event Stream */}
-          <ErrorBoundary section="live-events">
-            <LiveEvents />
-          </ErrorBoundary>
+            {/* Breaking Alerts */}
+            <div className="flex-[5] min-h-0">
+              <ErrorBoundary section="alerts">
+                <BreakingAlerts />
+              </ErrorBoundary>
+            </div>
+          </div>
 
-          {/* Bottom-right: Trending & Market Overview */}
-          <ErrorBoundary section="trending">
-            <TrendingPanel />
-          </ErrorBoundary>
-        </div>
-
-        {/* Right Panel — Intel Feed */}
-        <div className="hidden lg:block w-[340px]">
-          <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
-            <Suspense fallback={<IntelFeedSkeleton />}>
-              <IntelFeed variant={variant} />
-            </Suspense>
-          </ErrorBoundary>
+          {/* ── Column 3: Intel Feed ── */}
+          <div className="flex-[3] min-w-0 hidden lg:block">
+            <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
+              <Suspense fallback={<IntelFeedSkeleton />}>
+                <IntelFeed variant={variant} />
+              </Suspense>
+            </ErrorBoundary>
+          </div>
         </div>
       </div>
     </div>
