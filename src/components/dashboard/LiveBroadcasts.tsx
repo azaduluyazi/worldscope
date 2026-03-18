@@ -1,14 +1,17 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
-import { LIVE_CHANNELS, type LiveChannel } from "@/config/live-channels";
+import { useState, useCallback, useRef, useMemo } from "react";
+import { useLocale } from "next-intl";
+import { getChannelsByLocale, type LiveChannel } from "@/config/live-channels";
 
 /**
  * Live news broadcast panel — YouTube embeds with channel tabs.
- * Features: channel switch flash, mute/fullscreen controls, loading state.
+ * Locale-aware: shows national channels for user's language + international.
  */
 export function LiveBroadcasts() {
-  const [activeChannel, setActiveChannel] = useState<LiveChannel>(LIVE_CHANNELS[0]);
+  const locale = useLocale();
+  const channels = useMemo(() => getChannelsByLocale(locale), [locale]);
+  const [activeChannel, setActiveChannel] = useState<LiveChannel>(channels[0]);
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [showFlash, setShowFlash] = useState(false);
@@ -61,14 +64,14 @@ export function LiveBroadcasts() {
             ⛶
           </button>
           <span className="font-mono text-[8px] text-hud-muted">
-            {LIVE_CHANNELS.length} ch
+            {channels.length} ch
           </span>
         </div>
       </div>
 
       {/* Channel tabs — scrollable */}
       <div className="flex gap-0.5 px-2 py-1 border-b border-hud-border overflow-x-auto scrollbar-hide">
-        {LIVE_CHANNELS.map((ch) => {
+        {channels.map((ch) => {
           const isActive = activeChannel.id === ch.id;
           return (
             <button
