@@ -226,6 +226,26 @@ export async function GET(request: Request) {
       );
     }
 
+    // Text search filter (optional — matches title or summary)
+    const query = searchParams.get("q");
+    if (query && query.trim().length >= 2) {
+      const q = query.toLowerCase();
+      filtered = filtered.filter(
+        (i) =>
+          i.title.toLowerCase().includes(q) ||
+          (i.summary && i.summary.toLowerCase().includes(q)) ||
+          i.source.toLowerCase().includes(q)
+      );
+    }
+
+    // Source filter (optional)
+    const sourceParam = searchParams.get("source");
+    if (sourceParam) {
+      filtered = filtered.filter(
+        (i) => i.source.toLowerCase() === sourceParam.toLowerCase()
+      );
+    }
+
     // Hours filter (optional — filter by publishedAt age)
     const hoursParam = searchParams.get("hours");
     if (hoursParam) {

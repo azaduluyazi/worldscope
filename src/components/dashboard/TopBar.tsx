@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { VARIANTS, type VariantId } from "@/config/variants";
 import { useLocaleSwitcher } from "@/hooks/useLocale";
 import { locales } from "@/i18n/config";
+import { SearchBar } from "./SearchBar";
 
 const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "world", href: "/" },
@@ -84,8 +85,12 @@ export function TopBar({ variant = "world" }: TopBarProps) {
         })}
       </div>
 
-      {/* Right section — locale switcher + live + clock */}
+      {/* Right section — search + locale + live + clock */}
       <div className="flex items-center gap-1.5 md:gap-3 font-mono text-[8px] md:text-[9px]">
+        {/* Search */}
+        <div className="hidden md:block">
+          <SearchBar />
+        </div>
         {/* Locale switcher */}
         <div className="flex border border-hud-border rounded overflow-hidden">
           {locales.map((loc) => (
