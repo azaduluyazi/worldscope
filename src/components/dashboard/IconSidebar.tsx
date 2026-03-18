@@ -20,7 +20,7 @@ const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "cyber", icon: "🛡️", tKey: "sidebar.cyber", color: "#00e5ff", category: "cyber" },
   { id: "finance", icon: "📊", tKey: "sidebar.markets", color: "#ffd000", category: "finance" },
   { id: "tech", icon: "💻", tKey: "sidebar.tech", color: "#8a5cf6", category: "tech" },
-  { id: "aviation", icon: "✈️", tKey: "sidebar.aviation", color: "#00ff88", category: "aviation" },
+  { id: "aviation", icon: "🛫", tKey: "sidebar.aviation", color: "#c471ed", category: "aviation" },
   { id: "health", icon: "🏥", tKey: "sidebar.health", color: "#ff4757", category: "health" },
   { id: "diplomacy", icon: "🏛️", tKey: "sidebar.diplomacy", color: "#00e5ff", category: "diplomacy" },
   { id: "energy", icon: "⚡", tKey: "sidebar.energy", color: "#ffd000", category: "energy" },

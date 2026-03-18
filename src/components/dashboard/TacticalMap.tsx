@@ -588,7 +588,8 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Aircraft Markers (ADS-B) ── */}
-        {filters.flights && aircraft.slice(0, 200).map((ac) => {
+        {/* Show when: flights toggle ON, OR aviation category is active */}
+        {(filters.flights || filters.categories.has("aviation")) && aircraft.slice(0, 200).map((ac) => {
           if (!ac.latitude || !ac.longitude) return null;
           const isMilitary = ac.category === "military";
           const color = isMilitary ? "#ff4757" : "#8a5cf6";
@@ -605,7 +606,8 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Vessel Markers (AIS) ── */}
-        {filters.vessels && vessels.slice(0, 100).map((v) => {
+        {/* Show when: vessels toggle ON, OR energy/conflict category active (shipping lanes) */}
+        {(filters.vessels || filters.categories.has("energy") || filters.categories.has("conflict")) && vessels.slice(0, 100).map((v) => {
           if (!v.latitude || !v.longitude) return null;
           const isMilitary = v.shipType === "military";
           const color = isMilitary ? "#ff4757" : v.shipType === "tanker" ? "#ffd000" : "#00e5ff";
@@ -622,7 +624,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── GPS Jamming Zones ── */}
-        {filters.gpsJamming && jammingZones.map((zone) => {
+        {(filters.gpsJamming || filters.categories.has("cyber") || filters.categories.has("conflict")) && jammingZones.map((zone) => {
           const color = zone.severity === "high" ? "#ff4757" : zone.severity === "medium" ? "#ffd000" : "#00e5ff";
           return (
             <Marker key={zone.id} latitude={zone.lat} longitude={zone.lng} anchor="center">
@@ -641,7 +643,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Submarine Cable Landing Points ── */}
-        {filters.cables && cables.map((cable) =>
+        {(filters.cables || filters.categories.has("tech") || filters.categories.has("cyber")) && cables.map((cable) =>
           cable.landing_points.map((lp, i) => (
             <Marker key={`${cable.id}-${i}`} latitude={lp.lat} longitude={lp.lng} anchor="center">
               <div
