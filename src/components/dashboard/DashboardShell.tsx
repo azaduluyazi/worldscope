@@ -10,6 +10,7 @@ import { BreakingAlerts } from "./BreakingAlerts";
 import { LiveBroadcasts } from "./LiveBroadcasts";
 import { LiveWebcams } from "./LiveWebcams";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
+import { KeyboardHelp } from "./KeyboardHelp";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
@@ -255,6 +256,9 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
         activePanel={mobilePanel}
         onPanelChange={setMobilePanel}
       />
+
+      {/* Keyboard Shortcuts Help — press ? to toggle */}
+      <KeyboardHelp />
     </div>
   );
 }
