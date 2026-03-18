@@ -45,13 +45,23 @@ export function FeedAdminPanel({ feeds, onRefresh }: FeedAdminPanelProps) {
     setTimeout(() => setMessage(null), 3000);
   }, []);
 
-  const handleUnlock = useCallback(() => {
-    // Simple client-side check — real protection is on API side via CRON_SECRET
+  const handleUnlock = useCallback(async () => {
     const key = adminKey.trim();
-    if (key.length >= 4) {
-      setUnlocked(true);
-      setKeyError(false);
-    } else {
+    if (!key) { setKeyError(true); return; }
+    try {
+      const res = await fetch("/api/admin/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key }),
+      });
+      const data = await res.json();
+      if (data.verified) {
+        setUnlocked(true);
+        setKeyError(false);
+      } else {
+        setKeyError(true);
+      }
+    } catch {
       setKeyError(true);
     }
   }, [adminKey]);

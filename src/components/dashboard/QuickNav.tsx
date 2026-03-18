@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/search?q=", icon: "🔍", label: "Search" },
   { href: "/reports", icon: "📄", label: "Reports" },
   { href: "/bookmarks", icon: "🔖", label: "Bookmarks" },
+  { href: "/admin", icon: "🔐", label: "Admin" },
 ];
 
 export function QuickNav() {
