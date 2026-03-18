@@ -169,3 +169,90 @@
   0%, 100% { text-shadow: 0 0 4px currentColor; }
   50% { text-shadow: 0 0 12px currentColor, 0 0 20px currentColor; }
 }
+
+/* ─── Panel Loading Shimmer ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 229, 255, 0.03) 0%,
+    rgba(0, 229, 255, 0.08) 50%,
+    rgba(0, 229, 255, 0.03) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ─── Breaking Alert Flash ─── */
+@keyframes alertFlash {
+  0%, 100% { background-color: transparent; }
+  15% { background-color: rgba(255, 71, 87, 0.08); }
+  85% { background-color: rgba(255, 71, 87, 0.04); }
+}
+.alert-flash {
+  animation: alertFlash 4s ease-in-out;
+}
+
+/* ─── Urgency Border Pulse ─── */
+@keyframes urgencyPulse {
+  0%, 100% { border-color: rgba(255, 71, 87, 0.3); }
+  50% { border-color: rgba(255, 71, 87, 0.7); }
+}
+.urgency-pulse {
+  animation: urgencyPulse 2s ease-in-out infinite;
+}
+
+/* ─── Smooth Fade Transition ─── */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-slide-in {
+  animation: fadeSlideIn 0.3s ease-out;
+}
+
+/* ─── Live Indicator Glow ─── */
+@keyframes liveGlow {
+  0%, 100% { box-shadow: 0 0 4px currentColor; }
+  50% { box-shadow: 0 0 10px currentColor, 0 0 16px currentColor; }
+}
+.live-glow {
+  animation: liveGlow 1.5s ease-in-out infinite;
+}
+
+/* ─── Channel Switch Flash ─── */
+@keyframes channelFlash {
+  0% { opacity: 0; }
+  20% { opacity: 0.15; }
+  100% { opacity: 0; }
+}
+.channel-flash {
+  position: absolute;
+  inset: 0;
+  background: white;
+  pointer-events: none;
+  animation: channelFlash 0.5s ease-out forwards;
+}
+
+/* ─── Scrollbar HUD Style ─── */
+.hud-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.hud-scrollbar::-webkit-scrollbar-track {
+  background: rgba(5, 10, 18, 0.5);
+}
+.hud-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 229, 255, 0.2);
+  border-radius: 2px;
+}
+.hud-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 229, 255, 0.4);
+}
+
+/* ─── Webcam Connection Status ─── */
+.cam-online { color: #00ff88; }
+.cam-offline { color: #ff4757; }
+.cam-loading { color: #ffd000; }
