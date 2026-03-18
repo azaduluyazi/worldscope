@@ -1,9 +1,27 @@
 import type { Metadata } from "next";
+import { JetBrains_Mono, Inter } from "next/font/google";
 import Script from "next/script";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages } from "next-intl/server";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { WebVitals } from "@/components/shared/WebVitals";
 import { ADSENSE_PUB_ID } from "@/config/ads";
 import "./globals.css";
+
+/** Self-hosted fonts via next/font — eliminates render-blocking external requests */
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-mono",
+  display: "swap",
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://worldscope.app";
 
@@ -28,6 +46,15 @@ export const metadata: Metadata = {
   },
   robots: { index: true, follow: true },
   alternates: { canonical: "/" },
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "WorldScope",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 /** WebSite JSON-LD for Google rich results */
@@ -45,24 +72,21 @@ const jsonLd = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
-    <html lang="en" className="dark">
+    <html lang={locale} className={`dark ${jetbrainsMono.variable} ${inter.variable}`}>
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
+        {/* PWA & Mobile meta */}
+        <meta name="theme-color" content="#050a12" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -83,13 +107,19 @@ export default function RootLayout({
         >
           Skip to content
         </a>
-        <ThemeProvider>
-          <WebVitals />
-          <main id="main-content">
-            {children}
-          </main>
-          <div className="scanlines" aria-hidden="true" />
-        </ThemeProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            <WebVitals />
+            <main id="main-content">
+              {children}
+            </main>
+            <div className="scanlines" aria-hidden="true" />
+          </ThemeProvider>
+        </NextIntlClientProvider>
+        {/* Service Worker registration */}
+        <Script id="sw-register" strategy="lazyOnload">
+          {`if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}`}
+        </Script>
       </body>
     </html>
   );

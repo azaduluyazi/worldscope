@@ -38,7 +38,7 @@ export function AnalyticsDashboard() {
               </p>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 flex-wrap">
               <TimeRangeSelector value={hours} onChange={setHours} />
               {analytics.isLoading && (
                 <span className="font-mono text-[9px] text-hud-accent animate-pulse">◆ LOADING...</span>
