@@ -6,11 +6,24 @@ import { IntelCard } from "./IntelCard";
 import { AIBrief } from "./AIBrief";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getVariantCategories, type VariantId } from "@/config/variants";
 
 const TABS = ["INTEL FEED", "ANALYSIS", "AI BRIEF"] as const;
 
-export function IntelFeed() {
-  const { items, isLoading, total } = useIntelFeed();
+interface IntelFeedProps {
+  variant?: VariantId;
+}
+
+export function IntelFeed({ variant = "world" }: IntelFeedProps) {
+  const { items: allItems, isLoading, total: rawTotal } = useIntelFeed();
+
+  // Filter items by variant categories
+  const { items, total } = useMemo(() => {
+    if (variant === "world") return { items: allItems, total: rawTotal };
+    const { all } = getVariantCategories(variant);
+    const filtered = allItems.filter((item) => all.has(item.category as never));
+    return { items: filtered, total: filtered.length };
+  }, [allItems, rawTotal, variant]);
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("INTEL FEED");
 
   // Compute analysis data

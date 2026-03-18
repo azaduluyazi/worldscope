@@ -9,6 +9,7 @@ import { IntelFeed } from "./IntelFeed";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
+import { VARIANTS, type VariantId } from "@/config/variants";
 import type { MapFilters } from "@/types/geo";
 
 const DEFAULT_FILTERS: MapFilters = {
@@ -18,8 +19,13 @@ const DEFAULT_FILTERS: MapFilters = {
   clusters: true,
 };
 
-export function DashboardShell() {
+interface DashboardShellProps {
+  variant?: VariantId;
+}
+
+export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   const [filters, setFilters] = useState<MapFilters>(DEFAULT_FILTERS);
+  const variantConfig = VARIANTS[variant];
 
   const toggleCategory = useCallback((cat: string) => {
     setFilters((prev) => {
@@ -57,12 +63,16 @@ export function DashboardShell() {
   useKeyboardShortcuts(shortcuts);
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-hidden">
-      <TopBar />
+    <div
+      className="h-screen w-screen flex flex-col overflow-hidden"
+      style={{ "--variant-accent": variantConfig.accent } as React.CSSProperties}
+    >
+      <TopBar variant={variant} />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Icon Sidebar — filter controls */}
         <IconSidebar
+          variant={variant}
           filters={filters}
           onToggleCategory={toggleCategory}
           onToggleHeatmap={toggleHeatmap}
@@ -85,7 +95,7 @@ export function DashboardShell() {
         <div className="hidden lg:block w-[360px]">
           <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
             <Suspense fallback={<IntelFeedSkeleton />}>
-              <IntelFeed />
+              <IntelFeed variant={variant} />
             </Suspense>
           </ErrorBoundary>
         </div>

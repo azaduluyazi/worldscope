@@ -10,6 +10,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // ── Static pages ──
   entries.push(
     { url: BASE_URL, lastModified: new Date(), changeFrequency: "always", priority: 1.0 },
+    { url: `${BASE_URL}/tech`, lastModified: new Date(), changeFrequency: "always", priority: 0.9 },
+    { url: `${BASE_URL}/finance`, lastModified: new Date(), changeFrequency: "always", priority: 0.9 },
     { url: `${BASE_URL}/reports`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
   );
 

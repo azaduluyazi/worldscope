@@ -1,17 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
 import type { MapFilters } from "@/types/geo";
+import { VARIANTS, getVariantCategories, type VariantId } from "@/config/variants";
 
 interface SidebarItem {
   id: string;
   icon: string;
   label: string;
   color: string;
-  /** Maps to a category filter value (null = no filter, just a view toggle) */
-  category?: string;
+  /** Maps to a category filter value */
+  category: string;
 }
 
-const SIDEBAR_ITEMS: SidebarItem[] = [
+/** All 10 categories with their icons and colors */
+const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "conflict", icon: "⚔️", label: "Conflicts", color: "#ff4757", category: "conflict" },
   { id: "natural", icon: "🌍", label: "Natural", color: "#00ff88", category: "natural" },
   { id: "cyber", icon: "🛡️", label: "Cyber", color: "#00e5ff", category: "cyber" },
@@ -19,9 +22,13 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { id: "tech", icon: "💻", label: "Tech", color: "#8a5cf6", category: "tech" },
   { id: "aviation", icon: "✈️", label: "Aviation", color: "#00ff88", category: "aviation" },
   { id: "health", icon: "🏥", label: "Health", color: "#ff4757", category: "health" },
+  { id: "diplomacy", icon: "🏛️", label: "Diplomacy", color: "#00e5ff", category: "diplomacy" },
+  { id: "energy", icon: "⚡", label: "Energy", color: "#ffd000", category: "energy" },
+  { id: "protest", icon: "📢", label: "Protests", color: "#ff4757", category: "protest" },
 ];
 
 interface IconSidebarProps {
+  variant?: VariantId;
   filters: MapFilters;
   onToggleCategory: (cat: string) => void;
   onToggleHeatmap: () => void;
@@ -29,43 +36,49 @@ interface IconSidebarProps {
 }
 
 export function IconSidebar({
+  variant = "world",
   filters,
   onToggleCategory,
   onToggleHeatmap,
   onToggleClusters,
 }: IconSidebarProps) {
+  const { primary, all } = useMemo(() => getVariantCategories(variant), [variant]);
   const hasActiveFilters = filters.categories.size > 0;
 
   return (
     <aside className="w-[52px] bg-hud-surface border-r border-hud-border flex flex-col items-center py-2 gap-1 z-50">
-      {/* Category filters */}
-      {SIDEBAR_ITEMS.map((item) => {
-        const isActive = item.category ? filters.categories.has(item.category) : false;
+      {/* Category filters — filtered by variant */}
+      {ALL_SIDEBAR_ITEMS
+        .filter((item) => all.has(item.category as never))
+        .map((item) => {
+          const isActive = filters.categories.has(item.category);
+          const isPrimary = primary.has(item.category as never);
 
-        return (
-          <button
-            key={item.id}
-            onClick={() => item.category && onToggleCategory(item.category)}
-            title={`${item.label}${isActive ? " (filtered)" : ""}`}
-            className={`w-9 h-9 rounded-md flex items-center justify-center text-base transition-all relative
-              ${
-                isActive
-                  ? "bg-hud-accent/10 border border-hud-accent/30 shadow-[0_0_8px_rgba(0,229,255,0.2)]"
-                  : "bg-hud-panel border border-hud-border hover:border-hud-muted"
-              }`}
-            style={isActive ? { borderColor: `${item.color}60`, boxShadow: `0 0 8px ${item.color}30` } : undefined}
-          >
-            {item.icon}
-            {/* Active indicator dot */}
-            {isActive && (
-              <div
-                className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
-                style={{ backgroundColor: item.color }}
-              />
-            )}
-          </button>
-        );
-      })}
+          return (
+            <button
+              key={item.id}
+              onClick={() => onToggleCategory(item.category)}
+              title={`${item.label}${isActive ? " (filtered)" : ""}`}
+              className={`w-9 h-9 rounded-md flex items-center justify-center transition-all relative
+                ${isPrimary ? "text-base" : "text-sm opacity-60"}
+                ${
+                  isActive
+                    ? "bg-hud-accent/10 border border-hud-accent/30 shadow-[0_0_8px_rgba(0,229,255,0.2)]"
+                    : "bg-hud-panel border border-hud-border hover:border-hud-muted"
+                }`}
+              style={isActive ? { borderColor: `${item.color}60`, boxShadow: `0 0 8px ${item.color}30` } : undefined}
+            >
+              {item.icon}
+              {/* Active indicator dot */}
+              {isActive && (
+                <div
+                  className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
+              )}
+            </button>
+          );
+        })}
 
       {/* Divider */}
       <div className="w-6 border-t border-hud-border my-1" />
