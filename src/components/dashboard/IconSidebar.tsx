@@ -1,30 +1,30 @@
 "use client";
 
 import { useMemo } from "react";
+import { useTranslations } from "next-intl";
 import type { MapFilters } from "@/types/geo";
-import { VARIANTS, getVariantCategories, type VariantId } from "@/config/variants";
+import { getVariantCategories, type VariantId } from "@/config/variants";
 
 interface SidebarItem {
   id: string;
   icon: string;
-  label: string;
+  tKey: string;
   color: string;
-  /** Maps to a category filter value */
   category: string;
 }
 
 /** All 10 categories with their icons and colors */
 const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
-  { id: "conflict", icon: "⚔️", label: "Conflicts", color: "#ff4757", category: "conflict" },
-  { id: "natural", icon: "🌍", label: "Natural", color: "#00ff88", category: "natural" },
-  { id: "cyber", icon: "🛡️", label: "Cyber", color: "#00e5ff", category: "cyber" },
-  { id: "finance", icon: "📊", label: "Markets", color: "#ffd000", category: "finance" },
-  { id: "tech", icon: "💻", label: "Tech", color: "#8a5cf6", category: "tech" },
-  { id: "aviation", icon: "✈️", label: "Aviation", color: "#00ff88", category: "aviation" },
-  { id: "health", icon: "🏥", label: "Health", color: "#ff4757", category: "health" },
-  { id: "diplomacy", icon: "🏛️", label: "Diplomacy", color: "#00e5ff", category: "diplomacy" },
-  { id: "energy", icon: "⚡", label: "Energy", color: "#ffd000", category: "energy" },
-  { id: "protest", icon: "📢", label: "Protests", color: "#ff4757", category: "protest" },
+  { id: "conflict", icon: "⚔️", tKey: "sidebar.conflicts", color: "#ff4757", category: "conflict" },
+  { id: "natural", icon: "🌍", tKey: "sidebar.natural", color: "#00ff88", category: "natural" },
+  { id: "cyber", icon: "🛡️", tKey: "sidebar.cyber", color: "#00e5ff", category: "cyber" },
+  { id: "finance", icon: "📊", tKey: "sidebar.markets", color: "#ffd000", category: "finance" },
+  { id: "tech", icon: "💻", tKey: "sidebar.tech", color: "#8a5cf6", category: "tech" },
+  { id: "aviation", icon: "✈️", tKey: "sidebar.aviation", color: "#00ff88", category: "aviation" },
+  { id: "health", icon: "🏥", tKey: "sidebar.health", color: "#ff4757", category: "health" },
+  { id: "diplomacy", icon: "🏛️", tKey: "sidebar.diplomacy", color: "#00e5ff", category: "diplomacy" },
+  { id: "energy", icon: "⚡", tKey: "sidebar.energy", color: "#ffd000", category: "energy" },
+  { id: "protest", icon: "📢", tKey: "sidebar.protests", color: "#ff4757", category: "protest" },
 ];
 
 interface IconSidebarProps {
@@ -33,6 +33,7 @@ interface IconSidebarProps {
   onToggleCategory: (cat: string) => void;
   onToggleHeatmap: () => void;
   onToggleClusters: () => void;
+  onToggleLayer: (layer: "flights" | "vessels" | "gpsJamming" | "cables") => void;
 }
 
 export function IconSidebar({
@@ -41,7 +42,9 @@ export function IconSidebar({
   onToggleCategory,
   onToggleHeatmap,
   onToggleClusters,
+  onToggleLayer,
 }: IconSidebarProps) {
+  const t = useTranslations();
   const { primary, all } = useMemo(() => getVariantCategories(variant), [variant]);
   const hasActiveFilters = filters.categories.size > 0;
 
@@ -58,7 +61,7 @@ export function IconSidebar({
             <button
               key={item.id}
               onClick={() => onToggleCategory(item.category)}
-              title={`${item.label}${isActive ? " (filtered)" : ""}`}
+              title={`${t(item.tKey)}${isActive ? " (filtered)" : ""}`}
               className={`w-9 h-9 rounded-md flex items-center justify-center transition-all relative
                 ${isPrimary ? "text-base" : "text-sm opacity-60"}
                 ${
@@ -86,7 +89,7 @@ export function IconSidebar({
       {/* Clear all filters */}
       {hasActiveFilters && (
         <button
-          title="Clear all filters"
+          title={t("sidebar.clearFilters")}
           onClick={() => {
             // Toggle off all active categories
             filters.categories.forEach((cat) => onToggleCategory(cat));
@@ -101,7 +104,7 @@ export function IconSidebar({
 
       {/* Heatmap toggle */}
       <button
-        title={`Heatmap ${filters.heatmap ? "ON" : "OFF"}`}
+        title={`${t("sidebar.heatmap")} ${filters.heatmap ? "ON" : "OFF"}`}
         onClick={onToggleHeatmap}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-base transition-all
           ${
@@ -115,7 +118,7 @@ export function IconSidebar({
 
       {/* Cluster toggle */}
       <button
-        title={`Clusters ${filters.clusters ? "ON" : "OFF"}`}
+        title={`${t("sidebar.clusters")} ${filters.clusters ? "ON" : "OFF"}`}
         onClick={onToggleClusters}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-base transition-all
           ${
@@ -127,9 +130,64 @@ export function IconSidebar({
         🎯
       </button>
 
+      {/* Divider */}
+      <div className="w-6 border-t border-hud-border my-0.5" />
+
+      {/* Flights toggle */}
+      <button
+        title={`Flights ${filters.flights ? "ON" : "OFF"}`}
+        onClick={() => onToggleLayer("flights")}
+        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
+          ${filters.flights
+            ? "bg-[#8a5cf6]/10 border border-[#8a5cf6]/30"
+            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
+          }`}
+      >
+        ✈️
+      </button>
+
+      {/* Vessels toggle */}
+      <button
+        title={`Vessels ${filters.vessels ? "ON" : "OFF"}`}
+        onClick={() => onToggleLayer("vessels")}
+        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
+          ${filters.vessels
+            ? "bg-[#00e5ff]/10 border border-[#00e5ff]/30"
+            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
+          }`}
+      >
+        🚢
+      </button>
+
+      {/* GPS Jamming toggle */}
+      <button
+        title={`GPS Jamming ${filters.gpsJamming ? "ON" : "OFF"}`}
+        onClick={() => onToggleLayer("gpsJamming")}
+        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
+          ${filters.gpsJamming
+            ? "bg-[#ff4757]/10 border border-[#ff4757]/30"
+            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
+          }`}
+      >
+        📡
+      </button>
+
+      {/* Submarine Cables toggle */}
+      <button
+        title={`Cables ${filters.cables ? "ON" : "OFF"}`}
+        onClick={() => onToggleLayer("cables")}
+        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
+          ${filters.cables
+            ? "bg-[#00e5ff]/10 border border-[#00e5ff]/30"
+            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
+          }`}
+      >
+        🔌
+      </button>
+
       {/* Settings */}
       <button
-        title="Settings"
+        title={t("sidebar.settings")}
         className="w-9 h-9 rounded-md bg-hud-panel border border-hud-border flex items-center justify-center text-base hover:border-hud-muted transition-colors"
       >
         ⚙️

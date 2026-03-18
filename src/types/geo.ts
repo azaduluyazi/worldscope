@@ -30,4 +30,12 @@ export interface MapFilters {
   heatmap: boolean;
   /** Show cluster grouping */
   clusters: boolean;
+  /** Show ADS-B aircraft markers */
+  flights: boolean;
+  /** Show AIS vessel markers */
+  vessels: boolean;
+  /** Show GPS jamming zones */
+  gpsJamming: boolean;
+  /** Show submarine cable landing points */
+  cables: boolean;
 }

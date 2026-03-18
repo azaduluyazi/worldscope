@@ -588,7 +588,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Aircraft Markers (ADS-B) ── */}
-        {aircraft.slice(0, 200).map((ac) => {
+        {filters.flights && aircraft.slice(0, 200).map((ac) => {
           if (!ac.latitude || !ac.longitude) return null;
           const isMilitary = ac.category === "military";
           const color = isMilitary ? "#ff4757" : "#8a5cf6";
@@ -605,7 +605,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Vessel Markers (AIS) ── */}
-        {vessels.slice(0, 100).map((v) => {
+        {filters.vessels && vessels.slice(0, 100).map((v) => {
           if (!v.latitude || !v.longitude) return null;
           const isMilitary = v.shipType === "military";
           const color = isMilitary ? "#ff4757" : v.shipType === "tanker" ? "#ffd000" : "#00e5ff";
@@ -622,7 +622,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── GPS Jamming Zones ── */}
-        {jammingZones.map((zone) => {
+        {filters.gpsJamming && jammingZones.map((zone) => {
           const color = zone.severity === "high" ? "#ff4757" : zone.severity === "medium" ? "#ffd000" : "#00e5ff";
           return (
             <Marker key={zone.id} latitude={zone.lat} longitude={zone.lng} anchor="center">
@@ -641,7 +641,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Submarine Cable Landing Points ── */}
-        {cables.map((cable) =>
+        {filters.cables && cables.map((cable) =>
           cable.landing_points.map((lp, i) => (
             <Marker key={`${cable.id}-${i}`} latitude={lp.lat} longitude={lp.lng} anchor="center">
               <div
