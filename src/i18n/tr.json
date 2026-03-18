@@ -2,7 +2,11 @@
   "app": {
     "name": "WORLDSCOPE",
     "live": "CANLI",
-    "loading": "İSTİHBARAT AKIŞI YÜKLENİYOR..."
+    "loading": "İSTİHBARAT AKIŞI YÜKLENİYOR...",
+    "loadingMore": "DAHA FAZLA YÜKLENİYOR...",
+    "allEventsLoaded": "TÜM {count} OLAY YÜKLENDİ",
+    "skipToContent": "İçeriğe geç",
+    "version": "v1.0"
   },
   "variants": {
     "world": "DÜNYA",
@@ -14,7 +18,8 @@
     "analysis": "ANALİZ",
     "aiBrief": "AI BRİFİNG",
     "streaming": "CANLI AKIŞ",
-    "eventsTracked": "{count} olay takip ediliyor"
+    "eventsTracked": "{count} olay takip ediliyor",
+    "eventsCount": "{visible}/{total} olay"
   },
   "threat": {
     "title": "Küresel Tehdit Endeksi",
@@ -37,6 +42,106 @@
     "tech": "Teknoloji",
     "aviation": "Havacılık",
     "cyber": "Siber",
-    "settings": "Ayarlar"
+    "health": "Sağlık",
+    "diplomacy": "Diplomasi",
+    "energy": "Enerji",
+    "protests": "Protestolar",
+    "natural": "Doğal Afet",
+    "settings": "Ayarlar",
+    "clearFilters": "Tüm filtreleri temizle",
+    "heatmap": "Isı Haritası",
+    "clusters": "Kümeler"
+  },
+  "mobile": {
+    "map": "HARİTA",
+    "intel": "İSTİHBARAT",
+    "live": "CANLI",
+    "alerts": "ALARM"
+  },
+  "alerts": {
+    "title": "SON DAKİKA ALARMLAR",
+    "new": "YENİ",
+    "active": "{count} aktif",
+    "allClear": "TEMİZ — KRİTİK ALARM YOK"
+  },
+  "analysis": {
+    "timeline": "24S OLAY ZAMAN ÇİZELGESİ",
+    "severity": "CİDDİYET DAĞILIMI",
+    "category": "KATEGORİ DAĞILIMI",
+    "topSources": "EN İYİ KAYNAKLAR",
+    "activeSources": "Aktif Kaynaklar",
+    "geoLocated": "Konum Belirlenen",
+    "criticalEvents": "Kritik Olaylar",
+    "highAlerts": "Yüksek Alarmlar",
+    "hoursAgo": "{hours}s önce",
+    "now": "şimdi"
+  },
+  "locale": {
+    "en": "EN",
+    "tr": "TR",
+    "switch": "Dil değiştir"
+  },
+  "country": {
+    "intelReport": "{name} İstihbarat Raporu",
+    "events72h": "{count} olay (72s)",
+    "threatLevel": "TEHDİT SEVİYESİ",
+    "threatScore": "TEHDİT SKORU",
+    "topCategories": "ÜST KATEGORİLER",
+    "geoData": "COĞRAFİ VERİ",
+    "recentIntel": "SON İSTİHBARAT",
+    "noEvents": "Son 72 saatte {name} için istihbarat olayı bulunamadı.",
+    "backToDashboard": "Canlı Panoya Dön",
+    "allCountries": "İZLENEN TÜM ÜLKELER",
+    "prevCountry": "Önceki Ülke",
+    "nextCountry": "Sonraki Ülke",
+    "searchCountry": "Ülke ara...",
+    "regionAll": "TÜMÜ",
+    "filters": "FİLTRELER",
+    "clearFilters": "TEMİZLE",
+    "timeline": "24S ZAMAN ÇİZELGESİ",
+    "severityDist": "CİDDİYET DAĞILIMI",
+    "categoryBreak": "KATEGORİ DAĞILIMI",
+    "sources": "KAYNAKLAR",
+    "viewOnMap": "HARİTADA GÖR",
+    "eventCount": "{count} olay",
+    "criticalAlerts": "Kritik",
+    "highAlerts": "Yüksek",
+    "geoLocated": "Konumlu",
+    "activeSources": "Kaynak",
+    "collapse": "DARALT",
+    "noMatch": "\"{query}\" ile eşleşen ülke yok"
+  },
+  "analytics": {
+    "title": "İSTİHBARAT ANALİTİĞİ",
+    "subtitle": "Olay analizi ve trend takibi",
+    "timeRange": "ZAMAN ARALIĞI",
+    "last6h": "6S",
+    "last24h": "24S",
+    "last7d": "7G",
+    "last30d": "30G",
+    "severityTrend": "CİDDİYET TRENDİ",
+    "categoryBreakdown": "KATEGORİ DAĞILIMI",
+    "topSources": "EN İYİ KAYNAKLAR",
+    "trendIndicators": "TREND GÖSTERGELERİ",
+    "geoHotspots": "COĞRAFİ YOĞUNLUKLAR",
+    "rising": "YÜKSELEN",
+    "declining": "DÜŞEN",
+    "stable": "KARARLILI",
+    "noData": "Seçilen aralık için veri yok",
+    "export": "DIŞA AKTAR",
+    "exportCSV": "CSV",
+    "exportPDF": "PDF",
+    "exportJSON": "JSON",
+    "exporting": "AKTARILIYOR...",
+    "exportReady": "İndirme hazır",
+    "totalEvents": "Toplam Olay",
+    "events": "olay",
+    "sources": "kaynak",
+    "regions": "bölge",
+    "categories": "kategori",
+    "backToDashboard": "Panoya Dön",
+    "avgPerHour": "Ort/Saat",
+    "peakHour": "Zirve Saati",
+    "geoRate": "Konum Oranı"
   }
 }

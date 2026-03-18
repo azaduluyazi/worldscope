@@ -157,8 +157,27 @@ export async function GET(request: Request) {
     // Persist to Supabase (fire-and-forget — don't block response)
     persistEvents(items).catch(() => {});
 
+    // Country filter (optional query param — applied after cache)
+    const countryParam = searchParams.get("country");
+    let filtered = items;
+    if (countryParam) {
+      filtered = filtered.filter(
+        (i) => i.countryCode?.toUpperCase() === countryParam.toUpperCase()
+      );
+    }
+
+    // Hours filter (optional — filter by publishedAt age)
+    const hoursParam = searchParams.get("hours");
+    if (hoursParam) {
+      const hours = Math.min(Math.max(Number(hoursParam) || 24, 1), 720);
+      const since = Date.now() - hours * 60 * 60 * 1000;
+      filtered = filtered.filter(
+        (i) => new Date(i.publishedAt).getTime() >= since
+      );
+    }
+
     // Apply limit AFTER cache so different limit params don't cause stale results
-    const sliced = items.slice(0, limit);
+    const sliced = filtered.slice(0, limit);
 
     return NextResponse.json({
       items: sliced,

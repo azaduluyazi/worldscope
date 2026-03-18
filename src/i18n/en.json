@@ -2,7 +2,11 @@
   "app": {
     "name": "WORLDSCOPE",
     "live": "LIVE",
-    "loading": "LOADING INTEL STREAM..."
+    "loading": "LOADING INTEL STREAM...",
+    "loadingMore": "LOADING MORE...",
+    "allEventsLoaded": "ALL {count} EVENTS LOADED",
+    "skipToContent": "Skip to content",
+    "version": "v1.0"
   },
   "variants": {
     "world": "WORLD",
@@ -14,7 +18,8 @@
     "analysis": "ANALYSIS",
     "aiBrief": "AI BRIEF",
     "streaming": "STREAMING",
-    "eventsTracked": "{count} events tracked"
+    "eventsTracked": "{count} events tracked",
+    "eventsCount": "{visible}/{total} events"
   },
   "threat": {
     "title": "Global Threat Index",
@@ -37,6 +42,106 @@
     "tech": "Tech",
     "aviation": "Aviation",
     "cyber": "Cyber",
-    "settings": "Settings"
+    "health": "Health",
+    "diplomacy": "Diplomacy",
+    "energy": "Energy",
+    "protests": "Protests",
+    "natural": "Natural",
+    "settings": "Settings",
+    "clearFilters": "Clear all filters",
+    "heatmap": "Heatmap",
+    "clusters": "Clusters"
+  },
+  "mobile": {
+    "map": "MAP",
+    "intel": "INTEL",
+    "live": "LIVE",
+    "alerts": "ALERTS"
+  },
+  "alerts": {
+    "title": "BREAKING ALERTS",
+    "new": "NEW",
+    "active": "{count} active",
+    "allClear": "ALL CLEAR — NO CRITICAL ALERTS"
+  },
+  "analysis": {
+    "timeline": "24H EVENT TIMELINE",
+    "severity": "SEVERITY DISTRIBUTION",
+    "category": "CATEGORY BREAKDOWN",
+    "topSources": "TOP SOURCES",
+    "activeSources": "Active Sources",
+    "geoLocated": "Geo-Located",
+    "criticalEvents": "Critical Events",
+    "highAlerts": "High Alerts",
+    "hoursAgo": "{hours}h ago",
+    "now": "now"
+  },
+  "locale": {
+    "en": "EN",
+    "tr": "TR",
+    "switch": "Switch language"
+  },
+  "country": {
+    "intelReport": "{name} Intelligence Report",
+    "events72h": "{count} events (72h)",
+    "threatLevel": "THREAT LEVEL",
+    "threatScore": "THREAT SCORE",
+    "topCategories": "TOP CATEGORIES",
+    "geoData": "GEO DATA",
+    "recentIntel": "RECENT INTELLIGENCE",
+    "noEvents": "No intelligence events for {name} in the last 72 hours.",
+    "backToDashboard": "Back to Live Dashboard",
+    "allCountries": "ALL MONITORED COUNTRIES",
+    "prevCountry": "Previous Country",
+    "nextCountry": "Next Country",
+    "searchCountry": "Search country...",
+    "regionAll": "ALL",
+    "filters": "FILTERS",
+    "clearFilters": "CLEAR",
+    "timeline": "24H TIMELINE",
+    "severityDist": "SEVERITY DISTRIBUTION",
+    "categoryBreak": "CATEGORY BREAKDOWN",
+    "sources": "SOURCES",
+    "viewOnMap": "VIEW ON MAP",
+    "eventCount": "{count} events",
+    "criticalAlerts": "Critical",
+    "highAlerts": "High",
+    "geoLocated": "Geo-Located",
+    "activeSources": "Sources",
+    "collapse": "COLLAPSE",
+    "noMatch": "No countries match \"{query}\""
+  },
+  "analytics": {
+    "title": "INTELLIGENCE ANALYTICS",
+    "subtitle": "Event analysis and trend monitoring",
+    "timeRange": "TIME RANGE",
+    "last6h": "6H",
+    "last24h": "24H",
+    "last7d": "7D",
+    "last30d": "30D",
+    "severityTrend": "SEVERITY TREND",
+    "categoryBreakdown": "CATEGORY BREAKDOWN",
+    "topSources": "TOP SOURCES",
+    "trendIndicators": "TREND INDICATORS",
+    "geoHotspots": "GEO HOTSPOTS",
+    "rising": "RISING",
+    "declining": "DECLINING",
+    "stable": "STABLE",
+    "noData": "No data available for selected range",
+    "export": "EXPORT",
+    "exportCSV": "CSV",
+    "exportPDF": "PDF",
+    "exportJSON": "JSON",
+    "exporting": "EXPORTING...",
+    "exportReady": "Download ready",
+    "totalEvents": "Total Events",
+    "events": "events",
+    "sources": "sources",
+    "regions": "regions",
+    "categories": "categories",
+    "backToDashboard": "Back to Dashboard",
+    "avgPerHour": "Avg/Hour",
+    "peakHour": "Peak Hour",
+    "geoRate": "Geo Rate"
   }
 }
