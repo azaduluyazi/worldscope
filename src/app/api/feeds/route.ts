@@ -95,6 +95,38 @@ export async function POST(request: Request) {
   }
 }
 
+/** DELETE /api/feeds?id=xxx — remove a feed */
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    const ids = searchParams.get("ids"); // bulk delete: comma-separated
+
+    const db = createServerClient();
+
+    if (ids) {
+      const idList = ids.split(",").map((s) => s.trim()).filter(Boolean);
+      if (idList.length === 0) {
+        return NextResponse.json({ error: "No valid IDs" }, { status: 400 });
+      }
+      const { error } = await db.from("feeds").delete().in("id", idList);
+      if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ deleted: idList.length });
+    }
+
+    if (!id) {
+      return NextResponse.json({ error: "id or ids parameter required" }, { status: 400 });
+    }
+
+    const { error } = await db.from("feeds").delete().eq("id", id);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+    return NextResponse.json({ deleted: 1 });
+  } catch {
+    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+  }
+}
+
 /** PATCH /api/feeds?id=xxx — update feed (toggle active, reset errors) */
 export async function PATCH(request: Request) {
   try {

@@ -32,9 +32,12 @@ export function useFeedHealth() {
   });
 }
 
-export function useFeedList(category?: string) {
-  const params = category ? `?category=${category}` : "";
-  return useSWR<FeedListData>(`/api/feeds${params}`, fetcher, {
+export function useFeedList(category?: string, activeOnly = true) {
+  const params = new URLSearchParams();
+  if (category) params.set("category", category);
+  if (!activeOnly) params.set("active", "false");
+  const qs = params.toString();
+  return useSWR<FeedListData>(`/api/feeds${qs ? `?${qs}` : ""}`, fetcher, {
     refreshInterval: 60_000,
   });
 }

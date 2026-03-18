@@ -1,13 +1,20 @@
 "use client";
 
+import { useCallback } from "react";
 import { useFeedHealth, useFeedList } from "@/hooks/useFeedHealth";
 import { FeedHealthTable } from "@/components/feeds/FeedHealthTable";
 import { FeedCategoryChart } from "@/components/feeds/FeedCategoryChart";
+import { FeedAdminPanel } from "@/components/feeds/FeedAdminPanel";
 import Link from "next/link";
 
 export default function FeedsPage() {
   const { data: health, isLoading: healthLoading } = useFeedHealth();
-  const { data: feedList, isLoading: listLoading } = useFeedList();
+  // Fetch ALL feeds (including inactive) for admin panel
+  const { data: feedList, isLoading: listLoading, mutate } = useFeedList(undefined, false);
+
+  const handleRefresh = useCallback(() => {
+    mutate();
+  }, [mutate]);
 
   return (
     <div className="min-h-screen bg-hud-base text-hud-text">
@@ -25,14 +32,22 @@ export default function FeedsPage() {
               FEED HEALTH MONITOR
             </h1>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-mono text-hud-muted">
-              LAST UPDATE:{" "}
-              {health?.timestamp
-                ? new Date(health.timestamp).toLocaleTimeString()
-                : "—"}
-            </span>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/analytics"
+              className="font-mono text-[9px] text-hud-muted hover:text-hud-accent transition-colors"
+            >
+              ANALYTICS →
+            </Link>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-mono text-hud-muted">
+                LAST UPDATE:{" "}
+                {health?.timestamp
+                  ? new Date(health.timestamp).toLocaleTimeString()
+                  : "—"}
+              </span>
+            </div>
           </div>
         </div>
       </header>
@@ -72,7 +87,12 @@ export default function FeedsPage() {
           </div>
         )}
 
-        {/* Feed Table */}
+        {/* Admin Panel */}
+        {feedList?.feeds && (
+          <FeedAdminPanel feeds={feedList.feeds} onRefresh={handleRefresh} />
+        )}
+
+        {/* Read-only Feed Table (shown when admin is locked) */}
         <div className="bg-hud-surface/50 border border-hud-border rounded-lg p-4">
           <h3 className="text-xs font-mono text-hud-accent uppercase tracking-wider mb-4">
             All Feeds
@@ -91,7 +111,7 @@ export default function FeedsPage() {
         </div>
       </div>
 
-      {/* Footer scan line */}
+      {/* Footer */}
       <div className="px-6 py-4">
         <div className="h-px bg-gradient-to-r from-transparent via-hud-accent/30 to-transparent" />
         <p className="font-mono text-[9px] text-hud-muted/50 mt-2 tracking-widest text-center">
