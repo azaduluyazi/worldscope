@@ -87,6 +87,12 @@ export default async function RootLayout({
         <meta name="theme-color" content="#050a12" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
         <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+        {/* Performance: DNS prefetch + preconnect for external APIs */}
+        <link rel="dns-prefetch" href="https://api.mapbox.com" />
+        <link rel="dns-prefetch" href="https://img.youtube.com" />
+        <link rel="dns-prefetch" href="https://opensky-network.org" />
+        <link rel="preconnect" href="https://api.mapbox.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://img.youtube.com" crossOrigin="anonymous" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
