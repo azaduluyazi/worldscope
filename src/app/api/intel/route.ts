@@ -14,6 +14,10 @@ import { fetchWeatherAlerts } from "@/lib/api/openweathermap";
 import { fetchSpaceflightNews } from "@/lib/api/spaceflight";
 import { fetchAviationIncidents } from "@/lib/api/flightradar";
 import { fetchNewsData } from "@/lib/api/newsdata";
+import { fetchAllCyberThreats } from "@/lib/api/cyber-threats";
+import { fetchTelegramOSINT } from "@/lib/api/telegram-osint";
+import { fetchFireHotspots } from "@/lib/api/nasa-firms";
+import { fetchSafecastReadings, radiationToIntelItems } from "@/lib/api/radiation";
 import { createServerClient } from "@/lib/db/supabase";
 import { persistEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
@@ -88,6 +92,7 @@ export async function GET(request: Request) {
           newsApi, gNews, rssItems, gdeltDocs, gdeltGeo,
           quakesMajor, quakesRecent, nasaEvents, nvdCves, whoOutbreaks,
           reliefWeb, acledEvents, weatherAlerts, spaceNews, aviationInc, newsData,
+          cyberThreats, telegramOsint, fireHotspots, radiationData,
         ] = await Promise.allSettled([
             fetchNewsApi(),
             fetchGNews(),
@@ -105,6 +110,11 @@ export async function GET(request: Request) {
             fetchSpaceflightNews(),
             fetchAviationIncidents(),
             fetchNewsData(),
+            // New sources (WM parity)
+            fetchAllCyberThreats(),
+            fetchTelegramOSINT(),
+            fetchFireHotspots(30),
+            fetchSafecastReadings(),
           ]);
 
         const allItems: IntelItem[] = [];
@@ -125,6 +135,10 @@ export async function GET(request: Request) {
         if (spaceNews.status === "fulfilled") allItems.push(...spaceNews.value);
         if (aviationInc.status === "fulfilled") allItems.push(...aviationInc.value);
         if (newsData.status === "fulfilled") allItems.push(...newsData.value);
+        if (cyberThreats.status === "fulfilled") allItems.push(...cyberThreats.value);
+        if (telegramOsint.status === "fulfilled") allItems.push(...telegramOsint.value);
+        if (fireHotspots.status === "fulfilled") allItems.push(...fireHotspots.value);
+        if (radiationData.status === "fulfilled") allItems.push(...radiationToIntelItems(radiationData.value));
 
         // Geo-enrich items that lack coordinates
         const enriched = enrichGeoData(allItems);
