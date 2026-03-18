@@ -8,6 +8,12 @@ import { fetchEarthquakes } from "@/lib/api/usgs";
 import { fetchNasaEonet } from "@/lib/api/nasa-eonet";
 import { fetchNvdCves } from "@/lib/api/nvd-cve";
 import { fetchWhoOutbreaks } from "@/lib/api/who-outbreaks";
+import { fetchReliefWebDisasters } from "@/lib/api/reliefweb";
+import { fetchAcledEvents } from "@/lib/api/acled";
+import { fetchWeatherAlerts } from "@/lib/api/openweathermap";
+import { fetchSpaceflightNews } from "@/lib/api/spaceflight";
+import { fetchAviationIncidents } from "@/lib/api/flightradar";
+import { fetchNewsData } from "@/lib/api/newsdata";
 import { createServerClient } from "@/lib/db/supabase";
 import { persistEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
@@ -80,6 +86,7 @@ export async function GET(request: Request) {
         const [
           newsApi, gNews, rssItems, gdeltDocs, gdeltGeo,
           quakesMajor, quakesRecent, nasaEvents, nvdCves, whoOutbreaks,
+          reliefWeb, acledEvents, weatherAlerts, spaceNews, aviationInc, newsData,
         ] = await Promise.allSettled([
             fetchNewsApi(),
             fetchGNews(),
@@ -91,6 +98,12 @@ export async function GET(request: Request) {
             fetchNasaEonet(30, 60),
             fetchNvdCves(15),
             fetchWhoOutbreaks(10),
+            fetchReliefWebDisasters(),
+            fetchAcledEvents(),
+            fetchWeatherAlerts(),
+            fetchSpaceflightNews(),
+            fetchAviationIncidents(),
+            fetchNewsData(),
           ]);
 
         const allItems: IntelItem[] = [];
@@ -105,6 +118,12 @@ export async function GET(request: Request) {
         if (nasaEvents.status === "fulfilled") allItems.push(...nasaEvents.value);
         if (nvdCves.status === "fulfilled") allItems.push(...nvdCves.value);
         if (whoOutbreaks.status === "fulfilled") allItems.push(...whoOutbreaks.value);
+        if (reliefWeb.status === "fulfilled") allItems.push(...reliefWeb.value);
+        if (acledEvents.status === "fulfilled") allItems.push(...acledEvents.value);
+        if (weatherAlerts.status === "fulfilled") allItems.push(...weatherAlerts.value);
+        if (spaceNews.status === "fulfilled") allItems.push(...spaceNews.value);
+        if (aviationInc.status === "fulfilled") allItems.push(...aviationInc.value);
+        if (newsData.status === "fulfilled") allItems.push(...newsData.value);
 
         // Deduplicate by title similarity
         const seen = new Set<string>();
