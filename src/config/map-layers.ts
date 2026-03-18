@@ -9,7 +9,7 @@ export const DEFAULT_LAYERS: MapLayer[] = [
   { id: "tech", label: "Tech", icon: "💻", color: "#8a5cf6", enabled: false },
 ];
 
-export const MAP_STYLE = "mapbox://styles/mapbox/dark-v11";
+export const MAP_STYLE = "mapbox://styles/mapbox/navigation-night-v1";
 
 export const MAP_INITIAL_VIEW = {
   longitude: 30,

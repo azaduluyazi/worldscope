@@ -299,10 +299,10 @@ export function TacticalMap({ filters }: TacticalMapProps) {
         interactiveLayerIds={filters.clusters ? ["cluster-circles", "unclustered-point"] : []}
         fog={{
           color: "#050a12",
-          "high-color": "#0a1530",
-          "horizon-blend": 0.04,
+          "high-color": "#0a1a3a",
+          "horizon-blend": 0.05,
           "space-color": "#020408",
-          "star-intensity": 0.7,
+          "star-intensity": 0.8,
         }}
       >
         <NavigationControl position="bottom-right" showCompass visualizePitch />
