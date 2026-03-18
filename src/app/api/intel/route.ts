@@ -18,6 +18,7 @@ import { createServerClient } from "@/lib/db/supabase";
 import { persistEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
+import { enrichGeoData } from "@/lib/utils/geo-enrichment";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -125,9 +126,12 @@ export async function GET(request: Request) {
         if (aviationInc.status === "fulfilled") allItems.push(...aviationInc.value);
         if (newsData.status === "fulfilled") allItems.push(...newsData.value);
 
+        // Geo-enrich items that lack coordinates
+        const enriched = enrichGeoData(allItems);
+
         // Deduplicate by title similarity
         const seen = new Set<string>();
-        const unique = allItems.filter((item) => {
+        const unique = enriched.filter((item) => {
           const key = item.title.toLowerCase().slice(0, 60);
           if (seen.has(key)) return false;
           seen.add(key);
