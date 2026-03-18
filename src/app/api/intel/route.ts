@@ -26,6 +26,11 @@ import { fetchHackerNews } from "@/lib/api/hackernews";
 import { fetchGDACSAlerts } from "@/lib/api/gdacs";
 import { fetchIFRCEmergencies } from "@/lib/api/ifrc";
 import { fetchSpaceXLaunches, fetchLaunchLibrary } from "@/lib/api/spacex";
+import { fetchGuardianNews } from "@/lib/api/guardian";
+import { fetchNYTTopStories } from "@/lib/api/nytimes";
+import { fetchCurrentsNews } from "@/lib/api/currents";
+import { fetchAirQualityAlerts } from "@/lib/api/openaq";
+import { fetchShodanAlerts } from "@/lib/api/shodan-api";
 import { createServerClient } from "@/lib/db/supabase";
 import { persistEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
@@ -102,6 +107,7 @@ export async function GET(request: Request) {
           reliefWeb, acledEvents, weatherAlerts, spaceNews, aviationInc, newsData,
           cyberThreats, telegramOsint, fireHotspots, radiationData,
           meteoAlerts, nwsAlerts, diseaseData, fedRegister, hnStories, gdacsAlerts, ifrcOps, spacexLaunches, launchLib,
+          guardianNews, nytStories, currentsNews, airQuality, shodanAlerts,
         ] = await Promise.allSettled([
             fetchNewsApi(),
             fetchGNews(),
@@ -134,6 +140,12 @@ export async function GET(request: Request) {
             fetchIFRCEmergencies(),
             fetchSpaceXLaunches(),
             fetchLaunchLibrary(),
+            // Tier 2: key-based APIs
+            fetchGuardianNews(10),
+            fetchNYTTopStories("world"),
+            fetchCurrentsNews(10),
+            fetchAirQualityAlerts(),
+            fetchShodanAlerts(),
           ]);
 
         const allItems: IntelItem[] = [];
@@ -167,6 +179,11 @@ export async function GET(request: Request) {
         if (ifrcOps.status === "fulfilled") allItems.push(...ifrcOps.value);
         if (spacexLaunches.status === "fulfilled") allItems.push(...spacexLaunches.value);
         if (launchLib.status === "fulfilled") allItems.push(...launchLib.value);
+        if (guardianNews.status === "fulfilled") allItems.push(...guardianNews.value);
+        if (nytStories.status === "fulfilled") allItems.push(...nytStories.value);
+        if (currentsNews.status === "fulfilled") allItems.push(...currentsNews.value);
+        if (airQuality.status === "fulfilled") allItems.push(...airQuality.value);
+        if (shodanAlerts.status === "fulfilled") allItems.push(...shodanAlerts.value);
 
         // Geo-enrich items that lack coordinates
         const enriched = enrichGeoData(allItems);
