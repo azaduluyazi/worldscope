@@ -212,26 +212,24 @@ export function TacticalMap({ filters }: TacticalMapProps) {
     })),
   }), [geoEvents]);
 
-  // ── Auto-fit to geo events when they first load ──
+  // ── Smooth globe spin on load — stays at global view, no auto-fit ──
   const hasFitted = useRef(false);
   useEffect(() => {
-    if (!mapLoaded || hasFitted.current || geoEvents.length < 2) return;
+    if (!mapLoaded || hasFitted.current) return;
     const map = mapRef.current?.getMap();
     if (!map) return;
 
-    const lngs = geoEvents.map((e) => e.lng);
-    const lats = geoEvents.map((e) => e.lat);
-    const sw: [number, number] = [Math.min(...lngs) - 5, Math.min(...lats) - 5];
-    const ne: [number, number] = [Math.max(...lngs) + 5, Math.max(...lats) + 5];
-
-    map.fitBounds([sw, ne], {
-      padding: { top: 80, bottom: 80, left: 60, right: 380 },
-      maxZoom: 5,
-      duration: 3000,
+    // Gentle spin to show the globe is 3D — center on Middle East/Europe hotzone
+    map.flyTo({
+      center: [35, 30], // Middle East centered — global conflict hotzone
+      zoom: 1.6,
       pitch: 40,
+      bearing: 10,
+      duration: 4000,
+      essential: true,
     });
     hasFitted.current = true;
-  }, [geoEvents, mapLoaded]);
+  }, [mapLoaded]);
 
   // ── Marker click → flyTo + popup ──
   const handleMarkerClick = useCallback((event: IntelItem & { lat: number; lng: number }) => {
