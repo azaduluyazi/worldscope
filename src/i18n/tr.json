@@ -205,5 +205,23 @@
     "weekly": "Haftalık",
     "subscribed": "Abone olundu",
     "noWebhooks": "Aktif webhook yok"
+  },
+  "insights": {
+    "title": "AI İÇGÖRÜLER",
+    "anomalies": "TESPİT EDİLEN ANOMALİLER",
+    "entities": "ANAHTAR VARLIKLAR",
+    "sentiment": "DUYGU ANALİZİ",
+    "noAnomalies": "Anomali tespit edilmedi",
+    "negative": "NEGATİF",
+    "neutral": "NÖTR",
+    "positive": "POZİTİF",
+    "organizations": "Organizasyonlar",
+    "locations": "Konumlar",
+    "events": "Olaylar",
+    "score": "Skor",
+    "spike": "ARTIS",
+    "severityShift": "CİDDİYET KAYMASI",
+    "geoCluster": "COĞRAFİ KÜME",
+    "analyzedEvents": "Analiz Edilen Olay"
   }
 }

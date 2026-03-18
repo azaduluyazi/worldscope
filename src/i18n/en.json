@@ -205,5 +205,23 @@
     "weekly": "Weekly",
     "subscribed": "Subscribed",
     "noWebhooks": "No active webhooks"
+  },
+  "insights": {
+    "title": "AI INSIGHTS",
+    "anomalies": "ANOMALIES DETECTED",
+    "entities": "KEY ENTITIES",
+    "sentiment": "SENTIMENT ANALYSIS",
+    "noAnomalies": "No anomalies detected",
+    "negative": "NEGATIVE",
+    "neutral": "NEUTRAL",
+    "positive": "POSITIVE",
+    "organizations": "Organizations",
+    "locations": "Locations",
+    "events": "Events",
+    "score": "Score",
+    "spike": "SPIKE",
+    "severityShift": "SEVERITY SHIFT",
+    "geoCluster": "GEO CLUSTER",
+    "analyzedEvents": "Analyzed Events"
   }
 }

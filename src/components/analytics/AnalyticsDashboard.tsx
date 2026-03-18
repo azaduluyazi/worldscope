@@ -10,6 +10,7 @@ import { TopSourcesChart } from "./TopSourcesChart";
 import { TrendIndicators } from "./TrendIndicators";
 import { GeoHotspots } from "./GeoHotspots";
 import { ExportPanel } from "./ExportPanel";
+import { InsightsPanel } from "./InsightsPanel";
 import Link from "next/link";
 
 export function AnalyticsDashboard() {
@@ -69,9 +70,10 @@ export function AnalyticsDashboard() {
             </div>
           </div>
 
-          {/* Right column: Trends + Geo + Export */}
+          {/* Right column: Trends + Insights + Geo + Export */}
           <div className="lg:col-span-4 space-y-4">
             <TrendIndicators trends={analytics.trends} />
+            <InsightsPanel hours={hours} />
             <GeoHotspots data={analytics.geoHotspots} />
             <ExportPanel items={analytics.items} hours={hours} />
           </div>
