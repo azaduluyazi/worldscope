@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import useSWR from "swr";
 import { useFeedHealth, useFeedList } from "@/hooks/useFeedHealth";
 import { FeedAdminPanel } from "@/components/feeds/FeedAdminPanel";
 import { FeedCategoryChart } from "@/components/feeds/FeedCategoryChart";
+import type { ApiRegistryEntry } from "@/config/api-registry";
 import Link from "next/link";
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function AdminPage() {
   const [isVerified, setIsVerified] = useState(false);
@@ -155,6 +159,9 @@ export default function AdminPage() {
           </div>
         </div>
 
+        {/* API Registry */}
+        <ApiRegistryTable />
+
         {/* Category Distribution */}
         {health?.byCategory && (
           <div className="bg-hud-surface border border-hud-border rounded-md p-4">
@@ -195,5 +202,116 @@ function AdminLink({ href, icon, label }: { href: string; icon: string; label: s
       <span className="text-sm">{icon}</span>
       {label}
     </a>
+  );
+}
+
+function ApiRegistryTable() {
+  const { data, isLoading } = useSWR<{ apis: ApiRegistryEntry[]; summary: { total: number; active: number; noKey: number; open: number; keyed: number } }>(
+    "/api/admin/apis",
+    fetcher
+  );
+  const [filter, setFilter] = useState<string>("all");
+
+  if (isLoading || !data) {
+    return (
+      <div className="bg-hud-surface border border-hud-border rounded-md p-4">
+        <span className="font-mono text-[9px] text-hud-accent animate-pulse">◆ Loading API Registry...</span>
+      </div>
+    );
+  }
+
+  const { apis, summary } = data;
+  const categories = [...new Set(apis.map((a) => a.category))].sort();
+  const filtered = filter === "all" ? apis : filter === "no_key" ? apis.filter((a) => a.status === "no_key") : apis.filter((a) => a.category === filter);
+
+  const planColors: Record<string, string> = {
+    open: "text-severity-low",
+    free: "text-hud-accent",
+    freemium: "text-severity-high",
+    paid: "text-severity-critical",
+  };
+
+  const statusColors: Record<string, string> = {
+    active: "bg-severity-low/15 text-severity-low border-severity-low/30",
+    no_key: "bg-severity-high/15 text-severity-high border-severity-high/30",
+    expired: "bg-severity-critical/15 text-severity-critical border-severity-critical/30",
+  };
+
+  return (
+    <div className="bg-hud-surface border border-hud-border rounded-md p-4">
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="font-mono text-[10px] font-bold text-hud-accent tracking-wider">
+          ◆ API REGISTRY — {summary.total} sources
+        </h2>
+        <div className="flex items-center gap-2 font-mono text-[7px]">
+          <span className="text-severity-low">● {summary.active} active</span>
+          <span className="text-severity-high">● {summary.noKey} no key</span>
+          <span className="text-hud-muted">● {summary.open} open / {summary.keyed} keyed</span>
+        </div>
+      </div>
+
+      {/* Filter */}
+      <div className="flex flex-wrap gap-1 mb-3">
+        <button onClick={() => setFilter("all")} className={`font-mono text-[7px] px-2 py-0.5 rounded border transition-all ${filter === "all" ? "bg-hud-accent/15 border-hud-accent/40 text-hud-accent" : "border-hud-border text-hud-muted hover:text-hud-text"}`}>ALL</button>
+        <button onClick={() => setFilter("no_key")} className={`font-mono text-[7px] px-2 py-0.5 rounded border transition-all ${filter === "no_key" ? "bg-severity-high/15 border-severity-high/40 text-severity-high" : "border-hud-border text-hud-muted hover:text-hud-text"}`}>NO KEY</button>
+        {categories.map((cat) => (
+          <button key={cat} onClick={() => setFilter(cat)} className={`font-mono text-[7px] px-2 py-0.5 rounded border transition-all ${filter === cat ? "bg-hud-accent/15 border-hud-accent/40 text-hud-accent" : "border-hud-border text-hud-muted hover:text-hud-text"}`}>{cat.toUpperCase()}</button>
+        ))}
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-[8px] font-mono">
+          <thead>
+            <tr className="border-b border-hud-border text-hud-muted uppercase">
+              <th className="text-left py-1.5 px-2">Status</th>
+              <th className="text-left py-1.5 px-2">API Name</th>
+              <th className="text-left py-1.5 px-2">Provider</th>
+              <th className="text-left py-1.5 px-2">Category</th>
+              <th className="text-left py-1.5 px-2">Plan</th>
+              <th className="text-left py-1.5 px-2">Rate Limit</th>
+              <th className="text-left py-1.5 px-2">Env Key</th>
+              <th className="text-left py-1.5 px-2">Expiry</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filtered.map((api) => (
+              <tr key={api.name} className="border-b border-hud-border/30 hover:bg-hud-panel/30 transition-colors">
+                <td className="py-1.5 px-2">
+                  <span className={`text-[7px] px-1.5 py-0.5 rounded border ${statusColors[api.status]}`}>
+                    {api.status === "active" ? "✓ LIVE" : api.status === "no_key" ? "⚠ NO KEY" : "✕ EXPIRED"}
+                  </span>
+                </td>
+                <td className="py-1.5 px-2 text-hud-text">
+                  <a href={api.url} target="_blank" rel="noopener noreferrer" className="hover:text-hud-accent transition-colors">
+                    {api.name}
+                  </a>
+                </td>
+                <td className="py-1.5 px-2 text-hud-muted">{api.provider}</td>
+                <td className="py-1.5 px-2 text-hud-muted">{api.category}</td>
+                <td className={`py-1.5 px-2 ${planColors[api.plan] || "text-hud-muted"}`}>{api.plan.toUpperCase()}</td>
+                <td className="py-1.5 px-2 text-hud-muted">{api.rateLimit}</td>
+                <td className="py-1.5 px-2">
+                  {api.envKey === "-" ? (
+                    <span className="text-hud-muted/40">—</span>
+                  ) : (
+                    <code className="text-[7px] text-hud-accent/70">{api.envKey}</code>
+                  )}
+                </td>
+                <td className="py-1.5 px-2">
+                  {api.expiry ? (
+                    <span className="text-severity-high">{api.expiry}</span>
+                  ) : (
+                    <span className="text-severity-low">∞ No Expiry</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p className="font-mono text-[7px] text-hud-muted mt-2">Note: &quot;Open&quot; APIs have no key requirement. Free APIs require registration but have generous limits. Rate limits shown are approximate.</p>
+    </div>
   );
 }
