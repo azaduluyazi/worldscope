@@ -15,7 +15,8 @@ export function AdConsentBanner() {
     // Only show if no consent decision has been made
     const consent = localStorage.getItem(CONSENT_KEY);
     if (consent === null) {
-      setVisible(true);
+      const timer = setTimeout(() => setVisible(true), 0);
+      return () => clearTimeout(timer);
     }
   }, []);
 

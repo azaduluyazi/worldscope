@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import { AFFILIATE_BANNERS } from "@/config/ads";
 
 interface AffiliateBannerProps {
@@ -12,10 +12,18 @@ interface AffiliateBannerProps {
  * HUD-styled to blend with the WorldScope aesthetic.
  */
 export function AffiliateBanner({ className = "" }: AffiliateBannerProps) {
-  const banner = useMemo(() => {
-    if (AFFILIATE_BANNERS.length === 0) return null;
-    return AFFILIATE_BANNERS[Math.floor(Math.random() * AFFILIATE_BANNERS.length)];
+  const [bannerIdx, setBannerIdx] = useState(-1);
+
+  useEffect(() => {
+    if (AFFILIATE_BANNERS.length > 0) {
+      const timer = setTimeout(() => {
+        setBannerIdx(Math.floor(Math.random() * AFFILIATE_BANNERS.length));
+      }, 0);
+      return () => clearTimeout(timer);
+    }
   }, []);
+
+  const banner = bannerIdx >= 0 ? AFFILIATE_BANNERS[bannerIdx] : null;
 
   if (!banner) return null;
 

@@ -50,12 +50,12 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
           >
             ↻ RETRY OPERATION
           </button>
-          <a
-            href="/"
+          <button
+            onClick={() => window.location.href = "/"}
             className="font-mono text-xs text-hud-muted border border-hud-border px-4 py-2 rounded hover:bg-hud-panel transition-colors"
           >
             ← RETURN TO HQ
-          </a>
+          </button>
         </div>
 
         {/* Decorative */}

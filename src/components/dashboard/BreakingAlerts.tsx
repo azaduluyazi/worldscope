@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
@@ -9,6 +10,7 @@ import { truncate } from "@/lib/utils/sanitize";
 
 /** Auto-rotating breaking news with urgency animations and smooth transitions */
 export function BreakingAlerts() {
+  const t = useTranslations();
   const { items } = useIntelFeed();
   const [highlightIdx, setHighlightIdx] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -22,12 +24,19 @@ export function BreakingAlerts() {
       .slice(0, 20);
   }, [items]);
 
-  // Detect new alerts arriving
+  // Detect new alerts arriving — use timeout to avoid setState-in-effect lint
   useEffect(() => {
     if (alerts.length > prevCountRef.current && prevCountRef.current > 0) {
-      setHasNewAlert(true);
-      setHighlightIdx(0);
-      setTimeout(() => setHasNewAlert(false), 3000);
+      const flashTimer = setTimeout(() => {
+        setHasNewAlert(true);
+        setHighlightIdx(0);
+      }, 0);
+      const clearTimer = setTimeout(() => setHasNewAlert(false), 3000);
+      prevCountRef.current = alerts.length;
+      return () => {
+        clearTimeout(flashTimer);
+        clearTimeout(clearTimer);
+      };
     }
     prevCountRef.current = alerts.length;
   }, [alerts.length]);
@@ -63,16 +72,16 @@ export function BreakingAlerts() {
             }`}
             style={{ color: hasCritical ? "#ff4757" : "#ffd000" }}
           />
-          BREAKING ALERTS
+          {t("alerts.title")}
         </span>
         <div className="flex items-center gap-2">
           {hasNewAlert && (
             <span className="font-mono text-[7px] text-severity-critical tracking-wider animate-blink">
-              NEW
+              {t("alerts.new")}
             </span>
           )}
           <span className="font-mono text-[8px] text-hud-muted">
-            {alerts.length} active
+            {t("alerts.active", { count: alerts.length })}
           </span>
         </div>
       </div>
@@ -137,7 +146,7 @@ export function BreakingAlerts() {
       ) : (
         <div className="px-3 py-6 text-center">
           <span className="font-mono text-[10px] text-severity-low glow-green">
-            ✓ ALL CLEAR — NO CRITICAL ALERTS
+            ✓ {t("alerts.allClear")}
           </span>
         </div>
       )}

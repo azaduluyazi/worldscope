@@ -99,6 +99,50 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "Hellenic Shipping News", url: "https://www.hellenicshippingnews.com/feed/", category: "finance", defaultSeverity: "low", region: "global" },
   { name: "Splash Maritime", url: "https://splash247.com/feed/", category: "finance", defaultSeverity: "low", region: "global" },
 
+  // ── Finance Extended: Forex, Bonds, Commodities, Crypto (from reference repo) ──
+  // Forex & Currencies
+  { name: "Forex News (GN)", url: "https://news.google.com/rss/search?q=(%22forex%22+OR+%22currency%22+OR+%22FX+market%22)+trading+when:1d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Dollar Watch (GN)", url: "https://news.google.com/rss/search?q=(%22dollar+index%22+OR+DXY+OR+%22US+dollar%22+OR+%22euro+dollar%22)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Central Bank Rates (GN)", url: "https://news.google.com/rss/search?q=(%22central+bank%22+OR+%22interest+rate%22+OR+%22rate+decision%22+OR+%22monetary+policy%22)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "global" },
+  // Fixed Income
+  { name: "Bond Market (GN)", url: "https://news.google.com/rss/search?q=(%22bond+market%22+OR+%22treasury+yields%22+OR+%22bond+yields%22+OR+%22fixed+income%22)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Treasury Watch (GN)", url: "https://news.google.com/rss/search?q=(%22US+Treasury%22+OR+%22Treasury+auction%22+OR+%2210-year+yield%22)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "us" },
+  // Commodities
+  { name: "Oil & Gas (GN)", url: "https://news.google.com/rss/search?q=(oil+price+OR+OPEC+OR+%22natural+gas%22+OR+%22crude+oil%22+OR+WTI+OR+Brent)+when:1d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "global" },
+  { name: "Gold & Metals (GN)", url: "https://news.google.com/rss/search?q=(gold+price+OR+silver+price+OR+copper+OR+platinum+OR+%22precious+metals%22)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Commodity Trading (GN)", url: "https://news.google.com/rss/search?q=(%22commodity+trading%22+OR+%22futures+market%22+OR+CME+OR+NYMEX+OR+COMEX)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  // Crypto Extended
+  { name: "The Block (GN)", url: "https://news.google.com/rss/search?q=site:theblock.co+when:1d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "DeFi News (GN)", url: "https://news.google.com/rss/search?q=(DeFi+OR+%22decentralized+finance%22+OR+DEX+OR+%22yield+farming%22)+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  // Central Banks Extended
+  { name: "ECB Watch (GN)", url: "https://news.google.com/rss/search?q=(%22European+Central+Bank%22+OR+ECB+OR+Lagarde)+monetary+policy+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "europe" },
+  { name: "BoJ Watch (GN)", url: "https://news.google.com/rss/search?q=(%22Bank+of+Japan%22+OR+BoJ)+monetary+policy+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "asia" },
+  { name: "BoE Watch (GN)", url: "https://news.google.com/rss/search?q=(%22Bank+of+England%22+OR+BoE)+monetary+policy+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "europe" },
+  { name: "PBoC Watch (GN)", url: "https://news.google.com/rss/search?q=(%22People%27s+Bank+of+China%22+OR+PBoC+OR+PBOC)+when:7d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "asia" },
+  // Economic Data
+  { name: "Economic Data (GN)", url: "https://news.google.com/rss/search?q=(CPI+OR+inflation+OR+GDP+OR+%22jobs+report%22+OR+%22nonfarm+payrolls%22+OR+PMI)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "global" },
+  { name: "Trade & Tariffs (GN)", url: "https://news.google.com/rss/search?q=(tariff+OR+%22trade+war%22+OR+%22trade+deficit%22+OR+sanctions)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "global" },
+  // IPOs & M&A
+  { name: "IPO News (GN)", url: "https://news.google.com/rss/search?q=(IPO+OR+%22initial+public+offering%22+OR+SPAC+OR+%22direct+listing%22)+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Earnings Reports (GN)", url: "https://news.google.com/rss/search?q=(%22earnings+report%22+OR+%22quarterly+earnings%22+OR+%22revenue+beat%22+OR+%22earnings+miss%22)+when:2d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "M&A News (GN)", url: "https://news.google.com/rss/search?q=(%22merger%22+OR+%22acquisition%22+OR+%22takeover+bid%22+OR+%22buyout%22)+billion+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "medium", region: "global" },
+  // Regulation
+  { name: "Financial Regulation (GN)", url: "https://news.google.com/rss/search?q=(SEC+OR+CFTC+OR+FINRA+OR+FCA)+regulation+OR+enforcement+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Crypto Regulation (GN)", url: "https://news.google.com/rss/search?q=(crypto+regulation+OR+%22digital+asset%22+regulation+OR+%22stablecoin%22+regulation)+when:7d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  // Institutional
+  { name: "Hedge Fund News (GN)", url: "https://news.google.com/rss/search?q=(%22hedge+fund%22+OR+%22Bridgewater%22+OR+%22Citadel%22+OR+%22Renaissance%22)+when:7d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Private Equity (GN)", url: "https://news.google.com/rss/search?q=(%22private+equity%22+OR+Blackstone+OR+KKR+OR+Apollo+OR+Carlyle)+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  // GCC Business
+  { name: "Arabian Business (GN)", url: "https://news.google.com/rss/search?q=site:arabianbusiness.com+(Saudi+Arabia+OR+UAE+OR+GCC)+when:7d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "middle-east" },
+  { name: "Gulf Investments (GN)", url: "https://news.google.com/rss/search?q=(%22Saudi+Arabia%22+OR+%22UAE%22+OR+%22Abu+Dhabi%22)+investment+infrastructure+when:7d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "middle-east" },
+  // Market Analysis
+  { name: "Market Outlook (GN)", url: "https://news.google.com/rss/search?q=(%22market+outlook%22+OR+%22stock+market+forecast%22+OR+%22bull+market%22+OR+%22bear+market%22)+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Bank Research (GN)", url: "https://news.google.com/rss/search?q=(%22Goldman+Sachs%22+OR+%22JPMorgan%22+OR+%22Morgan+Stanley%22)+forecast+OR+outlook+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Nikkei Asia Markets (GN)", url: "https://news.google.com/rss/search?q=site:asia.nikkei.com+markets+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "low", region: "asia" },
+  // Fintech
+  { name: "Fintech News (GN)", url: "https://news.google.com/rss/search?q=(fintech+OR+%22payment+technology%22+OR+%22neobank%22+OR+%22digital+banking%22)+when:3d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "info", region: "global" },
+  { name: "Blockchain Finance (GN)", url: "https://news.google.com/rss/search?q=(%22blockchain+finance%22+OR+%22tokenization%22+OR+%22digital+securities%22+OR+CBDC)+when:7d&hl=en-US&gl=US&ceid=US:en", category: "finance", defaultSeverity: "info", region: "global" },
+
   // ── Diplomacy & Policy (16) ──────────────────────────────────────
   { name: "Foreign Affairs", url: "https://www.foreignaffairs.com/rss.xml", category: "diplomacy", defaultSeverity: "medium", region: "global" },
   { name: "The Diplomat", url: "https://thediplomat.com/feed/", category: "diplomacy", defaultSeverity: "low", region: "asia" },

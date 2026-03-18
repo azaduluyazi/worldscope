@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useMarketData } from "@/hooks/useMarketData";
-import { SEVERITY_COLORS, CATEGORY_ICONS, type Category } from "@/types/intel";
+import { CATEGORY_ICONS, type Category } from "@/types/intel";
 import { getDirection } from "@/types/market";
 
 /** Trending categories, hot regions, and market overview */

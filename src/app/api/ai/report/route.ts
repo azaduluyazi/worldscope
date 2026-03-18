@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { generateText } from "ai";
 import { briefModel } from "@/lib/ai/providers";
-import { cachedFetch, TTL } from "@/lib/cache/redis";
 import { createServerClient } from "@/lib/db/supabase";
 import { fetchPersistedEvents } from "@/lib/db/events";
 

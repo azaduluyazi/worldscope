@@ -63,10 +63,23 @@ export async function generateMetadata({
   const title = `${capitalize(report.type)} Intelligence Report — ${dateStr} — WorldScope`;
   const description = `WorldScope ${report.type} intelligence report for ${dateStr}. Analysis of ${report.event_count} global events covering conflicts, cybersecurity, finance, and geopolitics.`;
 
+  const ogImageUrl = `/api/og/report?type=${report.type}&date=${report.date}&events=${report.event_count}`;
+
   return {
     title,
     description,
-    openGraph: { title, description, type: "article" },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      images: [{ url: ogImageUrl, width: 1200, height: 630, alt: title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 
@@ -144,6 +157,14 @@ export default async function ReportPage({
         <article className="bg-hud-surface border border-hud-border rounded-md p-6 md:p-8">
           <ReportContent content={report.content} />
         </article>
+
+        {/* Share buttons */}
+        <ShareButtons
+          type={report.type}
+          date={report.date}
+          dateStr={dateStr}
+          eventCount={report.event_count}
+        />
 
         {/* Post-article ad */}
         <div className="mt-6">
@@ -297,6 +318,56 @@ function InlineMarkdown({ text }: { text: string }) {
         return <span key={i}>{part}</span>;
       })}
     </>
+  );
+}
+
+/** Social media share buttons */
+function ShareButtons({
+  type,
+  date,
+  dateStr,
+  eventCount,
+}: {
+  type: string;
+  date: string;
+  dateStr: string;
+  eventCount: number;
+}) {
+  const reportUrl = `https://worldscope-two.vercel.app/reports/${type}/${date}`;
+  const text = `WorldScope ${capitalize(type)} Intelligence Report — ${dateStr} — ${eventCount} events analyzed`;
+
+  const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(reportUrl)}`;
+  const linkedinUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(reportUrl)}`;
+  const redditUrl = `https://reddit.com/submit?url=${encodeURIComponent(reportUrl)}&title=${encodeURIComponent(text)}`;
+
+  return (
+    <div className="mt-6 flex items-center gap-3">
+      <span className="font-mono text-[9px] text-hud-muted tracking-wider">SHARE:</span>
+      <a
+        href={twitterUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-mono text-[9px] px-3 py-1.5 bg-hud-surface border border-hud-border rounded hover:border-hud-accent/50 hover:text-hud-accent text-hud-muted transition-colors"
+      >
+        𝕏 TWITTER
+      </a>
+      <a
+        href={linkedinUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-mono text-[9px] px-3 py-1.5 bg-hud-surface border border-hud-border rounded hover:border-[#0077b5]/50 hover:text-[#0077b5] text-hud-muted transition-colors"
+      >
+        LINKEDIN
+      </a>
+      <a
+        href={redditUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-mono text-[9px] px-3 py-1.5 bg-hud-surface border border-hud-border rounded hover:border-[#ff4500]/50 hover:text-[#ff4500] text-hud-muted transition-colors"
+      >
+        REDDIT
+      </a>
+    </div>
   );
 }
 

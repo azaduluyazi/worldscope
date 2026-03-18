@@ -31,9 +31,10 @@ export function CarbonAd({ className = "" }: CarbonAdProps) {
     containerRef.current.appendChild(script);
     loaded.current = true;
 
+    const container = containerRef.current;
     return () => {
-      if (containerRef.current) {
-        const existing = containerRef.current.querySelector("#_carbonads_js");
+      if (container) {
+        const existing = container.querySelector("#_carbonads_js");
         if (existing) existing.remove();
       }
     };

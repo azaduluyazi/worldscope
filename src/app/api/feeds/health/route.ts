@@ -19,7 +19,7 @@ export async function GET() {
     return NextResponse.json({
       ...health,
       timestamp: new Date().toISOString(),
-      feedDatabaseSize: 308, // Total seed feeds configured
+      feedDatabaseSize: 536, // Total seed feeds configured (updated Faz 9+10)
     });
   } catch {
     return NextResponse.json(

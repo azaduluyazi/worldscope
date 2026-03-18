@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { IntelCard } from "./IntelCard";
 import { AIBrief } from "./AIBrief";
@@ -8,14 +9,22 @@ import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getVariantCategories, type VariantId } from "@/config/variants";
 
-const TABS = ["INTEL FEED", "ANALYSIS", "AI BRIEF"] as const;
+type TabId = "feed" | "analysis" | "brief";
+const TAB_IDS: TabId[] = ["feed", "analysis", "brief"];
+const PAGE_SIZE = 30;
 
 interface IntelFeedProps {
   variant?: VariantId;
 }
 
 export function IntelFeed({ variant = "world" }: IntelFeedProps) {
+  const t = useTranslations();
   const { items: allItems, isLoading, total: rawTotal } = useIntelFeed();
+  const TAB_LABELS: Record<TabId, string> = {
+    feed: t("intel.title"),
+    analysis: t("intel.analysis"),
+    brief: t("intel.aiBrief"),
+  };
 
   // Filter items by variant categories
   const { items, total } = useMemo(() => {
@@ -24,16 +33,56 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
     const filtered = allItems.filter((item) => all.has(item.category as never));
     return { items: filtered, total: filtered.length };
   }, [allItems, rawTotal, variant]);
-  const [activeTab, setActiveTab] = useState<(typeof TABS)[number]>("INTEL FEED");
 
-  // Compute analysis data
+  const [activeTab, setActiveTab] = useState<TabId>("feed");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+
+  // Reset visible count when items change significantly
+  useEffect(() => {
+    if (visibleCount > items.length && items.length > 0) {
+      const timer = setTimeout(() => {
+        setVisibleCount(Math.min(PAGE_SIZE, items.length));
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [items.length, visibleCount]);
+
+  // ── Infinite scroll: IntersectionObserver on sentinel ──
+  const sentinelRef = useRef<HTMLDivElement>(null);
+
+  const loadMore = useCallback(() => {
+    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, items.length));
+  }, [items.length]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loadMore]);
+
+  const visibleItems = useMemo(
+    () => items.slice(0, visibleCount),
+    [items, visibleCount]
+  );
+
+  // Compute analysis data (memoized, only recalcs when items change)
   const analysis = useMemo(() => {
     const categoryCount: Record<string, number> = {};
     const severityCount: Record<string, number> = {};
     const sourceCount: Record<string, number> = {};
     let geoCount = 0;
 
-    // Timeline: 12 buckets of 2 hours each (last 24h)
     const now = Date.now();
     const timelineBuckets = Array.from({ length: 12 }, () => 0);
     const timelineSevBuckets = Array.from({ length: 12 }, () => ({
@@ -68,18 +117,18 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
     <div className="h-full flex flex-col bg-gradient-to-b from-hud-panel to-hud-surface border-l border-hud-border">
       {/* Tabs */}
       <div className="flex border-b border-hud-border">
-        {TABS.map((tab) => (
+        {TAB_IDS.map((tabId) => (
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
+            key={tabId}
+            onClick={() => setActiveTab(tabId)}
             className={`flex-1 py-2.5 text-center font-mono text-[9px] tracking-wider transition-colors
               ${
-                activeTab === tab
+                activeTab === tabId
                   ? "text-hud-accent border-b-2 border-hud-accent"
                   : "text-hud-muted hover:text-hud-text"
               }`}
           >
-            {tab}
+            {TAB_LABELS[tabId]}
           </button>
         ))}
       </div>
@@ -89,28 +138,42 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
             <span className="font-mono text-[10px] text-hud-accent animate-blink">
-              ◆ LOADING INTEL STREAM...
+              ◆ {t("app.loading")}
             </span>
           </div>
-        ) : activeTab === "INTEL FEED" ? (
+        ) : activeTab === "feed" ? (
           <div className="p-2 flex flex-col gap-1">
-            {items.slice(0, 50).map((item) => (
+            {visibleItems.map((item) => (
               <IntelCard key={item.id} item={item} />
             ))}
+            {/* Infinite scroll sentinel */}
+            {visibleCount < items.length && (
+              <div ref={sentinelRef} className="py-3 text-center">
+                <span className="font-mono text-[8px] text-hud-muted animate-pulse">
+                  ◆ {t("app.loadingMore")}
+                </span>
+              </div>
+            )}
+            {visibleCount >= items.length && items.length > PAGE_SIZE && (
+              <div className="py-2 text-center">
+                <span className="font-mono text-[7px] text-hud-muted/50">
+                  — {t("app.allEventsLoaded", { count: items.length })} —
+                </span>
+              </div>
+            )}
           </div>
-        ) : activeTab === "AI BRIEF" ? (
+        ) : activeTab === "brief" ? (
           <AIBrief />
         ) : (
           /* Analysis Tab */
           <div className="p-3 flex flex-col gap-4">
             {/* ── Timeline Heatmap ── */}
             <div>
-              <div className="hud-label text-[8px] mb-2">◆ 24H EVENT TIMELINE</div>
+              <div className="hud-label text-[8px] mb-2">◆ {t("analysis.timeline")}</div>
               <div className="flex items-end gap-[3px] h-16">
                 {analysis.timelineBuckets.map((count, i) => {
                   const height = Math.max(2, (count / analysis.maxBucket) * 100);
                   const severity = analysis.timelineSevBuckets[i];
-                  // Color based on dominant severity in this bucket
                   const color =
                     severity.critical > 0 ? "#ff4757" :
                     severity.high > 0 ? "#ffd000" :
@@ -135,14 +198,14 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
                 })}
               </div>
               <div className="flex justify-between mt-1">
-                <span className="font-mono text-[6px] text-hud-muted">24h ago</span>
-                <span className="font-mono text-[6px] text-hud-muted">now</span>
+                <span className="font-mono text-[6px] text-hud-muted">{t("analysis.hoursAgo", { hours: 24 })}</span>
+                <span className="font-mono text-[6px] text-hud-muted">{t("analysis.now")}</span>
               </div>
             </div>
 
             {/* ── Severity Distribution ── */}
             <div>
-              <div className="hud-label text-[8px] mb-2">◆ SEVERITY DISTRIBUTION</div>
+              <div className="hud-label text-[8px] mb-2">◆ {t("analysis.severity")}</div>
               {(["critical", "high", "medium", "low", "info"] as const).map((sev) => {
                 const count = analysis.severityCount[sev] || 0;
                 const color = SEVERITY_COLORS[sev];
@@ -175,7 +238,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
 
             {/* ── Category Breakdown ── */}
             <div>
-              <div className="hud-label text-[8px] mb-2">◆ CATEGORY BREAKDOWN</div>
+              <div className="hud-label text-[8px] mb-2">◆ {t("analysis.category")}</div>
               {Object.entries(analysis.categoryCount)
                 .sort(([, a], [, b]) => b - a)
                 .map(([cat, count]) => {
@@ -201,7 +264,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
 
             {/* ── Top Sources ── */}
             <div>
-              <div className="hud-label text-[8px] mb-2">◆ TOP SOURCES</div>
+              <div className="hud-label text-[8px] mb-2">◆ {t("analysis.topSources")}</div>
               {analysis.topSources.map(([source, count], idx) => (
                 <div key={source} className="flex items-center gap-2 mb-1">
                   <span className="font-mono text-[7px] text-hud-muted w-3 text-right">
@@ -224,7 +287,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
                   {Object.keys(analysis.sourceCount).length}
                 </div>
                 <div className="font-mono text-[7px] text-hud-muted uppercase">
-                  Active Sources
+                  {t("analysis.activeSources")}
                 </div>
               </div>
               <div className="bg-hud-base/50 border border-hud-border rounded-md p-2 text-center">
@@ -232,7 +295,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
                   {analysis.geoCount}
                 </div>
                 <div className="font-mono text-[7px] text-hud-muted uppercase">
-                  Geo-Located
+                  {t("analysis.geoLocated")}
                 </div>
               </div>
               <div className="bg-hud-base/50 border border-hud-border rounded-md p-2 text-center">
@@ -240,7 +303,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
                   {analysis.severityCount["critical"] || 0}
                 </div>
                 <div className="font-mono text-[7px] text-hud-muted uppercase">
-                  Critical Events
+                  {t("analysis.criticalEvents")}
                 </div>
               </div>
               <div className="bg-hud-base/50 border border-hud-border rounded-md p-2 text-center">
@@ -248,7 +311,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
                   {analysis.severityCount["high"] || 0}
                 </div>
                 <div className="font-mono text-[7px] text-hud-muted uppercase">
-                  High Alerts
+                  {t("analysis.highAlerts")}
                 </div>
               </div>
             </div>
@@ -259,10 +322,10 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
       {/* Footer */}
       <div className="px-3 py-2 border-t border-hud-border flex justify-between items-center">
         <span className="font-mono text-[8px] text-hud-muted">
-          {total} events tracked
+          {t("intel.eventsCount", { visible: visibleCount, total })}
         </span>
         <span className="font-mono text-[8px] text-severity-low animate-blink">
-          ● STREAMING
+          ● {t("intel.streaming")}
         </span>
       </div>
     </div>
