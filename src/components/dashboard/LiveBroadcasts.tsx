@@ -2,16 +2,26 @@
 
 import { useState, useCallback, useRef, useMemo } from "react";
 import { useLocale } from "next-intl";
-import { getChannelsByLocale, type LiveChannel } from "@/config/live-channels";
+import { getChannelsByLocale, getAvailableCountries, getChannelsByCountry, type LiveChannel } from "@/config/live-channels";
 
 /**
- * Live news broadcast panel — YouTube embeds with channel tabs.
- * Locale-aware: shows national channels for user's language + international.
+ * Live news broadcast panel — YouTube + HLS embeds with channel tabs.
+ * Locale-aware with country picker for targeted viewing.
  */
 export function LiveBroadcasts() {
   const locale = useLocale();
-  const channels = useMemo(() => getChannelsByLocale(locale), [locale]);
-  const [activeChannel, setActiveChannel] = useState<LiveChannel>(channels[0]);
+  const allChannels = useMemo(() => getChannelsByLocale(locale), [locale]);
+  const countries = useMemo(() => getAvailableCountries(), []);
+  const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [showCountryPicker, setShowCountryPicker] = useState(false);
+
+  const channels = useMemo(() => {
+    if (!selectedCountry) return allChannels;
+    const countryChannels = getChannelsByCountry(selectedCountry);
+    return countryChannels.length > 0 ? countryChannels : allChannels;
+  }, [allChannels, selectedCountry]);
+
+  const [activeChannel, setActiveChannel] = useState<LiveChannel>(allChannels[0]);
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [showFlash, setShowFlash] = useState(false);
@@ -35,10 +45,12 @@ export function LiveBroadcasts() {
     }
   }, []);
 
-  // Build YouTube embed URL
-  const embedUrl = activeChannel.videoId
-    ? `https://www.youtube.com/embed/${activeChannel.videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=1&modestbranding=1&rel=0&showinfo=0`
-    : `https://www.youtube.com/embed/live_stream?channel=${activeChannel.channelId}&autoplay=1&mute=${isMuted ? 1 : 0}`;
+  // Build embed URL based on channel type
+  const embedUrl = activeChannel.type === "hls" && activeChannel.hlsUrl
+    ? activeChannel.hlsUrl // HLS streams handled via video element
+    : activeChannel.videoId
+      ? `https://www.youtube.com/embed/${activeChannel.videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=1&modestbranding=1&rel=0&showinfo=0`
+      : `https://www.youtube.com/embed/live_stream?channel=${activeChannel.channelId}&autoplay=1&mute=${isMuted ? 1 : 0}`;
 
   return (
     <div className="h-full flex flex-col bg-hud-surface/50 border border-hud-border rounded-lg overflow-hidden">
@@ -49,6 +61,39 @@ export function LiveBroadcasts() {
           LIVE BROADCASTS
         </span>
         <div className="flex items-center gap-1.5">
+          {/* Country Picker */}
+          <div className="relative">
+            <button
+              onClick={() => setShowCountryPicker(!showCountryPicker)}
+              className={`font-mono text-[7px] px-1.5 h-5 flex items-center gap-1 rounded border transition-colors ${
+                selectedCountry
+                  ? "bg-hud-accent/10 border-hud-accent/30 text-hud-accent"
+                  : "border-hud-border text-hud-muted hover:border-hud-accent/30"
+              }`}
+              title="Filter by country"
+            >
+              🌍 {selectedCountry || "ALL"}
+            </button>
+            {showCountryPicker && (
+              <div className="absolute right-0 top-6 z-50 bg-hud-surface border border-hud-border rounded-md shadow-lg w-32 max-h-48 overflow-y-auto py-1">
+                <button
+                  onClick={() => { setSelectedCountry(null); setShowCountryPicker(false); }}
+                  className={`w-full text-left px-2 py-1 font-mono text-[7px] hover:bg-hud-panel/50 transition-colors ${!selectedCountry ? "text-hud-accent" : "text-hud-muted"}`}
+                >
+                  🌍 ALL ({allChannels.length})
+                </button>
+                {countries.map((c) => (
+                  <button
+                    key={c.code}
+                    onClick={() => { setSelectedCountry(c.code); setShowCountryPicker(false); }}
+                    className={`w-full text-left px-2 py-1 font-mono text-[7px] hover:bg-hud-panel/50 transition-colors ${selectedCountry === c.code ? "text-hud-accent" : "text-hud-muted"}`}
+                  >
+                    {c.name} ({c.count})
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
           <button
             onClick={() => setIsMuted(!isMuted)}
             className="font-mono text-[8px] w-6 h-5 flex items-center justify-center rounded border border-hud-border hover:bg-hud-panel/60 hover:border-hud-accent/30 transition-colors"
@@ -114,16 +159,30 @@ export function LiveBroadcasts() {
         {/* Channel switch flash */}
         {showFlash && <div className="channel-flash z-20" />}
 
-        <iframe
-          key={activeChannel.id}
-          src={embedUrl}
-          className="absolute inset-0 w-full h-full"
-          allow="autoplay; encrypted-media; picture-in-picture"
-          allowFullScreen
-          title={`${activeChannel.label} Live`}
-          loading="lazy"
-          onLoad={() => setIsLoading(false)}
-        />
+        {activeChannel.type === "hls" && activeChannel.hlsUrl ? (
+          <video
+            key={activeChannel.id}
+            src={activeChannel.hlsUrl}
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            muted={isMuted}
+            controls
+            playsInline
+            onLoadedData={() => setIsLoading(false)}
+            onError={() => setIsLoading(false)}
+          />
+        ) : (
+          <iframe
+            key={activeChannel.id}
+            src={embedUrl}
+            className="absolute inset-0 w-full h-full"
+            allow="autoplay; encrypted-media; picture-in-picture"
+            allowFullScreen
+            title={`${activeChannel.label} Live`}
+            loading="lazy"
+            onLoad={() => setIsLoading(false)}
+          />
+        )}
 
         {/* Channel overlay gradient */}
         <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-black/70 to-transparent pointer-events-none flex items-end justify-between px-3 pb-1.5">
