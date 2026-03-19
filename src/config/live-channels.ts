@@ -192,6 +192,198 @@ export const LIVE_CHANNELS: LiveChannel[] = [
   // Chinese HLS
   { id: "hls-cgtn-en", label: "CGTN EN", hlsUrl: "https://english-livebkali.cgtn.com/live/encgtn.m3u8", type: "hls", region: "asia", lang: "zh", country: "CN", color: "#D71920", category: "news" },
   { id: "hls-cgtn-doc", label: "CGTN DOC", hlsUrl: "https://amg00405-rakutentv-cgtndocumentary-rakuten-0ql8j.amagi.tv/master.m3u8", type: "hls", region: "asia", lang: "zh", country: "CN", color: "#D71920", category: "documentary" },
+
+  // ═══════════════════════════════════════
+  // ITALY (IT) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-rainews24", label: "RAI NEWS 24", hlsUrl: "https://rainews1-live.akamaized.net/hls/live/598326/rainews1/rainews1/playlist.m3u8", type: "hls", region: "eu", lang: "it", country: "IT", color: "#003DA6", category: "news" },
+  { id: "hls-tgcom24", label: "TGCOM 24", hlsUrl: "https://live2-mediaset-it.akamaized.net/Content/hls_h0_clr_vos/live/channel(kf)/index.m3u8", type: "hls", region: "eu", lang: "it", country: "IT", color: "#E30613", category: "news" },
+  { id: "hls-lacnews24", label: "LAC NEWS 24", hlsUrl: "https://f5842579ff984c1c98d63b8d789673eb.msvdn.net/live/S27391994/HVvPMzy/playlist.m3u8", type: "hls", region: "eu", lang: "it", country: "IT", color: "#FF6600", category: "news" },
+
+  // ═══════════════════════════════════════
+  // BRAZIL (BR) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-recordnews", label: "RECORD NEWS", hlsUrl: "https://rnw-rn.otteravision.com/rnw/rn/rnw_rn.m3u8", type: "hls", region: "latam", lang: "pt", country: "BR", color: "#00843D", category: "news" },
+  { id: "hls-canalgov", label: "CANAL GOV", hlsUrl: "https://canalgov-stream.ebc.com.br/index.m3u8", type: "hls", region: "latam", lang: "pt", country: "BR", color: "#003DA6", category: "news" },
+  { id: "hls-tvcamara", label: "TV CÂMARA", hlsUrl: "https://stream3.camara.gov.br/tv1/manifest.m3u8", type: "hls", region: "latam", lang: "pt", country: "BR", color: "#0055A4", category: "news" },
+  { id: "hls-tvbrasil", label: "TV BRASIL", hlsUrl: "https://tvbrasil-stream.ebc.com.br/index.m3u8", type: "hls", region: "latam", lang: "pt", country: "BR", color: "#FFD700", category: "news" },
+  { id: "hls-jpnews", label: "JOVEM PAN NEWS", hlsUrl: "https://d6yfbj4xxtrod.cloudfront.net/out/v1/7836eb391ec24452b149f3dc6df15bbd/index.m3u8", type: "hls", region: "latam", lang: "pt", country: "BR", color: "#FF4500", category: "news" },
+
+  // ═══════════════════════════════════════
+  // MEXICO (MX) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-adn40", label: "ADN 40", hlsUrl: "https://mdstrm.com/live-stream-playlist/60b578b060947317de7b57ac.m3u8", type: "hls", region: "latam", lang: "es", country: "MX", color: "#FF6B00", category: "news" },
+  { id: "hls-forotv", label: "FORO TV", hlsUrl: "https://channel02-notusa.akamaized.net/hls/live/2023914/event01/index.m3u8", type: "hls", region: "latam", lang: "es", country: "MX", color: "#003DA6", category: "news" },
+  { id: "hls-teleformula", label: "TELEFÓRMULA", hlsUrl: "https://mdstrm.com/live-stream-playlist/62f2c855f7981b5a5a2d8763.m3u8", type: "hls", region: "latam", lang: "es", country: "MX", color: "#E30613", category: "news" },
+  { id: "hls-capital21", label: "CAPITAL 21", hlsUrl: "https://video.cdmx.gob.mx/redes/stream.m3u8", type: "hls", region: "latam", lang: "es", country: "MX", color: "#0055A4", category: "news" },
+
+  // ═══════════════════════════════════════
+  // ARGENTINA (AR) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-a24", label: "A24", hlsUrl: "https://g5.vxral-slo.transport.edge-access.net/a12/ngrp:a24-100056_all/playlist.m3u8?sense=true", type: "hls", region: "latam", lang: "es", country: "AR", color: "#FF6600", category: "news" },
+  { id: "hls-tvpublica", label: "TV PUBLICA", hlsUrl: "https://ola1.com.ar/tvp/index.m3u8", type: "hls", region: "latam", lang: "es", country: "AR", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // ISRAEL (IL) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-i24news-en", label: "I24 NEWS EN", hlsUrl: "https://bcovlive-a.akamaihd.net/ecf224f43f3b43e69471a7b626481af0/eu-central-1/5377161796001/playlist.m3u8", type: "hls", region: "mideast", lang: "en", country: "IL", color: "#0055A4", category: "news" },
+  { id: "hls-i24news-he", label: "I24 NEWS HE", hlsUrl: "https://bcovlive-a.akamaihd.net/d89ede8094c741b7924120b27764153c/eu-central-1/5377161796001/playlist.m3u8", type: "hls", region: "mideast", lang: "he", country: "IL", color: "#003DA6", category: "news" },
+  { id: "hls-i24news-ar", label: "I24 NEWS AR", hlsUrl: "https://bcovlive-a.akamaihd.net/95116e8d79524d87bf3ac20ba04241e3/eu-central-1/5377161796001/playlist.m3u8", type: "hls", region: "mideast", lang: "ar", country: "IL", color: "#D4AA00", category: "news" },
+  { id: "hls-i24news-fr", label: "I24 NEWS FR", hlsUrl: "https://bcovlive-a.akamaihd.net/41814196d97e433fb401c5e632d985e9/eu-central-1/5377161796001/playlist.m3u8", type: "hls", region: "mideast", lang: "fr", country: "IL", color: "#00A1E4", category: "news" },
+  { id: "hls-knesset", label: "KNESSET TV", hlsUrl: "https://contact.gostreaming.tv/Knesset/myStream/playlist.m3u8", type: "hls", region: "mideast", lang: "he", country: "IL", color: "#004B87", category: "news" },
+
+  // ═══════════════════════════════════════
+  // EGYPT (EG) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-alghadtv", label: "AL GHAD TV", hlsUrl: "https://eazyvwqssi.erbvr.com/alghadtv/alghadtv.m3u8", type: "hls", region: "mideast", lang: "ar", country: "EG", color: "#E30613", category: "news" },
+
+  // ═══════════════════════════════════════
+  // PAKISTAN (PK) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-dunyanews", label: "DUNYA NEWS", hlsUrl: "https://imob.dunyanews.tv/livehd/ngrp:dunyalivehd_2_all/playlist.m3u8", type: "hls", region: "asia", lang: "ur", country: "PK", color: "#00843D", category: "news" },
+  { id: "hls-neonews", label: "NEO NEWS", hlsUrl: "https://vodzong.mjunoon.tv:8087/streamtest/Neo-110/playlist.m3u8", type: "hls", region: "asia", lang: "ur", country: "PK", color: "#003DA6", category: "news" },
+  { id: "hls-newsone-pk", label: "NEWS ONE", hlsUrl: "https://vodzong.mjunoon.tv:8087/streamtest/NEWS1-128/playlist.m3u8", type: "hls", region: "asia", lang: "ur", country: "PK", color: "#E30613", category: "news" },
+  { id: "hls-samaa", label: "SAMAA TV", hlsUrl: "https://vodzong.mjunoon.tv:8087/streamtest/SAMAA-173/playlist.m3u8", type: "hls", region: "asia", lang: "ur", country: "PK", color: "#FF6600", category: "news" },
+
+  // ═══════════════════════════════════════
+  // NIGERIA (NG) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-channelstv", label: "CHANNELS TV", hlsUrl: "https://cs2.push2stream.com/CHANNELSTV-DVR/playlist.m3u8", type: "hls", region: "africa", lang: "en", country: "NG", color: "#E30613", category: "news" },
+  { id: "hls-ln247", label: "LN247", hlsUrl: "https://go5lmb6oyawb-hls-live.5centscdn.com/station/3dfd3752af3d7aec5c53992c2da3a316.sdp/playlist.m3u8", type: "hls", region: "africa", lang: "en", country: "NG", color: "#003DA6", category: "news" },
+  { id: "hls-newscentral", label: "NEWS CENTRAL", hlsUrl: "https://wf.newscentral.ng:8443/hls/stream.m3u8", type: "hls", region: "africa", lang: "en", country: "NG", color: "#0055A4", category: "news" },
+
+  // ═══════════════════════════════════════
+  // SOUTH AFRICA (ZA) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-sabcnews", label: "SABC NEWS", hlsUrl: "https://sabconetanw.cdn.mangomolo.com/news/smil:news.stream.smil/master.m3u8", type: "hls", region: "africa", lang: "en", country: "ZA", color: "#003DA6", category: "news" },
+  { id: "hls-wildearth", label: "WILDEARTH", hlsUrl: "https://cdn-ue1-prod.tsv2.amagi.tv/linear/amg01290-wildearth-oando/playlist.m3u8", type: "hls", region: "africa", lang: "en", country: "ZA", color: "#00843D", category: "documentary" },
+
+  // ═══════════════════════════════════════
+  // AUSTRALIA (AU) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-abcnews-au", label: "ABC NEWS AU", hlsUrl: "https://abc-news-dmd-streams-1.akamaized.net/out/v1/701126012d044971b3fa89406a440133/index.m3u8", type: "hls", region: "global", lang: "en", country: "AU", color: "#00843D", category: "news" },
+  { id: "hls-ausbiz", label: "AUSBIZ TV", hlsUrl: "https://d9quh89lh7dtw.cloudfront.net/public-output/index.m3u8", type: "hls", region: "global", lang: "en", country: "AU", color: "#0055A4", category: "business" },
+  { id: "hls-skynews-au", label: "SKY NEWS AU", hlsUrl: "https://skynewsau-live.akamaized.net/hls/live/2002689/skynewsau-extra1/master.m3u8", type: "hls", region: "global", lang: "en", country: "AU", color: "#E30613", category: "news" },
+
+  // ═══════════════════════════════════════
+  // CANADA (CA) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-cpac", label: "CPAC", hlsUrl: "https://d7z3qjdsxbwoq.cloudfront.net/groupa/live/f9809cea-1e07-47cd-a94d-2ddd3e1351db/live.isml/.m3u8", type: "hls", region: "global", lang: "en", country: "CA", color: "#E30613", category: "news" },
+  { id: "hls-citynews-to", label: "CITYNEWS TORONTO", hlsUrl: "https://citynewsregional.akamaized.net/hls/live/1024052/Regional_Live_7/master.m3u8", type: "hls", region: "global", lang: "en", country: "CA", color: "#FF6600", category: "news" },
+  { id: "hls-ici-rdi", label: "ICI RDI", hlsUrl: "https://rcavlive.akamaized.net/hls/live/704025/xcanrdi/master.m3u8", type: "hls", region: "global", lang: "fr", country: "CA", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // POLAND (PL) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-tvpinfo", label: "TVP INFO", hlsUrl: "https://lowa8026-cmyk.github.io/tvpvod/399699.m3u8", type: "hls", region: "eu", lang: "pl", country: "PL", color: "#E30613", category: "news" },
+  { id: "hls-polsatnews", label: "POLSAT NEWS", hlsUrl: "https://cdn-s-lb2.pluscdn.pl/lv/1517830/349/hls/f03a76f3/masterlist.m3u8", type: "hls", region: "eu", lang: "pl", country: "PL", color: "#003DA6", category: "news" },
+  { id: "hls-tvbiznesowa", label: "TV BIZNESOWA", hlsUrl: "https://s-pl-01.mediatool.tv/playout/tbpl-abr/index.m3u8", type: "hls", region: "eu", lang: "pl", country: "PL", color: "#0055A4", category: "business" },
+  { id: "hls-echo24", label: "ECHO24", hlsUrl: "https://echo24new.pl/LiveAppStreamECHO24/streams/GL0VksiIgQUS1672825288490.m3u8", type: "hls", region: "eu", lang: "pl", country: "PL", color: "#FF6600", category: "news" },
+
+  // ═══════════════════════════════════════
+  // UKRAINE (UA) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-24kanal", label: "24 КАНАЛ", hlsUrl: "https://streamvideol1.luxnet.ua/news24/smil:news24.stream.smil/playlist.m3u8", type: "hls", region: "eu", lang: "uk", country: "UA", color: "#FFD700", category: "news" },
+  { id: "hls-espreso", label: "ESPRESO TV", hlsUrl: "https://liveovh009.cda.pl/2mwlMj_cpciQwY9XKkuwooIeujskIie828C5uElA/1760154894/24372638/enc024/espresotvraw/espresotvraw.m3u8", type: "hls", region: "eu", lang: "uk", country: "UA", color: "#003DA6", category: "news" },
+  { id: "hls-freedom-ua", label: "FREEDOM", hlsUrl: "https://freedom.cdn-01.cosmonova.net.ua/mobile-app/main/freedom/master.m3u8", type: "hls", region: "eu", lang: "uk", country: "UA", color: "#0055A4", category: "news" },
+
+  // ═══════════════════════════════════════
+  // IRAN (IR) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-presstv", label: "PRESS TV", hlsUrl: "https://live.presstv.ir/hls/presstv.m3u8", type: "hls", region: "mideast", lang: "en", country: "IR", color: "#00843D", category: "news" },
+  { id: "hls-presstv-fr", label: "PRESS TV FR", hlsUrl: "https://live4.presstv.ir/live/smil:presstvfr.smil/playlist.m3u8", type: "hls", region: "mideast", lang: "fr", country: "IR", color: "#003DA6", category: "news" },
+  { id: "hls-alalam", label: "AL ALAM", hlsUrl: "https://live2.alalam.ir/alalam.m3u8", type: "hls", region: "mideast", lang: "ar", country: "IR", color: "#E30613", category: "news" },
+
+  // ═══════════════════════════════════════
+  // IRAQ (IQ) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-aliraqia", label: "AL IRAQIA", hlsUrl: "https://cdn.catiacast.video/abr/8d2ffb0aba244e8d9101a9488a7daa05/playlist.m3u8", type: "hls", region: "mideast", lang: "ar", country: "IQ", color: "#003DA6", category: "news" },
+  { id: "hls-aliraqia-news", label: "AL IRAQIA NEWS", hlsUrl: "https://cdn.catiacast.video/abr/78054972db7708422595bc96c6e024ac/playlist.m3u8", type: "hls", region: "mideast", lang: "ar", country: "IQ", color: "#E30613", category: "news" },
+  { id: "hls-sharqiya-news", label: "AL-SHARQIYA NEWS", hlsUrl: "https://5d94523502c2d.streamlock.net/alsharqiyalive/mystream/playlist.m3u8", type: "hls", region: "mideast", lang: "ar", country: "IQ", color: "#0055A4", category: "news" },
+  { id: "hls-inews-iq", label: "INEWS TV", hlsUrl: "https://live.i-news.tv/hls/stream.m3u8", type: "hls", region: "mideast", lang: "ar", country: "IQ", color: "#FF6600", category: "news" },
+  { id: "hls-kurdsat-news", label: "KURDSAT NEWS", hlsUrl: "https://hlspackager.akamaized.net/live/DB/KURDSAT_NEWS/HLS/KURDSAT_NEWS.m3u8", type: "hls", region: "mideast", lang: "ku", country: "IQ", color: "#00843D", category: "news" },
+
+  // ═══════════════════════════════════════
+  // NETHERLANDS (NL) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-tweedekamer", label: "TWEEDE KAMER", hlsUrl: "https://livestreaming.b67buv2.tweedekamer.nl/live/plenairezaal/index.m3u8?hd=1&keyframes=1&subtitles=live", type: "hls", region: "eu", lang: "nl", country: "NL", color: "#FF6600", category: "news" },
+
+  // ═══════════════════════════════════════
+  // SWEDEN (SE) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-expressen", label: "EXPRESSEN TV", hlsUrl: "https://cdn0-03837-liveedge0.dna.ip-only.net/03837-liveedge0/smil:03837-tx2/playlist.m3u8", type: "hls", region: "eu", lang: "sv", country: "SE", color: "#E30613", category: "news" },
+
+  // ═══════════════════════════════════════
+  // NORWAY (NO) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-nrk1", label: "NRK 1", hlsUrl: "https://nrk-live-no.akamaized.net/nrk1/muxed.m3u8", type: "hls", region: "eu", lang: "no", country: "NO", color: "#E30613", category: "news" },
+  { id: "hls-nrk2", label: "NRK 2", hlsUrl: "https://nrk-live-no.akamaized.net/nrk2/muxed.m3u8", type: "hls", region: "eu", lang: "no", country: "NO", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // GREECE (GR) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-vouli", label: "VOULI TV", hlsUrl: "https://streamer-cache.grnet.gr/parliament/parltv.sdp/master.m3u8", type: "hls", region: "eu", lang: "el", country: "GR", color: "#0055A4", category: "news" },
+
+  // ═══════════════════════════════════════
+  // ROMANIA (RO) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-digi24", label: "DIGI 24", hlsUrl: "https://edge-ar.rcs-rds.ro/digi24ar/index.m3u8", type: "hls", region: "eu", lang: "ro", country: "RO", color: "#003DA6", category: "news" },
+  { id: "hls-alephnews", label: "ALEPH NEWS", hlsUrl: "https://stream-aleph.m.ro/Aleph/ngrp:Alephnewsmain.stream_all/playlist.m3u8", type: "hls", region: "eu", lang: "ro", country: "RO", color: "#0055A4", category: "news" },
+  { id: "hls-alephbiz", label: "ALEPH BUSINESS", hlsUrl: "https://streamw.m.ro/Aleph/ngrp:Alephbiz.stream_all/playlist.m3u8", type: "hls", region: "eu", lang: "ro", country: "RO", color: "#2800D7", category: "business" },
+  { id: "hls-romaniatv", label: "ROMANIA TV", hlsUrl: "https://livestream.romaniatv.net/clients/romaniatv/playlist.m3u8", type: "hls", region: "eu", lang: "ro", country: "RO", color: "#E30613", category: "news" },
+  { id: "hls-profitnews", label: "PROFIT NEWS", hlsUrl: "https://stream1.profit.ro:1945/profit/livestream/playlist.m3u8", type: "hls", region: "eu", lang: "ro", country: "RO", color: "#00843D", category: "business" },
+
+  // ═══════════════════════════════════════
+  // PORTUGAL (PT) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-rtpnoticias", label: "RTP NOTÍCIAS", hlsUrl: "https://streaming-live.rtp.pt/livetvhlsDVR/rtpnHDdvr.smil/playlist.m3u8", type: "hls", region: "eu", lang: "pt", country: "PT", color: "#003DA6", category: "news" },
+  { id: "hls-sicnoticias", label: "SIC NOTÍCIAS", hlsUrl: "https://d277k9d1h9dro4.cloudfront.net/out/v1/293e7c3464824cbd8818ab8e49dc5fe9/index.m3u8", type: "hls", region: "eu", lang: "pt", country: "PT", color: "#E30613", category: "news" },
+  { id: "hls-artv", label: "ARTV PARLAMENTO", hlsUrl: "https://playout172.livextend.cloud/liveiframe/_definst_/liveartvabr/playlist.m3u8", type: "hls", region: "eu", lang: "pt", country: "PT", color: "#0055A4", category: "news" },
+
+  // ═══════════════════════════════════════
+  // PHILIPPINES (PH) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-ptv-ph", label: "PTV", hlsUrl: "https://ythls.armelin.one/channel/UCJCUbMaY593_4SN1QPG7NFQ.m3u8", type: "hls", region: "asia", lang: "en", country: "PH", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // MALAYSIA (MY) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-beritartm", label: "BERITA RTM", hlsUrl: "https://d25tgymtnqzu8s.cloudfront.net/smil:berita/playlist.m3u8?id=5", type: "hls", region: "asia", lang: "ms", country: "MY", color: "#003DA6", category: "news" },
+  { id: "hls-parlimen-rakyat", label: "PARLIMEN RAKYAT", hlsUrl: "https://d25tgymtnqzu8s.cloudfront.net/smil:rakyat/playlist.m3u8?id=7", type: "hls", region: "asia", lang: "ms", country: "MY", color: "#FFD700", category: "news" },
+
+  // ═══════════════════════════════════════
+  // INDONESIA (ID) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-cnbc-id", label: "CNBC INDONESIA", hlsUrl: "https://live.cnbcindonesia.com/livecnbc/smil:cnbctv.smil/master.m3u8", type: "hls", region: "asia", lang: "id", country: "ID", color: "#005594", category: "business" },
+  { id: "hls-metrotv", label: "METRO TV", hlsUrl: "https://edge.medcom.id/live-edge/smil:metro.smil/playlist.m3u8", type: "hls", region: "asia", lang: "id", country: "ID", color: "#003DA6", category: "news" },
+  { id: "hls-tvri", label: "TVRI", hlsUrl: "https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional.m3u8", type: "hls", region: "asia", lang: "id", country: "ID", color: "#E30613", category: "news" },
+  { id: "hls-tvriworld", label: "TVRI WORLD", hlsUrl: "https://ott-balancer.tvri.go.id/live/eds/TVRIWorld/hls/TVRIWorld.m3u8", type: "hls", region: "asia", lang: "id", country: "ID", color: "#0055A4", category: "news" },
+  { id: "hls-parlemen-id", label: "TVR PARLEMEN", hlsUrl: "https://ssv1.dpr.go.id/golive/livestream/playlist.m3u8", type: "hls", region: "asia", lang: "id", country: "ID", color: "#FFD700", category: "news" },
+
+  // ═══════════════════════════════════════
+  // THAILAND (TH) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-thaipbs", label: "THAI PBS", hlsUrl: "https://thaipbs-live.cdn.byteark.com/live/playlist.m3u8", type: "hls", region: "asia", lang: "th", country: "TH", color: "#003DA6", category: "news" },
+  { id: "hls-topnews-th", label: "TOP NEWS", hlsUrl: "https://live.topnews.co.th/hls/topnews_a_720.m3u8", type: "hls", region: "asia", lang: "th", country: "TH", color: "#E30613", category: "news" },
+  { id: "hls-parliament-th", label: "PARLIAMENT TV", hlsUrl: "https://tv-live.tpchannel.org/live/tv.m3u8", type: "hls", region: "asia", lang: "th", country: "TH", color: "#FFD700", category: "news" },
+
+  // ═══════════════════════════════════════
+  // VIETNAM (VN) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-vtv1", label: "VTV1", hlsUrl: "https://liveh12.vtvprime.vn/hls/VTV1_HD/index.m3u8", type: "hls", region: "asia", lang: "vi", country: "VN", color: "#E30613", category: "news" },
+  { id: "hls-qpvn", label: "QPVN", hlsUrl: "https://qpvn.vn/live/qpvn/master.m3u8", type: "hls", region: "asia", lang: "vi", country: "VN", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // COLOMBIA (CO) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-cablenoticias", label: "CABLENOTICIAS", hlsUrl: "https://5ea86ddd14ce7.streamlock.net/live/cable09061970/playlist.m3u8", type: "hls", region: "latam", lang: "es", country: "CO", color: "#FFD700", category: "news" },
+
+  // ═══════════════════════════════════════
+  // PERU (PE) — HLS
+  // ═══════════════════════════════════════
+  { id: "hls-rpptv", label: "RPP TV", hlsUrl: "https://redirector.rudo.video/hls-video/567ffde3fa319fadf3419efda25619456231dfea/rpptv/rpptv.smil/playlist.m3u8", type: "hls", region: "latam", lang: "es", country: "PE", color: "#E30613", category: "news" },
+  { id: "hls-tvperu", label: "TV PERU", hlsUrl: "https://cdnhd.iblups.com/hls/777b4d4cc0984575a7d14f6ee57dbcaf7.m3u8", type: "hls", region: "latam", lang: "es", country: "PE", color: "#003DA6", category: "news" },
+  { id: "hls-tvperu-noticias", label: "TV PERU NOTICIAS", hlsUrl: "https://cdnhd.iblups.com/hls/902c1a0395264f269f1160efa00660e47.m3u8", type: "hls", region: "latam", lang: "es", country: "PE", color: "#0055A4", category: "news" },
 ];
 
 /**
@@ -224,6 +416,12 @@ export function getAvailableCountries(): Array<{ code: string; name: string; cou
     US: "USA", GB: "UK", TR: "Turkey", QA: "Qatar", AE: "UAE", SA: "Saudi Arabia",
     DE: "Germany", FR: "France", ES: "Spain", CL: "Chile", JP: "Japan",
     KR: "Korea", RU: "Russia", CN: "China", IN: "India",
+    IT: "Italy", BR: "Brazil", MX: "Mexico", AR: "Argentina", IL: "Israel",
+    EG: "Egypt", PK: "Pakistan", NG: "Nigeria", ZA: "South Africa", AU: "Australia",
+    CA: "Canada", PL: "Poland", UA: "Ukraine", IR: "Iran", IQ: "Iraq",
+    NL: "Netherlands", SE: "Sweden", NO: "Norway", GR: "Greece", RO: "Romania",
+    PT: "Portugal", PH: "Philippines", MY: "Malaysia", ID: "Indonesia", TH: "Thailand",
+    VN: "Vietnam", CO: "Colombia", PE: "Peru",
   };
 
   return [...countryMap.entries()]
