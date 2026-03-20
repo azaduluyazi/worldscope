@@ -25,10 +25,12 @@ export async function GET() {
     const start = Date.now();
     try {
       const res = await fetch(`${supabaseUrl}/rest/v1/`, {
+        method: "HEAD",
         headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "" },
         signal: AbortSignal.timeout(5000),
       });
-      checks.supabase = { status: res.ok ? "connected" : "error", latency: Date.now() - start };
+      const latency = Date.now() - start;
+      checks.supabase = { status: res.status < 500 ? "connected" : "error", latency };
     } catch {
       checks.supabase = { status: "unreachable", latency: Date.now() - start };
     }

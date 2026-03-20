@@ -13,13 +13,14 @@ interface SidebarItem {
   category: string;
 }
 
-/** All 10 categories with their icons and colors */
-const ALL_SIDEBAR_ITEMS: SidebarItem[] = [
+/**
+ * Categories shown in sidebar — only those useful as MAP FILTERS.
+ * Removed: tech, finance (already covered by variant tabs)
+ */
+const CATEGORY_ITEMS: SidebarItem[] = [
   { id: "conflict", icon: "⚔️", tKey: "sidebar.conflicts", color: "#ff4757", category: "conflict" },
   { id: "natural", icon: "🌍", tKey: "sidebar.natural", color: "#00ff88", category: "natural" },
   { id: "cyber", icon: "🛡️", tKey: "sidebar.cyber", color: "#00e5ff", category: "cyber" },
-  { id: "finance", icon: "📊", tKey: "sidebar.markets", color: "#ffd000", category: "finance" },
-  { id: "tech", icon: "💻", tKey: "sidebar.tech", color: "#8a5cf6", category: "tech" },
   { id: "aviation", icon: "🛫", tKey: "sidebar.aviation", color: "#c471ed", category: "aviation" },
   { id: "health", icon: "🏥", tKey: "sidebar.health", color: "#ff4757", category: "health" },
   { id: "diplomacy", icon: "🏛️", tKey: "sidebar.diplomacy", color: "#00e5ff", category: "diplomacy" },
@@ -45,150 +46,97 @@ export function IconSidebar({
   onToggleLayer,
 }: IconSidebarProps) {
   const t = useTranslations();
-  const { primary, all } = useMemo(() => getVariantCategories(variant), [variant]);
+  const { all } = useMemo(() => getVariantCategories(variant), [variant]);
   const hasActiveFilters = filters.categories.size > 0;
 
   return (
     <aside className="w-[52px] bg-hud-surface border-r border-hud-border flex flex-col items-center py-2 gap-1 z-50">
-      {/* Category filters — filtered by variant */}
-      {ALL_SIDEBAR_ITEMS
+      {CATEGORY_ITEMS
         .filter((item) => all.has(item.category as never))
         .map((item) => {
           const isActive = filters.categories.has(item.category);
-          const isPrimary = primary.has(item.category as never);
-
           return (
             <button
               key={item.id}
               onClick={() => onToggleCategory(item.category)}
-              title={`${t(item.tKey)}${isActive ? " (filtered)" : ""}`}
-              className={`w-9 h-9 rounded-md flex items-center justify-center transition-all relative
-                ${isPrimary ? "text-base" : "text-sm opacity-60"}
-                ${
-                  isActive
-                    ? "bg-hud-accent/10 border border-hud-accent/30 shadow-[0_0_8px_rgba(0,229,255,0.2)]"
-                    : "bg-hud-panel border border-hud-border hover:border-hud-muted"
+              title={t(item.tKey)}
+              className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all relative
+                ${isActive
+                  ? "bg-hud-accent/10 border border-hud-accent/30"
+                  : "bg-hud-panel border border-hud-border hover:border-hud-muted"
                 }`}
               style={isActive ? { borderColor: `${item.color}60`, boxShadow: `0 0 8px ${item.color}30` } : undefined}
             >
               {item.icon}
-              {/* Active indicator dot */}
               {isActive && (
-                <div
-                  className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full"
-                  style={{ backgroundColor: item.color }}
-                />
+                <div className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
               )}
             </button>
           );
         })}
 
-      {/* Divider */}
-      <div className="w-6 border-t border-hud-border my-1" />
-
-      {/* Clear all filters */}
       {hasActiveFilters && (
         <button
           title={t("sidebar.clearFilters")}
-          onClick={() => {
-            // Toggle off all active categories
-            filters.categories.forEach((cat) => onToggleCategory(cat));
-          }}
+          onClick={() => filters.categories.forEach((cat) => onToggleCategory(cat))}
           className="w-9 h-9 rounded-md bg-severity-critical/10 border border-severity-critical/30 flex items-center justify-center text-[10px] font-mono text-severity-critical hover:bg-severity-critical/20 transition-colors"
         >
           CLR
         </button>
       )}
 
-      <div className="flex-1" />
+      <div className="w-6 border-t border-hud-border my-1" />
 
-      {/* Heatmap toggle */}
       <button
-        title={`${t("sidebar.heatmap")} ${filters.heatmap ? "ON" : "OFF"}`}
+        title={t("sidebar.heatmap")}
         onClick={onToggleHeatmap}
-        className={`w-9 h-9 rounded-md flex items-center justify-center text-base transition-all
-          ${
-            filters.heatmap
-              ? "bg-hud-accent/10 border border-hud-accent/30"
-              : "bg-hud-panel border border-hud-border hover:border-hud-muted"
-          }`}
+        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
+          ${filters.heatmap ? "bg-hud-accent/10 border border-hud-accent/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted"}`}
       >
         🔥
       </button>
 
-      {/* Cluster toggle */}
       <button
-        title={`${t("sidebar.clusters")} ${filters.clusters ? "ON" : "OFF"}`}
+        title={t("sidebar.clusters")}
         onClick={onToggleClusters}
-        className={`w-9 h-9 rounded-md flex items-center justify-center text-base transition-all
-          ${
-            filters.clusters
-              ? "bg-hud-accent/10 border border-hud-accent/30"
-              : "bg-hud-panel border border-hud-border hover:border-hud-muted"
-          }`}
+        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
+          ${filters.clusters ? "bg-hud-accent/10 border border-hud-accent/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted"}`}
       >
         🎯
       </button>
 
-      {/* Divider */}
-      <div className="w-6 border-t border-hud-border my-0.5" />
+      <div className="flex-1" />
 
-      {/* Flights toggle */}
       <button
-        title={`Flights ${filters.flights ? "ON" : "OFF"}`}
+        title={t("tracking.flights")}
         onClick={() => onToggleLayer("flights")}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
-          ${filters.flights
-            ? "bg-[#8a5cf6]/10 border border-[#8a5cf6]/30"
-            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
-          }`}
+          ${filters.flights ? "bg-[#ffd000]/10 border border-[#ffd000]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
       >
         ✈️
       </button>
 
-      {/* Vessels toggle */}
       <button
-        title={`Vessels ${filters.vessels ? "ON" : "OFF"}`}
+        title={t("tracking.vessels")}
         onClick={() => onToggleLayer("vessels")}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
-          ${filters.vessels
-            ? "bg-[#00e5ff]/10 border border-[#00e5ff]/30"
-            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
-          }`}
+          ${filters.vessels ? "bg-[#00ff88]/10 border border-[#00ff88]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
       >
         🚢
       </button>
 
-      {/* GPS Jamming toggle */}
       <button
-        title={`GPS Jamming ${filters.gpsJamming ? "ON" : "OFF"}`}
+        title="GPS"
         onClick={() => onToggleLayer("gpsJamming")}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
-          ${filters.gpsJamming
-            ? "bg-[#ff4757]/10 border border-[#ff4757]/30"
-            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
-          }`}
+          ${filters.gpsJamming ? "bg-[#ff4757]/10 border border-[#ff4757]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
       >
         📡
       </button>
 
-      {/* Submarine Cables toggle */}
-      <button
-        title={`Cables ${filters.cables ? "ON" : "OFF"}`}
-        onClick={() => onToggleLayer("cables")}
-        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
-          ${filters.cables
-            ? "bg-[#00e5ff]/10 border border-[#00e5ff]/30"
-            : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"
-          }`}
-      >
-        🔌
-      </button>
-
-      {/* Settings */}
       <button
         title={t("sidebar.settings")}
-        className="w-9 h-9 rounded-md bg-hud-panel border border-hud-border flex items-center justify-center text-base hover:border-hud-muted transition-colors"
+        className="w-9 h-9 rounded-md bg-hud-panel border border-hud-border flex items-center justify-center text-sm hover:border-hud-muted transition-colors"
       >
         ⚙️
       </button>
