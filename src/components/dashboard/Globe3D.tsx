@@ -125,14 +125,6 @@ export function Globe3D({ variant = "world", onEventClick }: Globe3DProps) {
     }
   }, []);
 
-  const handlePointClick = useCallback(
-    (point: Record<string, unknown>) => {
-      if (point?.item && onEventClick) {
-        onEventClick(point.item);
-      }
-    },
-    [onEventClick]
-  );
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
@@ -150,12 +142,12 @@ export function Globe3D({ variant = "world", onEventClick }: Globe3DProps) {
         pointsData={pointsData}
         pointLat="lat"
         pointLng="lng"
-        pointAltitude={(d: Record<string, number>) => d.size * 0.05}
-        pointRadius={(d: Record<string, number>) => d.size * 0.4}
+        pointAltitude="size"
+        pointRadius="size"
         pointColor="color"
         pointLabel="label"
         pointsMerge={false}
-        onPointClick={handlePointClick}
+        onPointClick={(point: object) => { const p = point as { item?: IntelItem }; if (p.item && onEventClick) onEventClick(p.item); }}
         // Rings (critical event ripples)
         ringsData={ringsData}
         ringLat="lat"
