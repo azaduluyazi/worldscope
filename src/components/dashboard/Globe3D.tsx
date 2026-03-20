@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useMemo, useCallback, useEffect, useState } from "react";
-import Globe, { type GlobeProps } from "react-globe.gl";
+import Globe from "react-globe.gl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { SEVERITY_COLORS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
@@ -31,7 +31,8 @@ interface Globe3DProps {
 }
 
 export function Globe3D({ variant = "world", onEventClick }: Globe3DProps) {
-  const globeRef = useRef<any>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const globeRef = useRef<any>(null); // Globe instance type not exported
   const { items } = useIntelFeed();
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
@@ -125,7 +126,7 @@ export function Globe3D({ variant = "world", onEventClick }: Globe3DProps) {
   }, []);
 
   const handlePointClick = useCallback(
-    (point: any) => {
+    (point: Record<string, unknown>) => {
       if (point?.item && onEventClick) {
         onEventClick(point.item);
       }
@@ -149,8 +150,8 @@ export function Globe3D({ variant = "world", onEventClick }: Globe3DProps) {
         pointsData={pointsData}
         pointLat="lat"
         pointLng="lng"
-        pointAltitude={(d: any) => d.size * 0.05}
-        pointRadius={(d: any) => d.size * 0.4}
+        pointAltitude={(d: Record<string, number>) => d.size * 0.05}
+        pointRadius={(d: Record<string, number>) => d.size * 0.4}
         pointColor="color"
         pointLabel="label"
         pointsMerge={false}

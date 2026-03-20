@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         });
         if (!res.ok) return [];
         const data = await res.json();
-        return (data.items || []).slice(0, limit).map((item: any) => ({
+        return (data.items || []).slice(0, limit).map((item: Record<string, string>) => ({
           title: item.title,
           source: item.source,
           severity: item.severity,
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
     info: "#8a5cf6",
   };
 
-  const eventsHtml = (events as any[])
+  const eventsHtml = (events as Record<string, string>[])
     .map(
       (e) => `
     <div style="padding:8px 0;border-bottom:1px solid ${borderColor}">
