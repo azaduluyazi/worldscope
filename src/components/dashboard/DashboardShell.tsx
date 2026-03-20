@@ -216,7 +216,24 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
           {/* ── Column 1: Map + Webcams ── */}
           <div className="flex-[3.5] flex flex-col gap-1 min-w-0 col-stagger-1">
-            {/* Map — 2D tactical or 3D globe modes */}            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0">              <MapViewToggle mode={mapMode} onModeChange={setMapMode} />              {mapMode === "2d" ? (                <ErrorBoundary section="map" fallback={<MapSkeleton />}>                  <TacticalMap filters={filters} variant={variant} />                </ErrorBoundary>              ) : (                <ErrorBoundary section="globe" fallback={<MapSkeleton />}>                  <Globe3D variant={variant} globeMode={mapMode} />                </ErrorBoundary>              )}              {mapMode === "2d" && (                <ErrorBoundary section="ticker">                  <MemoMarketTicker />                </ErrorBoundary>              )}            </div>
+            {/* Map — 2D tactical or 3D globe modes */}
+            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0">
+              <MapViewToggle mode={mapMode} onModeChange={setMapMode} />
+              {mapMode === "2d" ? (
+                <ErrorBoundary section="map" fallback={<MapSkeleton />}>
+                  <TacticalMap filters={filters} variant={variant} />
+                </ErrorBoundary>
+              ) : (
+                <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
+                  <Globe3D variant={variant} globeMode={mapMode} />
+                </ErrorBoundary>
+              )}
+              {mapMode === "2d" && (
+                <ErrorBoundary section="ticker">
+                  <MemoMarketTicker />
+                </ErrorBoundary>
+              )}
+            </div>
 
             {/* Live Webcams */}
             <div className="flex-[4.5] min-h-0">
