@@ -614,9 +614,9 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
           return (
             <Marker key={v.mmsi} latitude={v.latitude} longitude={v.longitude} anchor="center">
               <div title={`${v.name} | ${v.shipType.toUpperCase()} | ${v.flag || "?"} | SPD: ${v.speed || "?"}kn | DEST: ${v.destination || "?"}`}>
-                <svg width={10} height={10} viewBox="0 0 24 24" fill="none"
-                  style={{ transform: `rotate(${v.heading || v.course || 0}deg)`, filter: `drop-shadow(0 0 3px ${color}60)` }}>
-                  <polygon points="12,2 20,20 12,16 4,20" fill={`${color}cc`} stroke={color} strokeWidth="1" />
+                <svg width={isMilitary ? 16 : 12} height={isMilitary ? 16 : 12} viewBox="0 0 24 24" fill="none"
+                  style={{ transform: `rotate(${v.heading || v.course || 0}deg)`, filter: `drop-shadow(0 0 4px ${color}80)` }}>
+                  <polygon points="12,2 20,20 12,16 4,20" fill={`${color}cc`} stroke={color} strokeWidth="1.5" />
                 </svg>
               </div>
             </Marker>
