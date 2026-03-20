@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo, useEffect, useState } from "react";
+import { useRef, useMemo, useEffect, useState, useCallback } from "react";
 import Globe from "react-globe.gl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useFlightTracker } from "@/hooks/useFlightTracker";
@@ -8,6 +8,7 @@ import { useVesselTracker } from "@/hooks/useVesselTracker";
 import { SEVERITY_COLORS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
 import { VARIANTS, type VariantId } from "@/config/variants";
+import { FlightSearch, type FlightSearchResult } from "./FlightSearch";
 
 /* ── Layer configuration ── */
 interface GlobeLayers {
@@ -58,6 +59,8 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   });
   const containerRef = useRef<HTMLDivElement>(null);
   const variantConfig = VARIANTS[variant];
+  const [searchedFlight, setSearchedFlight] = useState<FlightSearchResult | null>(null);
+  const handleFlightResult = useCallback((r: FlightSearchResult | null) => setSearchedFlight(r), []);
 
   const toggleLayer = (key: keyof GlobeLayers) => {
     setLayers((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -94,7 +97,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
         propagationSpeed: item.severity === "critical" ? 4 : 2,
         repeatPeriod: item.severity === "critical" ? 800 : 1200,
       }));
-  }, [geoItems, layers.conflictZones]);
+  }, [geoItems, layers.conflictZones, searchedFlight]);
 
   // ── LAYER DATA: Flight positions ──
   const flightArcsData = useMemo(() => {
@@ -150,8 +153,18 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
         color: `${SEVERITY_COLORS.critical}80`,
       });
     }
+    // Add searched flight route arc
+    if (searchedFlight?.route.origin && searchedFlight?.route.destination) {
+      arcs.push({
+        startLat: searchedFlight.route.origin.lat,
+        startLng: searchedFlight.route.origin.lng,
+        endLat: searchedFlight.route.destination.lat,
+        endLng: searchedFlight.route.destination.lng,
+        color: "#00e5ff",
+      });
+    }
     return arcs;
-  }, [geoItems, layers.conflictZones]);
+  }, [geoItems, layers.conflictZones, searchedFlight]);
 
   // Resize observer
   useEffect(() => {
@@ -265,6 +278,11 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
           </div>
         </div>
       </div>
+
+      {/* ── Flight Search (only in flight mode) ── */}
+      {globeMode === "globe-flights" && (
+        <FlightSearch onResult={handleFlightResult} />
+      )}
 
       {/* ── Stats HUD ── */}
       <div className="absolute bottom-3 left-3 z-10">
