@@ -22,7 +22,7 @@ export interface FeedConfig {
 
 export const SEED_FEEDS: FeedConfig[] = [
   // ── Conflict & Security (55) ─────────────────────────────────────
-  { name: "Reuters World", url: "https://feeds.reuters.com/Reuters/worldNews", category: "conflict", defaultSeverity: "medium", region: "global" },
+  { name: "AP Top News", url: "https://rsshub.app/apnews/topics/apf-topnews", category: "conflict", defaultSeverity: "medium", region: "global" },
   { name: "BBC World", url: "https://feeds.bbci.co.uk/news/world/rss.xml", category: "conflict", defaultSeverity: "medium", region: "global" },
   { name: "Al Jazeera", url: "https://www.aljazeera.com/xml/rss/all.xml", category: "conflict", defaultSeverity: "medium", region: "global" },
   { name: "AP News", url: "https://rsshub.app/apnews/topics/world-news", category: "conflict", defaultSeverity: "medium", region: "global" },
@@ -79,7 +79,7 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "gCaptain Maritime", url: "https://gcaptain.com/feed/", category: "conflict", defaultSeverity: "medium", region: "global" },
 
   // ── Finance & Economy (19) ───────────────────────────────────────
-  { name: "Reuters Business", url: "https://feeds.reuters.com/reuters/businessNews", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "AFP Business", url: "https://rsshub.app/afp/news/business", category: "finance", defaultSeverity: "low", region: "global" },
   { name: "CNBC Top News", url: "https://search.cnbc.com/rs/search/combinedcms/view.xml?partnerId=wrss01&id=100003114", category: "finance", defaultSeverity: "low", region: "us" },
   { name: "Bloomberg Markets", url: "https://feeds.bloomberg.com/markets/news.rss", category: "finance", defaultSeverity: "medium", region: "global" },
   { name: "Financial Times", url: "https://www.ft.com/rss/home", category: "finance", defaultSeverity: "low", region: "global" },
@@ -558,8 +558,8 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "Money Control India", url: "https://www.moneycontrol.com/rss/latestnews.xml", category: "finance", defaultSeverity: "low", region: "asia" },
   { name: "Economic Times India", url: "https://economictimes.indiatimes.com/rssfeedstopstories.cms", category: "finance", defaultSeverity: "low", region: "asia" },
   { name: "Caixin Global", url: "https://www.caixinglobal.com/rss.html", category: "finance", defaultSeverity: "medium", region: "asia" },
-  { name: "Reuters Bonds", url: "https://feeds.reuters.com/reuters/bondsNews", category: "finance", defaultSeverity: "low", region: "global" },
-  { name: "Reuters Commodities", url: "https://feeds.reuters.com/reuters/commoditiesNews", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Investing.com Bonds", url: "https://rsshub.app/investing/news/bonds", category: "finance", defaultSeverity: "low", region: "global" },
+  { name: "Investing.com Commodities", url: "https://rsshub.app/investing/news/commodities", category: "finance", defaultSeverity: "low", region: "global" },
   { name: "Institutional Investor", url: "https://www.institutionalinvestor.com/rss/", category: "finance", defaultSeverity: "low", region: "global" },
   { name: "Risk.net", url: "https://www.risk.net/feeds/rss", category: "finance", defaultSeverity: "low", region: "global" },
   { name: "Central Banking", url: "https://www.centralbanking.com/rss", category: "finance", defaultSeverity: "medium", region: "global" },
@@ -643,6 +643,64 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "Fire Information (NASA FIRMS)", url: "https://firms.modaps.eosdis.nasa.gov/rss/", category: "natural", defaultSeverity: "medium", region: "global" },
   { name: "EFAS European Floods", url: "https://www.efas.eu/rss.xml", category: "natural", defaultSeverity: "medium", region: "europe" },
   { name: "Severe Weather Europe", url: "https://www.severe-weather.eu/feed/", category: "natural", defaultSeverity: "medium", region: "europe" },
+
+  // ══════════════════════════════════════════════════════════════════
+  // TURKISH SOURCES — Diverse, multi-perspective coverage
+  // Right-leaning, center, left-leaning, and independent media
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── Mainstream Right-leaning ──
+  { name: "AA Güncel", url: "https://www.aa.com.tr/tr/rss/default?cat=guncel", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "AA Dünya", url: "https://www.aa.com.tr/tr/rss/default?cat=dunya", category: "diplomacy", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "AA Ekonomi", url: "https://www.aa.com.tr/tr/rss/default?cat=ekonomi", category: "finance", defaultSeverity: "low", language: "tr", region: "turkey" },
+  { name: "Sabah Gündem", url: "https://www.sabah.com.tr/rss/anasayfa.xml", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+
+  // ── Center / Center-left ──
+  { name: "Cumhuriyet", url: "https://www.cumhuriyet.com.tr/rss", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "Sözcü", url: "https://www.sozcu.com.tr/rss/tum-haberler.xml", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+
+  // ── Independent / Balanced ──
+  { name: "BBC Türkçe", url: "https://feeds.bbci.co.uk/turkce/rss.xml", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "DW Türkçe", url: "https://rss.dw.com/xml/rss-tr-all", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "T24", url: "https://t24.com.tr/rss", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "Bianet", url: "https://bianet.org/bianet.rss", category: "protest", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "Diken", url: "https://www.diken.com.tr/feed/", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "Medyascope", url: "https://medyascope.tv/feed/", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+  { name: "BirGün", url: "https://www.birgun.net/rss", category: "conflict", defaultSeverity: "medium", language: "tr", region: "turkey" },
+
+  // ── Turkish Economy ──
+  { name: "Bloomberg HT", url: "https://www.bloomberght.com/rss", category: "finance", defaultSeverity: "low", language: "tr", region: "turkey" },
+  { name: "Dünya Gazetesi", url: "https://www.dunya.com/rss", category: "finance", defaultSeverity: "low", language: "tr", region: "turkey" },
+
+  // ── Turkish Tech ──
+  { name: "Webrazzi", url: "https://webrazzi.com/feed/", category: "tech", defaultSeverity: "low", language: "tr", region: "turkey" },
+  { name: "ShiftDelete", url: "https://shiftdelete.net/feed", category: "tech", defaultSeverity: "low", language: "tr", region: "turkey" },
+
+  // ══════════════════════════════════════════════════════════════════
+  // ADDITIONAL GLOBAL SOURCES — Filling coverage gaps
+  // ══════════════════════════════════════════════════════════════════
+
+  // ── Wire Services (Reuters replacement) ──
+  { name: "AFP World", url: "https://rsshub.app/afp/news/world", category: "conflict", defaultSeverity: "medium", region: "global" },
+  { name: "UPI Top News", url: "https://rss.upi.com/news/top_news.rss", category: "conflict", defaultSeverity: "medium", region: "global" },
+  { name: "Xinhua World", url: "https://rsshub.app/xinhuanet/english/world", category: "diplomacy", defaultSeverity: "medium", region: "asia" },
+
+  // ── South America ──
+  { name: "Buenos Aires Times", url: "https://www.batimes.com.ar/feed", category: "conflict", defaultSeverity: "low", region: "latam" },
+  { name: "MercoPress", url: "https://en.mercopress.com/rss/", category: "diplomacy", defaultSeverity: "low", region: "latam" },
+
+  // ── India & South Asia ──
+  { name: "The Wire India", url: "https://thewire.in/feed", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "NDTV World", url: "https://feeds.feedburner.com/ndtvnews-world-news", category: "conflict", defaultSeverity: "medium", region: "asia" },
+
+  // ── Southeast Asia ──
+  { name: "The Straits Times Asia", url: "https://www.straitstimes.com/news/asia/rss.xml", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "Nikkei Asia", url: "https://asia.nikkei.com/rss/feed/nar", category: "finance", defaultSeverity: "low", region: "asia" },
+
+  // ── Cyber Security (additional) ──
+  { name: "The Record by Recorded Future", url: "https://therecord.media/feed/", category: "cyber", defaultSeverity: "high", region: "global" },
+  { name: "SecurityWeek", url: "https://www.securityweek.com/feed/", category: "cyber", defaultSeverity: "medium", region: "global" },
+  { name: "Cybersecurity Dive", url: "https://www.cybersecuritydive.com/feeds/news/", category: "cyber", defaultSeverity: "medium", region: "global" },
 ];
 
 export const FEED_COUNT = SEED_FEEDS.length;

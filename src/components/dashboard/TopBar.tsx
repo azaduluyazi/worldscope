@@ -5,9 +5,8 @@ import { useTranslations } from "next-intl";
 import { formatUTC } from "@/lib/utils/date";
 import { useEffect, useState } from "react";
 import { VARIANTS, type VariantId } from "@/config/variants";
-import { useLocaleSwitcher } from "@/hooks/useLocale";
-import { locales } from "@/i18n/config";
 import { SearchBar } from "./SearchBar";
+import { LanguageSelector } from "./LanguageSelector";
 import { NotificationBell } from "./NotificationBell";
 import { QuickNav } from "./QuickNav";
 import { FullscreenToggle } from "./FullscreenToggle";
@@ -29,7 +28,6 @@ export function TopBar({ variant = "world" }: TopBarProps) {
   const [time, setTime] = useState(formatUTC());
   const config = VARIANTS[variant];
   const t = useTranslations();
-  const { locale, switchLocale, isPending } = useLocaleSwitcher();
 
   useEffect(() => {
     const interval = setInterval(() => setTime(formatUTC()), 1000);
@@ -99,23 +97,8 @@ export function TopBar({ variant = "world" }: TopBarProps) {
           <FullscreenToggle />
           <QuickNav />
         </div>
-        {/* Locale switcher */}
-        <div className="flex border border-hud-border rounded overflow-hidden">
-          {locales.map((loc) => (
-            <button
-              key={loc}
-              onClick={() => switchLocale(loc)}
-              disabled={isPending}
-              className={`px-1.5 py-0.5 text-[7px] md:text-[8px] tracking-wider transition-colors ${
-                locale === loc
-                  ? "bg-hud-accent/20 text-hud-accent font-bold"
-                  : "text-hud-muted hover:text-hud-text"
-              }`}
-            >
-              {t(`locale.${loc}`)}
-            </button>
-          ))}
-        </div>
+        {/* Language selector — dropdown for 30 languages */}
+        <LanguageSelector />
         <span className="text-severity-low animate-blink">● {t("app.live")}</span>
         <span className="text-hud-muted hidden sm:inline">{time}</span>
         <button className="w-5 h-5 md:w-6 md:h-6 border border-hud-border rounded flex items-center justify-center hover:border-hud-accent/30 transition-colors text-xs md:text-base">

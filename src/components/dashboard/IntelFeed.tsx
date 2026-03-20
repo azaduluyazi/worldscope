@@ -5,7 +5,9 @@ import { useTranslations } from "next-intl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { IntelCard } from "./IntelCard";
 import { AIBrief } from "./AIBrief";
+import { NewsPreviewModal } from "./NewsPreviewModal";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
+import type { IntelItem } from "@/types/intel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getVariantCategories, type VariantId } from "@/config/variants";
 
@@ -36,6 +38,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
 
   const [activeTab, setActiveTab] = useState<TabId>("feed");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [previewItem, setPreviewItem] = useState<IntelItem | null>(null);
 
   // Reset visible count when items change significantly
   useEffect(() => {
@@ -144,7 +147,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
         ) : activeTab === "feed" ? (
           <div className="p-2 flex flex-col gap-1">
             {visibleItems.map((item) => (
-              <IntelCard key={item.id} item={item} />
+              <IntelCard key={item.id} item={item} onPreview={setPreviewItem} />
             ))}
             {/* Infinite scroll sentinel */}
             {visibleCount < items.length && (
@@ -328,6 +331,12 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
           ● {t("intel.streaming")}
         </span>
       </div>
+
+      {/* News Preview Modal */}
+      <NewsPreviewModal
+        item={previewItem}
+        onClose={() => setPreviewItem(null)}
+      />
     </div>
   );
 }

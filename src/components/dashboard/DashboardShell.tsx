@@ -12,6 +12,9 @@ import { LiveWebcams } from "./LiveWebcams";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
 import { KeyboardHelp } from "./KeyboardHelp";
 import { StatusFooter } from "./StatusFooter";
+import { NewsTicker } from "./NewsTicker";
+import { BreakingToast } from "./BreakingToast";
+import { MapViewToggle } from "./MapViewToggle";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
@@ -24,6 +27,12 @@ import { loadPreferences, savePreferences } from "@/lib/user-preferences";
 const PANEL_ORDER: MobilePanel[] = ["map", "feed", "live", "alerts"];
 
 /** Dynamic import TacticalMap — 3.2MB mapbox-gl only loads when needed */
+/** Dynamic import Globe3D — Three.js only loads when 3D mode is active */
+const Globe3D = dynamic(
+  () => import("./Globe3D").then((mod) => ({ default: mod.Globe3D })),
+  { ssr: false, loading: () => <MapSkeleton /> }
+);
+
 const TacticalMap = dynamic(
   () => import("./TacticalMap").then((mod) => ({ default: mod.TacticalMap })),
   { ssr: false, loading: () => <MapSkeleton /> }
@@ -56,6 +65,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
     return { ...DEFAULT_FILTERS, ...prefs.mapLayers, categories: new Set(prefs.categoryFilters), severities: new Set() };
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
+  const [is3D, setIs3D] = useState(false);
   const variantConfig = VARIANTS[variant];
 
   // Persist filter changes to localStorage
@@ -206,14 +216,23 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
           {/* ── Column 1: Map + Webcams ── */}
           <div className="flex-[3.5] flex flex-col gap-1 min-w-0 col-stagger-1">
-            {/* Tactical Map — lazy loaded */}
+            {/* Map — 2D (Mapbox) or 3D (Globe.gl) with toggle */}
             <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0">
-              <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-                <TacticalMap filters={filters} variant={variant} />
-              </ErrorBoundary>
-              <ErrorBoundary section="ticker">
-                <MemoMarketTicker />
-              </ErrorBoundary>
+              <MapViewToggle is3D={is3D} onToggle={() => setIs3D((v) => !v)} />
+              {is3D ? (
+                <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
+                  <Globe3D variant={variant} />
+                </ErrorBoundary>
+              ) : (
+                <ErrorBoundary section="map" fallback={<MapSkeleton />}>
+                  <TacticalMap filters={filters} variant={variant} />
+                </ErrorBoundary>
+              )}
+              {!is3D && (
+                <ErrorBoundary section="ticker">
+                  <MemoMarketTicker />
+                </ErrorBoundary>
+              )}
             </div>
 
             {/* Live Webcams */}
@@ -252,6 +271,11 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
         </div>
       </div>
 
+      {/* News Ticker — desktop only */}
+      <div className="hidden md:block">
+        <NewsTicker />
+      </div>
+
       {/* Status Footer — desktop only */}
       <div className="hidden md:block">
         <StatusFooter />
@@ -266,6 +290,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
       {/* Keyboard Shortcuts Help — press ? to toggle */}
       <KeyboardHelp />
+      {/* Breaking Alert Toast */}
+      <BreakingToast />
       {/* Offline indicator */}
       <ConnectionStatus />
     </div>

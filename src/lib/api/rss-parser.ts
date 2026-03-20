@@ -1,10 +1,42 @@
 import Parser from "rss-parser";
 import type { IntelItem, Category, Severity } from "@/types/intel";
 
-const parser = new Parser({
-  timeout: 10000,
-  headers: { "User-Agent": "WorldScope/1.0" },
-});
+/* ── Bot Protection Bypass: Rotate User-Agents to avoid detection ── */
+const USER_AGENTS = [
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15",
+  "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0",
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0",
+  "Mozilla/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+  "Mozilla/5.0 (iPad; CPU OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15",
+];
+
+let uaIndex = 0;
+function getNextUserAgent(): string {
+  const ua = USER_AGENTS[uaIndex % USER_AGENTS.length];
+  uaIndex++;
+  return ua;
+}
+
+function createParser(): Parser {
+  return new Parser({
+    timeout: 15000,
+    headers: {
+      "User-Agent": getNextUserAgent(),
+      "Accept": "application/rss+xml, application/xml, application/atom+xml, text/xml, */*;q=0.1",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Accept-Encoding": "gzip, deflate",
+      "Cache-Control": "no-cache",
+      "Connection": "keep-alive",
+    },
+  });
+}
+
+/** Max retry attempts for failed feed fetches */
+const MAX_RETRIES = 2;
+const RETRY_DELAYS = [1000, 3000]; // exponential-ish backoff
 
 const CATEGORY_KEYWORDS: Record<Category, string[]> = {
   conflict: ["war", "military", "missile", "strike", "attack", "troops", "nato", "defense", "combat", "weapon", "bomb", "artillery", "invasion"],
@@ -148,26 +180,42 @@ function isUrlSafe(url: string): boolean {
   }
 }
 
+/** Sleep helper for retry backoff */
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function fetchFeed(url: string, feedName: string): Promise<IntelItem[]> {
-  try {
-    if (!isUrlSafe(url)) return [];
-    const feed = await parser.parseURL(url);
-    return (feed.items || []).slice(0, 10).map((item, idx) => {
-      const title = item.title || "Untitled";
-      const raw = item.link || item.guid || `${feedName}-${idx}-${title}`;
-      return {
-        id: `rss-${Buffer.from(raw).toString("base64url").slice(0, 40)}-${idx}`,
-        title,
-        summary: item.contentSnippet?.slice(0, 300) || "",
-        url: item.link || "",
-        source: feedName,
-        category: categorizeFeedItem(title + " " + (item.contentSnippet || "")),
-        severity: mapSeverity(title + " " + (item.contentSnippet || "")),
-        publishedAt: item.isoDate || new Date().toISOString(),
-        imageUrl: item.enclosure?.url,
-      };
-    });
-  } catch {
-    return [];
+  if (!isUrlSafe(url)) return [];
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      // Create fresh parser with rotated User-Agent for each attempt
+      const p = createParser();
+      const feed = await p.parseURL(url);
+      return (feed.items || []).slice(0, 10).map((item, idx) => {
+        const title = item.title || "Untitled";
+        const raw = item.link || item.guid || `${feedName}-${idx}-${title}`;
+        return {
+          id: `rss-${Buffer.from(raw).toString("base64url").slice(0, 40)}-${idx}`,
+          title,
+          summary: item.contentSnippet?.slice(0, 300) || "",
+          url: item.link || "",
+          source: feedName,
+          category: categorizeFeedItem(title + " " + (item.contentSnippet || "")),
+          severity: mapSeverity(title + " " + (item.contentSnippet || "")),
+          publishedAt: item.isoDate || new Date().toISOString(),
+          imageUrl: item.enclosure?.url,
+        };
+      });
+    } catch {
+      // If we have retries left, wait and try with a different UA
+      if (attempt < MAX_RETRIES) {
+        await sleep(RETRY_DELAYS[attempt]);
+        continue;
+      }
+      return [];
+    }
   }
+  return [];
 }

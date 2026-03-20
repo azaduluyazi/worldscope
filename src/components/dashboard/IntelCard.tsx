@@ -7,20 +7,26 @@ import { truncate } from "@/lib/utils/sanitize";
 
 interface IntelCardProps {
   item: IntelItem;
+  onPreview?: (item: IntelItem) => void;
 }
 
-export function IntelCard({ item }: IntelCardProps) {
+export function IntelCard({ item, onPreview }: IntelCardProps) {
   const severityColor = SEVERITY_COLORS[item.severity];
   const icon = CATEGORY_ICONS[item.category] || "📄";
-
   const hasGeo = item.lat != null && item.lng != null;
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (onPreview) {
+      e.preventDefault();
+      onPreview(item);
+    }
+  };
+
   return (
-    <a
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className={`severity-${item.severity} group block rounded-r-md p-2.5 transition-all duration-200 hover:brightness-125 hover:translate-x-0.5 animate-slide-in`}
+    <button
+      type="button"
+      onClick={handleClick}
+      className={`severity-${item.severity} group block w-full text-left rounded-r-md p-2.5 transition-all duration-200 hover:brightness-125 hover:translate-x-0.5 animate-slide-in cursor-pointer`}
     >
       <div className="flex justify-between items-center mb-1">
         <span
@@ -45,9 +51,9 @@ export function IntelCard({ item }: IntelCardProps) {
           {item.source}
         </span>
         <span className="font-mono text-[7px] text-hud-accent opacity-0 group-hover:opacity-100 transition-opacity">
-          OPEN →
+          PREVIEW →
         </span>
       </div>
-    </a>
+    </button>
   );
 }

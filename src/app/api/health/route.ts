@@ -36,18 +36,32 @@ export async function GET() {
     checks.supabase = { status: "not_configured" };
   }
 
-  // Redis/Upstash check
+  // Redis/Upstash check — use PING command via REST API
   const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-  if (redisUrl) {
+  const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (redisUrl && redisToken) {
     const start = Date.now();
     try {
-      const res = await fetch(redisUrl, {
-        headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN || ""}` },
+      // Upstash REST API: POST with ["PING"] command for proper health check
+      const res = await fetch(`${redisUrl}/ping`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${redisToken}`,
+        },
         signal: AbortSignal.timeout(5000),
       });
-      checks.redis = { status: res.ok ? "connected" : "error", latency: Date.now() - start };
-    } catch {
-      checks.redis = { status: "unreachable", latency: Date.now() - start };
+      const latency = Date.now() - start;
+      if (res.ok) {
+        checks.redis = { status: "connected", latency };
+      } else {
+        const errText = await res.text().catch(() => "unknown");
+        checks.redis = { status: `error (${res.status}: ${errText.slice(0, 50)})`, latency };
+      }
+    } catch (err) {
+      checks.redis = {
+        status: err instanceof DOMException ? "timeout" : "unreachable",
+        latency: Date.now() - start,
+      };
     }
   } else {
     checks.redis = { status: "not_configured" };
