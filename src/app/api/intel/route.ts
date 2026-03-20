@@ -89,15 +89,14 @@ export async function GET(request: Request) {
           return true;
         });
 
-        // Sort by severity then recency
+        // Sort: critical always first, then severity, then recency
         unique.sort((a, b) => {
-          const sevDiff =
-            SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity];
+          // Critical events always on top
+          if (a.severity === "critical" && b.severity !== "critical") return -1;
+          if (b.severity === "critical" && a.severity !== "critical") return 1;
+          const sevDiff = SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity];
           if (sevDiff !== 0) return sevDiff;
-          return (
-            new Date(b.publishedAt).getTime() -
-            new Date(a.publishedAt).getTime()
-          );
+          return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
         });
 
         return unique.slice(0, 500);

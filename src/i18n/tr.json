@@ -254,5 +254,12 @@
     "govSpending": "KAMU HARCAMALARI",
     "nationalDebt": "Ulusal Borç",
     "fiscalData": "Mali Veriler"
+  },
+  "mapModes": {
+    "tactical": "2D TAKTİK",
+    "intel": "3D İSTİHBARAT",
+    "flights": "3D UÇUŞ TAKİP",
+    "ships": "3D GEMİ TAKİP",
+    "cables": "3D DENİZALTI KABLO"
   }
 }

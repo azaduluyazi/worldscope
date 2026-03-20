@@ -254,5 +254,12 @@
     "govSpending": "การใช้จ่ายภาครัฐ",
     "nationalDebt": "หนี้สาธารณะ",
     "fiscalData": "ข้อมูลการคลัง"
+  },
+  "mapModes": {
+    "tactical": "2D TACTICAL",
+    "intel": "3D INTEL GLOBE",
+    "flights": "3D FLIGHT TRACKER",
+    "ships": "3D SHIP TRACKER",
+    "cables": "3D SUBMARINE CABLES"
   }
 }

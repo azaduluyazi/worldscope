@@ -14,7 +14,7 @@ import { KeyboardHelp } from "./KeyboardHelp";
 import { StatusFooter } from "./StatusFooter";
 import { NewsTicker } from "./NewsTicker";
 import { BreakingToast } from "./BreakingToast";
-import { MapViewToggle } from "./MapViewToggle";
+import { MapViewToggle, type MapMode } from "./MapViewToggle";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
@@ -65,7 +65,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
     return { ...DEFAULT_FILTERS, ...prefs.mapLayers, categories: new Set(prefs.categoryFilters), severities: new Set() };
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
-  const [is3D, setIs3D] = useState(false);
+  const [mapMode, setMapMode] = useState<MapMode>("2d");
   const variantConfig = VARIANTS[variant];
 
   // Persist filter changes to localStorage
@@ -216,24 +216,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
           {/* ── Column 1: Map + Webcams ── */}
           <div className="flex-[3.5] flex flex-col gap-1 min-w-0 col-stagger-1">
-            {/* Map — 2D (Mapbox) or 3D (Globe.gl) with toggle */}
-            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0">
-              <MapViewToggle is3D={is3D} onToggle={() => setIs3D((v) => !v)} />
-              {is3D ? (
-                <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
-                  <Globe3D variant={variant} />
-                </ErrorBoundary>
-              ) : (
-                <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-                  <TacticalMap filters={filters} variant={variant} />
-                </ErrorBoundary>
-              )}
-              {!is3D && (
-                <ErrorBoundary section="ticker">
-                  <MemoMarketTicker />
-                </ErrorBoundary>
-              )}
-            </div>
+            {/* Map — 2D tactical or 3D globe modes */}            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0">              <MapViewToggle mode={mapMode} onModeChange={setMapMode} />              {mapMode === "2d" ? (                <ErrorBoundary section="map" fallback={<MapSkeleton />}>                  <TacticalMap filters={filters} variant={variant} />                </ErrorBoundary>              ) : (                <ErrorBoundary section="globe" fallback={<MapSkeleton />}>                  <Globe3D variant={variant} globeMode={mapMode} />                </ErrorBoundary>              )}              {mapMode === "2d" && (                <ErrorBoundary section="ticker">                  <MemoMarketTicker />                </ErrorBoundary>              )}            </div>
 
             {/* Live Webcams */}
             <div className="flex-[4.5] min-h-0">

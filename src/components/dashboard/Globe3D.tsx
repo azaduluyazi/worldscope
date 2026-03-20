@@ -33,19 +33,29 @@ const SEVERITY_SIZE: Record<string, number> = {
   critical: 1.2, high: 0.8, medium: 0.5, low: 0.3, info: 0.15,
 };
 
+import type { MapMode } from "./MapViewToggle";
+
 interface Globe3DProps {
   variant?: VariantId;
   onEventClick?: (item: IntelItem) => void;
+  globeMode?: MapMode;
 }
 
-export function Globe3D({ variant = "world", onEventClick }: Globe3DProps) {
+export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-intel" }: Globe3DProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
   const { items } = useIntelFeed();
   const { aircraft } = useFlightTracker();
   const { vessels } = useVesselTracker();
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
-  const [layers, setLayers] = useState<GlobeLayers>(DEFAULT_LAYERS);
+  const [layers, setLayers] = useState<GlobeLayers>(() => {
+    switch (globeMode) {
+      case "globe-flights": return { ...DEFAULT_LAYERS, intelEvents: false, conflictZones: false, flights: true };
+      case "globe-ships": return { ...DEFAULT_LAYERS, intelEvents: false, conflictZones: false, ships: true };
+      case "globe-cables": return { ...DEFAULT_LAYERS, intelEvents: false, conflictZones: false, subCables: true };
+      default: return DEFAULT_LAYERS;
+    }
+  });
   const containerRef = useRef<HTMLDivElement>(null);
   const variantConfig = VARIANTS[variant];
 

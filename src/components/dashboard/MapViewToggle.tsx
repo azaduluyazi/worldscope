@@ -1,27 +1,83 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
+import { useTranslations } from "next-intl";
+
+export type MapMode = "2d" | "globe-intel" | "globe-flights" | "globe-ships" | "globe-cables";
+
+const MAP_MODES: Array<{ id: MapMode; icon: string; labelKey: string }> = [
+  { id: "2d", icon: "🗺️", labelKey: "mapModes.tactical" },
+  { id: "globe-intel", icon: "🌍", labelKey: "mapModes.intel" },
+  { id: "globe-flights", icon: "✈️", labelKey: "mapModes.flights" },
+  { id: "globe-ships", icon: "🚢", labelKey: "mapModes.ships" },
+  { id: "globe-cables", icon: "🔌", labelKey: "mapModes.cables" },
+];
+
 interface MapViewToggleProps {
-  is3D: boolean;
-  onToggle: () => void;
+  mode: MapMode;
+  onModeChange: (mode: MapMode) => void;
 }
 
 /**
- * Toggle between 2D (Mapbox) and 3D (Globe.gl) map views.
- * Positioned in the top-right corner of the map container.
+ * Map mode selector — 2D tactical + 4 specialized 3D globe views.
  */
-export function MapViewToggle({ is3D, onToggle }: MapViewToggleProps) {
+export function MapViewToggle({ mode, onModeChange }: MapViewToggleProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const t = useTranslations();
+
+  // Close on click outside
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setIsOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [isOpen]);
+
+  const current = MAP_MODES.find((m) => m.id === mode) || MAP_MODES[0];
+
   return (
-    <div className="absolute top-3 right-3 z-20">
+    <div ref={ref} className="absolute top-3 right-3 z-20">
+      {/* Current mode button */}
       <button
-        onClick={onToggle}
-        className="flex items-center gap-1 bg-hud-panel/90 backdrop-blur-sm border border-hud-border rounded px-2 py-1 hover:border-hud-accent/50 transition-all group"
-        title={is3D ? "Switch to 2D Map" : "Switch to 3D Globe"}
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1.5 bg-hud-panel/90 backdrop-blur-sm border border-hud-border rounded px-2 py-1 hover:border-hud-accent/50 transition-all group"
       >
-        <span className="font-mono text-[8px] text-hud-muted group-hover:text-hud-accent transition-colors">
-          {is3D ? "2D" : "3D"}
+        <span className="text-[10px]">{current.icon}</span>
+        <span className="font-mono text-[7px] text-hud-muted group-hover:text-hud-accent tracking-wider">
+          {t(current.labelKey)}
         </span>
-        <span className="text-[10px]">{is3D ? "🗺️" : "🌍"}</span>
+        <span className={`text-[6px] text-hud-muted transition-transform ${isOpen ? "rotate-180" : ""}`}>▼</span>
       </button>
+
+      {/* Dropdown */}
+      {isOpen && (
+        <div className="absolute top-full right-0 mt-1 bg-hud-panel/95 backdrop-blur-sm border border-hud-border rounded-lg shadow-lg shadow-black/50 overflow-hidden min-w-[160px]">
+          {MAP_MODES.map((m) => {
+            const isActive = m.id === mode;
+            return (
+              <button
+                key={m.id}
+                onClick={() => {
+                  onModeChange(m.id);
+                  setIsOpen(false);
+                }}
+                className={`w-full flex items-center gap-2 px-3 py-2 transition-all ${
+                  isActive
+                    ? "bg-hud-accent/15 text-hud-accent"
+                    : "text-hud-muted hover:bg-hud-surface hover:text-hud-text"
+                }`}
+              >
+                <span className="text-[11px]">{m.icon}</span>
+                <span className="font-mono text-[8px] tracking-wider">{t(m.labelKey)}</span>
+                {isActive && <span className="ml-auto text-[8px]">●</span>}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

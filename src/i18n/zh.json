@@ -252,5 +252,12 @@
     "govSpending": "政府支出",
     "nationalDebt": "国债",
     "fiscalData": "财政数据"
+  },
+  "mapModes": {
+    "tactical": "2D TACTICAL",
+    "intel": "3D INTEL GLOBE",
+    "flights": "3D FLIGHT TRACKER",
+    "ships": "3D SHIP TRACKER",
+    "cables": "3D SUBMARINE CABLES"
   }
 }
