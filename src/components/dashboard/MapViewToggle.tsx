@@ -39,7 +39,7 @@ export function MapViewToggle({ mode, onModeChange }: MapViewToggleProps) {
   const current = MAP_MODES.find((m) => m.id === mode) || MAP_MODES[0];
 
   return (
-    <div ref={ref} className="absolute top-3 right-3 z-20">
+    <div ref={ref} className="absolute top-12 left-3 z-[100]">
       {/* Current mode button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
@@ -54,7 +54,7 @@ export function MapViewToggle({ mode, onModeChange }: MapViewToggleProps) {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 bg-hud-panel/95 backdrop-blur-sm border border-hud-border rounded-lg shadow-lg shadow-black/50 overflow-hidden min-w-[160px]">
+        <div className="absolute top-full right-0 mt-1 z-[200] bg-hud-panel/95 backdrop-blur-sm border border-hud-border rounded-lg shadow-lg shadow-black/50 overflow-hidden min-w-[160px]">
           {MAP_MODES.map((m) => {
             const isActive = m.id === mode;
             return (
