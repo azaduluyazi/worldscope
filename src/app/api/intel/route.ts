@@ -8,10 +8,38 @@ import { fetchAllCyberThreats } from "@/lib/api/cyber-threats";
 import { fetchFireHotspots } from "@/lib/api/nasa-firms";
 import { fetchDiseaseOutbreaks } from "@/lib/api/disease-sh";
 import { fetchGDACSAlerts } from "@/lib/api/gdacs";
+import { fetchFeed } from "@/lib/api/rss-parser";
 import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
 import { enrichGeoData } from "@/lib/utils/geo-enrichment";
+
+// ── Priority RSS feeds — fetched inline when DB has few items ──
+// These are reliable, fast feeds that provide broad coverage
+const PRIORITY_FEEDS = [
+  { url: "https://feeds.bbci.co.uk/news/world/rss.xml", name: "BBC World" },
+  { url: "https://rss.cnn.com/rss/edition_world.rss", name: "CNN World" },
+  { url: "https://www.aljazeera.com/xml/rss/all.xml", name: "Al Jazeera" },
+  { url: "https://feeds.npr.org/1004/rss.xml", name: "NPR World" },
+  { url: "https://www.theguardian.com/world/rss", name: "The Guardian World" },
+  { url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", name: "NY Times World" },
+  { url: "https://feeds.skynews.com/feeds/rss/world.xml", name: "Sky News World" },
+  { url: "https://rss.dw.com/xml/rss-en-all", name: "DW News" },
+  { url: "https://www.france24.com/en/rss", name: "France 24" },
+  { url: "https://www.aa.com.tr/en/rss/default?cat=world", name: "Anadolu Agency" },
+  // Tech
+  { url: "https://www.theverge.com/rss/index.xml", name: "The Verge" },
+  { url: "https://techcrunch.com/feed/", name: "TechCrunch" },
+  { url: "https://feeds.arstechnica.com/arstechnica/index", name: "Ars Technica" },
+  // Finance
+  { url: "https://feeds.content.dowjones.io/public/rss/RSSWorldNews", name: "WSJ World" },
+  { url: "https://www.cnbc.com/id/100003114/device/rss/rss.html", name: "CNBC World" },
+  // Cyber
+  { url: "https://www.bleepingcomputer.com/feed/", name: "BleepingComputer" },
+  { url: "https://thehackernews.com/feeds/posts/default?alt=rss", name: "The Hacker News" },
+  // Health
+  { url: "https://tools.cdc.gov/api/v2/resources/media/rss?topic=outbreaks", name: "CDC Outbreaks" },
+];
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -75,7 +103,22 @@ export async function GET(request: Request) {
           }
         }
 
-        // 3. Merge: DB events + live API results
+        // 3. If DB has few items, fetch priority RSS feeds directly
+        //    This ensures the feed always has content even before cron runs
+        if (dbEvents.length < 50) {
+          const rssBatches = await Promise.allSettled(
+            PRIORITY_FEEDS.map((f) => fetchFeed(f.url, f.name))
+          );
+          for (const result of rssBatches) {
+            if (result.status === "fulfilled" && Array.isArray(result.value)) {
+              liveItems.push(...result.value);
+            }
+          }
+          // Persist RSS items so next request can use DB (fire-and-forget)
+          persistEvents(liveItems).catch(() => {});
+        }
+
+        // 4. Merge: DB events + live API results
         const allItems = [...dbEvents, ...liveItems];
 
         // Geo-enrich items that lack coordinates
