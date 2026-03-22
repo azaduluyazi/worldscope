@@ -17,6 +17,7 @@ import { BreakingToast } from "./BreakingToast";
 import { MapViewToggle, type MapMode } from "./MapViewToggle";
 import { PredictionPanel } from "./PredictionPanel";
 import { EconomicsPanel } from "./EconomicsPanel";
+import { PremiumPopup } from "./PremiumPopup";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
@@ -334,6 +335,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       <BreakingToast />
       {/* Offline indicator */}
       <ConnectionStatus />
+      {/* Premium subscription popup */}
+      <PremiumPopup />
     </div>
   );
 }
