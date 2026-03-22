@@ -15,6 +15,8 @@ import { StatusFooter } from "./StatusFooter";
 import { NewsTicker } from "./NewsTicker";
 import { BreakingToast } from "./BreakingToast";
 import { MapViewToggle, type MapMode } from "./MapViewToggle";
+import { PredictionPanel } from "./PredictionPanel";
+import { EconomicsPanel } from "./EconomicsPanel";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
@@ -66,6 +68,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [mapMode, setMapMode] = useState<MapMode>("2d");
+  const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics">("intel");
   const variantConfig = VARIANTS[variant];
 
   // Persist filter changes to localStorage
@@ -260,13 +263,50 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </div>
           </div>
 
-          {/* ── Column 3: Intel Feed ── */}
-          <div className="flex-[3] min-w-0 hidden lg:block col-stagger-3">
-            <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
-              <Suspense fallback={<IntelFeedSkeleton />}>
-                <IntelFeed variant={variant} />
-              </Suspense>
-            </ErrorBoundary>
+          {/* ── Column 3: Tabbed Panel (Intel / Predictions / Economics) ── */}
+          <div className="flex-[3] min-w-0 max-lg:hidden flex flex-col col-stagger-3">
+            {/* Tab bar */}
+            <div className="flex border-b border-hud-border/50 mb-1 shrink-0">
+              {([
+                { id: "intel" as const, label: "INTEL", icon: "📡" },
+                { id: "predictions" as const, label: "PREDICT", icon: "📊" },
+                { id: "economics" as const, label: "ECON", icon: "💹" },
+              ]).map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setRightTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 font-mono text-[7px] tracking-wider transition-all ${
+                    rightTab === tab.id
+                      ? "text-hud-accent border-b-2 border-hud-accent"
+                      : "text-hud-muted hover:text-hud-text"
+                  }`}
+                >
+                  <span className="text-[9px]">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Tab content */}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              {rightTab === "intel" && (
+                <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
+                  <Suspense fallback={<IntelFeedSkeleton />}>
+                    <IntelFeed variant={variant} />
+                  </Suspense>
+                </ErrorBoundary>
+              )}
+              {rightTab === "predictions" && (
+                <ErrorBoundary section="predictions">
+                  <PredictionPanel />
+                </ErrorBoundary>
+              )}
+              {rightTab === "economics" && (
+                <ErrorBoundary section="economics">
+                  <EconomicsPanel />
+                </ErrorBoundary>
+              )}
+            </div>
           </div>
         </div>
       </div>
