@@ -4,9 +4,33 @@ import { useEffect, useRef, useCallback, useState } from "react";
 import { useIntelFeed } from "./useIntelFeed";
 import type { IntelItem } from "@/types/intel";
 
-// Short alert beep as base64 (tiny sine wave)
-const ALERT_BEEP_B64 =
-  "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+/**
+ * Play a tactical alert sound using Web Audio API.
+ * 3-tone descending beep pattern (military alert style).
+ */
+function playAlertSound() {
+  try {
+    const ctx = new AudioContext();
+    const frequencies = [880, 660, 440]; // A5 → E5 → A4
+    const duration = 0.15;
+    const gap = 0.08;
+
+    frequencies.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "square";
+      osc.frequency.value = freq;
+      gain.gain.value = 0.15;
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (i * (duration + gap)) + duration);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(ctx.currentTime + i * (duration + gap));
+      osc.stop(ctx.currentTime + (i * (duration + gap)) + duration);
+    });
+
+    // Cleanup after sounds finish
+    setTimeout(() => ctx.close(), 1000);
+  } catch {}
+}
 
 interface BreakingAlertState {
   alerts: IntelItem[];
@@ -69,12 +93,8 @@ export function useBreakingAlert() {
       showToast: true,
     }));
 
-    // Play alert sound
-    try {
-      const audio = new Audio(ALERT_BEEP_B64);
-      audio.volume = 0.3;
-      audio.play().catch(() => {});
-    } catch {}
+    // Play tactical alert sound
+    playAlertSound();
 
     // Browser notification
     if (state.notificationsEnabled && typeof Notification !== "undefined") {

@@ -10,7 +10,7 @@ import type { Category } from "@/types/intel";
  * - Finance: Markets, crypto, commodities, central banks
  */
 
-export type VariantId = "world" | "tech" | "finance" | "commodity" | "happy";
+export type VariantId = "world" | "tech" | "finance" | "commodity" | "happy" | "conflict" | "cyber" | "weather" | "health" | "energy";
 
 export interface Variant {
   id: VariantId;
@@ -95,6 +95,71 @@ export const VARIANTS: Record<VariantId, Variant> = {
     accent: "#00ff88",
     icon: "🌟",
     keywords: ["positive", "innovation", "peace", "breakthrough", "progress"],
+  },
+
+  conflict: {
+    id: "conflict",
+    name: "ConflictScope",
+    tagline: "Conflict & Security Monitor",
+    description: "Active conflicts, military operations, OREF alerts, and security incidents worldwide.",
+    primaryCategories: ["conflict", "protest"],
+    secondaryCategories: ["diplomacy", "energy", "aviation"],
+    defaultLayers: ["conflicts"],
+    accent: "#ff4757",
+    icon: "⚔️",
+    keywords: ["conflict", "war", "military", "security", "OREF", "ACLED", "UCDP"],
+  },
+
+  cyber: {
+    id: "cyber",
+    name: "CyberScope",
+    tagline: "Cybersecurity Intelligence",
+    description: "Cyber threats, CVE vulnerabilities, internet outages, and digital security monitoring.",
+    primaryCategories: ["cyber", "tech"],
+    secondaryCategories: ["conflict", "finance"],
+    defaultLayers: ["cyber"],
+    accent: "#00ff88",
+    icon: "🛡️",
+    keywords: ["cybersecurity", "hacking", "CVE", "ransomware", "internet outages"],
+  },
+
+  weather: {
+    id: "weather",
+    name: "WeatherScope",
+    tagline: "Weather & Natural Events",
+    description: "Extreme weather, earthquakes, wildfires, volcanic eruptions, and climate events.",
+    primaryCategories: ["natural", "health"],
+    secondaryCategories: ["energy", "aviation"],
+    defaultLayers: ["natural"],
+    accent: "#4ecdc4",
+    icon: "🌡️",
+    keywords: ["weather", "earthquake", "wildfire", "hurricane", "tsunami", "climate"],
+  },
+
+  health: {
+    id: "health",
+    name: "HealthScope",
+    tagline: "Global Health Intelligence",
+    description: "Disease outbreaks, WHO alerts, radiation monitoring, and pandemic tracking.",
+    primaryCategories: ["health"],
+    secondaryCategories: ["natural", "diplomacy", "tech"],
+    defaultLayers: ["natural"],
+    accent: "#e74c3c",
+    icon: "🏥",
+    keywords: ["health", "pandemic", "outbreak", "WHO", "disease", "radiation"],
+  },
+
+  energy: {
+    id: "energy",
+    name: "EnergyScope",
+    tagline: "Energy & Infrastructure Monitor",
+    description: "Oil, gas, nuclear, renewable energy, power grids, and infrastructure monitoring.",
+    primaryCategories: ["energy"],
+    secondaryCategories: ["finance", "conflict", "natural"],
+    defaultLayers: ["markets"],
+    accent: "#f39c12",
+    icon: "⚡",
+    keywords: ["energy", "oil", "gas", "nuclear", "renewable", "power grid"],
   },
 };
 

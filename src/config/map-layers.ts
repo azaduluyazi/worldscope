@@ -51,6 +51,11 @@ export const VARIANT_MAP_VIEWS: Record<VariantId, typeof MAP_INITIAL_VIEW> = {
     pitch: 25,
     bearing: 0,
   },
+  conflict: { longitude: 40, latitude: 30, zoom: 1.6, pitch: 35, bearing: 5 },
+  cyber: { longitude: -30, latitude: 35, zoom: 1.4, pitch: 30, bearing: -10 },
+  weather: { longitude: 0, latitude: 15, zoom: 1.2, pitch: 20, bearing: 0 },
+  health: { longitude: 20, latitude: 20, zoom: 1.3, pitch: 25, bearing: 5 },
+  energy: { longitude: 45, latitude: 30, zoom: 1.5, pitch: 30, bearing: 10 },
 };
 
 /** Variant-specific fly-to after map loads (more dramatic entry) */
@@ -60,4 +65,9 @@ export const VARIANT_FLY_TO: Record<VariantId, { center: [number, number]; zoom:
   finance: { center: [-10, 35], zoom: 1.7, pitch: 35, bearing: 15 },
   commodity: { center: [50, 28], zoom: 1.7, pitch: 35, bearing: 8 },
   happy: { center: [10, 25], zoom: 1.5, pitch: 30, bearing: 0 },
+  conflict: { center: [42, 33], zoom: 1.8, pitch: 40, bearing: 8 },
+  cyber: { center: [-20, 38], zoom: 1.6, pitch: 35, bearing: -5 },
+  weather: { center: [0, 20], zoom: 1.4, pitch: 25, bearing: 0 },
+  health: { center: [25, 25], zoom: 1.5, pitch: 30, bearing: 5 },
+  energy: { center: [50, 32], zoom: 1.7, pitch: 35, bearing: 12 },
 };

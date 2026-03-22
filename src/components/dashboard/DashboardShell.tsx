@@ -176,14 +176,45 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </ErrorBoundary>
           </div>
 
-          {/* Intel Feed panel */}
+          {/* Intel / Predictions / Economics panel (mobile) */}
           {mobilePanel === "feed" && (
-            <div className="absolute inset-0 z-20 bg-hud-base overflow-auto pb-16 mobile-panel-enter">
-              <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
-                <Suspense fallback={<IntelFeedSkeleton />}>
-                  <IntelFeed variant={variant} />
-                </Suspense>
-              </ErrorBoundary>
+            <div className="absolute inset-0 z-20 bg-hud-base overflow-hidden pb-16 flex flex-col mobile-panel-enter">
+              {/* Mobile tab bar */}
+              <div className="flex border-b border-hud-border/50 shrink-0">
+                {([
+                  { id: "intel" as const, label: "INTEL", icon: "📡" },
+                  { id: "predictions" as const, label: "PREDICT", icon: "📊" },
+                  { id: "economics" as const, label: "ECON", icon: "💹" },
+                ]).map((tab) => (
+                  <button
+                    key={tab.id}
+                    onClick={() => setRightTab(tab.id)}
+                    className={`flex-1 flex items-center justify-center gap-1 py-2 font-mono text-[8px] tracking-wider transition-all ${
+                      rightTab === tab.id
+                        ? "text-hud-accent border-b-2 border-hud-accent"
+                        : "text-hud-muted hover:text-hud-text"
+                    }`}
+                  >
+                    <span className="text-[10px]">{tab.icon}</span>
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+              <div className="flex-1 overflow-auto">
+                {rightTab === "intel" && (
+                  <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
+                    <Suspense fallback={<IntelFeedSkeleton />}>
+                      <IntelFeed variant={variant} />
+                    </Suspense>
+                  </ErrorBoundary>
+                )}
+                {rightTab === "predictions" && (
+                  <ErrorBoundary section="predictions"><PredictionPanel /></ErrorBoundary>
+                )}
+                {rightTab === "economics" && (
+                  <ErrorBoundary section="economics"><EconomicsPanel /></ErrorBoundary>
+                )}
+              </div>
             </div>
           )}
 

@@ -15,10 +15,13 @@ import { ThemeSelector } from "./ThemeSelector";
 
 const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "world", href: "/" },
+  { id: "conflict", href: "/conflict" },
   { id: "tech", href: "/tech" },
   { id: "finance", href: "/finance" },
-  { id: "commodity", href: "/commodity" },
-  { id: "happy", href: "/happy" },
+  { id: "cyber", href: "/cyber" },
+  { id: "weather", href: "/weather" },
+  { id: "health", href: "/health" },
+  { id: "energy", href: "/energy" },
 ];
 
 interface TopBarProps {
