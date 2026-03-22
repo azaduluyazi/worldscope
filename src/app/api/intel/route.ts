@@ -15,6 +15,7 @@ import { fetchSafecastReadings, radiationToIntelItems } from "@/lib/api/radiatio
 import { fetchOrefAlerts } from "@/lib/api/tzevaadom";
 import { fetchUcdpEvents } from "@/lib/api/ucdp";
 import { fetchInternetOutagesAsIntel } from "@/lib/api/cloudflare-radar";
+import { gatewayFetch } from "@/lib/api/gateway";
 import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
@@ -55,31 +56,31 @@ export async function GET(request: Request) {
 
         const startTime = Date.now();
 
-        // 1. DB + Tier 1 critical sources in parallel
+        // 1. DB + Tier 1 critical sources (circuit breaker protected)
         const [dbEvents, ...tier1Results] = await Promise.all([
           fetchPersistedEvents({ category: category || undefined, limit: 1000, hoursBack: 48 }),
-          fetchGdeltArticles(undefined, 50, lang),
-          fetchEarthquakes("4.5_week"),
-          fetchOrefAlerts(20),
-          fetchGDACSAlerts(),
+          gatewayFetch("gdelt-articles", () => fetchGdeltArticles(undefined, 50, lang), { fallback: [] }),
+          gatewayFetch("usgs-4.5w", () => fetchEarthquakes("4.5_week"), { fallback: [] }),
+          gatewayFetch("oref", () => fetchOrefAlerts(20), { fallback: [] }),
+          gatewayFetch("gdacs", () => fetchGDACSAlerts(), { fallback: [] }),
         ]);
 
-        // 2. Tier 2 secondary sources — best-effort, don't block on slow ones
+        // 2. Tier 2 secondary sources (circuit breaker + best-effort)
         const tier2Sources = await Promise.allSettled([
-          fetchGdeltGeo(undefined, 100, lang),
-          fetchEarthquakes("2.5_day"),
-          fetchEarthquakes("significant_month"),
-          fetchReliefWebDisasters(),
-          fetchSpaceflightNews(),
-          fetchDiseaseOutbreaks(),
-          fetchAllCyberThreats(),
-          fetchFireHotspots(50),
-          fetchNasaEonet(14, 30),
-          fetchHackerNews(20),
-          fetchWhoOutbreaks(15),
-          fetchSafecastReadings().then(radiationToIntelItems),
-          fetchUcdpEvents(30),
-          fetchInternetOutagesAsIntel(),
+          gatewayFetch("gdelt-geo", () => fetchGdeltGeo(undefined, 100, lang), { fallback: [] }),
+          gatewayFetch("usgs-2.5d", () => fetchEarthquakes("2.5_day"), { fallback: [] }),
+          gatewayFetch("usgs-sig-month", () => fetchEarthquakes("significant_month"), { fallback: [] }),
+          gatewayFetch("reliefweb", () => fetchReliefWebDisasters(), { fallback: [] }),
+          gatewayFetch("spaceflight", () => fetchSpaceflightNews(), { fallback: [] }),
+          gatewayFetch("disease-sh", () => fetchDiseaseOutbreaks(), { fallback: [] }),
+          gatewayFetch("cyber", () => fetchAllCyberThreats(), { fallback: [] }),
+          gatewayFetch("nasa-firms", () => fetchFireHotspots(50), { fallback: [] }),
+          gatewayFetch("nasa-eonet", () => fetchNasaEonet(14, 30), { fallback: [] }),
+          gatewayFetch("hackernews", () => fetchHackerNews(20), { fallback: [] }),
+          gatewayFetch("who", () => fetchWhoOutbreaks(15), { fallback: [] }),
+          gatewayFetch("safecast", () => fetchSafecastReadings().then(radiationToIntelItems), { fallback: [] }),
+          gatewayFetch("ucdp", () => fetchUcdpEvents(30), { fallback: [] }),
+          gatewayFetch("cloudflare-radar", () => fetchInternetOutagesAsIntel(), { fallback: [] }),
         ]);
 
         // Merge tier 1 (already resolved) + tier 2 results
