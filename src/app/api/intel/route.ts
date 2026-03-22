@@ -14,7 +14,7 @@ import { SEVERITY_ORDER } from "@/types/intel";
 import { enrichGeoData } from "@/lib/utils/geo-enrichment";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 // Whitelist of valid categories — prevents cache key injection
 const VALID_CATEGORIES = new Set<Category>([
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     const category = rawCategory && VALID_CATEGORIES.has(rawCategory as Category)
       ? (rawCategory as Category)
       : null;
-    const limit = Math.min(Number(searchParams.get("limit") || 200), 500);
+    const limit = Math.min(Number(searchParams.get("limit") || 500), 2000);
     const lang = searchParams.get("lang") || "en";
 
     const cacheKey = category
@@ -49,22 +49,23 @@ export async function GET(request: Request) {
         // 1. Read persisted events from Supabase (< 1 second)
         const dbEvents = await fetchPersistedEvents({
           category: category || undefined,
-          limit: 300,
+          limit: 1000,
           hoursBack: 48,
         });
 
         // 2. Fetch ONLY fast, lightweight APIs (no RSS, < 10s total)
         const fastSources = await Promise.allSettled([
-          fetchGdeltArticles(undefined, 20, lang),
-          fetchGdeltGeo(undefined, 50, lang),
+          fetchGdeltArticles(undefined, 50, lang),
+          fetchGdeltGeo(undefined, 100, lang),
           fetchEarthquakes("4.5_week"),
           fetchEarthquakes("2.5_day"),
+          fetchEarthquakes("significant_month"),
           fetchReliefWebDisasters(),
           fetchGDACSAlerts(),
           fetchSpaceflightNews(),
           fetchDiseaseOutbreaks(),
           fetchAllCyberThreats(),
-          fetchFireHotspots(20),
+          fetchFireHotspots(50),
         ]);
 
         const liveItems: IntelItem[] = [];
@@ -80,12 +81,28 @@ export async function GET(request: Request) {
         // Geo-enrich items that lack coordinates
         const enriched = enrichGeoData(allItems);
 
-        // Deduplicate by title similarity
-        const seen = new Set<string>();
+        // Deduplicate: same URL = always duplicate; similar titles across
+        // different sources = duplicate (cross-source dedup)
+        const seenUrls = new Set<string>();
+        const seenTitles = new Set<string>();
         const unique = enriched.filter((item) => {
-          const key = item.title.toLowerCase().slice(0, 60);
-          if (seen.has(key)) return false;
-          seen.add(key);
+          // Exact URL dedup
+          if (item.url) {
+            const normalizedUrl = item.url.split("?")[0].split("#")[0].toLowerCase();
+            if (seenUrls.has(normalizedUrl)) return false;
+            seenUrls.add(normalizedUrl);
+          }
+          // Normalize title: remove common prefixes, lowercase, strip punctuation
+          const normalized = item.title
+            .toLowerCase()
+            .replace(/^(breaking|update|just in|exclusive|watch|opinion|analysis)[:\s-]*/i, "")
+            .replace(/[^\w\s]/g, "")
+            .replace(/\s+/g, " ")
+            .trim();
+          // Use first 80 chars of normalized title for similarity
+          const titleKey = normalized.slice(0, 80);
+          if (seenTitles.has(titleKey)) return false;
+          seenTitles.add(titleKey);
           return true;
         });
 
@@ -99,7 +116,7 @@ export async function GET(request: Request) {
           return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
         });
 
-        return unique.slice(0, 500);
+        return unique.slice(0, 2000);
       },
       TTL.NEWS
     );

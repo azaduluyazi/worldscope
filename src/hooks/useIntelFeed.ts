@@ -10,7 +10,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 export function useIntelFeed() {
   const locale = useLocale();
   const { data, error, isLoading, mutate } = useSWR<IntelFeedResponse>(
-    `/api/intel?lang=${locale}`,
+    `/api/intel?lang=${locale}&limit=1000`,
     fetcher,
     {
       refreshInterval: 60_000,
@@ -25,11 +25,25 @@ export function useIntelFeed() {
       mutate(
         (current) => {
           if (!current) return current;
-          // Skip if already exists (by title similarity)
-          const key = newItem.title.toLowerCase().slice(0, 60);
-          const exists = current.items.some(
-            (i) => i.title.toLowerCase().slice(0, 60) === key
-          );
+          // Skip if already exists (by URL or normalized title)
+          const normalizedTitle = newItem.title
+            .toLowerCase()
+            .replace(/^(breaking|update|just in|exclusive)[:\s-]*/i, "")
+            .replace(/[^\w\s]/g, "")
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 80);
+          const exists = current.items.some((i) => {
+            if (newItem.url && i.url && i.url.split("?")[0] === newItem.url.split("?")[0]) return true;
+            const iNorm = i.title
+              .toLowerCase()
+              .replace(/^(breaking|update|just in|exclusive)[:\s-]*/i, "")
+              .replace(/[^\w\s]/g, "")
+              .replace(/\s+/g, " ")
+              .trim()
+              .slice(0, 80);
+            return iNorm === normalizedTitle;
+          });
           if (exists) return current;
 
           // Insert in sorted position (severity then recency)
@@ -42,8 +56,8 @@ export function useIntelFeed() {
 
           return {
             ...current,
-            items: updated.slice(0, 500),
-            total: Math.min(updated.length, 500),
+            items: updated.slice(0, 2000),
+            total: Math.min(updated.length, 2000),
           };
         },
         { revalidate: false }

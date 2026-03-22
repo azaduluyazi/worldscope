@@ -7,8 +7,8 @@ const redis = new Redis({
 
 export const TTL = {
   MARKET: 60,
-  NEWS: 600,
-  RSS: 900,
+  NEWS: 180,      // 3 min — keep feed fresh
+  RSS: 600,       // 10 min
   THREAT: 300,
   AI_BRIEF: 3600,
 } as const;

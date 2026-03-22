@@ -60,7 +60,7 @@ export async function fetchPersistedEvents(
     hoursBack?: number;
   } = {}
 ): Promise<IntelItem[]> {
-  const { category, limit = 200, hoursBack = 24 } = options;
+  const { category, limit = 1000, hoursBack = 48 } = options;
   const db = createServerClient();
 
   const since = new Date(Date.now() - hoursBack * 60 * 60 * 1000).toISOString();
