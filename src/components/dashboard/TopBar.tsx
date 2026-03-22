@@ -11,6 +11,7 @@ import { NotificationBell } from "./NotificationBell";
 import { QuickNav } from "./QuickNav";
 import { FullscreenToggle } from "./FullscreenToggle";
 import { ThemeToggle } from "./ThemeToggle";
+import { ThemeSelector } from "./ThemeSelector";
 
 const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "world", href: "/" },
@@ -94,6 +95,7 @@ export function TopBar({ variant = "world" }: TopBarProps) {
           <SearchBar />
           <NotificationBell />
           <ThemeToggle />
+          <ThemeSelector />
           <FullscreenToggle />
           <QuickNav />
         </div>
