@@ -13,7 +13,12 @@
     "tech": "TECH",
     "finance": "FINANCE",
     "commodity": "COMMODITY",
-    "happy": "GOOD NEWS"
+    "happy": "GOOD NEWS",
+    "conflict": "CONFLICT",
+    "cyber": "CYBER",
+    "weather": "WEATHER",
+    "health": "HEALTH",
+    "energy": "ENERGY"
   },
   "intel": {
     "title": "INTEL FEED",
