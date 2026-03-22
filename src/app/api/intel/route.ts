@@ -68,10 +68,19 @@ export async function GET(request: Request) {
           fetchFireHotspots(50),
         ]);
 
+        // Filter live API results to last 72 hours
+        // (USGS significant_month/4.5_week return weeks-old data)
+        const MAX_AGE_MS = 72 * 60 * 60 * 1000;
+        const cutoff = Date.now() - MAX_AGE_MS;
+
         const liveItems: IntelItem[] = [];
         for (const result of fastSources) {
           if (result.status === "fulfilled" && Array.isArray(result.value)) {
-            liveItems.push(...result.value);
+            for (const item of result.value) {
+              if (new Date(item.publishedAt).getTime() >= cutoff) {
+                liveItems.push(item);
+              }
+            }
           }
         }
 
@@ -142,14 +151,25 @@ export async function GET(request: Request) {
           return true;
         });
 
-        // Sort: critical always first, then severity, then recency
+        // Sort: recency-weighted severity
+        // Items older than 24h get deprioritized regardless of severity
+        const NOW = Date.now();
+        const H24 = 24 * 60 * 60 * 1000;
+
         unique.sort((a, b) => {
-          // Critical events always on top
-          if (a.severity === "critical" && b.severity !== "critical") return -1;
-          if (b.severity === "critical" && a.severity !== "critical") return 1;
+          const aAge = NOW - new Date(a.publishedAt).getTime();
+          const bAge = NOW - new Date(b.publishedAt).getTime();
+          const aRecent = aAge <= H24;
+          const bRecent = bAge <= H24;
+
+          // Recent items always beat old items
+          if (aRecent && !bRecent) return -1;
+          if (bRecent && !aRecent) return 1;
+
+          // Within same recency bucket: sort by severity then time
           const sevDiff = SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity];
           if (sevDiff !== 0) return sevDiff;
-          return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+          return bAge === aAge ? 0 : aAge < bAge ? -1 : 1;
         });
 
         return unique.slice(0, 2000);
