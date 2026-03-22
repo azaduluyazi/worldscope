@@ -5,6 +5,7 @@ import Globe from "react-globe.gl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useFlightTracker } from "@/hooks/useFlightTracker";
 import { useVesselTracker } from "@/hooks/useVesselTracker";
+import { useWeatherData, type WeatherCity } from "@/hooks/useWeatherData";
 import { SEVERITY_COLORS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
 import { VARIANTS, type VariantId } from "@/config/variants";
@@ -27,6 +28,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   const { items } = useIntelFeed();
   const { aircraft } = useFlightTracker();
   const { vessels } = useVesselTracker();
+  const { cities: weatherCities } = useWeatherData();
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
   const variantConfig = VARIANTS[variant];
@@ -73,20 +75,42 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
     return vessels.slice(0, 80).map((v) => ({ lat: v.latitude, lng: v.longitude, size: v.shipType === "military" ? 0.12 : 0.06, color: v.shipType === "military" ? "#ff4757" : v.shipType === "tanker" ? "#ffd000" : "#00ff88", label: (v.name || "?") + " | " + v.shipType + " | " + (v.flag || "?") }));
   }, [vessels, globeMode]);
 
+  // WEATHER: temperature dots
+  const weatherPoints = useMemo(() => {
+    if (globeMode !== "globe-cables") return []; // cables mode = weather mode
+    return weatherCities.map((c: WeatherCity) => {
+      const color = c.isExtreme ? "#ff4757" : c.temperature > 35 ? "#ff9f43" : c.temperature > 20 ? "#ffd000" : c.temperature > 5 ? "#00e5ff" : c.temperature > -10 ? "#8a5cf6" : "#ffffff";
+      return {
+        lat: c.lat, lng: c.lng,
+        size: c.isExtreme ? 0.6 : 0.3,
+        color,
+        label: `${c.city}, ${c.country} | ${c.temperature}°C | ${c.weatherLabel} | Wind ${c.windSpeed} km/h`,
+      };
+    });
+  }, [weatherCities, globeMode]);
+
+  const weatherRings = useMemo(() => {
+    if (globeMode !== "globe-cables") return [];
+    return weatherCities
+      .filter((c: WeatherCity) => c.isExtreme)
+      .map((c: WeatherCity) => ({ lat: c.lat, lng: c.lng, maxR: 5, propagationSpeed: 2, repeatPeriod: 2000 }));
+  }, [weatherCities, globeMode]);
+
   const pointsData = useMemo(() => {
     switch (globeMode) {
       case "globe-flights": return flightPoints;
       case "globe-ships": return shipPoints;
+      case "globe-cables": return weatherPoints;
       default: return intelPoints;
     }
-  }, [globeMode, intelPoints, flightPoints, shipPoints]);
+  }, [globeMode, intelPoints, flightPoints, shipPoints, weatherPoints]);
 
   const modeInfo = useMemo(() => {
     switch (globeMode) {
       case "globe-intel": return { label: geoItems.length + " EVENTS", color: "#00e5ff" };
       case "globe-flights": return { label: flightPoints.length + " AIRCRAFT", color: "#ffd000" };
       case "globe-ships": return { label: shipPoints.length + " VESSELS", color: "#00ff88" };
-      case "globe-cables": return { label: "SUBMARINE CABLES", color: "#ff9f43" };
+      case "globe-cables": return { label: weatherPoints.length + " WEATHER STATIONS", color: "#ff9f43" };
       default: return { label: "", color: "#00e5ff" };
     }
   }, [globeMode, geoItems.length, flightPoints.length, shipPoints.length]);
@@ -115,7 +139,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
         atmosphereColor={modeInfo.color} atmosphereAltitude={0.15}
         pointsData={pointsData} pointLat="lat" pointLng="lng" pointAltitude={0.01} pointRadius="size" pointColor="color" pointLabel="label" pointsMerge={false}
         onPointClick={(point: object) => { const p = point as { item?: IntelItem }; if (p.item && onEventClick) onEventClick(p.item); }}
-        ringsData={intelRings} ringLat="lat" ringLng="lng" ringMaxRadius="maxR" ringPropagationSpeed="propagationSpeed" ringRepeatPeriod="repeatPeriod" ringColor={() => "#ff475760"}
+        ringsData={globeMode === "globe-cables" ? weatherRings : intelRings} ringLat="lat" ringLng="lng" ringMaxRadius="maxR" ringPropagationSpeed="propagationSpeed" ringRepeatPeriod="repeatPeriod" ringColor={() => "#ff475760"}
         arcsData={flightArc} arcStartLat="startLat" arcStartLng="startLng" arcEndLat="endLat" arcEndLng="endLng" arcColor="color" arcDashLength={0.4} arcDashGap={0.2} arcDashAnimateTime={1500} arcStroke={1.5}
         animateIn={true} waitForGlobeReady={true}
       />

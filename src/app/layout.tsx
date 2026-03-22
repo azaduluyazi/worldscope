@@ -105,6 +105,17 @@ export default async function RootLayout({
             crossOrigin="anonymous"
           />
         )}
+        {/* Plausible Analytics — privacy-friendly, cookie-free */}
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
+          <Script
+            defer
+            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+            src={process.env.NEXT_PUBLIC_PLAUSIBLE_HOST
+              ? `${process.env.NEXT_PUBLIC_PLAUSIBLE_HOST}/js/script.js`
+              : "https://plausible.io/js/script.js"}
+            strategy="afterInteractive"
+          />
+        )}
       </head>
       <body className="min-h-screen bg-hud-base text-hud-text overflow-hidden">
         {/* Skip to content — accessibility */}

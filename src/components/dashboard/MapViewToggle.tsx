@@ -10,7 +10,7 @@ const MAP_MODES: Array<{ id: MapMode; icon: string; labelKey: string }> = [
   { id: "globe-intel", icon: "🌍", labelKey: "mapModes.intel" },
   { id: "globe-flights", icon: "✈️", labelKey: "mapModes.flights" },
   { id: "globe-ships", icon: "🚢", labelKey: "mapModes.ships" },
-  { id: "globe-cables", icon: "🔌", labelKey: "mapModes.cables" },
+  { id: "globe-cables", icon: "🌡️", labelKey: "mapModes.weather" },
 ];
 
 interface MapViewToggleProps {

@@ -260,6 +260,7 @@
     "intel": "3D İSTİHBARAT",
     "flights": "3D UÇUŞ TAKİP",
     "ships": "3D GEMİ TAKİP",
-    "cables": "3D DENİZALTI KABLO"
+    "cables": "3D DENİZALTI KABLO",
+    "weather": "3D HAVA DURUMU"
   }
 }
