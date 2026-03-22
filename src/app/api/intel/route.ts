@@ -14,6 +14,7 @@ import { fetchWhoOutbreaks } from "@/lib/api/who-outbreaks";
 import { fetchSafecastReadings, radiationToIntelItems } from "@/lib/api/radiation";
 import { fetchOrefAlerts } from "@/lib/api/tzevaadom";
 import { fetchUcdpEvents } from "@/lib/api/ucdp";
+import { fetchInternetOutagesAsIntel } from "@/lib/api/cloudflare-radar";
 import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
@@ -78,6 +79,7 @@ export async function GET(request: Request) {
           fetchWhoOutbreaks(15),
           fetchSafecastReadings().then(radiationToIntelItems),
           fetchUcdpEvents(30),
+          fetchInternetOutagesAsIntel(),
         ]);
 
         // Merge tier 1 (already resolved) + tier 2 results

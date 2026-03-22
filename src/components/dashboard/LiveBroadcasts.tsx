@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useCallback, useRef, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { useLocale } from "next-intl";
 import { getChannelsByLocale, getAvailableCountries, getChannelsByCountry, type LiveChannel } from "@/config/live-channels";
+
+const HlsPlayer = dynamic(() => import("./HlsPlayer"), { ssr: false });
 
 /**
  * Live news broadcast panel — YouTube + HLS embeds with channel tabs.
@@ -160,16 +163,12 @@ export function LiveBroadcasts() {
         {showFlash && <div className="channel-flash z-20" />}
 
         {activeChannel.type === "hls" && activeChannel.hlsUrl ? (
-          <video
+          <HlsPlayer
             key={activeChannel.id}
             src={activeChannel.hlsUrl}
             className="absolute inset-0 w-full h-full object-cover"
             autoPlay
             muted={isMuted}
-            controls
-            playsInline
-            onLoadedData={() => setIsLoading(false)}
-            onError={() => setIsLoading(false)}
           />
         ) : (
           <iframe

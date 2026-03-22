@@ -4,6 +4,8 @@
  * https://developers.cloudflare.com/radar/
  */
 
+import type { IntelItem } from "@/types/intel";
+
 export interface InternetOutage {
   id: string;
   name: string;         // Country or ASN name
@@ -53,4 +55,24 @@ export async function fetchInternetOutages(): Promise<InternetOutage[]> {
   } catch {
     return [];
   }
+}
+
+/** Convert outages to IntelItems for the feed */
+export function outagesToIntelItems(outages: InternetOutage[]): IntelItem[] {
+  return outages.map((o): IntelItem => ({
+    id: `cfradar-${o.id}`,
+    title: `Internet Outage: ${o.name}`,
+    summary: `${o.type === "country" ? "Nationwide" : "Network"} internet disruption detected${o.endTime ? " (resolved)" : " (ongoing)"}`,
+    url: "https://radar.cloudflare.com/outage-center",
+    source: "Cloudflare Radar",
+    category: "cyber",
+    severity: o.score >= 0.8 ? "high" : "medium",
+    publishedAt: o.startTime || new Date().toISOString(),
+  }));
+}
+
+/** Fetch outages as IntelItems (combined function) */
+export async function fetchInternetOutagesAsIntel(): Promise<IntelItem[]> {
+  const outages = await fetchInternetOutages();
+  return outagesToIntelItems(outages);
 }
