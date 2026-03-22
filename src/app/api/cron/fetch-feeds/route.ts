@@ -5,10 +5,10 @@ import { persistEvents } from "@/lib/db/events";
 import { recordFeedSuccess, recordFeedError } from "@/lib/db/feed-health";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 60;
+export const maxDuration = 300;
 
-const BATCH_SIZE = 10;
-const FEED_LIMIT = 50;
+const BATCH_SIZE = 15;
+const FEED_LIMIT = 200;
 
 function isAuthorized(request: Request): boolean {
   const authHeader = request.headers.get("authorization");

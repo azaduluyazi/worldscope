@@ -193,7 +193,7 @@ export async function fetchFeed(url: string, feedName: string): Promise<IntelIte
       // Create fresh parser with rotated User-Agent for each attempt
       const p = createParser();
       const feed = await p.parseURL(url);
-      return (feed.items || []).slice(0, 10).map((item, idx) => {
+      return (feed.items || []).slice(0, 30).map((item, idx) => {
         const title = item.title || "Untitled";
         const raw = item.link || item.guid || `${feedName}-${idx}-${title}`;
         return {

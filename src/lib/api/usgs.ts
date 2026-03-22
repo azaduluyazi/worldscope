@@ -48,7 +48,7 @@ function magnitudeToSeverity(mag: number, alert: string | null): Severity {
  * For more frequent data, use 4.5_week or 2.5_day endpoints
  */
 export async function fetchEarthquakes(
-  feed: "significant_week" | "4.5_week" | "2.5_day" | "all_hour" = "4.5_week"
+  feed: "significant_week" | "significant_month" | "4.5_week" | "4.5_month" | "2.5_day" | "all_hour" = "4.5_week"
 ): Promise<IntelItem[]> {
   const url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/${feed}.geojson`;
 
