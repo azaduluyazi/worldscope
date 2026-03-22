@@ -103,20 +103,31 @@ export function EconomicsPanel() {
           </Section>
         )}
 
-        {/* Big Mac Index */}
+        {/* Big Mac Index — Price + PPP Valuation */}
         {bigmacData.length > 0 && (
-          <Section title="BIG MAC INDEX ($)">
+          <Section title="BIG MAC INDEX — PURCHASING POWER">
             {bigmacData
               .sort((a, b) => b.dollarPrice - a.dollarPrice)
-              .map((item) => (
-                <IndicatorRow
-                  key={item.countryCode}
-                  label={item.countryCode}
-                  value={"$" + item.dollarPrice.toFixed(2)}
-                  color="#00e5ff"
-                  barPct={Math.min(100, (item.dollarPrice / 8) * 100)}
-                />
-              ))}
+              .map((item) => {
+                const usBigMac = 5.69; // approximate US Big Mac price
+                const pppDiff = ((item.dollarPrice - usBigMac) / usBigMac) * 100;
+                const isOver = pppDiff > 0;
+                return (
+                  <div key={item.countryCode} className="flex items-center gap-2 px-1 py-0.5 hover:bg-hud-surface/30 rounded transition-colors">
+                    <span className="font-mono text-[8px] text-hud-muted w-8 shrink-0">{item.countryCode}</span>
+                    <div className="flex-1 h-1 bg-hud-border/20 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full" style={{ width: `${Math.min(100, (item.dollarPrice / 8) * 100)}%`, backgroundColor: "#00e5ff" }} />
+                    </div>
+                    <span className="font-mono text-[9px] text-hud-text shrink-0">${item.dollarPrice.toFixed(2)}</span>
+                    <span className={`font-mono text-[7px] shrink-0 w-12 text-right ${isOver ? "text-red-400" : "text-green-400"}`}>
+                      {isOver ? "+" : ""}{pppDiff.toFixed(0)}%
+                    </span>
+                  </div>
+                );
+              })}
+            <div className="font-mono text-[7px] text-hud-muted mt-1 px-1">
+              vs USD — <span className="text-green-400">green</span> = undervalued, <span className="text-red-400">red</span> = overvalued
+            </div>
           </Section>
         )}
       </div>
