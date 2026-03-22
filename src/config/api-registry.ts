@@ -118,5 +118,17 @@ export function getApiRegistry(): ApiRegistryEntry[] {
     { name: "GeoDB Cities", provider: "rapidapi.com", url: "https://rapidapi.com/wirefreethought/api/geodb-cities", envKey: "GEODB_API_KEY", plan: "free", rateLimit: "1K req/day", expiry: null, category: "Geocoding", status: has("GEODB_API_KEY") ? "active" : "no_key" },
     { name: "ADS-B Exchange", provider: "adsbexchange.com", url: "https://adsbexchange.com", envKey: "ADSBX_API_KEY", plan: "free", rateLimit: "Varies", expiry: null, category: "Aviation", status: has("ADSBX_API_KEY") ? "active" : "no_key" },
     { name: "OpenCorporates", provider: "opencorporates.com", url: "https://api.opencorporates.com", envKey: "OPENCORP_API_KEY", plan: "free", rateLimit: "500 req/day", expiry: null, category: "Corporate Intel", status: has("OPENCORP_API_KEY") ? "active" : "no_key" },
+
+    // ═══ V3 NEW SOURCES ═══
+    { name: "Tzevaadom (OREF)", provider: "tzevaadom.co.il", url: "https://api.tzevaadom.co.il", envKey: "-", plan: "open", rateLimit: "Generous", expiry: null, category: "Conflict", status: "active", notes: "Israel rocket/missile alerts — global mirror" },
+    { name: "IMF DataMapper", provider: "imf.org", url: "https://www.imf.org/external/datamapper/api/v1", envKey: "-", plan: "open", rateLimit: "Generous", expiry: null, category: "Economics", status: "active", notes: "GDP, inflation, unemployment for 190+ countries" },
+    { name: "World Bank", provider: "worldbank.org", url: "https://api.worldbank.org/v2", envKey: "-", plan: "open", rateLimit: "Generous", expiry: null, category: "Economics", status: "active", notes: "16K+ indicators, 300+ economies" },
+    { name: "BIS", provider: "bis.org", url: "https://stats.bis.org/api/v2", envKey: "-", plan: "open", rateLimit: "Generous", expiry: null, category: "Finance", status: "active", notes: "Central bank policy rates, credit, exchange rates" },
+    { name: "UCDP", provider: "ucdp.uu.se", url: "https://ucdpapi.pcr.uu.se", envKey: "UCDP_API_TOKEN", plan: "open", rateLimit: "Generous", expiry: null, category: "Conflict", status: "active", notes: "Academic georeferenced conflict data" },
+    { name: "ArXiv", provider: "arxiv.org", url: "https://export.arxiv.org/api", envKey: "-", plan: "open", rateLimit: "1 req/3s", expiry: null, category: "Research", status: "active", notes: "2.4M+ research papers" },
+    { name: "UN Comtrade", provider: "un.org", url: "https://comtradeapi.un.org", envKey: "UN_COMTRADE_KEY", plan: "free", rateLimit: "500 req/day", expiry: null, category: "Trade", status: has("UN_COMTRADE_KEY") ? "active" : "no_key" },
+    { name: "Big Mac Index", provider: "economist.com", url: "https://github.com/TheEconomist/big-mac-data", envKey: "-", plan: "open", rateLimit: "N/A (static)", expiry: null, category: "Economics", status: "active", notes: "Purchasing power parity" },
+    { name: "Windy Webcams", provider: "windy.com", url: "https://api.windy.com/webcams", envKey: "WINDY_WEBCAMS_KEY", plan: "free", rateLimit: "Free tier", expiry: null, category: "Visual Intel", status: has("WINDY_WEBCAMS_KEY") ? "active" : "no_key" },
+    { name: "Cloudflare Radar", provider: "cloudflare.com", url: "https://api.cloudflare.com/client/v4/radar", envKey: "CLOUDFLARE_API_TOKEN", plan: "free", rateLimit: "1200 req/5min", expiry: null, category: "Infrastructure", status: has("CLOUDFLARE_API_TOKEN") ? "active" : "no_key", notes: "Internet outage detection" },
   ];
 }

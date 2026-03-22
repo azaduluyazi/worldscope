@@ -8,6 +8,12 @@ import { fetchAllCyberThreats } from "@/lib/api/cyber-threats";
 import { fetchFireHotspots } from "@/lib/api/nasa-firms";
 import { fetchDiseaseOutbreaks } from "@/lib/api/disease-sh";
 import { fetchGDACSAlerts } from "@/lib/api/gdacs";
+import { fetchNasaEonet } from "@/lib/api/nasa-eonet";
+import { fetchHackerNews } from "@/lib/api/hackernews";
+import { fetchWhoOutbreaks } from "@/lib/api/who-outbreaks";
+import { fetchSafecastReadings, radiationToIntelItems } from "@/lib/api/radiation";
+import { fetchOrefAlerts } from "@/lib/api/tzevaadom";
+import { fetchUcdpEvents } from "@/lib/api/ucdp";
 import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
@@ -46,27 +52,39 @@ export async function GET(request: Request) {
         // This endpoint reads persisted events + fast real-time APIs
         // ═══════════════════════════════════════════════════════
 
-        // 1. Read persisted events from Supabase (< 1 second)
-        const dbEvents = await fetchPersistedEvents({
-          category: category || undefined,
-          limit: 1000,
-          hoursBack: 48,
-        });
+        const startTime = Date.now();
 
-        // 2. Fetch ONLY fast, lightweight APIs (no RSS, < 10s total)
-        const fastSources = await Promise.allSettled([
+        // 1. DB + Tier 1 critical sources in parallel
+        const [dbEvents, ...tier1Results] = await Promise.all([
+          fetchPersistedEvents({ category: category || undefined, limit: 1000, hoursBack: 48 }),
           fetchGdeltArticles(undefined, 50, lang),
-          fetchGdeltGeo(undefined, 100, lang),
           fetchEarthquakes("4.5_week"),
+          fetchOrefAlerts(20),
+          fetchGDACSAlerts(),
+        ]);
+
+        // 2. Tier 2 secondary sources — best-effort, don't block on slow ones
+        const tier2Sources = await Promise.allSettled([
+          fetchGdeltGeo(undefined, 100, lang),
           fetchEarthquakes("2.5_day"),
           fetchEarthquakes("significant_month"),
           fetchReliefWebDisasters(),
-          fetchGDACSAlerts(),
           fetchSpaceflightNews(),
           fetchDiseaseOutbreaks(),
           fetchAllCyberThreats(),
           fetchFireHotspots(50),
+          fetchNasaEonet(14, 30),
+          fetchHackerNews(20),
+          fetchWhoOutbreaks(15),
+          fetchSafecastReadings().then(radiationToIntelItems),
+          fetchUcdpEvents(30),
         ]);
+
+        // Merge tier 1 (already resolved) + tier 2 results
+        const fastSources: PromiseSettledResult<IntelItem[]>[] = [
+          ...tier1Results.map((v): PromiseSettledResult<IntelItem[]> => ({ status: "fulfilled", value: v })),
+          ...tier2Sources,
+        ];
 
         // Filter live API results to last 72 hours
         // (USGS significant_month/4.5_week return weeks-old data)
