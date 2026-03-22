@@ -27,7 +27,7 @@ export async function GET(request: Request) {
   const startTime = Date.now();
   const db = createServerClient();
 
-  // Fetch the 50 oldest-unfetched active feeds
+  // Fetch the 200 oldest-unfetched active feeds
   const { data: feeds, error: fetchError } = await db
     .from("feeds")
     .select("id, url, name, category")

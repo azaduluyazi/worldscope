@@ -78,6 +78,42 @@ export async function GET(request: Request) {
         // 3. Merge: DB events + live API results
         const allItems = [...dbEvents, ...liveItems];
 
+        // ═══════════════════════════════════════════════════════
+        // RSS FALLBACK: If DB has <50 items, fetch priority feeds directly
+        // ═══════════════════════════════════════════════════════
+        if (dbEvents.length < 50) {
+          const { fetchFeed } = await import("@/lib/api/rss-parser");
+          const PRIORITY_FEEDS = [
+            { url: "https://feeds.bbci.co.uk/news/world/rss.xml", name: "BBC World" },
+            { url: "https://rss.cnn.com/rss/edition_world.rss", name: "CNN World" },
+            { url: "https://www.aljazeera.com/xml/rss/all.xml", name: "Al Jazeera" },
+            { url: "https://www.theguardian.com/world/rss", name: "The Guardian" },
+            { url: "https://rss.nytimes.com/services/xml/rss/nyt/World.xml", name: "NYT World" },
+            { url: "https://rss.dw.com/xml/rss-en-all", name: "DW News" },
+            { url: "https://www.france24.com/en/rss", name: "France24" },
+            { url: "https://feeds.npr.org/1004/rss.xml", name: "NPR World" },
+            { url: "https://feeds.skynews.com/feeds/rss/world.xml", name: "Sky News" },
+            { url: "https://www.aa.com.tr/en/rss/default?cat=world", name: "Anadolu Agency" },
+            { url: "https://www.theverge.com/rss/index.xml", name: "The Verge" },
+            { url: "https://techcrunch.com/feed/", name: "TechCrunch" },
+            { url: "https://feeds.arstechnica.com/arstechnica/index", name: "Ars Technica" },
+            { url: "https://feeds.content.dowjones.io/public/rss/mw_topstories", name: "WSJ Markets" },
+            { url: "https://www.cnbc.com/id/100003114/device/rss/rss.html", name: "CNBC World" },
+            { url: "https://www.bleepingcomputer.com/feed/", name: "BleepingComputer" },
+            { url: "https://hnrss.org/frontpage", name: "Hacker News" },
+            { url: "https://tools.cdc.gov/api/v2/resources/media/rss", name: "CDC Health" },
+          ];
+
+          const fallbackResults = await Promise.allSettled(
+            PRIORITY_FEEDS.map((f) => fetchFeed(f.url, f.name))
+          );
+          for (const result of fallbackResults) {
+            if (result.status === "fulfilled" && Array.isArray(result.value)) {
+              allItems.push(...result.value);
+            }
+          }
+        }
+
         // Geo-enrich items that lack coordinates
         const enriched = enrichGeoData(allItems);
 
