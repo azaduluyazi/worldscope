@@ -18,7 +18,8 @@
     "cyber": "SİBER",
     "weather": "HAVA",
     "health": "SAĞLIK",
-    "energy": "ENERJİ"
+    "energy": "ENERJİ",
+    "sports": "SPOR"
   },
   "intel": {
     "title": "İSTİHBARAT AKIŞI",
@@ -54,6 +55,7 @@
     "energy": "Enerji",
     "protests": "Protestolar",
     "natural": "Doğal Afet",
+    "sports": "Spor",
     "settings": "Ayarlar",
     "clearFilters": "Tüm filtreleri temizle",
     "heatmap": "Isı Haritası",
@@ -265,7 +267,7 @@
     "intel": "3D İSTİHBARAT",
     "flights": "3D UÇUŞ TAKİP",
     "ships": "3D GEMİ TAKİP",
-    "cables": "3D DENİZALTI KABLO",
+    "cables": "3D HAVA DURUMU",
     "weather": "3D HAVA DURUMU"
   }
 }

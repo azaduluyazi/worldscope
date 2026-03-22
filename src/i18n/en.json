@@ -18,7 +18,8 @@
     "cyber": "CYBER",
     "weather": "WEATHER",
     "health": "HEALTH",
-    "energy": "ENERGY"
+    "energy": "ENERGY",
+    "sports": "SPORTS"
   },
   "intel": {
     "title": "INTEL FEED",
@@ -54,6 +55,7 @@
     "energy": "Energy",
     "protests": "Protests",
     "natural": "Natural",
+    "sports": "Sports",
     "settings": "Settings",
     "clearFilters": "Clear all filters",
     "heatmap": "Heatmap",
@@ -265,7 +267,7 @@
     "intel": "3D INTEL GLOBE",
     "flights": "3D FLIGHT TRACKER",
     "ships": "3D SHIP TRACKER",
-    "cables": "3D SUBMARINE CABLES",
+    "cables": "3D WEATHER",
     "weather": "3D WEATHER"
   }
 }

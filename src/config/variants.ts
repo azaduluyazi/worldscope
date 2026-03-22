@@ -10,7 +10,7 @@ import type { Category } from "@/types/intel";
  * - Finance: Markets, crypto, commodities, central banks
  */
 
-export type VariantId = "world" | "tech" | "finance" | "commodity" | "happy" | "conflict" | "cyber" | "weather" | "health" | "energy";
+export type VariantId = "world" | "tech" | "finance" | "commodity" | "happy" | "conflict" | "cyber" | "weather" | "health" | "energy" | "sports";
 
 export interface Variant {
   id: VariantId;
@@ -160,6 +160,19 @@ export const VARIANTS: Record<VariantId, Variant> = {
     accent: "#f39c12",
     icon: "⚡",
     keywords: ["energy", "oil", "gas", "nuclear", "renewable", "power grid"],
+  },
+
+  sports: {
+    id: "sports",
+    name: "SportsScope",
+    tagline: "Global Sports Intelligence",
+    description: "Live sports scores, transfers, match results, and global sports news monitoring.",
+    primaryCategories: ["sports"],
+    secondaryCategories: ["diplomacy", "finance", "tech"],
+    defaultLayers: ["natural"],
+    accent: "#22c55e",
+    icon: "⚽",
+    keywords: ["sports", "football", "basketball", "tennis", "olympics", "FIFA", "transfers"],
   },
 };
 

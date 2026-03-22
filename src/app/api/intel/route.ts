@@ -27,7 +27,7 @@ export const maxDuration = 120;
 // Whitelist of valid categories — prevents cache key injection
 const VALID_CATEGORIES = new Set<Category>([
   "conflict", "finance", "cyber", "tech", "natural",
-  "aviation", "energy", "diplomacy", "protest", "health",
+  "aviation", "energy", "diplomacy", "protest", "health", "sports",
 ]);
 
 
@@ -58,7 +58,7 @@ export async function GET(request: Request) {
 
         // 1. DB + Tier 1 critical sources (circuit breaker protected)
         const [dbEvents, ...tier1Results] = await Promise.all([
-          fetchPersistedEvents({ category: category || undefined, limit: 1000, hoursBack: 48 }),
+          fetchPersistedEvents({ category: category || undefined, limit: 1500, hoursBack: 72 }),
           gatewayFetch("gdelt-articles", () => fetchGdeltArticles(undefined, 50, lang), { fallback: [] }),
           gatewayFetch("usgs-4.5w", () => fetchEarthquakes("4.5_week"), { fallback: [] }),
           gatewayFetch("oref", () => fetchOrefAlerts(20), { fallback: [] }),

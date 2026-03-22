@@ -13,7 +13,13 @@
     "tech": "فناوری",
     "finance": "مالی",
     "commodity": "کالا",
-    "happy": "اخبار خوب"
+    "happy": "اخبار خوب",
+    "sports": "ورزش",
+    "conflict": "CONFLICT",
+    "cyber": "CYBER",
+    "weather": "WEATHER",
+    "health": "HEALTH",
+    "energy": "ENERGY"
   },
   "intel": {
     "title": "خوراک اطلاعاتی",
@@ -260,6 +266,6 @@
     "intel": "3D INTEL GLOBE",
     "flights": "3D FLIGHT TRACKER",
     "ships": "3D SHIP TRACKER",
-    "cables": "3D SUBMARINE CABLES"
+    "cables": "3D WEATHER"
   }
 }

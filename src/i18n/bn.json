@@ -13,7 +13,13 @@
     "tech": "প্রযুক্তি",
     "finance": "অর্থনীতি",
     "commodity": "পণ্য",
-    "happy": "শুভ সংবাদ"
+    "happy": "শুভ সংবাদ",
+    "sports": "খেলাধুলা",
+    "conflict": "CONFLICT",
+    "cyber": "CYBER",
+    "weather": "WEATHER",
+    "health": "HEALTH",
+    "energy": "ENERGY"
   },
   "intel": {
     "title": "ইন্টেল ফিড",
@@ -260,6 +266,6 @@
     "intel": "3D INTEL GLOBE",
     "flights": "3D FLIGHT TRACKER",
     "ships": "3D SHIP TRACKER",
-    "cables": "3D SUBMARINE CABLES"
+    "cables": "3D WEATHER"
   }
 }

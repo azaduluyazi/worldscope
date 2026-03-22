@@ -14,7 +14,7 @@ import { KeyboardHelp } from "./KeyboardHelp";
 import { StatusFooter } from "./StatusFooter";
 import { NewsTicker } from "./NewsTicker";
 import { BreakingToast } from "./BreakingToast";
-import { MapViewToggle, type MapMode } from "./MapViewToggle";
+import { MapViewToggle, VARIANT_DEFAULT_GLOBE, type MapMode } from "./MapViewToggle";
 import { PredictionPanel } from "./PredictionPanel";
 import { EconomicsPanel } from "./EconomicsPanel";
 import { PremiumPopup } from "./PremiumPopup";
@@ -69,6 +69,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [mapMode, setMapMode] = useState<MapMode>("2d");
+  const defaultGlobe = VARIANT_DEFAULT_GLOBE[variant] || "globe-intel";
   const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics">("intel");
   const variantConfig = VARIANTS[variant];
 

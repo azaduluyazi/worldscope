@@ -7,8 +7,8 @@ import { recordFeedSuccess, recordFeedError } from "@/lib/db/feed-health";
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
-const BATCH_SIZE = 15;
-const FEED_LIMIT = 200;
+const BATCH_SIZE = 20;
+const FEED_LIMIT = 300;
 
 function isAuthorized(request: Request): boolean {
   const authHeader = request.headers.get("authorization");

@@ -10,7 +10,8 @@ export type Category =
   | "energy"
   | "diplomacy"
   | "protest"
-  | "health";
+  | "health"
+  | "sports";
 
 export interface IntelItem {
   id: string;
@@ -60,4 +61,5 @@ export const CATEGORY_ICONS: Record<Category, string> = {
   diplomacy: "🏛️",
   protest: "📢",
   health: "🏥",
+  sports: "⚽",
 };

@@ -56,6 +56,7 @@ export const VARIANT_MAP_VIEWS: Record<VariantId, typeof MAP_INITIAL_VIEW> = {
   weather: { longitude: 0, latitude: 15, zoom: 1.2, pitch: 20, bearing: 0 },
   health: { longitude: 20, latitude: 20, zoom: 1.3, pitch: 25, bearing: 5 },
   energy: { longitude: 45, latitude: 30, zoom: 1.5, pitch: 30, bearing: 10 },
+  sports: { longitude: 10, latitude: 40, zoom: 1.4, pitch: 25, bearing: 0 },
 };
 
 /** Variant-specific fly-to after map loads (more dramatic entry) */
@@ -70,4 +71,5 @@ export const VARIANT_FLY_TO: Record<VariantId, { center: [number, number]; zoom:
   weather: { center: [0, 20], zoom: 1.4, pitch: 25, bearing: 0 },
   health: { center: [25, 25], zoom: 1.5, pitch: 30, bearing: 5 },
   energy: { center: [50, 32], zoom: 1.7, pitch: 35, bearing: 12 },
+  sports: { center: [15, 42], zoom: 1.6, pitch: 30, bearing: 0 },
 };

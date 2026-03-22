@@ -13,7 +13,13 @@
     "tech": "TEKNIIKKA",
     "finance": "TALOUS",
     "commodity": "RAAKA-AINEET",
-    "happy": "HYVÄT UUTISET"
+    "happy": "HYVÄT UUTISET",
+    "sports": "URHEILU",
+    "conflict": "CONFLICT",
+    "cyber": "CYBER",
+    "weather": "WEATHER",
+    "health": "HEALTH",
+    "energy": "ENERGY"
   },
   "intel": {
     "title": "TIEDUSTELUPÄIVITYS",
@@ -260,6 +266,6 @@
     "intel": "3D INTEL GLOBE",
     "flights": "3D FLIGHT TRACKER",
     "ships": "3D SHIP TRACKER",
-    "cables": "3D SUBMARINE CABLES"
+    "cables": "3D WEATHER"
   }
 }

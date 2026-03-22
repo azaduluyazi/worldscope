@@ -666,6 +666,33 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "NDTV World", url: "https://feeds.feedburner.com/ndtvnews-world-news", category: "conflict", defaultSeverity: "medium", region: "asia" },
   { name: "The Record by Recorded Future", url: "https://therecord.media/feed/", category: "cyber", defaultSeverity: "high", region: "global" },
   { name: "Cybersecurity Dive", url: "https://www.cybersecuritydive.com/feeds/news/", category: "cyber", defaultSeverity: "medium", region: "global" },
+
+  // ── Sports (25) ─────────────────────────────────────────────────
+  { name: "ESPN Top Headlines", url: "https://www.espn.com/espn/rss/news", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "ESPN Football", url: "https://www.espn.com/espn/rss/soccer/news", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "BBC Sport", url: "https://feeds.bbci.co.uk/sport/rss.xml", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "BBC Football", url: "https://feeds.bbci.co.uk/sport/football/rss.xml", category: "sports", defaultSeverity: "info", region: "eu" },
+  { name: "Sky Sports News", url: "https://www.skysports.com/rss/12040", category: "sports", defaultSeverity: "info", region: "eu" },
+  { name: "Sky Sports Football", url: "https://www.skysports.com/rss/11095", category: "sports", defaultSeverity: "info", region: "eu" },
+  { name: "Guardian Sport", url: "https://www.theguardian.com/sport/rss", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "Guardian Football", url: "https://www.theguardian.com/football/rss", category: "sports", defaultSeverity: "info", region: "eu" },
+  { name: "Bleacher Report", url: "https://bleacherreport.com/articles/feed", category: "sports", defaultSeverity: "info", region: "us" },
+  { name: "CBS Sports", url: "https://www.cbssports.com/rss/headlines/", category: "sports", defaultSeverity: "info", region: "us" },
+  { name: "Yahoo Sports", url: "https://sports.yahoo.com/rss/", category: "sports", defaultSeverity: "info", region: "us" },
+  { name: "Marca EN", url: "https://e00-marca.uecdn.es/rss/en/main.xml", category: "sports", defaultSeverity: "info", region: "eu" },
+  { name: "L'Equipe", url: "https://www.lequipe.fr/rss/actu_rss.xml", category: "sports", defaultSeverity: "info", language: "fr", region: "eu" },
+  { name: "Gazzetta Sport", url: "https://www.gazzetta.it/rss/home.xml", category: "sports", defaultSeverity: "info", language: "it", region: "eu" },
+  { name: "AS Diario", url: "https://as.com/rss/tags/ultimas_noticias.xml", category: "sports", defaultSeverity: "info", language: "es", region: "eu" },
+  { name: "TRT Spor", url: "https://www.trtspor.com.tr/rss/spor.xml", category: "sports", defaultSeverity: "info", language: "tr", region: "tr" },
+  { name: "Fanatik", url: "https://www.fanatik.com.tr/rss", category: "sports", defaultSeverity: "info", language: "tr", region: "tr" },
+  { name: "NTV Spor", url: "https://www.ntvspor.net/rss", category: "sports", defaultSeverity: "info", language: "tr", region: "tr" },
+  { name: "UEFA News", url: "https://www.uefa.com/rss/news.xml", category: "sports", defaultSeverity: "info", region: "eu" },
+  { name: "FIFA News", url: "https://www.fifa.com/rss/news.xml", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "Olympic News", url: "https://www.olympics.com/en/news/rss", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "F1 News", url: "https://www.formula1.com/content/fom-website/en/latest/all.xml", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "NBA News", url: "https://www.nba.com/feeds/rss", category: "sports", defaultSeverity: "info", region: "us" },
+  { name: "MMA Fighting", url: "https://www.mmafighting.com/rss/current", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "Deadspin", url: "https://deadspin.com/rss", category: "sports", defaultSeverity: "info", region: "us" },
 ];
 
 export const FEED_COUNT = SEED_FEEDS.length;

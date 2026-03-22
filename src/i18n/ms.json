@@ -13,7 +13,13 @@
     "tech": "TEKNOLOGI",
     "finance": "KEWANGAN",
     "commodity": "KOMODITI",
-    "happy": "BERITA BAIK"
+    "happy": "BERITA BAIK",
+    "sports": "SUKAN",
+    "conflict": "CONFLICT",
+    "cyber": "CYBER",
+    "weather": "WEATHER",
+    "health": "HEALTH",
+    "energy": "ENERGY"
   },
   "intel": {
     "title": "SUAPAN PERISIKAN",
@@ -260,6 +266,6 @@
     "intel": "3D INTEL GLOBE",
     "flights": "3D FLIGHT TRACKER",
     "ships": "3D SHIP TRACKER",
-    "cables": "3D SUBMARINE CABLES"
+    "cables": "3D WEATHER"
   }
 }

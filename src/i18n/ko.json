@@ -11,7 +11,15 @@
   "variants": {
     "world": "세계",
     "tech": "기술",
-    "finance": "금융"
+    "finance": "금융",
+    "sports": "스포츠",
+    "commodity": "COMMODITY",
+    "happy": "HAPPY",
+    "conflict": "CONFLICT",
+    "cyber": "CYBER",
+    "weather": "WEATHER",
+    "health": "HEALTH",
+    "energy": "ENERGY"
   },
   "intel": {
     "title": "인텔 피드",
@@ -258,6 +266,6 @@
     "intel": "3D INTEL GLOBE",
     "flights": "3D FLIGHT TRACKER",
     "ships": "3D SHIP TRACKER",
-    "cables": "3D SUBMARINE CABLES"
+    "cables": "3D WEATHER"
   }
 }

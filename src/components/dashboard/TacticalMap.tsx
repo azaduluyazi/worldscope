@@ -92,6 +92,14 @@ const CATEGORY_SHAPES: Record<Category, (color: string, size: number) => React.R
       <rect x="2" y="2" width="20" height="20" rx="4" fill="none" stroke={color} strokeWidth="1.5" />
     </svg>
   ),
+  sports: (color, size) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill={`${color}cc`} stroke={color} strokeWidth="1.5" />
+      <path d="M12 2 C12 2 16 8 16 12 C16 16 12 22 12 22" fill="none" stroke={`${color}40`} strokeWidth="1.5" />
+      <path d="M12 2 C12 2 8 8 8 12 C8 16 12 22 12 22" fill="none" stroke={`${color}40`} strokeWidth="1.5" />
+      <line x1="2" y1="12" x2="22" y2="12" stroke={`${color}40`} strokeWidth="1.5" />
+    </svg>
+  ),
 };
 
 /* ── Mapbox heatmap layer style ── */

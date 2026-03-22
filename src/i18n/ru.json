@@ -11,7 +11,15 @@
   "variants": {
     "world": "МИР",
     "tech": "ТЕХНОЛОГИИ",
-    "finance": "ФИНАНСЫ"
+    "finance": "ФИНАНСЫ",
+    "sports": "СПОРТ",
+    "commodity": "COMMODITY",
+    "happy": "HAPPY",
+    "conflict": "CONFLICT",
+    "cyber": "CYBER",
+    "weather": "WEATHER",
+    "health": "HEALTH",
+    "energy": "ENERGY"
   },
   "intel": {
     "title": "ЛЕНТА РАЗВЕДДАННЫХ",
@@ -258,6 +266,6 @@
     "intel": "3D INTEL GLOBE",
     "flights": "3D FLIGHT TRACKER",
     "ships": "3D SHIP TRACKER",
-    "cables": "3D SUBMARINE CABLES"
+    "cables": "3D WEATHER"
   }
 }

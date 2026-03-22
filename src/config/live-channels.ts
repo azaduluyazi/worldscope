@@ -27,7 +27,7 @@ export interface LiveChannel {
   /** Accent color for the tab */
   color?: string;
   /** Channel category */
-  category?: "news" | "business" | "documentary";
+  category?: "news" | "business" | "documentary" | "sports";
 }
 
 export const LIVE_CHANNELS: LiveChannel[] = [
@@ -467,6 +467,22 @@ export const LIVE_CHANNELS: LiveChannel[] = [
   { id: "hls-rpptv", label: "RPP TV", hlsUrl: "https://redirector.rudo.video/hls-video/567ffde3fa319fadf3419efda25619456231dfea/rpptv/rpptv.smil/playlist.m3u8", type: "hls", region: "latam", lang: "es", country: "PE", color: "#E30613", category: "news" },
   { id: "hls-tvperu", label: "TV PERU", hlsUrl: "https://cdnhd.iblups.com/hls/777b4d4cc0984575a7d14f6ee57dbcaf7.m3u8", type: "hls", region: "latam", lang: "es", country: "PE", color: "#003DA6", category: "news" },
   { id: "hls-tvperu-noticias", label: "TV PERU NOTICIAS", hlsUrl: "https://cdnhd.iblups.com/hls/902c1a0395264f269f1160efa00660e47.m3u8", type: "hls", region: "latam", lang: "es", country: "PE", color: "#0055A4", category: "news" },
+
+  // ═══════════════════════════════════════
+  // SPORTS CHANNELS
+  // ═══════════════════════════════════════
+  { id: "bein-xtra", label: "beIN SPORTS XTRA", channelId: "UCkWkO8QjIGbxVPn_ymSKqdg", type: "youtube", region: "global", lang: "en", color: "#FFD200", category: "sports" },
+  { id: "nba-tv", label: "NBA", channelId: "UCWJ2lWNubArHWmf3FIHbfcQ", type: "youtube", region: "us", lang: "en", color: "#1D428A", category: "sports" },
+  { id: "ufc", label: "UFC", channelId: "UCvgfXK4nTYKudb0rFR6noLA", type: "youtube", region: "global", lang: "en", color: "#D20A0A", category: "sports" },
+  { id: "wwe", label: "WWE", channelId: "UCJ5v_MCY6GNUBTO8-D3XoAg", type: "youtube", region: "global", lang: "en", color: "#000000", category: "sports" },
+  { id: "sky-sports-news", label: "SKY SPORTS NEWS", channelId: "UCOSia3M_mEs42ygMMfNGEYA", type: "youtube", region: "eu", lang: "en", country: "GB", color: "#E30613", category: "sports" },
+  { id: "espn-youtube", label: "ESPN", channelId: "UCiWLfSweyRNmLpgEHGkPwnw", type: "youtube", region: "us", lang: "en", country: "US", color: "#CC0000", category: "sports" },
+  { id: "tivibu-spor", label: "TİVİBU SPOR", channelId: "UCl8sHGn0MMvAV_nnxiPqxmA", type: "youtube", region: "tr", lang: "tr", country: "TR", color: "#FF6600", category: "sports" },
+  { id: "asspor", label: "A SPOR", channelId: "UCxpRdwFv9rhaOPBaxfbDw0Q", type: "youtube", region: "tr", lang: "tr", country: "TR", color: "#FF0000", category: "sports" },
+  { id: "trt-spor", label: "TRT SPOR", channelId: "UC5HDIjdJmVJ1ZuEOOcJbN0g", type: "youtube", region: "tr", lang: "tr", country: "TR", color: "#E30613", category: "sports" },
+  { id: "bein-tr", label: "beIN SPORTS TR", channelId: "UClPR8mmE0NJ_EqHvyTi0xAQ", type: "youtube", region: "tr", lang: "tr", country: "TR", color: "#FFD200", category: "sports" },
+  { id: "dazn", label: "DAZN", channelId: "UC5Gj6CNmNYdSEWYhv8VqELg", type: "youtube", region: "global", lang: "en", color: "#F5FF00", category: "sports" },
+  { id: "eurosport", label: "EUROSPORT", channelId: "UCuqbB0Ol9SNmwfCLBlkiZ6g", type: "youtube", region: "eu", lang: "en", color: "#003DA6", category: "sports" },
 ];
 
 /**
@@ -511,6 +527,21 @@ export function getAvailableCountries(): Array<{ code: string; name: string; cou
     .map(([code, count]) => ({ code, name: COUNTRY_NAMES[code] || code, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+export type ChannelCategory = "all" | "news" | "business" | "documentary" | "sports";
+
+/** Filter channels by category */
+export function getChannelsByCategory(channels: LiveChannel[], category: ChannelCategory): LiveChannel[] {
+  if (category === "all") return channels;
+  return channels.filter((ch) => ch.category === category);
+}
+
+export const CHANNEL_CATEGORIES: Array<{ id: ChannelCategory; label: string; icon: string }> = [
+  { id: "all", label: "ALL", icon: "📺" },
+  { id: "news", label: "NEWS", icon: "📰" },
+  { id: "business", label: "BIZ", icon: "💰" },
+  { id: "sports", label: "SPORTS", icon: "⚽" },
+];
 
 /**
  * Live webcam feeds from key global cities.

@@ -10,7 +10,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 export function useIntelFeed() {
   const locale = useLocale();
   const { data, error, isLoading, mutate } = useSWR<IntelFeedResponse>(
-    `/api/intel?lang=${locale}&limit=1000`,
+    `/api/intel?lang=${locale}&limit=2000`,
     fetcher,
     {
       refreshInterval: 60_000,

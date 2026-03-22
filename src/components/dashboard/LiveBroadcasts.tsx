@@ -3,26 +3,34 @@
 import { useState, useCallback, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useLocale } from "next-intl";
-import { getChannelsByLocale, getAvailableCountries, getChannelsByCountry, type LiveChannel } from "@/config/live-channels";
+import {
+  getChannelsByLocale, getAvailableCountries, getChannelsByCountry,
+  getChannelsByCategory, CHANNEL_CATEGORIES,
+  type LiveChannel, type ChannelCategory,
+} from "@/config/live-channels";
 
 const HlsPlayer = dynamic(() => import("./HlsPlayer"), { ssr: false });
 
 /**
  * Live news broadcast panel — YouTube + HLS embeds with channel tabs.
- * Locale-aware with country picker for targeted viewing.
+ * Locale-aware with country picker + category filter for targeted viewing.
  */
 export function LiveBroadcasts() {
   const locale = useLocale();
   const allChannels = useMemo(() => getChannelsByLocale(locale), [locale]);
   const countries = useMemo(() => getAvailableCountries(), []);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<ChannelCategory>("all");
   const [showCountryPicker, setShowCountryPicker] = useState(false);
 
   const channels = useMemo(() => {
-    if (!selectedCountry) return allChannels;
-    const countryChannels = getChannelsByCountry(selectedCountry);
-    return countryChannels.length > 0 ? countryChannels : allChannels;
-  }, [allChannels, selectedCountry]);
+    let filtered = allChannels;
+    if (selectedCountry) {
+      const countryChannels = getChannelsByCountry(selectedCountry);
+      if (countryChannels.length > 0) filtered = countryChannels;
+    }
+    return getChannelsByCategory(filtered, selectedCategory);
+  }, [allChannels, selectedCountry, selectedCategory]);
 
   const [activeChannel, setActiveChannel] = useState<LiveChannel>(allChannels[0]);
   const [isMuted, setIsMuted] = useState(true);
@@ -64,6 +72,23 @@ export function LiveBroadcasts() {
           LIVE BROADCASTS
         </span>
         <div className="flex items-center gap-1.5">
+          {/* Category Filter */}
+          <div className="flex gap-0.5">
+            {CHANNEL_CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`font-mono text-[6px] px-1 h-5 flex items-center gap-0.5 rounded border transition-colors ${
+                  selectedCategory === cat.id
+                    ? "bg-hud-accent/15 border-hud-accent/30 text-hud-accent"
+                    : "border-hud-border text-hud-muted hover:border-hud-accent/20"
+                }`}
+              >
+                <span className="text-[7px]">{cat.icon}</span>
+                {cat.label}
+              </button>
+            ))}
+          </div>
           {/* Country Picker */}
           <div className="relative">
             <button

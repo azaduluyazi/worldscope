@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 
+import type { VariantId } from "@/config/variants";
+
 export type MapMode = "2d" | "globe-intel" | "globe-flights" | "globe-ships" | "globe-cables";
 
 const MAP_MODES: Array<{ id: MapMode; icon: string; labelKey: string }> = [
@@ -12,6 +14,21 @@ const MAP_MODES: Array<{ id: MapMode; icon: string; labelKey: string }> = [
   { id: "globe-ships", icon: "🚢", labelKey: "mapModes.ships" },
   { id: "globe-cables", icon: "🌡️", labelKey: "mapModes.weather" },
 ];
+
+/** Default globe mode per variant — determines which 3D view is most relevant */
+export const VARIANT_DEFAULT_GLOBE: Partial<Record<VariantId, MapMode>> = {
+  world: "globe-intel",
+  conflict: "globe-intel",
+  weather: "globe-cables",
+  energy: "globe-ships",
+  finance: "globe-ships",
+  commodity: "globe-ships",
+  cyber: "globe-intel",
+  tech: "globe-intel",
+  health: "globe-intel",
+  happy: "globe-intel",
+  sports: "globe-intel",
+};
 
 interface MapViewToggleProps {
   mode: MapMode;

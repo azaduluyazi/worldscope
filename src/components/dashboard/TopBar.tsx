@@ -22,6 +22,7 @@ const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "weather", href: "/weather" },
   { id: "health", href: "/health" },
   { id: "energy", href: "/energy" },
+  { id: "sports", href: "/sports" },
 ];
 
 interface TopBarProps {
@@ -65,8 +66,8 @@ export function TopBar({ variant = "world" }: TopBarProps) {
         </span>
       </div>
 
-      {/* Variant Tabs */}
-      <div className="flex-1 flex justify-center gap-0.5 md:gap-1">
+      {/* Variant Tabs — all routes */}
+      <div className="flex-1 flex justify-center gap-0.5 md:gap-1 overflow-x-auto scrollbar-hide">
         {VARIANT_ROUTES.map((route) => {
           const isActive = route.id === variant;
           const routeConfig = VARIANTS[route.id];

@@ -14,6 +14,7 @@ const CATEGORY_COLORS: Record<Category, string> = {
   diplomacy: "#a78bfa",
   protest: "#fb7185",
   health: "#34d399",
+  sports: "#22c55e",
 };
 
 interface Props {

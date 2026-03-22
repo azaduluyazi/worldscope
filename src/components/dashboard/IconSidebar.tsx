@@ -26,6 +26,7 @@ const CATEGORY_ITEMS: SidebarItem[] = [
   { id: "diplomacy", icon: "🏛️", tKey: "sidebar.diplomacy", color: "#00e5ff", category: "diplomacy" },
   { id: "energy", icon: "⚡", tKey: "sidebar.energy", color: "#ffd000", category: "energy" },
   { id: "protest", icon: "📢", tKey: "sidebar.protests", color: "#ff4757", category: "protest" },
+  { id: "sports", icon: "⚽", tKey: "sidebar.sports", color: "#22c55e", category: "sports" },
 ];
 
 interface IconSidebarProps {

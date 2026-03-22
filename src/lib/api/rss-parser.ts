@@ -49,6 +49,7 @@ const CATEGORY_KEYWORDS: Record<Category, string[]> = {
   diplomacy: ["diplomat", "embassy", "summit", "treaty", "sanction", "un", "united nations", "foreign minister"],
   protest: ["protest", "demonstration", "riot", "unrest", "strike", "opposition", "rally"],
   health: ["pandemic", "outbreak", "who", "vaccine", "epidemic", "virus", "disease"],
+  sports: ["football", "soccer", "basketball", "tennis", "olympics", "fifa", "uefa", "nba", "nfl", "cricket", "f1", "formula 1", "champion", "league", "premier league", "la liga", "serie a", "bundesliga", "transfer", "goal", "match", "tournament", "world cup"],
 };
 
 // ─── Severity Classification ───
