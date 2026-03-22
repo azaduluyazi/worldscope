@@ -374,6 +374,89 @@ export const LIVE_CHANNELS: LiveChannel[] = [
   { id: "hls-qpvn", label: "QPVN", hlsUrl: "https://qpvn.vn/live/qpvn/master.m3u8", type: "hls", region: "asia", lang: "vi", country: "VN", color: "#003DA6", category: "news" },
 
   // ═══════════════════════════════════════
+  // INDIA (IN) — HLS (iptv-org sourced)
+  // ═══════════════════════════════════════
+  { id: "hls-aajtak", label: "AAJ TAK", hlsUrl: "https://feeds.intoday.in/aajtak/api/aajtakhd/master.m3u8", type: "hls", region: "asia", lang: "hi", country: "IN", color: "#E30613", category: "news" },
+  { id: "hls-abpnews", label: "ABP NEWS", hlsUrl: "https://d2l4ar6y3mrs4k.cloudfront.net/live-streaming/abpnews-livetv/master.m3u8", type: "hls", region: "asia", lang: "hi", country: "IN", color: "#FF6600", category: "news" },
+  { id: "hls-indiatv", label: "INDIA TV", hlsUrl: "https://pl-indiatvnews.akamaized.net/out/v1/db79179b608641ceaa5a4d0dd0dca8da/index.m3u8", type: "hls", region: "asia", lang: "hi", country: "IN", color: "#003DA6", category: "news" },
+  { id: "hls-news18", label: "NEWS18 INDIA", hlsUrl: "https://n18syndication.akamaized.net/bpk-tv/News18_India_NW18_MOB/output01/master.m3u8", type: "hls", region: "asia", lang: "hi", country: "IN", color: "#0055A4", category: "news" },
+  { id: "hls-cnbcawaaz", label: "CNBC AWAAZ", hlsUrl: "https://n18syndication.akamaized.net/bpk-tv/CNBC_Awaaz_NW18_MOB/output01/master.m3u8", type: "hls", region: "asia", lang: "hi", country: "IN", color: "#005594", category: "business" },
+  { id: "hls-ndtvprofit", label: "NDTV PROFIT", hlsUrl: "https://ndtvprofit.akamaized.net/hls/live/2107404/ndtvprofit/master_1.m3u8", type: "hls", region: "asia", lang: "en", country: "IN", color: "#00843D", category: "business" },
+  { id: "hls-zeenews", label: "ZEE NEWS", hlsUrl: "https://dknttpxmr0dwf.cloudfront.net/index_57.m3u8", type: "hls", region: "asia", lang: "hi", country: "IN", color: "#E30613", category: "news" },
+
+  // ═══════════════════════════════════════
+  // TURKEY (TR) — HLS Extra (iptv-org sourced)
+  // ═══════════════════════════════════════
+  { id: "hls-halktv", label: "HALK TV", hlsUrl: "https://halktv-live.daioncdn.net/halktv/halktv.m3u8", type: "hls", region: "tr", lang: "tr", country: "TR", color: "#E30613", category: "news" },
+  { id: "hls-tele1", label: "TELE 1", hlsUrl: "https://tele1-live.ercdn.net/tele1/tele1.m3u8", type: "hls", region: "tr", lang: "tr", country: "TR", color: "#FF6600", category: "news" },
+  { id: "hls-kanald", label: "KANAL D", hlsUrl: "https://demiroren.daioncdn.net/kanald/kanald.m3u8?app=kanald_web&ce=3", type: "hls", region: "tr", lang: "tr", country: "TR", color: "#003DA6", category: "news" },
+  { id: "hls-atv", label: "ATV", hlsUrl: "https://trkvz-live.ercdn.net/tv2/tv2.m3u8", type: "hls", region: "tr", lang: "tr", country: "TR", color: "#FF0000", category: "news" },
+  { id: "hls-teve2", label: "TEVE2", hlsUrl: "https://demiroren-live.daioncdn.net/teve2/teve2.m3u8", type: "hls", region: "tr", lang: "tr", country: "TR", color: "#0055A4", category: "news" },
+  { id: "hls-trt1", label: "TRT 1", hlsUrl: "https://tv-trt1.medya.trt.com.tr/master.m3u8", type: "hls", region: "tr", lang: "tr", country: "TR", color: "#E30613", category: "news" },
+  { id: "hls-tbmm", label: "TBMM TV", hlsUrl: "https://meclistv-live.ercdn.net/meclistv/meclistv.m3u8", type: "hls", region: "tr", lang: "tr", country: "TR", color: "#004B87", category: "news" },
+
+  // ═══════════════════════════════════════
+  // SAUDI ARABIA (SA) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-alhadath", label: "AL HADATH", hlsUrl: "https://shd-gcp-live.edgenextcdn.net/live/bitmovin-hadath/2ff87ec4c2f3ede35295a20637d9f8fd/index.m3u8", type: "hls", region: "mideast", lang: "ar", country: "SA", color: "#B8860B", category: "news" },
+  { id: "hls-alarabiya-en", label: "AL ARABIYA EN", hlsUrl: "https://live.alarabiya.net/alarabiapublish/english/playlist_dvr.m3u8", type: "hls", region: "mideast", lang: "en", country: "SA", color: "#B8860B", category: "news" },
+  { id: "hls-cnbcarabiya", label: "CNBC ARABIYA", hlsUrl: "https://cnbc-live.akamaized.net/cnbc/master.m3u8", type: "hls", region: "mideast", lang: "ar", country: "AE", color: "#005594", category: "business" },
+
+  // ═══════════════════════════════════════
+  // QATAR (QA) — HLS Extra (Al Jazeera direct HLS)
+  // ═══════════════════════════════════════
+  { id: "hls-aja-hq", label: "الجزيرة HQ", hlsUrl: "https://live-hls-apps-aja-fa.getaj.net/AJA/index.m3u8", type: "hls", region: "mideast", lang: "ar", country: "QA", color: "#D4AA00", category: "news" },
+  { id: "hls-aje-hq", label: "AJ ENGLISH HQ", hlsUrl: "https://live-hls-apps-aje-fa.getaj.net/AJE/index.m3u8", type: "hls", region: "global", lang: "en", country: "QA", color: "#D4AA00", category: "news" },
+  { id: "hls-ajm", label: "AJ MUBASHER", hlsUrl: "https://live-hls-apps-ajm-fa.getaj.net/AJM/index.m3u8", type: "hls", region: "mideast", lang: "ar", country: "QA", color: "#D4AA00", category: "news" },
+
+  // ═══════════════════════════════════════
+  // SOUTH KOREA (KR) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-ytn", label: "YTN", hlsUrl: "http://202.60.106.14:8080/214/playlist.m3u8", type: "hls", region: "asia", lang: "ko", country: "KR", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // USA (US) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-foxweather", label: "FOX WEATHER", hlsUrl: "https://247wlive.foxweather.com/stream/index.m3u8", type: "hls", region: "us", lang: "en", country: "US", color: "#0055A4", category: "news" },
+  { id: "hls-livenow", label: "LIVENOW FROM FOX", hlsUrl: "https://fox-foxnewsnow-vizio.amagi.tv/playlist.m3u8", type: "hls", region: "us", lang: "en", country: "US", color: "#003DA6", category: "news" },
+  { id: "hls-newsy", label: "NEWSY", hlsUrl: "https://547f72e6652371c3.mediapackage.us-east-1.amazonaws.com/out/v1/e3e6e29095844c4ba7d887f01e44a5ef/index.m3u8", type: "hls", region: "us", lang: "en", country: "US", color: "#0055A4", category: "news" },
+
+  // ═══════════════════════════════════════
+  // UK (GB) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-iranintl", label: "IRAN INTL", hlsUrl: "https://live.livetvstream.co.uk/LS-63503-4/index.m3u8", type: "hls", region: "mideast", lang: "fa", country: "GB", color: "#00843D", category: "news" },
+
+  // ═══════════════════════════════════════
+  // FRANCE (FR) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-france24en", label: "FRANCE 24 EN", hlsUrl: "https://live.france24.com/hls/live/2037218/F24_EN_HI_HLS/master_5000.m3u8", type: "hls", region: "global", lang: "en", country: "FR", color: "#00A1E4", category: "news" },
+  { id: "hls-france24ar", label: "FRANCE 24 AR", hlsUrl: "https://live.france24.com/hls/live/2037222/F24_AR_HI_HLS/master_5000.m3u8", type: "hls", region: "mideast", lang: "ar", country: "FR", color: "#00A1E4", category: "news" },
+  { id: "hls-france24es", label: "FRANCE 24 ES", hlsUrl: "https://live.france24.com/hls/live/2037220/F24_ES_HI_HLS/master_5000.m3u8", type: "hls", region: "latam", lang: "es", country: "FR", color: "#00A1E4", category: "news" },
+  { id: "hls-tv5monde", label: "TV5MONDE INFO", hlsUrl: "https://ott.tv5monde.com/Content/HLS/Live/channel(info)/variant.m3u8", type: "hls", region: "global", lang: "fr", country: "FR", color: "#8B0000", category: "news" },
+
+  // ═══════════════════════════════════════
+  // GERMANY (DE) — HLS Extra (DW multi-language)
+  // ═══════════════════════════════════════
+  { id: "hls-dwen", label: "DW ENGLISH", hlsUrl: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/master.m3u8", type: "hls", region: "global", lang: "en", country: "DE", color: "#0077B6", category: "news" },
+  { id: "hls-dwar", label: "DW ARABIC", hlsUrl: "https://dwamdstream103.akamaized.net/hls/live/2015526/dwstream103/master.m3u8", type: "hls", region: "mideast", lang: "ar", country: "DE", color: "#0077B6", category: "news" },
+  { id: "hls-dwes", label: "DW ESPAÑOL", hlsUrl: "https://dwamdstream104.akamaized.net/hls/live/2015530/dwstream104/master.m3u8", type: "hls", region: "latam", lang: "es", country: "DE", color: "#0077B6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // SPAIN (ES) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-3catinfo", label: "3CAT INFO", hlsUrl: "https://directes-tv-int.3catdirectes.cat/live-origin/canal324-hls/master.m3u8", type: "hls", region: "eu", lang: "ca", country: "ES", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // RUSSIA (RU) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-izvestia", label: "ИЗВЕСТИЯ", hlsUrl: "http://igi-hls.cdnvideo.ru/igi/igi_tcode/playlist.m3u8", type: "hls", region: "eu", lang: "ru", country: "RU", color: "#003DA6", category: "news" },
+
+  // ═══════════════════════════════════════
+  // IRAQ (IQ) — HLS Extra
+  // ═══════════════════════════════════════
+  { id: "hls-kurdistan24", label: "KURDISTAN 24", hlsUrl: "https://d1x82nydcxndze.cloudfront.net/live/index.m3u8", type: "hls", region: "mideast", lang: "ku", country: "IQ", color: "#FFD700", category: "news" },
+
+  // ═══════════════════════════════════════
   // COLOMBIA (CO) — HLS
   // ═══════════════════════════════════════
   { id: "hls-cablenoticias", label: "CABLENOTICIAS", hlsUrl: "https://5ea86ddd14ce7.streamlock.net/live/cable09061970/playlist.m3u8", type: "hls", region: "latam", lang: "es", country: "CO", color: "#FFD700", category: "news" },
