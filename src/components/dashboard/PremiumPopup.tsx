@@ -9,8 +9,6 @@ import { useState, useEffect } from "react";
  */
 export function PremiumPopup() {
   const [isVisible, setIsVisible] = useState(false);
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   useEffect(() => {
     // Don't show if already dismissed this session
@@ -23,28 +21,6 @@ export function PremiumPopup() {
   const dismiss = () => {
     setIsVisible(false);
     sessionStorage.setItem("premium-dismissed", "1");
-  };
-
-  const subscribe = async () => {
-    if (!email || !email.includes("@")) return;
-    setStatus("loading");
-
-    try {
-      const res = await fetch("/api/newsletter/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, frequency: "daily", tier: "premium" }),
-      });
-
-      if (res.ok) {
-        setStatus("success");
-        setTimeout(dismiss, 3000);
-      } else {
-        setStatus("error");
-      }
-    } catch {
-      setStatus("error");
-    }
   };
 
   if (!isVisible) return null;
@@ -60,13 +36,6 @@ export function PremiumPopup() {
           ✕
         </button>
 
-        {status === "success" ? (
-          <div className="text-center py-2">
-            <div className="text-hud-accent text-lg mb-1">✓</div>
-            <p className="font-mono text-[10px] text-hud-accent">Subscribed successfully!</p>
-            <p className="font-mono text-[8px] text-hud-muted mt-1">Daily briefing starts tomorrow</p>
-          </div>
-        ) : (
           <>
             {/* Header */}
             <div className="flex items-center gap-2 mb-3">
@@ -98,30 +67,12 @@ export function PremiumPopup() {
               ))}
             </ul>
 
-            {/* Email input */}
-            <div className="flex gap-1.5">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className="flex-1 bg-hud-base border border-hud-border rounded px-2 py-1.5 font-mono text-[9px] text-hud-text placeholder-hud-muted/50 focus:border-hud-accent focus:outline-none"
-                onKeyDown={(e) => e.key === "Enter" && subscribe()}
-              />
-              <button
-                onClick={subscribe}
-                disabled={status === "loading"}
-                className="bg-hud-accent text-hud-base font-mono text-[8px] font-bold px-3 py-1.5 rounded hover:bg-hud-accent/80 transition-colors disabled:opacity-50"
-              >
-                {status === "loading" ? "..." : "GO"}
-              </button>
+            {/* Coming Soon Notice */}
+            <div className="bg-hud-accent/10 border border-hud-accent/30 rounded px-3 py-2 text-center">
+              <p className="font-mono text-[9px] text-hud-accent font-bold tracking-wider">COMING VERY SOON</p>
+              <p className="font-mono text-[7px] text-hud-muted mt-1">Premium intel subscription launching soon. Stay tuned!</p>
             </div>
-
-            {status === "error" && (
-              <p className="font-mono text-[8px] text-red-400 mt-1">Failed. Try again.</p>
-            )}
           </>
-        )}
       </div>
     </div>
   );
