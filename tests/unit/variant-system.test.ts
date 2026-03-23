@@ -10,8 +10,12 @@ import {
 describe("Variant System", () => {
   // ── Variant Config ──
   describe("VARIANTS config", () => {
-    it("defines 5 variants including commodity and happy", () => {
-      expect(Object.keys(VARIANTS)).toEqual(["world", "tech", "finance", "commodity", "happy"]);
+    it("defines 11 variants including all scopes", () => {
+      const keys = Object.keys(VARIANTS);
+      expect(keys.length).toBe(11);
+      expect(keys).toContain("world");
+      expect(keys).toContain("sports");
+      expect(keys).toContain("conflict");
     });
 
     it("default variant is world", () => {
@@ -83,11 +87,10 @@ describe("Variant System", () => {
       expect(all.has("natural")).toBe(false);
     });
 
-    it("finance primary is finance and energy", () => {
+    it("finance primary is finance", () => {
       const { primary } = getVariantCategories("finance");
       expect(primary.has("finance")).toBe(true);
-      expect(primary.has("energy")).toBe(true);
-      expect(primary.size).toBe(2);
+      expect(primary.size).toBe(1);
     });
   });
 
@@ -112,11 +115,9 @@ describe("Variant System", () => {
     it("tech filters to tech-relevant feeds only", () => {
       const filtered = filterFeedsByVariant(mockFeeds, "tech");
       const cats = filtered.map((f) => f.category);
-      // tech: primary=tech,cyber; secondary=finance,energy,conflict
+      // tech: primary=tech,cyber; secondary=energy
       expect(cats).toContain("tech");
       expect(cats).toContain("cyber");
-      expect(cats).toContain("finance");
-      expect(cats).toContain("conflict");
       expect(cats).toContain("energy");
       expect(cats).not.toContain("health");
     });
@@ -124,13 +125,11 @@ describe("Variant System", () => {
     it("finance filters to finance-relevant feeds only", () => {
       const filtered = filterFeedsByVariant(mockFeeds, "finance");
       const cats = filtered.map((f) => f.category);
-      // finance: primary=finance,energy; secondary=diplomacy,tech,conflict
+      // finance: primary=finance; secondary=energy
       expect(cats).toContain("finance");
       expect(cats).toContain("energy");
-      expect(cats).toContain("tech");
-      expect(cats).toContain("conflict");
       expect(cats).not.toContain("health");
-      expect(cats).not.toContain("cyber");
+      expect(cats).not.toContain("conflict");
     });
 
     it("returns empty for empty input", () => {

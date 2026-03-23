@@ -4,7 +4,7 @@ import type { Category, Severity } from "@/types/intel";
 
 const VALID_CATEGORIES: Category[] = [
   "conflict", "natural", "cyber", "finance", "tech",
-  "health", "energy", "aviation", "diplomacy", "protest",
+  "health", "energy", "aviation", "diplomacy", "protest", "sports",
 ];
 
 const VALID_SEVERITIES: Severity[] = [
@@ -37,15 +37,18 @@ describe("SEED_FEEDS config", () => {
     expect(unique.size).toBe(urls.length);
   });
 
-  it("covers all 10 categories", () => {
+  // Sports data comes from APIs (ESPN, Football Data, F1), not RSS feeds
+  const RSS_CATEGORIES = VALID_CATEGORIES.filter((c) => c !== "sports");
+
+  it("covers all RSS-based categories", () => {
     const coveredCategories = new Set(SEED_FEEDS.map((f) => f.category));
-    for (const cat of VALID_CATEGORIES) {
+    for (const cat of RSS_CATEGORIES) {
       expect(coveredCategories.has(cat)).toBe(true);
     }
   });
 
-  it("each category has at least 5 feeds", () => {
-    for (const cat of VALID_CATEGORIES) {
+  it("each RSS category has at least 5 feeds", () => {
+    for (const cat of RSS_CATEGORIES) {
       const count = SEED_FEEDS.filter((f) => f.category === cat).length;
       expect(count).toBeGreaterThanOrEqual(5);
     }

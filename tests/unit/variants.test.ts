@@ -7,8 +7,20 @@ import {
 } from "@/config/variants";
 
 describe("VARIANTS config", () => {
-  it("has 5 variants including commodity and happy", () => {
-    expect(Object.keys(VARIANTS)).toEqual(["world", "tech", "finance", "commodity", "happy"]);
+  it("has 11 variants including all scopes", () => {
+    const keys = Object.keys(VARIANTS);
+    expect(keys).toContain("world");
+    expect(keys).toContain("tech");
+    expect(keys).toContain("finance");
+    expect(keys).toContain("commodity");
+    expect(keys).toContain("happy");
+    expect(keys).toContain("conflict");
+    expect(keys).toContain("cyber");
+    expect(keys).toContain("weather");
+    expect(keys).toContain("health");
+    expect(keys).toContain("energy");
+    expect(keys).toContain("sports");
+    expect(keys.length).toBe(11);
   });
 
   it("default variant is world", () => {
@@ -52,9 +64,13 @@ describe("getVariantCategories", () => {
     expect(primary.has("conflict")).toBe(false);
   });
 
-  it("finance variant prioritizes finance and energy", () => {
+  it("finance variant prioritizes finance", () => {
     const { primary } = getVariantCategories("finance");
     expect(primary.has("finance")).toBe(true);
+  });
+
+  it("energy variant prioritizes energy", () => {
+    const { primary } = getVariantCategories("energy");
     expect(primary.has("energy")).toBe(true);
   });
 });
@@ -72,8 +88,7 @@ describe("filterFeedsByVariant", () => {
     const filtered = filterFeedsByVariant(feeds, "tech");
     const cats = filtered.map((f) => f.category);
     expect(cats).toContain("cyber");
-    expect(cats).toContain("finance"); // secondary for tech
-    expect(cats).toContain("conflict"); // secondary for tech
+    // tech secondary is only energy
     expect(cats).not.toContain("health");
     expect(cats).not.toContain("aviation");
   });
