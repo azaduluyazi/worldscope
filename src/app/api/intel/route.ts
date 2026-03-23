@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { cachedFetch, TTL } from "@/lib/cache/redis";
+import { cachedFetch, TTL, redis } from "@/lib/cache/redis";
 import { fetchGdeltArticles, fetchGdeltGeo } from "@/lib/api/gdelt";
 import { fetchEarthquakes } from "@/lib/api/usgs";
 import { fetchReliefWebDisasters } from "@/lib/api/reliefweb";
@@ -15,6 +15,25 @@ import { fetchSafecastReadings, radiationToIntelItems } from "@/lib/api/radiatio
 import { fetchOrefAlerts } from "@/lib/api/tzevaadom";
 import { fetchUcdpEvents } from "@/lib/api/ucdp";
 import { fetchInternetOutagesAsIntel } from "@/lib/api/cloudflare-radar";
+import { fetchKandilliEarthquakes } from "@/lib/api/kandilli";
+import { fetchEntsoeIntel } from "@/lib/api/entsoe";
+import { fetchEiaIntel } from "@/lib/api/eia";
+import { fetchAllSportsScores } from "@/lib/api/espn-sports";
+import { fetchSupplyChainAttacks } from "@/lib/api/supply-chain-threats";
+import { fetchDollarTomanIntel } from "@/lib/api/dollar-toman";
+import { fetchCrisisReports } from "@/lib/api/crisis-news";
+import { fetchCoinGeckoNews, fetchCryptoPanicNews } from "@/lib/api/crypto-news";
+import { fetchCryptoConvertIntel } from "@/lib/api/crypto-convert";
+import { fetchElectricityMapsIntel } from "@/lib/api/electricity-maps";
+import { fetchRansomwareVictims } from "@/lib/api/ransomware-live";
+import { fetchSarInterference } from "@/lib/api/sar-interference";
+import { fetchFootballIntel } from "@/lib/api/football-data";
+import { fetchMarketMoversIntel } from "@/lib/api/tv-screener";
+import { fetchMajorIndices } from "@/lib/api/finance-mcp";
+import { fetchSpaceXLaunches, fetchLaunchLibrary } from "@/lib/api/spacex";
+import { fetchNvdCves } from "@/lib/api/nvd-cve";
+import { fetchF1Intel } from "@/lib/api/f1-ergast";
+import { fetchGoodNews } from "@/lib/api/good-news";
 import { gatewayFetch } from "@/lib/api/gateway";
 import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
@@ -56,31 +75,65 @@ export async function GET(request: Request) {
 
         const startTime = Date.now();
 
+        // Load disabled sources from Redis (admin toggle)
+        const disabledRaw = await redis.get<string[]>("disabled-sources").catch(() => null);
+        const disabledSet = new Set<string>(disabledRaw || []);
+        // Helper: skip gatewayFetch if source is admin-disabled
+        const gf = <T>(sourceId: string, fetcher: () => Promise<T>, opts?: { timeoutMs?: number; fallback?: T }): Promise<T> => {
+          if (disabledSet.has(`api:${sourceId}`) || disabledSet.has(sourceId)) {
+            return Promise.resolve(opts?.fallback as T ?? [] as unknown as T);
+          }
+          return gatewayFetch(sourceId, fetcher, opts);
+        };
+
         // 1. DB + Tier 1 critical sources (circuit breaker protected)
         const [dbEvents, ...tier1Results] = await Promise.all([
           fetchPersistedEvents({ category: category || undefined, limit: 1500, hoursBack: 72 }),
-          gatewayFetch("gdelt-articles", () => fetchGdeltArticles(undefined, 50, lang), { fallback: [] }),
-          gatewayFetch("usgs-4.5w", () => fetchEarthquakes("4.5_week"), { fallback: [] }),
-          gatewayFetch("oref", () => fetchOrefAlerts(20), { fallback: [] }),
-          gatewayFetch("gdacs", () => fetchGDACSAlerts(), { fallback: [] }),
+          gf("gdelt-articles", () => fetchGdeltArticles(undefined, 50, lang), { fallback: [] }),
+          gf("usgs-4.5w", () => fetchEarthquakes("4.5_week"), { fallback: [] }),
+          gf("oref", () => fetchOrefAlerts(20), { fallback: [] }),
+          gf("gdacs", () => fetchGDACSAlerts(), { fallback: [] }),
         ]);
 
         // 2. Tier 2 secondary sources (circuit breaker + best-effort)
         const tier2Sources = await Promise.allSettled([
-          gatewayFetch("gdelt-geo", () => fetchGdeltGeo(undefined, 100, lang), { fallback: [] }),
-          gatewayFetch("usgs-2.5d", () => fetchEarthquakes("2.5_day"), { fallback: [] }),
-          gatewayFetch("usgs-sig-month", () => fetchEarthquakes("significant_month"), { fallback: [] }),
-          gatewayFetch("reliefweb", () => fetchReliefWebDisasters(), { fallback: [] }),
-          gatewayFetch("spaceflight", () => fetchSpaceflightNews(), { fallback: [] }),
-          gatewayFetch("disease-sh", () => fetchDiseaseOutbreaks(), { fallback: [] }),
-          gatewayFetch("cyber", () => fetchAllCyberThreats(), { fallback: [] }),
-          gatewayFetch("nasa-firms", () => fetchFireHotspots(50), { fallback: [] }),
-          gatewayFetch("nasa-eonet", () => fetchNasaEonet(14, 30), { fallback: [] }),
-          gatewayFetch("hackernews", () => fetchHackerNews(20), { fallback: [] }),
-          gatewayFetch("who", () => fetchWhoOutbreaks(15), { fallback: [] }),
-          gatewayFetch("safecast", () => fetchSafecastReadings().then(radiationToIntelItems), { fallback: [] }),
-          gatewayFetch("ucdp", () => fetchUcdpEvents(30), { fallback: [] }),
-          gatewayFetch("cloudflare-radar", () => fetchInternetOutagesAsIntel(), { fallback: [] }),
+          gf("gdelt-geo", () => fetchGdeltGeo(undefined, 100, lang), { fallback: [] }),
+          gf("usgs-2.5d", () => fetchEarthquakes("2.5_day"), { fallback: [] }),
+          gf("usgs-sig-month", () => fetchEarthquakes("significant_month"), { fallback: [] }),
+          gf("reliefweb", () => fetchReliefWebDisasters(), { fallback: [] }),
+          gf("spaceflight", () => fetchSpaceflightNews(), { fallback: [] }),
+          gf("disease-sh", () => fetchDiseaseOutbreaks(), { fallback: [] }),
+          gf("cyber", () => fetchAllCyberThreats(), { fallback: [] }),
+          gf("nasa-firms", () => fetchFireHotspots(50), { fallback: [] }),
+          gf("nasa-eonet", () => fetchNasaEonet(14, 30), { fallback: [] }),
+          gf("hackernews", () => fetchHackerNews(20), { fallback: [] }),
+          gf("who", () => fetchWhoOutbreaks(15), { fallback: [] }),
+          gf("safecast", () => fetchSafecastReadings().then(radiationToIntelItems), { fallback: [] }),
+          gf("ucdp", () => fetchUcdpEvents(30), { fallback: [] }),
+          gf("cloudflare-radar", () => fetchInternetOutagesAsIntel(), { fallback: [] }),
+          // ── New sources ──
+          gf("kandilli", () => fetchKandilliEarthquakes(), { fallback: [] }),
+          gf("entsoe", () => fetchEntsoeIntel(), { fallback: [] }),
+          gf("eia", () => fetchEiaIntel(), { fallback: [] }),
+          gf("espn-sports", () => fetchAllSportsScores(), { fallback: [] }),
+          gf("supply-chain", () => fetchSupplyChainAttacks(), { fallback: [] }),
+          gf("dollar-toman", () => fetchDollarTomanIntel(), { fallback: [] }),
+          gf("crisis-news", () => fetchCrisisReports(), { fallback: [] }),
+          gf("crypto-news", () => fetchCoinGeckoNews(), { fallback: [] }),
+          gf("cryptopanic", () => fetchCryptoPanicNews(), { fallback: [] }),
+          gf("crypto-convert", () => fetchCryptoConvertIntel(), { fallback: [] }),
+          gf("electricity-maps", () => fetchElectricityMapsIntel(), { fallback: [] }),
+          gf("ransomware-live", () => fetchRansomwareVictims(), { fallback: [] }),
+          gf("sar-interference", () => fetchSarInterference(), { fallback: [] }),
+          gf("football-data", () => fetchFootballIntel(), { fallback: [] }),
+          gf("tv-screener", () => fetchMarketMoversIntel(), { fallback: [] }),
+          gf("market-indices", () => fetchMajorIndices(), { fallback: [] }),
+          // ── Session 4: New open sources (no API key needed) ──
+          gf("spacex", () => fetchSpaceXLaunches(), { fallback: [] }),
+          gf("launch-library", () => fetchLaunchLibrary(), { fallback: [] }),
+          gf("nvd-cve", () => fetchNvdCves(15), { fallback: [] }),
+          gf("f1", () => fetchF1Intel(), { fallback: [] }),
+          gf("good-news", () => fetchGoodNews(), { fallback: [] }),
         ]);
 
         // Merge tier 1 (already resolved) + tier 2 results
