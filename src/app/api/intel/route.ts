@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { intelQuerySchema } from "@/lib/validators/schemas";
 import { cachedFetch, TTL, redis } from "@/lib/cache/redis";
 import { fetchGdeltArticles, fetchGdeltGeo } from "@/lib/api/gdelt";
 import { fetchEarthquakes } from "@/lib/api/usgs";
@@ -57,12 +58,18 @@ const VALID_CATEGORIES = new Set<Category>([
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const rawCategory = searchParams.get("category");
+    const rawParams = Object.fromEntries(searchParams);
+    const parsed = intelQuerySchema.safeParse(rawParams);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid parameters", details: parsed.error.flatten() },
+        { status: 400 }
+      );
+    }
+    const { limit, hours: _hours, lang, category: rawCategory, severity: _severity } = parsed.data;
     const category = rawCategory && VALID_CATEGORIES.has(rawCategory as Category)
       ? (rawCategory as Category)
       : null;
-    const limit = Math.min(Number(searchParams.get("limit") || 500), 2000);
-    const lang = searchParams.get("lang") || "en";
 
     const cacheKey = category
       ? `intel:feed:${category}:${lang}`
@@ -292,10 +299,8 @@ export async function GET(request: Request) {
     }
 
     // Hours filter (optional — filter by publishedAt age)
-    const hoursParam = searchParams.get("hours");
-    if (hoursParam) {
-      const hours = Math.min(Math.max(Number(hoursParam) || 24, 1), 720);
-      const since = Date.now() - hours * 60 * 60 * 1000;
+    if (searchParams.has("hours")) {
+      const since = Date.now() - _hours * 60 * 60 * 1000;
       filtered = filtered.filter(
         (i) => new Date(i.publishedAt).getTime() >= since
       );
