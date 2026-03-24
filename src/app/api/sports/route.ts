@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/middleware/rate-limit";
 import { cachedFetch } from "@/lib/cache/redis";
 import { fetchAllSportsScores } from "@/lib/api/espn-sports";
 import { fetchFootballIntel } from "@/lib/api/football-data";
@@ -15,8 +16,11 @@ export const runtime = "nodejs";
 const CACHE_KEY = "sports:aggregated";
 const CACHE_TTL = 120;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const rateLimited = await checkRateLimit(req);
+    if (rateLimited) return rateLimited;
+
     const data = await cachedFetch<{ items: IntelItem[]; total: number; lastUpdated: string }>(
       CACHE_KEY,
       async () => {

@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/middleware/rate-limit";
 import { intelQuerySchema } from "@/lib/validators/schemas";
 import { cachedFetch, TTL, redis } from "@/lib/cache/redis";
 import { fetchGdeltArticles, fetchGdeltGeo } from "@/lib/api/gdelt";
@@ -55,8 +56,11 @@ const VALID_CATEGORIES = new Set<Category>([
 ]);
 
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    const rateLimited = await checkRateLimit(request);
+    if (rateLimited) return rateLimited;
+
     const { searchParams } = new URL(request.url);
     const rawParams = Object.fromEntries(searchParams);
     const parsed = intelQuerySchema.safeParse(rawParams);
