@@ -40,7 +40,7 @@ export function TopBar({ variant = "world" }: TopBarProps) {
   }, []);
 
   return (
-    <header className="h-10 md:h-11 bg-gradient-to-b from-hud-panel to-hud-surface border-b border-hud-border flex items-center px-2 md:px-4 z-50">
+    <header role="banner" className="h-10 md:h-11 bg-gradient-to-b from-hud-panel to-hud-surface border-b border-hud-border flex items-center px-2 md:px-4 z-50">
       {/* Logo — compact on mobile */}
       <div className="flex items-center gap-1.5 md:gap-2">
         <div

@@ -61,6 +61,8 @@ export function IconSidebar({
               key={item.id}
               onClick={() => onToggleCategory(item.category)}
               title={t(item.tKey)}
+              aria-label={t(item.tKey)}
+              aria-pressed={filters.categories.has(item.category)}
               className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all relative
                 ${isActive
                   ? "bg-hud-accent/10 border border-hud-accent/30"
@@ -110,6 +112,8 @@ export function IconSidebar({
 
       <button
         title={t("tracking.flights")}
+        aria-label={t("tracking.flights")}
+        aria-pressed={!!filters.flights}
         onClick={() => onToggleLayer("flights")}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
           ${filters.flights ? "bg-[#ffd000]/10 border border-[#ffd000]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
@@ -119,6 +123,8 @@ export function IconSidebar({
 
       <button
         title={t("tracking.vessels")}
+        aria-label={t("tracking.vessels")}
+        aria-pressed={!!filters.vessels}
         onClick={() => onToggleLayer("vessels")}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
           ${filters.vessels ? "bg-[#00ff88]/10 border border-[#00ff88]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
@@ -128,6 +134,8 @@ export function IconSidebar({
 
       <button
         title="GPS"
+        aria-label="GPS"
+        aria-pressed={!!filters.gpsJamming}
         onClick={() => onToggleLayer("gpsJamming")}
         className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
           ${filters.gpsJamming ? "bg-[#ff4757]/10 border border-[#ff4757]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}

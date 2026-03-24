@@ -26,6 +26,7 @@ export function IntelCard({ item, onPreview }: IntelCardProps) {
     <button
       type="button"
       onClick={handleClick}
+      aria-label={`${item.severity} ${item.category}: ${truncate(item.title, 60)}`}
       className={`severity-${item.severity} group block w-full text-left rounded-r-md p-2.5 transition-all duration-200 hover:brightness-125 hover:translate-x-0.5 animate-slide-in cursor-pointer`}
     >
       <div className="flex justify-between items-center mb-1">

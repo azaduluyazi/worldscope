@@ -15,7 +15,7 @@ export function MarketTicker() {
   const { quotes, fearGreed, isLoading } = useMarketData();
 
   return (
-    <div className="absolute bottom-3 left-3 right-3 z-20 flex gap-1.5 overflow-x-auto">
+    <div role="marquee" aria-live="polite" aria-atomic="false" className="absolute bottom-3 left-3 right-3 z-20 flex gap-1.5 overflow-x-auto">
       {isLoading
         ? Array(6)
             .fill(0)
