@@ -8,15 +8,24 @@ import type { IntelItem, Severity } from "@/types/intel";
 
 const ESPN_API = "https://site.api.espn.com/apis/site/v2/sports";
 
-type Sport = "soccer" | "football" | "basketball" | "baseball" | "hockey" | "tennis";
+type Sport = "soccer" | "soccer_laliga" | "soccer_bundesliga" | "soccer_seriea" | "soccer_ligue1" | "soccer_super_lig" | "soccer_mls" | "soccer_ucl" | "football" | "basketball" | "baseball" | "hockey" | "tennis" | "rugby" | "mma";
 
 const SPORT_PATHS: Record<Sport, string> = {
   soccer: "soccer/eng.1", // Premier League
+  soccer_laliga: "soccer/esp.1", // La Liga
+  soccer_bundesliga: "soccer/ger.1", // Bundesliga
+  soccer_seriea: "soccer/ita.1", // Serie A
+  soccer_ligue1: "soccer/fra.1", // Ligue 1
+  soccer_super_lig: "soccer/tur.1", // Turkish Super Lig
+  soccer_mls: "soccer/usa.1", // MLS
+  soccer_ucl: "soccer/uefa.champions", // Champions League
   football: "football/nfl",
   basketball: "basketball/nba",
   baseball: "baseball/mlb",
   hockey: "hockey/nhl",
   tennis: "tennis/atp",
+  rugby: "rugby/270557", // Six Nations / World Cup
+  mma: "mma/ufc",
 };
 
 interface EspnEvent {
@@ -128,7 +137,11 @@ export async function fetchEspnNews(sport: Sport = "soccer"): Promise<IntelItem[
  * Fetch all major sports data combined.
  */
 export async function fetchAllSportsScores(): Promise<IntelItem[]> {
-  const sports: Sport[] = ["soccer", "basketball", "football", "baseball"];
+  const sports: Sport[] = [
+    "soccer", "soccer_laliga", "soccer_bundesliga", "soccer_seriea",
+    "soccer_ucl", "soccer_super_lig",
+    "basketball", "football", "baseball", "hockey", "mma",
+  ];
   const results = await Promise.allSettled(sports.map((s) => fetchEspnScores(s)));
   return results.flatMap((r) => (r.status === "fulfilled" ? r.value : []));
 }

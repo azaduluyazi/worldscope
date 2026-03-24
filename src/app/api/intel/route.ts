@@ -33,6 +33,10 @@ import { fetchMajorIndices } from "@/lib/api/finance-mcp";
 import { fetchSpaceXLaunches, fetchLaunchLibrary } from "@/lib/api/spacex";
 import { fetchNvdCves } from "@/lib/api/nvd-cve";
 import { fetchF1Intel } from "@/lib/api/f1-ergast";
+import { fetchOpenF1Intel } from "@/lib/api/openf1";
+import { fetchNbaIntel } from "@/lib/api/nba-stats";
+import { fetchTransfermarktIntel } from "@/lib/api/transfermarkt";
+import { fetchCricketIntel } from "@/lib/api/cricket";
 import { fetchGoodNews } from "@/lib/api/good-news";
 import { gatewayFetch } from "@/lib/api/gateway";
 import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
@@ -133,6 +137,10 @@ export async function GET(request: Request) {
           gf("launch-library", () => fetchLaunchLibrary(), { fallback: [] }),
           gf("nvd-cve", () => fetchNvdCves(15), { fallback: [] }),
           gf("f1", () => fetchF1Intel(), { fallback: [] }),
+          gf("openf1", () => fetchOpenF1Intel(), { fallback: [] }),
+          gf("nba-stats", () => fetchNbaIntel(), { fallback: [] }),
+          gf("transfermarkt", () => fetchTransfermarktIntel(), { fallback: [] }),
+          gf("cricket", () => fetchCricketIntel(), { fallback: [] }),
           gf("good-news", () => fetchGoodNews(), { fallback: [] }),
         ]);
 
