@@ -47,8 +47,8 @@ describe("categorizeFeedItem", () => {
     expect(categorizeFeedItem("WHO declares new pandemic threat")).toBe("health");
   });
 
-  it("defaults to diplomacy for unclassifiable text", () => {
-    expect(categorizeFeedItem("lorem ipsum dolor sit amet")).toBe("diplomacy");
+  it("defaults to conflict for unclassifiable text", () => {
+    expect(categorizeFeedItem("lorem ipsum dolor sit amet")).toBe("conflict");
   });
 });
 
