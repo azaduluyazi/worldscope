@@ -1,40 +1,24 @@
 /**
- * Ransomware.live — Real-time ransomware attack tracking.
- * Tracks ransomware groups, recent victims, and attack trends.
- * Free, no API key required.
- * Docs: https://api.ransomware.live
- *
- * Source: JMousqueton/ransomware.live (310 stars)
- * Gap filled: First ransomware-specific feed. Existing cyber feeds track
- * IoCs/CVEs (nvd-cve, shodan, pulsedive) but not ransomware incidents.
+ * Ransomware Tracking — RansomLook API (free, no key).
+ * Tracks ransomware group activity and victim postings.
+ * Replaces: ransomware.live (server down/timeout).
  */
 
 import type { IntelItem, Severity } from "@/types/intel";
 
-const RANSOMWARE_API = "https://api.ransomware.live/v2";
+const RANSOMLOOK_API = "https://www.ransomlook.io/api/recent";
 
-interface RansomwareVictim {
-  name: string;
-  group: string;
-  url: string;
-  date: string;
-  country?: string;
-  sector?: string;
-  description?: string;
-}
-
-interface RansomwareGroup {
-  name: string;
-  url: string;
-  count: number;
-  last_seen: string;
+interface RansomPost {
+  post_title: string;
+  discovered: string;
+  description: string;
+  link: string;
+  group_name: string;
 }
 
 function groupToSeverity(group: string): Severity {
-  // Major groups known for high-impact attacks
   const criticalGroups = ["lockbit", "alphv", "blackcat", "cl0p", "play", "blackbasta", "rhysida"];
   const highGroups = ["akira", "medusa", "bianlian", "hunters", "8base", "noescape"];
-
   const g = group.toLowerCase();
   if (criticalGroups.some((cg) => g.includes(cg))) return "critical";
   if (highGroups.some((hg) => g.includes(hg))) return "high";
@@ -42,48 +26,29 @@ function groupToSeverity(group: string): Severity {
 }
 
 /**
- * Fetch recent ransomware victims.
+ * Fetch recent ransomware victim postings from RansomLook.
  */
 export async function fetchRansomwareVictims(): Promise<IntelItem[]> {
   try {
-    const res = await fetch(`${RANSOMWARE_API}/recentvictims`, {
-      signal: AbortSignal.timeout(10000),
+    const res = await fetch(RANSOMLOOK_API, {
+      signal: AbortSignal.timeout(12000),
       headers: { Accept: "application/json" },
     });
     if (!res.ok) return [];
 
-    const victims: RansomwareVictim[] = await res.json();
-    if (!Array.isArray(victims)) return [];
+    const data: RansomPost[] = await res.json();
+    if (!Array.isArray(data)) return [];
 
-    return victims.slice(0, 20).map((v): IntelItem => ({
-      id: `ransomware-${v.group}-${v.name}-${v.date}`.replace(/\s+/g, "-").toLowerCase(),
-      title: `🔒 Ransomware: ${v.name} hit by ${v.group}`,
-      summary: `Victim: ${v.name} | Group: ${v.group}${v.sector ? ` | Sector: ${v.sector}` : ""}${v.country ? ` | Country: ${v.country}` : ""} | Date: ${v.date}`,
-      url: `https://www.ransomware.live/#/victims`,
-      source: "Ransomware.live",
+    return data.slice(0, 25).map((p, i): IntelItem => ({
+      id: `ransomware-${p.group_name}-${i}-${Date.now()}`,
+      title: `🔒 ${p.group_name}: ${p.post_title || "New victim"}`,
+      summary: `Ransomware group "${p.group_name}" posted new victim${p.description ? `: ${p.description.slice(0, 200)}` : ""}`,
+      url: p.link || "https://www.ransomlook.io",
+      source: "RansomLook",
       category: "cyber",
-      severity: groupToSeverity(v.group),
-      publishedAt: new Date(v.date).toISOString() || new Date().toISOString(),
-      countryCode: v.country?.slice(0, 2),
+      severity: groupToSeverity(p.group_name),
+      publishedAt: p.discovered || new Date().toISOString(),
     }));
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Fetch active ransomware groups.
- */
-export async function fetchRansomwareGroups(): Promise<RansomwareGroup[]> {
-  try {
-    const res = await fetch(`${RANSOMWARE_API}/groups`, {
-      signal: AbortSignal.timeout(10000),
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) return [];
-
-    const groups = await res.json();
-    return Array.isArray(groups) ? groups : [];
   } catch {
     return [];
   }

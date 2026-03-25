@@ -84,7 +84,7 @@ export async function fetchGdeltArticles(
 
   try {
     const res = await fetch(`${GDELT_BASE}/doc/doc?${params}`, {
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(25000),
     });
     if (!res.ok) return [];
 
@@ -128,7 +128,7 @@ export async function fetchGdeltGeo(
 
   try {
     const res = await fetch(`${GDELT_BASE}/geo/geo?${params}`, {
-      signal: AbortSignal.timeout(15000),
+      signal: AbortSignal.timeout(25000),
     });
     if (!res.ok) return [];
 

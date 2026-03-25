@@ -1,102 +1,72 @@
 /**
  * Cricket Data — Live scores and match results.
  * Free, no API key. Uses ESPN Cricinfo API (public).
- * Source: THOMASBAIJU/Batsman_Bowler_Matchup pattern.
- * Gap: Zero cricket coverage in current SportsScope.
+ * ESPN cricket API requires league IDs in the path.
  */
 
 import type { IntelItem } from "@/types/intel";
 
 const CRICINFO_API = "https://site.api.espn.com/apis/site/v2/sports/cricket";
 
+// Major cricket league IDs
+const CRICKET_LEAGUES = [
+  { id: 28431, name: "IPL" },
+  { id: 8043, name: "Sheffield Shield" },
+  { id: 8041, name: "SuperSport" },
+  { id: 8039, name: "ICC WTC" },
+  { id: 28880, name: "Big Bash" },
+  { id: 28129, name: "The Hundred" },
+];
+
 /**
  * Fetch live/recent international cricket scores.
  */
 export async function fetchCricketScores(): Promise<IntelItem[]> {
   try {
-    // International matches
-    const res = await fetch(`${CRICINFO_API}/scoreboard`, {
-      signal: AbortSignal.timeout(8000),
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) return [];
+    const allEvents: Array<Record<string, unknown>> = [];
 
-    const data = await res.json();
-    const events = data?.events || [];
+    // Fetch from multiple leagues in parallel
+    const results = await Promise.allSettled(
+      CRICKET_LEAGUES.map(async (league) => {
+        const res = await fetch(`${CRICINFO_API}/${league.id}/scoreboard`, {
+          signal: AbortSignal.timeout(5000),
+          headers: { Accept: "application/json" },
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return (data?.events || []) as Array<Record<string, unknown>>;
+      })
+    );
 
-    return events.slice(0, 10).map((e: {
-      id: string;
-      name: string;
-      shortName: string;
-      date: string;
-      status: { type: { state: string; description: string } };
-      competitions: Array<{
-        competitors: Array<{
-          team: { displayName: string; abbreviation: string };
-          score: string;
-          winner?: boolean;
-        }>;
-      }>;
-      links?: Array<{ href: string }>;
-    }): IntelItem => {
-      const state = e.status.type.state;
-      const comp = e.competitions?.[0];
+    for (const r of results) {
+      if (r.status === "fulfilled") allEvents.push(...r.value);
+    }
+
+    return allEvents.slice(0, 10).map((e): IntelItem => {
+      const state = (e.status as { type: { state: string; description: string } })?.type?.state || "";
+      const comp = (e.competitions as Array<{ competitors: Array<{ team: { displayName: string; abbreviation: string }; score: string; winner?: boolean }> }>)?.[0];
       const teams = comp?.competitors || [];
+      const shortName = String(e.shortName || e.name || "");
 
-      let title = e.shortName || e.name;
+      let title = shortName;
       if (state === "in") {
-        title = `🔴 LIVE: ${e.shortName} — ${teams.map(t => `${t.team.abbreviation} ${t.score || ""}`).join(" vs ")}`;
+        title = `🔴 LIVE: ${shortName} — ${teams.map(t => `${t.team.abbreviation} ${t.score || ""}`).join(" vs ")}`;
       } else if (state === "post") {
         const winner = teams.find(t => t.winner);
-        title = `🏏 ${winner?.team.displayName || "TBD"} wins | ${e.shortName}`;
+        title = `🏏 ${winner?.team.displayName || "TBD"} wins | ${shortName}`;
       }
 
       return {
         id: `cricket-${e.id}`,
         title,
-        summary: `${e.name} | ${e.status.type.description}`,
-        url: e.links?.[0]?.href || "https://www.espncricinfo.com",
+        summary: `${e.name} | ${(e.status as { type: { description: string } })?.type?.description || ""}`,
+        url: ((e.links as Array<{ href: string }>)?.[0]?.href) || "https://www.espncricinfo.com",
         source: "Cricinfo",
         category: "sports",
         severity: state === "in" ? "high" : state === "post" ? "medium" : "info",
-        publishedAt: e.date,
+        publishedAt: String(e.date || new Date().toISOString()),
       };
     });
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Fetch cricket news headlines.
- */
-export async function fetchCricketNews(): Promise<IntelItem[]> {
-  try {
-    const res = await fetch(`${CRICINFO_API}/news`, {
-      signal: AbortSignal.timeout(8000),
-      headers: { Accept: "application/json" },
-    });
-    if (!res.ok) return [];
-
-    const data = await res.json();
-    const articles = data?.articles || [];
-
-    return articles.slice(0, 5).map((a: {
-      dataSourceIdentifier?: string;
-      headline?: string;
-      description?: string;
-      links?: { web?: { href?: string } };
-      published?: string;
-    }): IntelItem => ({
-      id: `cricket-news-${a.dataSourceIdentifier || Date.now()}`,
-      title: `🏏 ${a.headline || "Cricket Update"}`,
-      summary: String(a.description || "").slice(0, 300),
-      url: a.links?.web?.href || "https://www.espncricinfo.com",
-      source: "Cricinfo",
-      category: "sports",
-      severity: "info",
-      publishedAt: a.published || new Date().toISOString(),
-    }));
   } catch {
     return [];
   }
@@ -106,13 +76,5 @@ export async function fetchCricketNews(): Promise<IntelItem[]> {
  * Combined Cricket intel.
  */
 export async function fetchCricketIntel(): Promise<IntelItem[]> {
-  const [scores, news] = await Promise.allSettled([
-    fetchCricketScores(),
-    fetchCricketNews(),
-  ]);
-
-  return [
-    ...(scores.status === "fulfilled" ? scores.value : []),
-    ...(news.status === "fulfilled" ? news.value : []),
-  ];
+  return fetchCricketScores();
 }

@@ -28,7 +28,7 @@ export async function fetchInternetOutages(): Promise<InternetOutage[]> {
     const timeout = setTimeout(() => controller.abort(), 10000);
 
     const res = await fetch(
-      `${RADAR_BASE}/annotations/outages?limit=20&format=json`,
+      `${RADAR_BASE}/annotations/outages?dateRange=7d&limit=20&format=json`,
       {
         signal: controller.signal,
         headers: {

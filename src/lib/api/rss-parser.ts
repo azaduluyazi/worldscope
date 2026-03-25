@@ -27,7 +27,10 @@ function createParser(): Parser {
       "User-Agent": getNextUserAgent(),
       "Accept": "application/rss+xml, application/xml, application/atom+xml, text/xml, */*;q=0.1",
       "Accept-Language": "en-US,en;q=0.9",
-      "Accept-Encoding": "gzip, deflate",
+      // NOTE: Do NOT send Accept-Encoding: gzip — rss-parser uses its own HTTP
+      // client (http/https module) which doesn't auto-decompress gzip responses.
+      // Sending this header causes sites to return compressed data that fails XML parsing
+      // with "Non-whitespace before first tag" error.
       "Cache-Control": "no-cache",
       "Connection": "keep-alive",
     },
@@ -39,17 +42,17 @@ const MAX_RETRIES = 2;
 const RETRY_DELAYS = [1000, 3000]; // exponential-ish backoff
 
 const CATEGORY_KEYWORDS: Record<Category, string[]> = {
-  conflict: ["war", "military", "missile", "strike", "attack", "troops", "nato", "defense", "combat", "weapon", "bomb", "artillery", "invasion"],
-  finance: ["market", "stock", "economy", "fed", "inflation", "gdp", "trade", "bank", "currency", "recession", "s&p", "dow", "nasdaq", "bitcoin", "crypto"],
-  cyber: ["cyber", "hack", "breach", "ransomware", "malware", "vulnerability", "cve", "phishing", "ddos"],
-  tech: ["ai", "artificial intelligence", "startup", "silicon valley", "openai", "google", "apple", "nvidia", "chip", "semiconductor", "software", "cloud"],
-  natural: ["earthquake", "tsunami", "hurricane", "flood", "wildfire", "volcano", "storm", "disaster", "climate"],
-  aviation: ["flight", "airline", "aircraft", "airport", "aviation", "faa", "crash", "boeing", "airbus"],
-  energy: ["oil", "gas", "opec", "energy", "nuclear", "solar", "wind", "pipeline", "electricity"],
-  diplomacy: ["diplomat", "embassy", "summit", "treaty", "sanction", "un", "united nations", "foreign minister"],
-  protest: ["protest", "demonstration", "riot", "unrest", "strike", "opposition", "rally"],
-  health: ["pandemic", "outbreak", "who", "vaccine", "epidemic", "virus", "disease"],
-  sports: ["football", "soccer", "basketball", "tennis", "olympics", "fifa", "uefa", "nba", "nfl", "cricket", "f1", "formula 1", "champion", "league", "premier league", "la liga", "serie a", "bundesliga", "transfer", "goal", "match", "tournament", "world cup"],
+  conflict: ["war", "military", "missile", "strike", "attack", "troops", "nato", "defense", "combat", "weapon", "bomb", "artillery", "invasion", "battlefield", "airstrike", "ceasefire", "hostage", "insurgent", "guerrilla"],
+  finance: ["market", "stock", "economy", "fed", "inflation", "gdp", "trade", "bank", "currency", "recession", "s&p", "dow", "nasdaq", "bitcoin", "crypto", "forex", "interest rate", "earnings", "ipo", "etf", "bonds", "treasury", "wall street", "hedge fund", "commodity"],
+  cyber: ["cyber", "hack", "breach", "ransomware", "malware", "vulnerability", "cve", "phishing", "ddos", "botnet", "zero-day", "exploit", "data leak", "dark web"],
+  tech: ["ai", "artificial intelligence", "startup", "silicon valley", "openai", "google", "apple", "nvidia", "chip", "semiconductor", "software", "cloud", "spacex", "rocket", "launch", "satellite", "orbit", "space station", "iss", "nasa", "starship", "falcon", "payload", "quantum", "robotics", "autonomous", "5g", "blockchain"],
+  natural: ["earthquake", "tsunami", "hurricane", "flood", "wildfire", "volcano", "storm", "disaster", "climate", "typhoon", "cyclone", "tornado", "landslide", "drought", "heatwave", "avalanche", "seismic"],
+  aviation: ["flight", "airline", "aircraft", "airport", "aviation", "faa", "crash", "boeing", "airbus", "turbulence", "runway", "pilot"],
+  energy: ["oil", "gas", "opec", "energy", "nuclear", "solar", "wind", "pipeline", "electricity", "power grid", "renewable", "carbon", "emission", "refinery", "barrel", "megawatt"],
+  diplomacy: ["diplomat", "embassy", "summit", "treaty", "sanction", "un", "united nations", "foreign minister", "bilateral", "multilateral", "peace talks", "negotiation"],
+  protest: ["protest", "demonstration", "riot", "unrest", "opposition", "rally", "uprising", "crackdown", "tear gas", "water cannon", "labor strike", "workers strike"],
+  health: ["pandemic", "outbreak", "who", "vaccine", "epidemic", "virus", "disease", "infection", "hospital", "surgeon", "pharmaceutical", "drug approval"],
+  sports: ["football", "soccer", "basketball", "tennis", "olympics", "fifa", "uefa", "nba", "nfl", "cricket", "f1", "formula 1", "champion", "league", "premier league", "la liga", "serie a", "bundesliga", "transfer", "goal", "match", "tournament", "world cup", "super bowl", "grand prix", "penalty", "referee", "halftime", "scoreboard", "playoff", "derby", "copa"],
 };
 
 // ─── Severity Classification ───
@@ -134,14 +137,23 @@ const COMPILED_CATEGORY_MATCHERS = Object.entries(CATEGORY_KEYWORDS).map(([cat, 
 
 export function categorizeFeedItem(text: string): Category {
   const lower = text.toLowerCase();
+
+  // Score each category — pick highest match count for better accuracy
+  let bestCategory: Category = "conflict"; // fallback: general world news
+  let bestScore = 0;
+
   for (const { category, matchers } of COMPILED_CATEGORY_MATCHERS) {
-    if (matchers.some((m) =>
+    const score = matchers.filter((m) =>
       m.type === "includes" ? lower.includes(m.kw) : m.re.test(lower)
-    )) {
-      return category;
+    ).length;
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestCategory = category;
     }
   }
-  return "diplomacy";
+
+  return bestCategory;
 }
 
 export function mapSeverity(text: string): Severity {
@@ -209,12 +221,15 @@ export async function fetchFeed(url: string, feedName: string): Promise<IntelIte
           imageUrl: item.enclosure?.url,
         };
       });
-    } catch {
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Unknown RSS error";
       // If we have retries left, wait and try with a different UA
       if (attempt < MAX_RETRIES) {
+        console.warn(`[RSS] ${feedName} attempt ${attempt + 1} failed: ${msg.slice(0, 80)}`);
         await sleep(RETRY_DELAYS[attempt]);
         continue;
       }
+      console.error(`[RSS] ${feedName} FAILED after ${MAX_RETRIES + 1} attempts: ${msg.slice(0, 120)}`);
       return [];
     }
   }

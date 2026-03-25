@@ -1,59 +1,62 @@
 /**
- * Supply Chain Attack Data — Known software supply chain attacks.
- * Based on tstromberg/supplychain-attack-data repository.
- * Free, no API key required.
+ * Supply Chain / Exploit Data — CISA Known Exploited Vulnerabilities catalog.
+ * Free, no API key required. Updated regularly by CISA.
+ * Replaces: IQTLabs/tstromberg repos (both 404).
  */
 
 import type { IntelItem, Severity } from "@/types/intel";
 
-const SUPPLY_CHAIN_RAW =
-  "https://raw.githubusercontent.com/tstromberg/supplychain-attack-data/main/data/attacks.json";
+const CISA_KEV_URL =
+  "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json";
 
-interface SupplyChainAttack {
-  name: string;
-  date: string;
-  description: string;
-  type: string;
-  target: string;
-  references: string[];
-  impact?: string;
+interface KevVuln {
+  cveID: string;
+  vendorProject: string;
+  product: string;
+  vulnerabilityName: string;
+  dateAdded: string;
+  shortDescription: string;
+  requiredAction: string;
+  dueDate: string;
+  knownRansomwareCampaignUse: string;
 }
 
-function attackToSeverity(attack: SupplyChainAttack): Severity {
-  const desc = (attack.description + " " + (attack.impact || "")).toLowerCase();
-  if (desc.includes("critical") || desc.includes("nation-state") || desc.includes("millions")) return "critical";
-  if (desc.includes("widespread") || desc.includes("major") || desc.includes("thousands")) return "high";
-  if (desc.includes("moderate") || desc.includes("hundreds")) return "medium";
-  return "low";
+function kevToSeverity(v: KevVuln): Severity {
+  if (v.knownRansomwareCampaignUse === "Known") return "critical";
+  const desc = v.shortDescription.toLowerCase();
+  if (desc.includes("remote code execution") || desc.includes("rce")) return "critical";
+  if (desc.includes("privilege escalation") || desc.includes("authentication bypass")) return "high";
+  return "medium";
 }
 
 /**
- * Fetch known supply chain attacks catalog.
+ * Fetch latest CISA KEV entries (most recent additions).
  */
 export async function fetchSupplyChainAttacks(): Promise<IntelItem[]> {
   try {
-    const res = await fetch(SUPPLY_CHAIN_RAW, {
-      signal: AbortSignal.timeout(10000),
+    const res = await fetch(CISA_KEV_URL, {
+      signal: AbortSignal.timeout(12000),
       headers: { Accept: "application/json" },
     });
     if (!res.ok) return [];
 
-    const data: SupplyChainAttack[] = await res.json();
-    if (!Array.isArray(data)) return [];
+    const data = await res.json();
+    const vulns: KevVuln[] = data?.vulnerabilities || [];
+    if (!Array.isArray(vulns)) return [];
 
-    // Return most recent attacks first
-    return data
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-      .slice(0, 25)
-      .map((a): IntelItem => ({
-        id: `supply-chain-${a.name.replace(/\s+/g, "-").toLowerCase()}`,
-        title: `Supply Chain: ${a.name}`,
-        summary: `${a.description.slice(0, 280)}${a.type ? ` | Type: ${a.type}` : ""}${a.target ? ` | Target: ${a.target}` : ""}`,
-        url: a.references?.[0] || "https://github.com/tstromberg/supplychain-attack-data",
-        source: "Supply Chain DB",
+    // Most recently added first
+    return vulns
+      .sort((a, b) => new Date(b.dateAdded).getTime() - new Date(a.dateAdded).getTime())
+      .slice(0, 20)
+      .map((v): IntelItem => ({
+        id: `kev-${v.cveID}`,
+        title: `🛡️ ${v.cveID}: ${v.vendorProject} ${v.product}`,
+        summary: `${v.vulnerabilityName} | ${v.shortDescription.slice(0, 250)}${v.knownRansomwareCampaignUse === "Known" ? " | ⚠️ Used in ransomware" : ""}`,
+        url: `https://nvd.nist.gov/vuln/detail/${v.cveID}`,
+        source: "CISA KEV",
         category: "cyber",
-        severity: attackToSeverity(a),
-        publishedAt: new Date(a.date).toISOString() || new Date().toISOString(),
+        severity: kevToSeverity(v),
+        publishedAt: new Date(v.dateAdded).toISOString(),
       }));
   } catch {
     return [];

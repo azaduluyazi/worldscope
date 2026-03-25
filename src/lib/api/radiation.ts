@@ -58,16 +58,20 @@ export async function fetchSafecastReadings(): Promise<RadiationReading[]> {
 
 /** Convert radiation readings to IntelItems for the feed */
 export function radiationToIntelItems(readings: RadiationReading[]): IntelItem[] {
-  return readings
-    .filter((r) => r.isElevated)
-    .map((r): IntelItem => ({
+  // Always include elevated readings + top 5 by value if none elevated
+  const elevated = readings.filter((r) => r.isElevated);
+  const toShow = elevated.length > 0
+    ? elevated
+    : readings.sort((a, b) => b.value - a.value).slice(0, 5);
+
+  return toShow.map((r): IntelItem => ({
       id: r.id,
-      title: `Elevated Radiation: ${r.value} ${r.unit} at ${r.location}`,
+      title: `${r.isElevated ? "⚠️ Elevated" : "📡"} Radiation: ${r.value} ${r.unit} at ${r.location}`,
       summary: `Source: ${r.source === "safecast" ? "Safecast (crowdsourced)" : "EPA RadNet"} | Time: ${r.timestamp}`,
       url: "https://safecast.org/tilemap/",
       source: r.source === "safecast" ? "Safecast" : "EPA RadNet",
       category: "health",
-      severity: r.value > 500 ? "critical" : r.value > 200 ? "high" : "medium",
+      severity: r.value > 500 ? "critical" : r.value > 200 ? "high" : r.isElevated ? "medium" : "info",
       publishedAt: r.timestamp,
       lat: r.lat,
       lng: r.lng,

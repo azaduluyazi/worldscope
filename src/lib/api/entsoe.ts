@@ -42,11 +42,15 @@ export async function fetchEntsoeDayAheadPrices(
   const apiKey = process.env.ENTSOE_API_KEY;
   if (!apiKey) return null;
 
+  // Query yesterday's data first (today's may not be published yet)
+  // If called after ~14:00 CET, today's data should be available too
   const now = new Date();
   const start = new Date(now);
+  start.setUTCDate(start.getUTCDate() - 1); // Yesterday
   start.setUTCHours(0, 0, 0, 0);
-  const end = new Date(start);
+  const end = new Date(now);
   end.setUTCDate(end.getUTCDate() + 1);
+  end.setUTCHours(0, 0, 0, 0);
 
   const fmt = (d: Date) => d.toISOString().replace(/[-:]/g, "").slice(0, 12) + "00";
 
@@ -66,6 +70,10 @@ export async function fetchEntsoeDayAheadPrices(
     if (!res.ok) return null;
 
     const text = await res.text();
+    // Check for error response (Acknowledgement_MarketDocument with code 999)
+    if (text.includes("Acknowledgement_MarketDocument") || text.includes("No matching data")) {
+      return null;
+    }
     // Parse XML response — extract price points
     const prices: EntsoePrice[] = [];
     const pointRegex = new RegExp("<Point>.*?<position>(\\d+)</position>.*?<price\\.amount>([\\d.]+)</price\\.amount>.*?</Point>", "gs");

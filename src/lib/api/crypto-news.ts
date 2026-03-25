@@ -42,7 +42,7 @@ export async function fetchCryptoPanicNews(): Promise<IntelItem[]> {
 
   try {
     const res = await fetch(
-      `https://cryptopanic.com/api/free/v1/posts/?auth_token=${apiKey}&public=true&kind=news`,
+      `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&public=true&kind=news`,
       {
         signal: AbortSignal.timeout(8000),
         headers: { Accept: "application/json" },
@@ -77,26 +77,33 @@ export async function fetchCryptoPanicNews(): Promise<IntelItem[]> {
  */
 export async function fetchCoinGeckoNews(): Promise<IntelItem[]> {
   try {
-    const res = await fetch("https://api.coingecko.com/api/v3/news", {
+    // /news endpoint is now Pro-only; use /search/trending (free)
+    const res = await fetch("https://api.coingecko.com/api/v3/search/trending", {
       signal: AbortSignal.timeout(8000),
       headers: { Accept: "application/json" },
     });
     if (!res.ok) return [];
 
     const data = await res.json();
-    const articles: Array<Record<string, unknown>> = data?.data || [];
+    const coins: Array<{ item: Record<string, unknown> }> = data?.coins || [];
 
-    return articles.slice(0, 15).map((a): IntelItem => ({
-      id: `cgk-news-${a.id || Date.now()}`,
-      title: String(a.title || ""),
-      summary: String(a.description || "").slice(0, 300),
-      url: String(a.url || "https://coingecko.com"),
-      source: String((a.news_site as string) || "CoinGecko"),
-      category: "finance",
-      severity: "info",
-      publishedAt: String(a.updated_at || a.created_at || new Date().toISOString()),
-      imageUrl: String(a.thumb_2x || a.large || ""),
-    }));
+    return coins.slice(0, 10).map((c, i): IntelItem => {
+      const item = c.item;
+      const priceChange = Number(item.data && (item.data as Record<string, unknown>).price_change_percentage_24h && ((item.data as Record<string, unknown>).price_change_percentage_24h as Record<string, number>)?.usd) || 0;
+      const direction = priceChange > 0 ? "📈" : priceChange < 0 ? "📉" : "➡️";
+
+      return {
+        id: `cgk-trending-${item.id || i}`,
+        title: `${direction} ${item.name} (${item.symbol}) — Trending #${Number(item.market_cap_rank) || i + 1}`,
+        summary: `Score: ${Number(item.score) + 1}/10 | Market Cap Rank: #${item.market_cap_rank || "N/A"} | 24h: ${priceChange > 0 ? "+" : ""}${priceChange.toFixed(1)}%`,
+        url: `https://www.coingecko.com/en/coins/${item.id}`,
+        source: "CoinGecko",
+        category: "finance",
+        severity: Math.abs(priceChange) > 10 ? "medium" : "info",
+        publishedAt: new Date().toISOString(),
+        imageUrl: String(item.large || item.thumb || ""),
+      };
+    });
   } catch {
     return [];
   }

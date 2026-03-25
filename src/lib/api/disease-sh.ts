@@ -35,9 +35,14 @@ export async function fetchDiseaseOutbreaks(): Promise<IntelItem[]> {
     const data = await res.json();
     if (!Array.isArray(data)) return [];
 
-    // Only report countries with significant daily cases
-    return data
-      .filter((d: DiseaseStats) => d.todayCases > 1000 || d.todayDeaths > 50)
+    // Report countries with most active cases (COVID daily reporting largely stopped)
+    // Fallback: sort by active cases if no daily data
+    const hasDaily = data.some((d: DiseaseStats) => d.todayCases > 0);
+    const filtered = hasDaily
+      ? data.filter((d: DiseaseStats) => d.todayCases > 100 || d.todayDeaths > 5)
+      : data.filter((d: DiseaseStats) => d.active > 10000);
+
+    return filtered
       .slice(0, 15)
       .map((d: DiseaseStats): IntelItem => ({
         id: `disease-${d.countryInfo?.iso2 || d.country}-${Date.now()}`,

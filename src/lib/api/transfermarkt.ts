@@ -1,100 +1,49 @@
 /**
- * Transfermarkt — Football transfer news and market values.
- * Free, no API key. Uses transfermarkt-api.fly.dev (unofficial REST proxy).
- * Source: dcaribou/transfermarkt-datasets (350 stars)
- * Gap: No transfer news/market data in current SportsScope.
+ * Football Transfers — Transfer news via RSS feeds.
+ * Replaces: transfermarkt-api.fly.dev (all endpoints 404/405).
+ * Uses football transfer RSS feeds as reliable alternative.
  */
 
 import type { IntelItem } from "@/types/intel";
 
-const TM_API = "https://transfermarkt-api.fly.dev";
-
-interface Transfer {
-  id: string;
-  playerName: string;
-  fromClub: string;
-  toClub: string;
-  fee?: string;
-  marketValue?: string;
-  date?: string;
-}
+// Transfer news RSS feeds
+const TRANSFER_FEEDS = [
+  "https://www.skysports.com/rss/12040", // Sky Sports Transfers
+  "https://www.90min.com/posts.rss",      // 90min football
+];
 
 /**
- * Fetch latest major transfers.
+ * Fetch latest transfer news from RSS feeds.
  */
 export async function fetchLatestTransfers(): Promise<IntelItem[]> {
   try {
-    // Top 5 leagues latest transfers
-    const res = await fetch(`${TM_API}/transfers`, {
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
+    const { fetchFeed } = await import("@/lib/api/rss-parser");
 
-    const data = await res.json();
-    const transfers: Transfer[] = Array.isArray(data?.transfers)
-      ? data.transfers.slice(0, 10)
-      : [];
+    const results = await Promise.allSettled(
+      TRANSFER_FEEDS.map((url, i) =>
+        fetchFeed(url, i === 0 ? "Sky Sports Transfers" : "90min Football")
+      )
+    );
 
-    return transfers.map((t): IntelItem => ({
-      id: `tm-transfer-${t.id || Date.now()}`,
-      title: `🔄 ${t.playerName}: ${t.fromClub} → ${t.toClub}${t.fee ? ` (${t.fee})` : ""}`,
-      summary: `Transfer: ${t.playerName} moves from ${t.fromClub} to ${t.toClub}${t.fee ? ` for ${t.fee}` : ""}${t.marketValue ? ` | Market value: ${t.marketValue}` : ""}`,
-      url: "https://www.transfermarkt.com",
-      source: "Transfermarkt",
-      category: "sports",
-      severity: "info",
-      publishedAt: t.date || new Date().toISOString(),
-    }));
+    const items: IntelItem[] = [];
+    for (const r of results) {
+      if (r.status === "fulfilled") {
+        items.push(...r.value.map((item) => ({
+          ...item,
+          category: "sports" as const,
+        })));
+      }
+    }
+
+    return items.slice(0, 15);
   } catch {
     return [];
   }
 }
 
 /**
- * Fetch most valuable players / market value updates.
- */
-export async function fetchMarketValues(): Promise<IntelItem[]> {
-  try {
-    const res = await fetch(`${TM_API}/market-values`, {
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) return [];
-
-    const data = await res.json();
-    const players = Array.isArray(data?.players) ? data.players.slice(0, 5) : [];
-    if (players.length === 0) return [];
-
-    const list = players.map(
-      (p: { name: string; marketValue: string; club: string }, i: number) =>
-        `${i + 1}. ${p.name} (${p.club}) — ${p.marketValue}`
-    ).join(" | ");
-
-    return [{
-      id: `tm-values-${Date.now()}`,
-      title: `💰 Most Valuable Players: ${players[0]?.name || "TBD"}`,
-      summary: list,
-      url: "https://www.transfermarkt.com/spieler-statistik/wertvollstespieler/marktwertetop",
-      source: "Transfermarkt",
-      category: "sports",
-      severity: "info",
-      publishedAt: new Date().toISOString(),
-    }];
-  } catch {
-    return [];
-  }
-}
-
-/**
- * Combined Transfermarkt intel.
+ * Combined Transfermarkt intel — now RSS-based.
  */
 export async function fetchTransfermarktIntel(): Promise<IntelItem[]> {
-  const [transfers, values] = await Promise.allSettled([
-    fetchLatestTransfers(),
-    fetchMarketValues(),
-  ]);
-
-  return [
-    ...(transfers.status === "fulfilled" ? transfers.value : []),
-    ...(values.status === "fulfilled" ? values.value : []),
-  ];
+  return fetchLatestTransfers();
 }
