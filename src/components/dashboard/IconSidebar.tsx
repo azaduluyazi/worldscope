@@ -20,12 +20,8 @@ interface SidebarItem {
 const CATEGORY_ITEMS: SidebarItem[] = [
   { id: "conflict", icon: "⚔️", tKey: "sidebar.conflicts", color: "#ff4757", category: "conflict" },
   { id: "natural", icon: "🌍", tKey: "sidebar.natural", color: "#00ff88", category: "natural" },
-  { id: "cyber", icon: "🛡️", tKey: "sidebar.cyber", color: "#00e5ff", category: "cyber" },
-  { id: "aviation", icon: "🛫", tKey: "sidebar.aviation", color: "#c471ed", category: "aviation" },
   { id: "health", icon: "🏥", tKey: "sidebar.health", color: "#ff4757", category: "health" },
-  { id: "diplomacy", icon: "🏛️", tKey: "sidebar.diplomacy", color: "#00e5ff", category: "diplomacy" },
   { id: "energy", icon: "⚡", tKey: "sidebar.energy", color: "#ffd000", category: "energy" },
-  { id: "protest", icon: "📢", tKey: "sidebar.protests", color: "#ff4757", category: "protest" },
   { id: "sports", icon: "⚽", tKey: "sidebar.sports", color: "#22c55e", category: "sports" },
 ];
 
@@ -109,17 +105,6 @@ export function IconSidebar({
       </button>
 
       <div className="flex-1" />
-
-      <button
-        title={t("tracking.flights")}
-        aria-label={t("tracking.flights")}
-        aria-pressed={!!filters.flights}
-        onClick={() => onToggleLayer("flights")}
-        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
-          ${filters.flights ? "bg-[#ffd000]/10 border border-[#ffd000]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
-      >
-        ✈️
-      </button>
 
       <button
         title={t("tracking.vessels")}

@@ -7,7 +7,7 @@ export const maxDuration = 30;
 
 const CACHE_TTL = 30; // 30 seconds — aircraft positions change rapidly
 
-/** GET /api/flights — live aircraft positions from OpenSky Network */
+/** GET /api/flights — live aircraft positions from adsb.lol (military + LADD) */
 export async function GET() {
   try {
     const aircraft = await cachedFetch(
@@ -20,7 +20,7 @@ export async function GET() {
       aircraft,
       total: aircraft.length,
       lastUpdated: new Date().toISOString(),
-      source: "OpenSky Network",
+      source: "adsb.lol",
     });
   } catch {
     return NextResponse.json(

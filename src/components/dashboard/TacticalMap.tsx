@@ -596,8 +596,8 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Aircraft Markers (ADS-B) ── */}
-        {/* Show when: flights toggle ON, OR aviation category is active */}
-        {(filters.flights || filters.categories.has("aviation")) && aircraft.slice(0, 200).map((ac) => {
+        {/* Aircraft always visible — real-time ADS-B data from adsb.lol */}
+        {aircraft.slice(0, 300).map((ac) => {
           if (!ac.latitude || !ac.longitude) return null;
           const isMilitary = ac.category === "military";
           const color = isMilitary ? "#ff4757" : "#8a5cf6";

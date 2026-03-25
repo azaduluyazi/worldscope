@@ -1,98 +1,129 @@
 import type { AircraftState, AircraftCategory } from "@/types/tracking";
 
-const OPENSKY_BASE = "https://opensky-network.org/api";
+/**
+ * Aircraft tracking via adsb.lol — free, no key, real-time ADS-B data.
+ * Replaces OpenSky Network (429 rate limit issues).
+ *
+ * Endpoints:
+ * - /v2/mil — military aircraft worldwide (~500+)
+ * - /v2/ladd — FAA LADD restricted aircraft (~600+)
+ * - /v2/all — all aircraft (very large, not used)
+ */
 
-// Military ICAO24 address prefixes (common military allocations)
-const MILITARY_PREFIXES = new Set([
-  "AE", // US Military
-  "AF", // US Air Force
-  "43", // UK Military
-  "3A", // France Military
-  "3E", // Germany Military
-  "33", // Italy Military
-]);
+const ADSB_BASE = "https://api.adsb.lol/v2";
 
-function classifyAircraft(icao24: string, callsign: string | null): AircraftCategory {
-  const prefix = icao24.slice(0, 2).toUpperCase();
-  if (MILITARY_PREFIXES.has(prefix)) return "military";
-
-  const cs = (callsign || "").trim().toUpperCase();
-  if (cs.startsWith("RCH") || cs.startsWith("EVAC") || cs.startsWith("RRR") || cs.startsWith("DUKE")) return "military";
-  if (cs.startsWith("FDX") || cs.startsWith("UPS") || cs.startsWith("GTI")) return "cargo";
-
+function classifyAircraft(flags: number | undefined, type: string | undefined): AircraftCategory {
+  // dbFlags: 1 = military
+  if (flags === 1) return "military";
+  const t = (type || "").toUpperCase();
+  if (t.startsWith("C") && /C17|C130|C5|C40/.test(t)) return "military";
+  if (t.startsWith("KC") || t.startsWith("E3") || t.startsWith("B52")) return "military";
+  if (/747F|777F|MD11/.test(t)) return "cargo";
   return "unknown";
 }
 
-/** Fetch all aircraft states in a bounding box from OpenSky Network */
-export async function fetchAircraftStates(
-  bounds?: { lamin: number; lamax: number; lomin: number; lomax: number }
-): Promise<AircraftState[]> {
+interface AdsbAircraft {
+  hex: string;
+  flight?: string;
+  lat?: number;
+  lon?: number;
+  alt_baro?: number | string;
+  gs?: number;
+  track?: number;
+  t?: string;        // aircraft type (e.g. "H47", "C17")
+  desc?: string;     // description
+  dbFlags?: number;  // 1 = military
+  r?: string;        // registration
+  baro_rate?: number;
+  squawk?: string;
+}
+
+/** Fetch military aircraft from adsb.lol */
+export async function fetchMilitaryAircraft(): Promise<AircraftState[]> {
   try {
-    let url = `${OPENSKY_BASE}/states/all`;
-    if (bounds) {
-      url += `?lamin=${bounds.lamin}&lamax=${bounds.lamax}&lomin=${bounds.lomin}&lomax=${bounds.lomax}`;
-    }
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
-
-    const res = await fetch(url, {
-      signal: controller.signal,
+    const res = await fetch(`${ADSB_BASE}/mil`, {
+      signal: AbortSignal.timeout(12000),
       headers: { Accept: "application/json" },
     });
-
-    clearTimeout(timeout);
-
     if (!res.ok) return [];
 
-    const data = await res.json();
-    if (!data?.states) return [];
+    const data: { ac: AdsbAircraft[] } = await res.json();
+    if (!data?.ac) return [];
 
-    return data.states
-      .filter((s: (string | number | boolean | null)[]) => s[5] != null && s[6] != null)
-      .map((s: (string | number | boolean | null)[]): AircraftState => ({
-        icao24: String(s[0]),
-        callsign: s[1] ? String(s[1]).trim() : null,
-        originCountry: String(s[2]),
-        longitude: s[5] as number,
-        latitude: s[6] as number,
-        altitude: s[7] as number | null,
-        velocity: s[9] as number | null,
-        heading: s[10] as number | null,
-        verticalRate: s[11] as number | null,
-        onGround: s[8] as boolean,
-        squawk: s[14] ? String(s[14]) : null,
-        lastContact: s[4] as number,
-        category: classifyAircraft(String(s[0]), s[1] ? String(s[1]) : null),
+    return data.ac
+      .filter((a) => a.lat != null && a.lon != null)
+      .map((a): AircraftState => ({
+        icao24: a.hex,
+        callsign: a.flight?.trim() || null,
+        originCountry: a.r || "Unknown",
+        latitude: a.lat!,
+        longitude: a.lon!,
+        altitude: typeof a.alt_baro === "number" ? a.alt_baro : null,
+        velocity: a.gs ?? null,
+        heading: a.track ?? null,
+        verticalRate: a.baro_rate ?? null,
+        onGround: a.alt_baro === "ground",
+        squawk: a.squawk || null,
+        lastContact: Math.floor(Date.now() / 1000),
+        category: classifyAircraft(a.dbFlags, a.t),
       }))
-      .slice(0, 500); // Limit to prevent massive payloads
+      .slice(0, 500);
   } catch {
     return [];
   }
 }
 
-/** Fetch aircraft in hotspot regions (Middle East, Europe, Asia-Pacific) */
+/** Fetch global aircraft — military + LADD restricted */
 export async function fetchGlobalAircraft(): Promise<AircraftState[]> {
-  const hotspots = [
-    { lamin: 25, lamax: 42, lomin: 25, lomax: 55 },   // Middle East
-    { lamin: 44, lamax: 56, lomin: 22, lomax: 45 },   // Eastern Europe/Black Sea
-    { lamin: 20, lamax: 40, lomin: 100, lomax: 130 },  // East Asia
-  ];
+  const [mil, ladd] = await Promise.allSettled([
+    fetchMilitaryAircraft(),
+    fetchLaddAircraft(),
+  ]);
 
-  const results = await Promise.allSettled(
-    hotspots.map((b) => fetchAircraftStates(b))
-  );
-
-  const allAircraft: AircraftState[] = [];
-  for (const r of results) {
-    if (r.status === "fulfilled") allAircraft.push(...r.value);
-  }
+  const all: AircraftState[] = [];
+  if (mil.status === "fulfilled") all.push(...mil.value);
+  if (ladd.status === "fulfilled") all.push(...ladd.value);
 
   // Deduplicate by icao24
   const seen = new Set<string>();
-  return allAircraft.filter((a) => {
+  return all.filter((a) => {
     if (seen.has(a.icao24)) return false;
     seen.add(a.icao24);
     return true;
   });
+}
+
+/** Fetch FAA LADD (Limited Aircraft Data Display) restricted aircraft */
+async function fetchLaddAircraft(): Promise<AircraftState[]> {
+  try {
+    const res = await fetch(`${ADSB_BASE}/ladd`, {
+      signal: AbortSignal.timeout(12000),
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return [];
+
+    const data: { ac: AdsbAircraft[] } = await res.json();
+    if (!data?.ac) return [];
+
+    return data.ac
+      .filter((a) => a.lat != null && a.lon != null)
+      .map((a): AircraftState => ({
+        icao24: a.hex,
+        callsign: a.flight?.trim() || null,
+        originCountry: a.r || "Unknown",
+        latitude: a.lat!,
+        longitude: a.lon!,
+        altitude: typeof a.alt_baro === "number" ? a.alt_baro : null,
+        velocity: a.gs ?? null,
+        heading: a.track ?? null,
+        verticalRate: a.baro_rate ?? null,
+        onGround: a.alt_baro === "ground",
+        squawk: a.squawk || null,
+        lastContact: Math.floor(Date.now() / 1000),
+        category: classifyAircraft(a.dbFlags, a.t),
+      }))
+      .slice(0, 300);
+  } catch {
+    return [];
+  }
 }
