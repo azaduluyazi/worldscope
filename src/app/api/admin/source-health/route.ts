@@ -59,6 +59,40 @@ async function loadApiSources() {
     { id: "transfermarkt", name: "Transfermarkt", fetcher: async () => (await import("@/lib/api/transfermarkt")).fetchTransfermarktIntel() },
     { id: "cricket", name: "Cricket", fetcher: async () => (await import("@/lib/api/cricket")).fetchCricketIntel() },
     { id: "good-news", name: "Good News", fetcher: async () => (await import("@/lib/api/good-news")).fetchGoodNews() },
+
+    // ─── NEW SOURCES (Session 6) ────────────────────────────
+    // Cyber
+    { id: "cisa-kev", name: "CISA KEV", fetcher: async () => (await import("@/lib/api/cisa-kev")).fetchCisaKev() },
+    { id: "hibp-breaches", name: "HIBP Breaches", fetcher: async () => (await import("@/lib/api/hibp-breaches")).fetchHibpBreaches() },
+    { id: "ransomlook", name: "RansomLook", fetcher: async () => (await import("@/lib/api/ransomlook")).fetchRansomLook() },
+    { id: "risk-sentinel", name: "CISA Advisories", fetcher: async () => (await import("@/lib/api/risk-sentinel")).fetchRiskSentinel() },
+    // Finance
+    { id: "freeforex", name: "FreeForexAPI", fetcher: async () => (await import("@/lib/api/freeforex")).fetchFreeForex() },
+    { id: "mempool-btc", name: "Mempool BTC", fetcher: async () => (await import("@/lib/api/mempool-btc")).fetchMempoolBtc() },
+    { id: "blockchain-stats", name: "Blockchain Stats", fetcher: async () => (await import("@/lib/api/blockchain-stats")).fetchBlockchainStats() },
+    { id: "binance-ticker", name: "Binance Ticker", fetcher: async () => (await import("@/lib/api/binance-ticker")).fetchBinanceTickers() },
+    { id: "coinbase-rates", name: "Coinbase Rates", fetcher: async () => (await import("@/lib/api/coinbase-rates")).fetchCoinbaseRates() },
+    { id: "finviz-movers", name: "Finviz Movers", fetcher: async () => (await import("@/lib/api/finviz-movers")).fetchFinvizMovers() },
+    { id: "cointelegraph", name: "CoinTelegraph", fetcher: async () => (await import("@/lib/api/cointelegraph")).fetchCoinTelegraph() },
+    // Energy
+    { id: "energidataservice", name: "Energidataservice DK", fetcher: async () => (await import("@/lib/api/energidataservice")).fetchEnergiDataService() },
+    // Weather
+    { id: "space-weather", name: "Space Weather", fetcher: async () => (await import("@/lib/api/space-weather")).fetchSpaceWeather() },
+    // Health
+    { id: "openfda", name: "OpenFDA Recalls", fetcher: async () => (await import("@/lib/api/openfda")).fetchOpenFda() },
+    { id: "pubmed", name: "PubMed Outbreaks", fetcher: async () => (await import("@/lib/api/pubmed-outbreaks")).fetchPubmedOutbreaks() },
+    { id: "gbif", name: "GBIF Biodiversity", fetcher: async () => (await import("@/lib/api/gbif")).fetchGbif() },
+    // Tech
+    { id: "npm-trends", name: "npm Trends", fetcher: async () => (await import("@/lib/api/npm-trends")).fetchNpmTrends() },
+    { id: "stackoverflow", name: "StackOverflow Hot", fetcher: async () => (await import("@/lib/api/stackoverflow-hot")).fetchStackOverflowHot() },
+    { id: "jsdelivr", name: "jsDelivr Stats", fetcher: async () => (await import("@/lib/api/jsdelivr-stats")).fetchJsDelivrStats() },
+    // World
+    { id: "un-news", name: "UN News", fetcher: async () => (await import("@/lib/api/un-news")).fetchUnNews() },
+    { id: "inshorts", name: "Inshorts (RSS)", fetcher: async () => (await import("@/lib/api/inshorts")).fetchInshortsNews() },
+    // Happy / Sports
+    { id: "positive-news", name: "Positive News", fetcher: async () => (await import("@/lib/api/positive-news")).fetchPositiveNews() },
+    { id: "thesportsdb", name: "TheSportsDB", fetcher: async () => (await import("@/lib/api/thesportsdb")).fetchTheSportsDb() },
+    { id: "nhl-scores", name: "NHL Scores", fetcher: async () => (await import("@/lib/api/nhl-scores")).fetchNhlScores() },
   ];
   return sources;
 }

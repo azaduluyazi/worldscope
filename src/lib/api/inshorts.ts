@@ -1,17 +1,42 @@
 /**
- * Inshorts — Short news summaries.
- * Note: Inshorts does not provide a public API.
- * This module exports a no-op placeholder for potential future integration.
+ * Inshorts-style short news — aggregated from positive/upbeat RSS sources.
+ * Sources: Positive News + Good News Network
+ * No API key required.
  */
 
 import type { IntelItem } from "@/types/intel";
+import { fetchFeed } from "./rss-parser";
 
-/**
- * Inshorts does not offer a public API.
- * Returns an empty array. If a public endpoint becomes available,
- * this function can be implemented to parse short news summaries.
- */
+const FEEDS = [
+  { url: "https://www.positive.news/feed/", name: "Positive News" },
+  { url: "https://www.goodnewsnetwork.org/feed/", name: "Good News Network" },
+];
+
 export async function fetchInshortsNews(): Promise<IntelItem[]> {
-  // Inshorts has no public API — returning empty result
-  return [];
+  try {
+    const results = await Promise.allSettled(
+      FEEDS.map((f) => fetchFeed(f.url, f.name))
+    );
+
+    const all: IntelItem[] = [];
+    for (const result of results) {
+      if (result.status === "fulfilled") {
+        all.push(...result.value);
+      }
+    }
+
+    return all
+      .map((item) => ({
+        ...item,
+        category: "diplomacy" as const,
+        severity: "info" as const,
+      }))
+      .sort(
+        (a, b) =>
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+      )
+      .slice(0, 20);
+  } catch {
+    return [];
+  }
 }
