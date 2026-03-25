@@ -7,9 +7,10 @@
 import type { IntelItem } from "@/types/intel";
 
 const CRISIS_FEEDS = [
-  { url: "https://www.icrc.org/en/rss", name: "ICRC Red Cross" },
   { url: "https://news.un.org/feed/subscribe/en/news/topic/humanitarian-aid/feed/rss.xml", name: "UN Humanitarian" },
   { url: "https://www.preventionweb.net/rss/drr-news", name: "PreventionWeb" },
+  { url: "https://www.irinnews.org/rss.xml", name: "The New Humanitarian" },
+  { url: "https://reliefweb.int/headlines/rss.xml", name: "ReliefWeb Headlines" },
 ];
 
 /**

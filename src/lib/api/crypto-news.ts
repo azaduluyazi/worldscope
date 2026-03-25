@@ -37,36 +37,10 @@ function votesToSeverity(votes: CryptoPanicPost["votes"], kind: string): Severit
  * Fetch latest crypto news from CryptoPanic.
  */
 export async function fetchCryptoPanicNews(): Promise<IntelItem[]> {
-  const apiKey = process.env.CRYPTOPANIC_API_KEY;
-  if (!apiKey) return [];
-
+  // CryptoPanic free tier removed — use CoinTelegraph RSS instead
   try {
-    const res = await fetch(
-      `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&public=true&kind=news`,
-      {
-        signal: AbortSignal.timeout(8000),
-        headers: { Accept: "application/json" },
-      },
-    );
-    if (!res.ok) return [];
-
-    const data = await res.json();
-    const posts: CryptoPanicPost[] = data?.results || [];
-
-    return posts.slice(0, 20).map((p): IntelItem => {
-      const coins = p.currencies?.map((c) => c.code).join(", ") || "";
-
-      return {
-        id: `crypto-news-${p.id}`,
-        title: p.title,
-        summary: `${p.source.title}${coins ? ` | Coins: ${coins}` : ""} | ${p.kind}`,
-        url: p.url,
-        source: "CryptoPanic",
-        category: "finance",
-        severity: votesToSeverity(p.votes, p.kind),
-        publishedAt: p.published_at,
-      };
-    });
+    const { fetchFeed } = await import("@/lib/api/rss-parser");
+    return fetchFeed("https://cointelegraph.com/rss", "CoinTelegraph");
   } catch {
     return [];
   }

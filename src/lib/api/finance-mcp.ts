@@ -42,27 +42,24 @@ export async function fetchMajorIndices(): Promise<IntelItem[]> {
     if (!res.ok) return [];
 
     const data = await res.json();
-    const results = data?.spark?.result || [];
 
-    for (const result of results) {
-      const sym = result.symbol;
-      const idx = indices.find((i) => i.symbol === sym);
-      if (!idx) continue;
+    // Yahoo Finance v8 now returns data keyed by symbol (no spark.result wrapper)
+    for (const idx of indices) {
+      const result = data[idx.symbol];
+      if (!result?.close?.length) continue;
 
-      const meta = result.response?.[0]?.meta;
-      if (!meta) continue;
-
-      const price = meta.regularMarketPrice || 0;
-      const prevClose = meta.chartPreviousClose || meta.previousClose || price;
+      const closes = result.close as number[];
+      const price = closes[closes.length - 1];
+      const prevClose = result.chartPreviousClose || result.previousClose || price;
       const change = price - prevClose;
       const changePct = prevClose ? (change / prevClose) * 100 : 0;
       const direction = change > 0 ? "📈" : change < 0 ? "📉" : "➡️";
 
       items.push({
-        id: `idx-${sym}-${Date.now()}`,
+        id: `idx-${idx.symbol}-${Date.now()}`,
         title: `${direction} ${idx.name}: ${price.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
         summary: `${idx.name} (${idx.region}) | ${price.toFixed(2)} | ${change > 0 ? "+" : ""}${changePct.toFixed(2)}% (${change > 0 ? "+" : ""}${change.toFixed(2)})`,
-        url: `https://finance.yahoo.com/quote/${encodeURIComponent(sym)}`,
+        url: `https://finance.yahoo.com/quote/${encodeURIComponent(idx.symbol)}`,
         source: "Market Indices",
         category: "finance",
         severity: Math.abs(changePct) > 3 ? "high" : Math.abs(changePct) > 1.5 ? "medium" : "info",

@@ -43,7 +43,8 @@ export async function fetchEiaSeries(
       api_key: apiKey,
       frequency: "weekly",
       "data[0]": "value",
-      sort: JSON.stringify([{ column: "period", direction: "desc" }]),
+      "sort[0][column]": "period",
+      "sort[0][direction]": "desc",
       length: String(limit),
     });
 

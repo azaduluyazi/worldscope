@@ -39,15 +39,21 @@ export async function fetchKandilliEarthquakes(): Promise<IntelItem[]> {
 
     const data = await res.json();
     const quakes: KandilliQuake[] = (data?.result || []).map(
-      (q: Record<string, unknown>) => ({
-        date: String(q.date || ""),
-        time: String(q.time || ""),
-        lat: Number(q.lat || 0),
-        lng: Number(q.lng || 0),
-        depth: Number(q.depth || 0),
-        magnitude: Number(q.mag || 0),
-        location: String(q.title || (q.location_properties as Record<string, Record<string, string>>)?.epiCenter?.name || "Bilinmeyen"),
-      }),
+      (q: Record<string, unknown>) => {
+        // API returns geojson.coordinates [lng, lat] and date_time
+        const geo = q.geojson as { coordinates?: number[] } | undefined;
+        const coords = geo?.coordinates || [0, 0];
+        const locProps = q.location_properties as { epiCenter?: { name?: string } } | undefined;
+        return {
+          date: String(q.date_time || q.date || "").split("T")[0] || "",
+          time: String(q.date_time || q.time || "").split("T")[1]?.slice(0, 8) || "",
+          lat: coords[1] || 0,
+          lng: coords[0] || 0,
+          depth: Number(q.depth || 0),
+          magnitude: Number(q.mag || 0),
+          location: String(q.title || locProps?.epiCenter?.name || "Bilinmeyen"),
+        };
+      },
     );
 
     return quakes

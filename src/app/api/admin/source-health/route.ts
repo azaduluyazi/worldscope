@@ -85,7 +85,7 @@ const PRIORITY_FEEDS = [
   { url: "https://www.bleepingcomputer.com/feed/", name: "BleepingComputer" },
   { url: "https://hnrss.org/frontpage", name: "Hacker News RSS" },
   { url: "https://www.darkreading.com/rss.xml", name: "Dark Reading" },
-  { url: "https://www.who.int/feeds/entity/csr/don/en/rss.xml", name: "WHO Disease Alerts" },
+  { url: "https://www.who.int/rss-feeds/news-english.xml", name: "WHO News" },
   { url: "https://www.sciencedaily.com/rss/top.xml", name: "ScienceDaily" },
   { url: "https://www.middleeasteye.net/rss", name: "Middle East Eye" },
   { url: "https://www.rt.com/rss/news/", name: "RT News" },
