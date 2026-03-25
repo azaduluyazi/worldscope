@@ -28,9 +28,9 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
     brief: t("intel.aiBrief"),
   };
 
-  // Filter items by variant categories
+  // Filter items by variant categories (critical items also shown in BreakingAlerts but kept here too)
   const { items, total } = useMemo(() => {
-    if (variant === "world") return { items: allItems, total: rawTotal };
+    if (variant === "world") return { items: allItems, total: allItems.length };
     const { all } = getVariantCategories(variant);
     const filtered = allItems.filter((item) => all.has(item.category as never));
     return { items: filtered, total: filtered.length };

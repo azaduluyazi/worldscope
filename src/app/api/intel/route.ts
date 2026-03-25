@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkRateLimit } from "@/lib/middleware/rate-limit";
 import { intelQuerySchema } from "@/lib/validators/schemas";
 import { cachedFetch, TTL, redis } from "@/lib/cache/redis";
 import { fetchGdeltArticles, fetchGdeltGeo } from "@/lib/api/gdelt";
@@ -15,7 +14,6 @@ import { fetchHackerNews } from "@/lib/api/hackernews";
 import { fetchWhoOutbreaks } from "@/lib/api/who-outbreaks";
 import { fetchSafecastReadings, radiationToIntelItems } from "@/lib/api/radiation";
 import { fetchOrefAlerts } from "@/lib/api/tzevaadom";
-import { fetchUcdpEvents } from "@/lib/api/ucdp";
 import { fetchInternetOutagesAsIntel } from "@/lib/api/cloudflare-radar";
 import { fetchKandilliEarthquakes } from "@/lib/api/kandilli";
 import { fetchEntsoeIntel } from "@/lib/api/entsoe";
@@ -40,6 +38,30 @@ import { fetchNbaIntel } from "@/lib/api/nba-stats";
 import { fetchTransfermarktIntel } from "@/lib/api/transfermarkt";
 import { fetchCricketIntel } from "@/lib/api/cricket";
 import { fetchGoodNews } from "@/lib/api/good-news";
+// Session 6: New no-key sources
+import { fetchCisaKev } from "@/lib/api/cisa-kev";
+import { fetchHibpBreaches } from "@/lib/api/hibp-breaches";
+import { fetchRansomLook } from "@/lib/api/ransomlook";
+import { fetchRiskSentinel } from "@/lib/api/risk-sentinel";
+import { fetchFreeForex } from "@/lib/api/freeforex";
+import { fetchMempoolBtc } from "@/lib/api/mempool-btc";
+import { fetchBlockchainStats } from "@/lib/api/blockchain-stats";
+import { fetchBinanceTickers } from "@/lib/api/binance-ticker";
+import { fetchCoinbaseRates } from "@/lib/api/coinbase-rates";
+import { fetchFinvizMovers } from "@/lib/api/finviz-movers";
+import { fetchCoinTelegraph } from "@/lib/api/cointelegraph";
+import { fetchEnergiDataService } from "@/lib/api/energidataservice";
+import { fetchSpaceWeather } from "@/lib/api/space-weather";
+import { fetchOpenFda } from "@/lib/api/openfda";
+import { fetchPubmedOutbreaks } from "@/lib/api/pubmed-outbreaks";
+import { fetchGbif } from "@/lib/api/gbif";
+import { fetchNpmTrends } from "@/lib/api/npm-trends";
+import { fetchStackOverflowHot } from "@/lib/api/stackoverflow-hot";
+import { fetchJsDelivrStats } from "@/lib/api/jsdelivr-stats";
+import { fetchUnNews } from "@/lib/api/un-news";
+import { fetchPositiveNews } from "@/lib/api/positive-news";
+import { fetchTheSportsDb } from "@/lib/api/thesportsdb";
+import { fetchNhlScores } from "@/lib/api/nhl-scores";
 import { gatewayFetch } from "@/lib/api/gateway";
 import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
@@ -58,9 +80,7 @@ const VALID_CATEGORIES = new Set<Category>([
 
 export async function GET(request: NextRequest) {
   try {
-    const rateLimited = await checkRateLimit(request);
-    if (rateLimited) return rateLimited;
-
+    // Rate limiting is handled by middleware — see src/middleware.ts
     const { searchParams } = new URL(request.url);
     const rawParams = Object.fromEntries(searchParams);
     const parsed = intelQuerySchema.safeParse(rawParams);
@@ -124,7 +144,6 @@ export async function GET(request: NextRequest) {
           gf("hackernews", () => fetchHackerNews(20), { fallback: [] }),
           gf("who", () => fetchWhoOutbreaks(15), { fallback: [] }),
           gf("safecast", () => fetchSafecastReadings().then(radiationToIntelItems), { fallback: [] }),
-          gf("ucdp", () => fetchUcdpEvents(30), { fallback: [] }),
           gf("cloudflare-radar", () => fetchInternetOutagesAsIntel(), { fallback: [] }),
           // ── New sources ──
           gf("kandilli", () => fetchKandilliEarthquakes(), { fallback: [] }),
@@ -153,6 +172,38 @@ export async function GET(request: NextRequest) {
           gf("transfermarkt", () => fetchTransfermarktIntel(), { fallback: [] }),
           gf("cricket", () => fetchCricketIntel(), { fallback: [] }),
           gf("good-news", () => fetchGoodNews(), { fallback: [] }),
+          // ── Session 6: 24 new no-key sources ──
+          // Cyber
+          gf("cisa-kev", () => fetchCisaKev(), { fallback: [] }),
+          gf("hibp-breaches", () => fetchHibpBreaches(), { fallback: [] }),
+          gf("ransomlook", () => fetchRansomLook(), { fallback: [] }),
+          gf("risk-sentinel", () => fetchRiskSentinel(), { fallback: [] }),
+          // Finance
+          gf("freeforex", () => fetchFreeForex(), { fallback: [] }),
+          gf("mempool-btc", () => fetchMempoolBtc(), { fallback: [] }),
+          gf("blockchain-stats", () => fetchBlockchainStats(), { fallback: [] }),
+          gf("binance-ticker", () => fetchBinanceTickers(), { fallback: [] }),
+          gf("coinbase-rates", () => fetchCoinbaseRates(), { fallback: [] }),
+          gf("finviz-movers", () => fetchFinvizMovers(), { fallback: [] }),
+          gf("cointelegraph", () => fetchCoinTelegraph(), { fallback: [] }),
+          // Energy
+          gf("energidataservice", () => fetchEnergiDataService(), { fallback: [] }),
+          // Weather
+          gf("space-weather", () => fetchSpaceWeather(), { fallback: [] }),
+          // Health
+          gf("openfda", () => fetchOpenFda(), { fallback: [] }),
+          gf("pubmed", () => fetchPubmedOutbreaks(), { fallback: [] }),
+          gf("gbif", () => fetchGbif(), { fallback: [] }),
+          // Tech
+          gf("npm-trends", () => fetchNpmTrends(), { fallback: [] }),
+          gf("stackoverflow", () => fetchStackOverflowHot(), { fallback: [] }),
+          gf("jsdelivr", () => fetchJsDelivrStats(), { fallback: [] }),
+          // World
+          gf("un-news", () => fetchUnNews(), { fallback: [] }),
+          // Happy / Sports
+          gf("positive-news", () => fetchPositiveNews(), { fallback: [] }),
+          gf("thesportsdb", () => fetchTheSportsDb(), { fallback: [] }),
+          gf("nhl-scores", () => fetchNhlScores(), { fallback: [] }),
         ]);
 
         // Merge tier 1 (already resolved) + tier 2 results
@@ -181,11 +232,14 @@ export async function GET(request: NextRequest) {
         const allItems = [...dbEvents, ...liveItems];
 
         // ═══════════════════════════════════════════════════════
-        // RSS FALLBACK: If DB has <50 items, fetch priority feeds directly
+        // RSS FEEDS: Always fetch priority feeds for rich content
+        // Cron job handles the full 147+ feed list in background,
+        // but we always pull top-tier feeds here for freshness
         // ═══════════════════════════════════════════════════════
-        if (dbEvents.length < 50) {
+        {
           const { fetchFeed } = await import("@/lib/api/rss-parser");
           const PRIORITY_FEEDS = [
+            // ── World News ──
             { url: "https://feeds.bbci.co.uk/news/world/rss.xml", name: "BBC World" },
             { url: "https://rss.cnn.com/rss/edition_world.rss", name: "CNN World" },
             { url: "https://www.aljazeera.com/xml/rss/all.xml", name: "Al Jazeera" },
@@ -196,20 +250,37 @@ export async function GET(request: NextRequest) {
             { url: "https://feeds.npr.org/1004/rss.xml", name: "NPR World" },
             { url: "https://feeds.skynews.com/feeds/rss/world.xml", name: "Sky News" },
             { url: "https://www.aa.com.tr/en/rss/default?cat=world", name: "Anadolu Agency" },
+            // ── Tech ──
             { url: "https://www.theverge.com/rss/index.xml", name: "The Verge" },
             { url: "https://techcrunch.com/feed/", name: "TechCrunch" },
             { url: "https://feeds.arstechnica.com/arstechnica/index", name: "Ars Technica" },
+            { url: "https://www.wired.com/feed/rss", name: "Wired" },
+            // ── Finance ──
             { url: "https://feeds.content.dowjones.io/public/rss/mw_topstories", name: "WSJ Markets" },
             { url: "https://www.cnbc.com/id/100003114/device/rss/rss.html", name: "CNBC World" },
+            { url: "https://feeds.bloomberg.com/markets/news.rss", name: "Bloomberg" },
+            // ── Cyber ──
             { url: "https://www.bleepingcomputer.com/feed/", name: "BleepingComputer" },
             { url: "https://hnrss.org/frontpage", name: "Hacker News" },
+            { url: "https://www.darkreading.com/rss.xml", name: "Dark Reading" },
+            // ── Health & Science ──
             { url: "https://tools.cdc.gov/api/v2/resources/media/rss", name: "CDC Health" },
+            { url: "https://www.sciencedaily.com/rss/top.xml", name: "ScienceDaily" },
+            // ── Middle East & Conflict ──
+            { url: "https://www.middleeasteye.net/rss", name: "Middle East Eye" },
+            { url: "https://english.alarabiya.net/tools/rss", name: "Al Arabiya" },
+            // ── Europe ──
+            { url: "https://www.euronews.com/rss", name: "Euronews" },
+            { url: "https://feeds.reuters.com/reuters/worldNews", name: "Reuters" },
+            // ── Asia ──
+            { url: "https://www3.nhk.or.jp/rss/news/cat0.xml", name: "NHK World" },
+            { url: "https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml", name: "CNA" },
           ];
 
-          const fallbackResults = await Promise.allSettled(
+          const feedResults = await Promise.allSettled(
             PRIORITY_FEEDS.map((f) => fetchFeed(f.url, f.name))
           );
-          for (const result of fallbackResults) {
+          for (const result of feedResults) {
             if (result.status === "fulfilled" && Array.isArray(result.value)) {
               allItems.push(...result.value);
             }

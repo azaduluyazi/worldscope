@@ -32,7 +32,7 @@ async function loadApiSources() {
     { id: "hackernews", name: "Hacker News", fetcher: async () => (await import("@/lib/api/hackernews")).fetchHackerNews(5) },
     { id: "who", name: "WHO Outbreaks", fetcher: async () => (await import("@/lib/api/who-outbreaks")).fetchWhoOutbreaks(5) },
     { id: "safecast", name: "Safecast Radiation", fetcher: async () => { const m = await import("@/lib/api/radiation"); return m.radiationToIntelItems(await m.fetchSafecastReadings()); } },
-    { id: "ucdp", name: "UCDP Conflict", fetcher: async () => (await import("@/lib/api/ucdp")).fetchUcdpEvents(10) },
+    // UCDP removed — required token, no longer maintained
     { id: "cloudflare-radar", name: "Cloudflare Radar", fetcher: async () => (await import("@/lib/api/cloudflare-radar")).fetchInternetOutagesAsIntel() },
     { id: "kandilli", name: "Kandilli Earthquakes", fetcher: async () => (await import("@/lib/api/kandilli")).fetchKandilliEarthquakes() },
     { id: "entsoe", name: "ENTSO-E Energy", fetcher: async () => (await import("@/lib/api/entsoe")).fetchEntsoeIntel() },

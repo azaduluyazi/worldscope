@@ -227,7 +227,6 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "The Points Guy Aviation", url: "https://thepointsguy.com/feed/", category: "aviation", defaultSeverity: "info", region: "global" },
 
   // ── Protest & Human Rights (4) ───────────────────────────────────
-  { name: "ACLED", url: "https://acleddata.com/feed/", category: "protest", defaultSeverity: "medium", region: "global" },
   { name: "Crisis Group", url: "https://www.crisisgroup.org/feed", category: "protest", defaultSeverity: "high", region: "global" },
   { name: "Human Rights Watch", url: "https://www.hrw.org/rss/publications", category: "protest", defaultSeverity: "medium", region: "global" },
   { name: "Amnesty International", url: "https://www.amnesty.org/en/feed/", category: "protest", defaultSeverity: "medium", region: "global" },
@@ -693,6 +692,27 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "NBA News", url: "https://www.nba.com/feeds/rss", category: "sports", defaultSeverity: "info", region: "us" },
   { name: "MMA Fighting", url: "https://www.mmafighting.com/rss/current", category: "sports", defaultSeverity: "info", region: "global" },
   { name: "Deadspin", url: "https://deadspin.com/rss", category: "sports", defaultSeverity: "info", region: "us" },
+
+  // ── RepoScout-discovered API Feeds ───────────────────────────────
+  // These are fetched via dedicated API clients in src/lib/api/,
+  // listed here for feed health tracking and admin dashboard visibility.
+  { name: "Kandilli Deprem", url: "https://api.orhanaydogdu.com.tr/deprem/kandilli/live", category: "natural", defaultSeverity: "high", language: "tr", region: "turkey" },
+  { name: "ENTSO-E Energy", url: "https://transparency.entsoe.eu/", category: "energy", defaultSeverity: "info", region: "europe" },
+  { name: "EIA US Energy", url: "https://api.eia.gov/v2", category: "energy", defaultSeverity: "info", region: "us" },
+  { name: "ESPN Premier League", url: "https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "ESPN NBA", url: "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard", category: "sports", defaultSeverity: "info", region: "us" },
+  { name: "ESPN NFL", url: "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard", category: "sports", defaultSeverity: "info", region: "us" },
+  { name: "Supply Chain Attacks", url: "https://github.com/tstromberg/supplychain-attack-data", category: "cyber", defaultSeverity: "medium", region: "global" },
+  { name: "Iran Dollar-Toman", url: "https://api.accessban.com/v1/market/currency/list", category: "finance", defaultSeverity: "info", region: "mideast" },
+  { name: "Crisis Reports", url: "https://api.reliefweb.int/v1/reports", category: "natural", defaultSeverity: "high", region: "global" },
+  { name: "CoinGecko News", url: "https://api.coingecko.com/api/v3/news", category: "finance", defaultSeverity: "info", region: "global" },
+  { name: "CryptoConvert", url: "https://api.coinconvert.net/convert", category: "finance", defaultSeverity: "info", region: "global" },
+  { name: "Electricity Maps CO2", url: "https://app.electricitymaps.com", category: "energy", defaultSeverity: "info", region: "global" },
+  { name: "Ransomware.live", url: "https://api.ransomware.live/v2/recentvictims", category: "cyber", defaultSeverity: "high", region: "global" },
+  { name: "Bellingcat SAR Interference", url: "https://github.com/bellingcat/sar-interference-tracker", category: "conflict", defaultSeverity: "high", region: "global" },
+  { name: "Football Data Standings", url: "https://api.football-data.org/v4/competitions/PL/standings", category: "sports", defaultSeverity: "info", region: "global" },
+  { name: "TV Screener Movers", url: "https://scanner.tradingview.com/america/scan", category: "finance", defaultSeverity: "info", region: "global" },
+  { name: "Market Indices", url: "https://query1.finance.yahoo.com/v8/finance/spark", category: "finance", defaultSeverity: "info", region: "global" },
 ];
 
 export const FEED_COUNT = SEED_FEEDS.length;
