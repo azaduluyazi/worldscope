@@ -55,7 +55,7 @@ function buildDigestHtml(items: IntelItem[], frequency: string): string {
     `).join("")}
 
     <div style="border-top:1px solid #1a2a4a;padding-top:16px;margin-top:16px;text-align:center;">
-      <a href="https://worldscope.app" style="color:#00e5ff;font-size:10px;">Open WorldScope Dashboard →</a>
+      <a href="https://troiamedia.com" style="color:#00e5ff;font-size:10px;">Open WorldScope Dashboard →</a>
       <p style="color:#5a7a9a;font-size:8px;margin-top:8px;">You're receiving this because you subscribed to WorldScope digests.</p>
     </div>
   </div>
@@ -97,7 +97,7 @@ export async function sendDigests(
     try {
       const period = frequency === "weekly" ? "Weekly" : "Daily";
       await resend.emails.send({
-        from: "WorldScope <digest@worldscope.app>",
+        from: "WorldScope <digest@troiamedia.com>",
         to: sub.email,
         subject: `WorldScope ${period} Digest — ${filteredItems.length} events`,
         html: buildDigestHtml(filteredItems, frequency),

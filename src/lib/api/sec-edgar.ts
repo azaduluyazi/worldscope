@@ -67,7 +67,7 @@ export async function fetchSecFilings(
         signal: AbortSignal.timeout(10000),
         headers: {
           Accept: "application/json",
-          "User-Agent": "WorldScope admin@worldscope.app",
+          "User-Agent": "WorldScope admin@troiamedia.com",
         },
       }
     );
@@ -118,7 +118,7 @@ async function fetchSecFullTextSearch(query: string, limit: number): Promise<Int
         signal: AbortSignal.timeout(10000),
         headers: {
           Accept: "application/json",
-          "User-Agent": "WorldScope admin@worldscope.app",
+          "User-Agent": "WorldScope admin@troiamedia.com",
         },
       }
     );

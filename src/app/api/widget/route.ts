@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
   const limit = Math.min(10, parseInt(searchParams.get("limit") || "5", 10));
   const theme = searchParams.get("theme") || "dark";
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://worldscope.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
 
   // Fetch cached intel data
   const events = await cachedFetch(

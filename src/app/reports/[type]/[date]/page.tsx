@@ -184,12 +184,12 @@ export default async function ReportPage({
               author: {
                 "@type": "Organization",
                 name: "WorldScope AI",
-                url: "https://worldscope.app",
+                url: "https://troiamedia.com",
               },
               publisher: {
                 "@type": "Organization",
                 name: "WorldScope",
-                url: "https://worldscope.app",
+                url: "https://troiamedia.com",
               },
               description: `Analysis of ${report.event_count} global intelligence events.`,
               articleSection: "Intelligence Report",

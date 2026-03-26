@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { COUNTRIES } from "@/config/countries";
 import { createServerClient } from "@/lib/db/supabase";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://worldscope.app";
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];

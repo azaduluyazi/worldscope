@@ -46,7 +46,7 @@ const shareTechMono = Share_Tech_Mono({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://worldscope.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
 
 export const metadata: Metadata = {
   title: {

@@ -115,7 +115,7 @@ export function ApiDocsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="bg-hud-surface border border-hud-border rounded-md p-3">
             <div className="font-mono text-[9px] font-bold text-hud-accent tracking-wider mb-1">◆ {t("baseUrl")}</div>
-            <code className="font-mono text-[10px] text-hud-text">https://worldscope.app</code>
+            <code className="font-mono text-[10px] text-hud-text">https://troiamedia.com</code>
           </div>
           <div className="bg-hud-surface border border-hud-border rounded-md p-3">
             <div className="font-mono text-[9px] font-bold text-hud-accent tracking-wider mb-1">◆ {t("authentication")}</div>
