@@ -50,16 +50,44 @@ export const rateLimiters = {
 export type RateLimitTier = keyof typeof rateLimiters;
 
 const ROUTE_TIERS: [RegExp, RateLimitTier][] = [
+  // ── AI: tightest (5 req/min) ──
   [/^\/api\/ai\//, "ai"],
+  [/^\/api\/translate/, "ai"],
+
+  // ── Strict: data-heavy (20 req/min) ──
   [/^\/api\/intel/, "strict"],
   [/^\/api\/market/, "strict"],
   [/^\/api\/threat/, "strict"],
+  [/^\/api\/sports/, "strict"],
+  [/^\/api\/flights/, "strict"],
+  [/^\/api\/vessels/, "strict"],
+  [/^\/api\/weather/, "strict"],
+  [/^\/api\/cyber-threats/, "strict"],
+  [/^\/api\/predictions/, "strict"],
+  [/^\/api\/economic/, "strict"],
+  [/^\/api\/economics/, "strict"],
+  [/^\/api\/fiscal/, "strict"],
+  [/^\/api\/radiation/, "strict"],
+  [/^\/api\/outages/, "strict"],
+  [/^\/api\/trending/, "strict"],
+  [/^\/api\/oref/, "strict"],
+  [/^\/api\/bootstrap/, "strict"],
+
+  // ── Standard: normal (60 req/min) ──
   [/^\/api\/feeds/, "standard"],
   [/^\/api\/analytics/, "standard"],
   [/^\/api\/errors/, "standard"],
+  [/^\/api\/article/, "standard"],
+  [/^\/api\/subscribe/, "standard"],
+  [/^\/api\/newsletter/, "standard"],
+  [/^\/api\/widget/, "standard"],
+  [/^\/api\/admin\//, "standard"],
+
+  // ── Relaxed: lightweight (120 req/min) ──
   [/^\/api\/health/, "relaxed"],
   [/^\/api\/locale/, "relaxed"],
   [/^\/api\/vitals/, "relaxed"],
+  [/^\/api\/market-data/, "relaxed"],
 ];
 
 /**
@@ -71,6 +99,9 @@ export function getTierForPath(pathname: string): RateLimitTier | null {
   if (pathname.startsWith("/api/cron")) return null;
   // Skip OG image generation
   if (pathname.startsWith("/api/og")) return null;
+  // Skip webhooks — external services need unrestricted access
+  if (pathname.startsWith("/api/webhooks")) return null;
+  if (pathname.startsWith("/api/payments/webhook")) return null;
 
   for (const [pattern, tier] of ROUTE_TIERS) {
     if (pattern.test(pathname)) return tier;

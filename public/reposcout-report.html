@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RepoScout Entegrasyon Raporu — WorldScope</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap');
+:root {
+  --bg: #08081a; --surface: #0d0d22; --panel: #10102a; --border: #1a1a40;
+  --text: #c8c8e8; --muted: #4a4a7a; --accent: #00e5ff;
+  --red: #ff4757; --yellow: #ffd000; --green: #00ff88; --purple: #8a5cf6;
+  --orange: #ff9f43; --teal: #4ecdc4;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); padding:24px; }
+
+.header { text-align:center; padding:32px 0 24px; border-bottom:1px solid var(--border); margin-bottom:32px; }
+.header h1 { font-family:'JetBrains Mono'; font-size:28px; color:var(--accent); letter-spacing:4px; }
+.header p { color:var(--muted); margin-top:8px; font-size:14px; }
+.header .date { color:var(--muted); font-size:12px; margin-top:4px; font-family:'JetBrains Mono'; }
+
+.stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-bottom:32px; }
+.stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center; }
+.stat .num { font-family:'JetBrains Mono'; font-size:32px; font-weight:700; }
+.stat .label { font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:2px; margin-top:6px; }
+
+.variant-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px; margin-bottom:32px; }
+.variant-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+.variant-header { padding:16px 20px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+.variant-header .icon { font-size:24px; }
+.variant-header .name { font-family:'JetBrains Mono'; font-size:16px; font-weight:700; }
+.variant-header .count { font-family:'JetBrains Mono'; font-size:12px; padding:2px 8px; border-radius:10px; margin-left:auto; }
+.variant-body { padding:12px 20px 16px; }
+
+.source-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
+.source-row:last-child { border-bottom:none; }
+.source-num { font-family:'JetBrains Mono'; font-size:12px; color:var(--muted); width:24px; text-align:right; flex-shrink:0; }
+.source-info { flex:1; }
+.source-name { font-size:14px; font-weight:600; }
+.source-file { font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); margin-top:2px; }
+.source-note { font-size:12px; color:var(--muted); margin-top:3px; font-style:italic; }
+.source-badges { display:flex; gap:6px; flex-shrink:0; }
+
+.badge { font-family:'JetBrains Mono'; font-size:10px; padding:3px 8px; border-radius:6px; border:1px solid; white-space:nowrap; }
+.badge-api { color:var(--accent); border-color:rgba(0,229,255,0.3); background:rgba(0,229,255,0.1); }
+.badge-ok { color:var(--green); border-color:rgba(0,255,136,0.3); background:rgba(0,255,136,0.1); }
+.badge-key { color:var(--yellow); border-color:rgba(255,208,0,0.3); background:rgba(255,208,0,0.1); }
+.badge-free { color:var(--green); border-color:rgba(0,255,136,0.3); background:rgba(0,255,136,0.1); }
+
+.cat-energy { border-left:3px solid var(--orange); }
+.cat-energy .variant-header .name { color:var(--orange); }
+.cat-energy .variant-header .count { color:var(--orange); background:rgba(255,159,67,0.15); }
+
+.cat-finance { border-left:3px solid var(--yellow); }
+.cat-finance .variant-header .name { color:var(--yellow); }
+.cat-finance .variant-header .count { color:var(--yellow); background:rgba(255,208,0,0.15); }
+
+.cat-sports { border-left:3px solid var(--green); }
+.cat-sports .variant-header .name { color:var(--green); }
+.cat-sports .variant-header .count { color:var(--green); background:rgba(0,255,136,0.15); }
+
+.cat-cyber { border-left:3px solid var(--purple); }
+.cat-cyber .variant-header .name { color:var(--purple); }
+.cat-cyber .variant-header .count { color:var(--purple); background:rgba(138,92,246,0.15); }
+
+.cat-natural { border-left:3px solid var(--teal); }
+.cat-natural .variant-header .name { color:var(--teal); }
+.cat-natural .variant-header .count { color:var(--teal); background:rgba(78,205,196,0.15); }
+
+.cat-conflict { border-left:3px solid var(--red); }
+.cat-conflict .variant-header .name { color:var(--red); }
+.cat-conflict .variant-header .count { color:var(--red); background:rgba(255,71,87,0.15); }
+
+.cat-world { border-left:3px solid var(--accent); }
+.cat-world .variant-header .name { color:var(--accent); }
+.cat-world .variant-header .count { color:var(--accent); background:rgba(0,229,255,0.15); }
+
+.full-table { width:100%; border-collapse:collapse; margin-top:24px; }
+.full-table th { font-family:'JetBrains Mono'; font-size:12px; text-align:left; padding:12px 16px; color:var(--muted); text-transform:uppercase; letter-spacing:1px; border-bottom:2px solid var(--border); background:var(--surface); }
+.full-table td { font-size:13px; padding:12px 16px; border-bottom:1px solid var(--border); vertical-align:top; }
+.full-table tr:hover { background:var(--panel); }
+.full-table .repo-name { font-weight:600; color:var(--accent); }
+.full-table .file-path { font-family:'JetBrains Mono'; font-size:11px; color:var(--muted); }
+
+.section-title { font-family:'JetBrains Mono'; font-size:18px; color:var(--accent); letter-spacing:2px; margin:32px 0 16px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+
+.footer { text-align:center; padding:32px 0; color:var(--muted); font-size:12px; border-top:1px solid var(--border); margin-top:40px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>REPOSCOUT // ENTEGRASYON RAPORU</h1>
+  <p>WorldScope'a RepoScout'tan entegre edilen tüm API kaynakları</p>
+  <div class="date">23 Mart 2026 — 16 kaynak entegre edildi / 627 repo tarandı</div>
+</div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat"><div class="num" style="color:var(--accent)">16</div><div class="label">Entegre Kaynak</div></div>
+  <div class="stat"><div class="num" style="color:var(--green)">10</div><div class="label">Key Gerektirmez</div></div>
+  <div class="stat"><div class="num" style="color:var(--yellow)">6</div><div class="label">API Key Gerekli</div></div>
+  <div class="stat"><div class="num" style="color:var(--accent)">7</div><div class="label">Varyant</div></div>
+  <div class="stat"><div class="num" style="color:var(--muted)">627</div><div class="label">Taranan Repo</div></div>
+  <div class="stat"><div class="num" style="color:var(--red)">611</div><div class="label">Elenen</div></div>
+</div>
+
+<!-- Variant Cards -->
+<div class="section-title">VARYANT BAZINDA DAĞILIM</div>
+
+<div class="variant-grid">
+  <!-- EnergyScope -->
+  <div class="variant-card cat-energy">
+    <div class="variant-header">
+      <span class="icon">⚡</span>
+      <span class="name">EnergyScope</span>
+      <span class="count">3 kaynak</span>
+    </div>
+    <div class="variant-body">
+      <div class="source-row">
+        <span class="source-num">1</span>
+        <div class="source-info">
+          <div class="source-name">ENTSO-E Transparency Platform</div>
+          <div class="source-file">entsoe.ts — AB enerji şebekesi, 35 ülke, gün öncesi fiyatlar</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-key">KEY</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">2</span>
+        <div class="source-info">
+          <div class="source-name">EIA (US Energy Information Admin)</div>
+          <div class="source-file">eia.ts — ABD petrol, doğalgaz, kömür, elektrik üretim/tüketim</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-key">KEY</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">3</span>
+        <div class="source-info">
+          <div class="source-name">Electricity Maps</div>
+          <div class="source-file">electricity-maps.ts — Global CO₂ yoğunluğu, 80+ ülke</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-key">KEY</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FinScope -->
+  <div class="variant-card cat-finance">
+    <div class="variant-header">
+      <span class="icon">📊</span>
+      <span class="name">FinScope</span>
+      <span class="count">5 kaynak</span>
+    </div>
+    <div class="variant-body">
+      <div class="source-row">
+        <span class="source-num">1</span>
+        <div class="source-info">
+          <div class="source-name">Dollar-Toman (Iran Market)</div>
+          <div class="source-file">dollar-toman.ts — İran döviz piyasası, USD/EUR/altın</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">2</span>
+        <div class="source-info">
+          <div class="source-name">CoinGecko Crypto News</div>
+          <div class="source-file">crypto-news.ts — Kripto haber aggregator</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">3</span>
+        <div class="source-info">
+          <div class="source-name">Tardis.dev Market Data</div>
+          <div class="source-file">tardis-market.ts — Kripto likidasyonlar, order book</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-key">KEY</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">4</span>
+        <div class="source-info">
+          <div class="source-name">CryptoConvert</div>
+          <div class="source-file">crypto-convert.ts — Gerçek zamanlı kripto-fiat çevirici</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">5</span>
+        <div class="source-info">
+          <div class="source-name">TradingView Screener</div>
+          <div class="source-file">tv-screener.ts — Top gainers/losers, piyasa tarama</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">6</span>
+        <div class="source-info">
+          <div class="source-name">Market Indices (Yahoo)</div>
+          <div class="source-file">finance-mcp.ts — S&P 500, NASDAQ, DAX, FTSE, BIST 100</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SportsScope -->
+  <div class="variant-card cat-sports">
+    <div class="variant-header">
+      <span class="icon">⚽</span>
+      <span class="name">SportsScope</span>
+      <span class="count">2 kaynak</span>
+    </div>
+    <div class="variant-body">
+      <div class="source-row">
+        <span class="source-num">1</span>
+        <div class="source-info">
+          <div class="source-name">ESPN Sports API</div>
+          <div class="source-file">espn-sports.ts — Canlı skorlar: PL, NBA, NFL, MLB, NHL</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">2</span>
+        <div class="source-info">
+          <div class="source-name">Football Data API</div>
+          <div class="source-file">football-data.ts — Lig sıralamaları, maç sonuçları</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-key">KEY</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CyberScope -->
+  <div class="variant-card cat-cyber">
+    <div class="variant-header">
+      <span class="icon">🛡️</span>
+      <span class="name">CyberScope</span>
+      <span class="count">2 kaynak</span>
+    </div>
+    <div class="variant-body">
+      <div class="source-row">
+        <span class="source-num">1</span>
+        <div class="source-info">
+          <div class="source-name">Supply Chain Attack Database</div>
+          <div class="source-file">supply-chain-threats.ts — Yazılım tedarik zinciri saldırıları</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">2</span>
+        <div class="source-info">
+          <div class="source-name">Ransomware.live</div>
+          <div class="source-file">ransomware-live.ts — Ransomware grup takibi, kurbanlar</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WeatherScope -->
+  <div class="variant-card cat-natural">
+    <div class="variant-header">
+      <span class="icon">🌡️</span>
+      <span class="name">WeatherScope</span>
+      <span class="count">2 kaynak</span>
+    </div>
+    <div class="variant-body">
+      <div class="source-row">
+        <span class="source-num">1</span>
+        <div class="source-info">
+          <div class="source-name">Kandilli Rasathanesi</div>
+          <div class="source-file">kandilli.ts — Türkiye deprem verileri, Boğaziçi Üniversitesi</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+      <div class="source-row">
+        <span class="source-num">2</span>
+        <div class="source-info">
+          <div class="source-name">ReliefWeb Crisis Reports</div>
+          <div class="source-file">crisis-news.ts — Kriz raporları: sel, deprem, salgın</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ConflictScope -->
+  <div class="variant-card cat-conflict">
+    <div class="variant-header">
+      <span class="icon">⚔️</span>
+      <span class="name">ConflictScope</span>
+      <span class="count">1 kaynak</span>
+    </div>
+    <div class="variant-body">
+      <div class="source-row">
+        <span class="source-num">1</span>
+        <div class="source-info">
+          <div class="source-name">Bellingcat SAR Interference Tracker</div>
+          <div class="source-file">sar-interference.ts — Sentinel-1 uydu GPS/SAR parazit tespiti</div>
+        </div>
+        <div class="source-badges"><span class="badge badge-free">FREE</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Full Table -->
+<div class="section-title">DETAYLI KAYNAK TABLOSU</div>
+
+<table class="full-table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Kaynak Repo</th>
+      <th>Dosya</th>
+      <th>Kategori</th>
+      <th>Varyantlar</th>
+      <th>Key</th>
+      <th>Durum</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td class="repo-name">Hexagon/entsoe-api-client</td><td class="file-path">entsoe.ts</td><td>energy</td><td>EnergyScope, CommodityScope</td><td><span class="badge badge-key">ENTSOE_API_KEY</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>2</td><td class="repo-name">orhanayd/kandilli-rasathanesi-api</td><td class="file-path">kandilli.ts</td><td>natural</td><td>WeatherScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>3</td><td class="repo-name">mkreiser/ESPN-Fantasy-Football-API</td><td class="file-path">espn-sports.ts</td><td>sports</td><td>SportsScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>4</td><td class="repo-name">tstromberg/supplychain-attack-data</td><td class="file-path">supply-chain-threats.ts</td><td>cyber</td><td>CyberScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>5</td><td class="repo-name">hamid/dollar-tomans-api</td><td class="file-path">dollar-toman.ts</td><td>finance</td><td>FinScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>6</td><td class="repo-name">mra1385/EIA-python</td><td class="file-path">eia.ts</td><td>energy</td><td>EnergyScope, CommodityScope</td><td><span class="badge badge-key">EIA_API_KEY</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>7</td><td class="repo-name">yuiseki/crisis-news-map-next</td><td class="file-path">crisis-news.ts</td><td>natural</td><td>WeatherScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>8</td><td class="repo-name">nirholas/free-crypto-news</td><td class="file-path">crypto-news.ts</td><td>finance</td><td>FinScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>9</td><td class="repo-name">tardis-dev/tardis-machine</td><td class="file-path">tardis-market.ts</td><td>finance</td><td>FinScope</td><td><span class="badge badge-key">TARDIS_API_KEY</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>10</td><td class="repo-name">coinconvert/crypto-convert</td><td class="file-path">crypto-convert.ts</td><td>finance</td><td>FinScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>11</td><td class="repo-name">electricitymaps/electricitymaps-contrib</td><td class="file-path">electricity-maps.ts</td><td>energy</td><td>EnergyScope, CommodityScope</td><td><span class="badge badge-key">ELECTRICITYMAPS_API_KEY</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>12</td><td class="repo-name">JMousqueton/ransomware.live</td><td class="file-path">ransomware-live.ts</td><td>cyber</td><td>CyberScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>13</td><td class="repo-name">bellingcat/sar-interference-tracker</td><td class="file-path">sar-interference.ts</td><td>conflict</td><td>ConflictScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>14</td><td class="repo-name">openfootball/football.json</td><td class="file-path">football-data.ts</td><td>sports</td><td>SportsScope</td><td><span class="badge badge-key">FOOTBALL_DATA_API_KEY</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>15</td><td class="repo-name">deepentropy/tvscreener</td><td class="file-path">tv-screener.ts</td><td>finance</td><td>FinScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+    <tr><td>16</td><td class="repo-name">guangxiangdebizi/FinanceMCP</td><td class="file-path">finance-mcp.ts</td><td>finance</td><td>FinScope</td><td><span class="badge badge-free">FREE</span></td><td><span class="badge badge-ok">OK</span></td></tr>
+  </tbody>
+</table>
+
+<!-- API Keys Required -->
+<div class="section-title">GEREKEN API KEY'LER</div>
+<div style="background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:20px;">
+  <table class="full-table" style="margin-top:0">
+    <thead><tr><th>Env Variable</th><th>Kaynak</th><th>Kayıt</th><th>Maliyet</th></tr></thead>
+    <tbody>
+      <tr><td><code style="color:var(--accent)">ENTSOE_API_KEY</code></td><td>ENTSO-E Transparency Platform</td><td>transparency.entsoe.eu</td><td>Ücretsiz</td></tr>
+      <tr><td><code style="color:var(--accent)">EIA_API_KEY</code></td><td>US Energy Information Admin</td><td>eia.gov/opendata/register.php</td><td>Ücretsiz</td></tr>
+      <tr><td><code style="color:var(--accent)">ELECTRICITYMAPS_API_KEY</code></td><td>Electricity Maps</td><td>electricitymaps.com</td><td>Ücretsiz tier</td></tr>
+      <tr><td><code style="color:var(--accent)">TARDIS_API_KEY</code></td><td>Tardis.dev Crypto Data</td><td>tardis.dev</td><td>Ücretsiz tier</td></tr>
+      <tr><td><code style="color:var(--accent)">FOOTBALL_DATA_API_KEY</code></td><td>Football Data API</td><td>football-data.org</td><td>Ücretsiz (10 req/min)</td></tr>
+      <tr><td><code style="color:var(--accent)">CRYPTOPANIC_API_KEY</code></td><td>CryptoPanic News</td><td>cryptopanic.com/developers/api</td><td>Ücretsiz</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="footer">
+  WORLDSCOPE // RepoScout Integration Report — Generated 2026-03-23<br>
+  627 repos scanned → 16 integrated → 6 variants enriched
+</div>
+
+</body>
+</html>

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldScope // NEON</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+  :root { --neon-pink: #ff2d95; --neon-blue: #00e5ff; --neon-purple: #a855f7; --bg-deep: #0a0015; }
+  body { background: var(--bg-deep); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+  .font-orbit { font-family: 'Orbitron', sans-serif; }
+  .font-mono { font-family: 'JetBrains Mono', monospace; }
+  .neon-card {
+    background: linear-gradient(145deg, rgba(168,85,247,0.08), rgba(0,229,255,0.04));
+    border: 1px solid rgba(168,85,247,0.2);
+    border-radius: 16px; padding: 20px; position: relative;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .neon-card:hover {
+    border-color: var(--neon-pink);
+    box-shadow: 0 0 20px rgba(255,45,149,0.3), 0 0 60px rgba(255,45,149,0.1), inset 0 0 20px rgba(255,45,149,0.05);
+    transform: translateY(-2px) scale(1.01);
+  }
+  .glow-text { text-shadow: 0 0 10px currentColor, 0 0 30px currentColor; }
+  .glow-border { box-shadow: 0 0 15px rgba(0,229,255,0.4), 0 0 45px rgba(0,229,255,0.15); }
+  .glow-pink { box-shadow: 0 0 15px rgba(255,45,149,0.4), 0 0 45px rgba(255,45,149,0.15); }
+  @keyframes pulse-glow { 0%,100% { opacity: 1; box-shadow: 0 0 5px currentColor; } 50% { opacity: 0.6; box-shadow: 0 0 15px currentColor; } }
+  @keyframes gradient-shift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+  @keyframes slide-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes ring-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  @keyframes live-pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .animate-slide { animation: slide-in 0.6s ease-out both; }
+  .breaking-banner {
+    background: linear-gradient(90deg, #ff2d95, #ff6b35, #ff2d95, #ff6b35);
+    background-size: 300% 100%; animation: gradient-shift 3s linear infinite;
+  }
+  .severity-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; animation: pulse-glow 2s infinite; }
+  .severity-critical { color: #ff2d55; } .severity-high { color: #ff8c00; } .severity-medium { color: #ffd600; } .severity-low { color: #00e5ff; }
+  .webcam-circle { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #1a1a2e, #16213e); border: 2px solid rgba(0,229,255,0.4); overflow: hidden; }
+  .webcam-circle:hover { border-color: var(--neon-pink); box-shadow: 0 0 20px rgba(255,45,149,0.4); }
+  .globe-ring { border: 3px solid transparent; border-image: linear-gradient(135deg, var(--neon-pink), var(--neon-blue), var(--neon-purple)) 1; border-radius: 50%; }
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.4); border-radius: 3px; }
+  .chart-glow canvas { filter: drop-shadow(0 0 8px rgba(0,229,255,0.3)); }
+  .ticker-num { font-size: 1.1rem; font-weight: 700; text-shadow: 0 0 8px currentColor; }
+</style>
+</head>
+<body class="text-white min-h-screen">
+
+<!-- BREAKING ALERT BANNER -->
+<div class="breaking-banner px-4 py-2 text-center font-orbit font-bold tracking-widest text-sm uppercase">
+  <span class="mr-2">&#9888;</span> BREAKING: Major earthquake strikes coastal region &mdash; Tsunami warning issued for 12 countries <span class="ml-2">&#9888;</span>
+</div>
+
+<!-- HEADER -->
+<header class="px-6 py-4 flex items-center justify-between border-b border-purple-900/40">
+  <div class="flex items-center gap-3">
+    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-cyan-400 flex items-center justify-center font-orbit font-black text-xs">WS</div>
+    <div>
+      <h1 class="font-orbit font-black text-xl tracking-wider">WORLD<span class="text-[#ff2d95] glow-text">SCOPE</span></h1>
+      <p class="text-[10px] text-purple-400 font-mono tracking-widest uppercase">Real-time Global Intelligence</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-6 text-xs font-mono text-purple-300">
+    <span>SOURCES: <span class="text-[#00e5ff] glow-text">247</span></span>
+    <span>FEEDS: <span class="text-[#00e5ff] glow-text">42</span> ACTIVE</span>
+    <span id="clock" class="text-[#ff2d95] font-orbit text-sm glow-text"></span>
+  </div>
+</header>
+
+<div class="flex h-[calc(100vh-90px)]">
+
+  <!-- LEFT: NEWS FEED -->
+  <div class="w-[420px] flex-shrink-0 border-r border-purple-900/30 overflow-y-auto p-4 space-y-3">
+    <h2 class="font-orbit text-xs tracking-[0.3em] text-purple-400 uppercase mb-3">Live Intelligence Feed</h2>
+    <div id="news-feed" class="space-y-3"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    <!-- MARKET TICKER -->
+    <div class="border-b border-purple-900/30 px-6 py-3 flex items-center gap-8 overflow-x-auto flex-shrink-0">
+      <span class="font-orbit text-[10px] text-purple-500 tracking-widest uppercase mr-2">Markets</span>
+      <div class="flex gap-6" id="market-ticker"></div>
+    </div>
+
+    <div class="flex-1 flex overflow-hidden">
+      <!-- GLOBE AREA -->
+      <div class="flex-1 flex flex-col items-center justify-center relative p-6">
+        <div class="relative">
+          <div class="w-64 h-64 rounded-full border-2 border-purple-800/50 flex items-center justify-center relative" style="background: radial-gradient(circle, rgba(168,85,247,0.1) 0%, transparent 70%);">
+            <div class="absolute inset-[-12px] rounded-full border border-dashed border-cyan-500/20" style="animation: ring-spin 30s linear infinite;"></div>
+            <div class="absolute inset-[-24px] rounded-full border border-dashed border-pink-500/15" style="animation: ring-spin 45s linear infinite reverse;"></div>
+            <div class="text-center">
+              <div class="font-orbit text-4xl font-black bg-gradient-to-r from-[#ff2d95] to-[#00e5ff] bg-clip-text text-transparent">GLOBE</div>
+              <div class="text-[10px] font-mono text-purple-400 mt-1">3D INTERACTIVE VIEW</div>
+            </div>
+            <!-- Threat dots -->
+            <div class="absolute top-8 left-12 severity-dot bg-red-500" title="Middle East"></div>
+            <div class="absolute top-16 right-10 severity-dot bg-orange-500" title="East Asia"></div>
+            <div class="absolute bottom-12 left-16 severity-dot bg-yellow-500" title="South America"></div>
+            <div class="absolute bottom-20 right-20 severity-dot bg-cyan-500" title="Europe"></div>
+          </div>
+        </div>
+        <!-- Stats below globe -->
+        <div class="flex gap-6 mt-8">
+          <div class="text-center"><div class="text-2xl font-orbit font-black text-[#ff2d95] glow-text">156</div><div class="text-[10px] font-mono text-purple-400">EVENTS/HR</div></div>
+          <div class="text-center"><div class="text-2xl font-orbit font-black text-[#00e5ff] glow-text">42</div><div class="text-[10px] font-mono text-purple-400">COUNTRIES</div></div>
+          <div class="text-center"><div class="text-2xl font-orbit font-black text-[#a855f7] glow-text">7</div><div class="text-[10px] font-mono text-purple-400">CONFLICTS</div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT SIDE PANELS -->
+      <div class="w-[320px] flex-shrink-0 border-l border-purple-900/30 overflow-y-auto p-4 space-y-4">
+        <!-- TV PANEL -->
+        <div class="neon-card">
+          <div class="flex items-center justify-between mb-3">
+            <span class="font-orbit text-[10px] tracking-[0.2em] text-purple-400 uppercase">Live Broadcast</span>
+            <span class="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 rounded font-orbit" style="animation: live-pulse 1.5s infinite;">LIVE</span>
+          </div>
+          <div class="w-full h-32 rounded-lg bg-gradient-to-br from-purple-900/50 to-blue-900/30 border border-purple-700/30 flex items-center justify-center">
+            <div class="text-center">
+              <div class="font-orbit text-sm font-bold text-[#00e5ff]">TRT HABER</div>
+              <div class="text-[10px] font-mono text-purple-400 mt-1">HD STREAM // 1080p</div>
+            </div>
+          </div>
+          <div class="flex gap-2 mt-2">
+            <div class="flex-1 text-center py-1.5 rounded bg-purple-900/30 border border-purple-700/20 text-[10px] font-mono text-purple-300 cursor-pointer hover:border-[#ff2d95] transition-colors">AL JAZEERA</div>
+            <div class="flex-1 text-center py-1.5 rounded bg-purple-900/30 border border-purple-700/20 text-[10px] font-mono text-purple-300 cursor-pointer hover:border-[#ff2d95] transition-colors">BBC WORLD</div>
+          </div>
+        </div>
+
+        <!-- CHARTS -->
+        <div class="neon-card chart-glow">
+          <span class="font-orbit text-[10px] tracking-[0.2em] text-purple-400 uppercase">Event Frequency</span>
+          <canvas id="chart-freq" height="120" class="mt-2"></canvas>
+        </div>
+
+        <!-- WEBCAMS -->
+        <div class="neon-card">
+          <span class="font-orbit text-[10px] tracking-[0.2em] text-purple-400 uppercase">Global Cams</span>
+          <div class="flex gap-3 mt-3 flex-wrap justify-center">
+            <div class="text-center"><div class="webcam-circle flex items-center justify-center text-[10px] font-mono text-purple-400">NYC</div><div class="text-[8px] text-purple-500 mt-1">New York</div></div>
+            <div class="text-center"><div class="webcam-circle flex items-center justify-center text-[10px] font-mono text-purple-400">LON</div><div class="text-[8px] text-purple-500 mt-1">London</div></div>
+            <div class="text-center"><div class="webcam-circle flex items-center justify-center text-[10px] font-mono text-purple-400">TYO</div><div class="text-[8px] text-purple-500 mt-1">Tokyo</div></div>
+            <div class="text-center"><div class="webcam-circle flex items-center justify-center text-[10px] font-mono text-purple-400">DXB</div><div class="text-[8px] text-purple-500 mt-1">Dubai</div></div>
+            <div class="text-center"><div class="webcam-circle flex items-center justify-center text-[10px] font-mono text-purple-400">SYD</div><div class="text-[8px] text-purple-500 mt-1">Sydney</div></div>
+            <div class="text-center"><div class="webcam-circle flex items-center justify-center text-[10px] font-mono text-purple-400">IST</div><div class="text-[8px] text-purple-500 mt-1">Istanbul</div></div>
+          </div>
+        </div>
+
+        <!-- SEVERITY CHART -->
+        <div class="neon-card chart-glow">
+          <span class="font-orbit text-[10px] tracking-[0.2em] text-purple-400 uppercase">Severity Distribution</span>
+          <canvas id="chart-severity" height="120" class="mt-2"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Clock
+function updateClock(){const n=new Date();document.getElementById('clock').textContent=n.toUTCString().split(' ')[4]+' UTC';}
+setInterval(updateClock,1000);updateClock();
+
+// News data
+const newsItems=[
+  {title:"Massive 7.8 earthquake strikes Indonesia's Sulawesi region",severity:"critical",category:"DISASTER",source:"Reuters",time:"2m ago"},
+  {title:"NATO deploys additional forces to Eastern European border",severity:"critical",category:"CONFLICT",source:"BBC",time:"8m ago"},
+  {title:"Oil prices surge 12% amid Middle East shipping lane disruption",severity:"high",category:"ECONOMY",source:"Bloomberg",time:"15m ago"},
+  {title:"Unprecedented flooding in Bangladesh displaces 2 million",severity:"high",category:"DISASTER",source:"Al Jazeera",time:"22m ago"},
+  {title:"EU emergency summit called over energy crisis escalation",severity:"high",category:"POLITICS",source:"DW",time:"31m ago"},
+  {title:"Cyberattack targets critical infrastructure in three countries",severity:"critical",category:"CYBER",source:"AP",time:"38m ago"},
+  {title:"Central Bank announces emergency interest rate decision",severity:"medium",category:"ECONOMY",source:"FT",time:"45m ago"},
+  {title:"Wildfire evacuation ordered for 50,000 in southern France",severity:"medium",category:"DISASTER",source:"France24",time:"52m ago"},
+  {title:"Peace talks between rival factions resume in Geneva",severity:"low",category:"DIPLOMACY",source:"UN News",time:"1h ago"},
+  {title:"Volcanic activity increases at Mount Etna, flights diverted",severity:"medium",category:"DISASTER",source:"ANSA",time:"1h ago"},
+  {title:"Tech sector layoffs accelerate across Silicon Valley",severity:"low",category:"ECONOMY",source:"TechCrunch",time:"1.5h ago"},
+  {title:"Arctic ice coverage reaches new seasonal low",severity:"medium",category:"CLIMATE",source:"NASA",time:"2h ago"},
+];
+
+const severityColors={critical:'#ff2d55',high:'#ff8c00',medium:'#ffd600',low:'#00e5ff'};
+const feed=document.getElementById('news-feed');
+newsItems.forEach((item,i)=>{
+  const card=document.createElement('div');
+  card.className='neon-card animate-slide';
+  card.style.animationDelay=`${i*0.08}s`;
+  card.innerHTML=`
+    <div class="flex items-center gap-2 mb-2">
+      <span class="severity-dot" style="color:${severityColors[item.severity]};background:${severityColors[item.severity]}"></span>
+      <span class="text-[10px] font-orbit tracking-wider severity-${item.severity}" style="color:${severityColors[item.severity]}">${item.severity.toUpperCase()}</span>
+      <span class="text-[10px] font-mono text-purple-500 ml-auto">${item.category}</span>
+    </div>
+    <h3 class="text-[15px] font-bold leading-snug mb-2" style="text-shadow: 0 0 20px rgba(255,255,255,0.1);">${item.title}</h3>
+    <div class="flex justify-between text-[10px] font-mono text-purple-500">
+      <span>${item.source}</span><span>${item.time}</span>
+    </div>`;
+  feed.appendChild(card);
+});
+
+// Market ticker
+const markets=[
+  {sym:'BTC',price:'67,842',change:'+3.2%',up:true},{sym:'ETH',price:'3,892',change:'+1.8%',up:true},
+  {sym:'GOLD',price:'2,412',change:'+0.6%',up:true},{sym:'OIL',price:'89.40',change:'+12.1%',up:true},
+  {sym:'S&P500',price:'5,234',change:'-1.4%',up:false},{sym:'EUR/USD',price:'1.0842',change:'-0.3%',up:false},
+  {sym:'NIKKEI',price:'38,420',change:'+0.8%',up:true},{sym:'VIX',price:'28.5',change:'+15.2%',up:true},
+];
+const ticker=document.getElementById('market-ticker');
+markets.forEach(m=>{
+  const el=document.createElement('div');
+  el.className='flex items-center gap-2 flex-shrink-0';
+  el.innerHTML=`<span class="font-mono text-[10px] text-purple-400">${m.sym}</span><span class="ticker-num" style="color:${m.up?'#00e5ff':'#ff2d95'}">${m.price}</span><span class="font-mono text-[10px]" style="color:${m.up?'#00ff87':'#ff2d55'}">${m.change}</span>`;
+  ticker.appendChild(el);
+});
+
+// Charts
+const ctx1=document.getElementById('chart-freq').getContext('2d');
+new Chart(ctx1,{type:'line',data:{labels:['00','04','08','12','16','20','24'],datasets:[{data:[42,38,65,120,98,145,156],borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,0.1)',fill:true,tension:0.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#6b21a8',font:{size:9}},grid:{color:'rgba(107,33,168,0.2)'}},y:{ticks:{color:'#6b21a8',font:{size:9}},grid:{color:'rgba(107,33,168,0.2)'}}}}});
+
+const ctx2=document.getElementById('chart-severity').getContext('2d');
+new Chart(ctx2,{type:'doughnut',data:{labels:['Critical','High','Medium','Low'],datasets:[{data:[12,28,35,25],backgroundColor:['#ff2d55','#ff8c00','#ffd600','#00e5ff'],borderWidth:0}]},options:{responsive:true,cutout:'65%',plugins:{legend:{display:true,position:'bottom',labels:{color:'#9333ea',font:{size:9},padding:8}}}}});
+</script>
+</body>
+</html>

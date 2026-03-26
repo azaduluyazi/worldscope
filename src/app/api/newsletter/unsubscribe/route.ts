@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
         <div style="text-align:center;">
           <h2 style="color:#00e5ff;">Unsubscribed</h2>
           <p>You have been unsubscribed from WorldScope emails.</p>
-          <a href="https://worldscope-two.vercel.app" style="color:#00e5ff;">Return to Dashboard</a>
+          <a href="https://troiamedia.com" style="color:#00e5ff;">Return to Dashboard</a>
         </div>
       </body></html>`,
       { headers: { "Content-Type": "text/html" } }

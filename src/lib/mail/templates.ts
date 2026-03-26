@@ -11,8 +11,8 @@ const FOOTER = `
   <div style="margin-top:32px;padding-top:16px;border-top:1px solid #1a2332;text-align:center;">
     <p style="color:#4a5568;font-size:10px;font-family:monospace;">
       ${LOGO_TEXT} — Global Intelligence Platform<br/>
-      <a href="https://worldscope-two.vercel.app" style="color:#00e5ff;">worldscope-two.vercel.app</a><br/>
-      <a href="https://worldscope-two.vercel.app/api/newsletter/unsubscribe?email={{EMAIL}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
+      <a href="https://troiamedia.com" style="color:#00e5ff;">troiamedia.com</a><br/>
+      <a href="https://troiamedia.com/api/newsletter/unsubscribe?email={{EMAIL}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
     </p>
   </div>
 `;
@@ -99,7 +99,7 @@ export function buildDailyBriefingEmail(params: {
         ${itemsHtml}
 
         <div style="text-align:center;margin-top:16px;">
-          <a href="https://worldscope-two.vercel.app" style="display:inline-block;background:#00e5ff;color:#050a12;font-size:11px;font-weight:bold;padding:8px 24px;border-radius:4px;text-decoration:none;">
+          <a href="https://troiamedia.com" style="display:inline-block;background:#00e5ff;color:#050a12;font-size:11px;font-weight:bold;padding:8px 24px;border-radius:4px;text-decoration:none;">
             VIEW FULL DASHBOARD →
           </a>
         </div>
@@ -152,7 +152,7 @@ export function buildBreakingAlertEmail(params: {
         </div>
 
         <div style="text-align:center;margin-top:16px;">
-          <a href="${item.url || "https://worldscope-two.vercel.app"}" style="display:inline-block;background:${borderColor};color:#050a12;font-size:11px;font-weight:bold;padding:8px 24px;border-radius:4px;text-decoration:none;">
+          <a href="${item.url || "https://troiamedia.com"}" style="display:inline-block;background:${borderColor};color:#050a12;font-size:11px;font-weight:bold;padding:8px 24px;border-radius:4px;text-decoration:none;">
             READ FULL REPORT →
           </a>
         </div>
@@ -164,6 +164,86 @@ export function buildBreakingAlertEmail(params: {
 
   return {
     subject: `⚡ [${sevLabel}] ${item.title.slice(0, 80)}`,
+    html,
+  };
+}
+
+/**
+ * Weekly report email — trend analysis + top events + regional breakdown.
+ */
+export function buildWeeklyReportEmail(params: {
+  items: IntelItem[];
+  aiAnalysis: string;
+  stats: { total: number; critical: number; high: number; sources: number; topCategories: string[] };
+  weekRange: string;
+}): { subject: string; html: string } {
+  const { items, aiAnalysis, stats, weekRange } = params;
+
+  const topItems = items.slice(0, 20);
+
+  const categorySummary = stats.topCategories
+    .slice(0, 5)
+    .map((c, i) => `<span style="color:#00e5ff;font-weight:bold;">${i + 1}.</span> ${c}`)
+    .join(" &nbsp;|&nbsp; ");
+
+  const itemsHtml = topItems.map((item) => {
+    const borderColor = item.severity === "critical" ? "#ff4757" : item.severity === "high" ? "#ffd000" : "#00e5ff";
+    return `
+      <div class="item" style="border-left-color:${borderColor};">
+        <div style="font-size:10px;margin-bottom:4px;">
+          <span style="color:${borderColor};font-weight:bold;">${item.severity.toUpperCase()}</span>
+          <span style="color:#4a5568;margin:0 4px;">—</span>
+          <span style="color:#4a5568;">${item.category}</span>
+          <span style="color:#4a5568;float:right;">${item.source}</span>
+        </div>
+        <a href="${item.url}" style="color:#e2e8f0;text-decoration:none;font-size:12px;">${item.title}</a>
+      </div>`;
+  }).join("");
+
+  const html = `
+    <!DOCTYPE html>
+    <html><head><style>${BASE_STYLE}</style></head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div style="font-size:14px;font-weight:bold;" class="accent">${LOGO_TEXT}</div>
+          <div style="font-size:18px;color:#e2e8f0;margin-top:8px;">Weekly Intelligence Report</div>
+          <div style="font-size:10px;color:#4a5568;">${weekRange}</div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+          <div class="stat"><div style="font-size:16px;color:#00e5ff;">${stats.total}</div><div style="font-size:8px;color:#4a5568;">EVENTS</div></div>
+          <div class="stat"><div style="font-size:16px;color:#ff4757;">${stats.critical}</div><div style="font-size:8px;color:#4a5568;">CRITICAL</div></div>
+          <div class="stat"><div style="font-size:16px;color:#ffd000;">${stats.high}</div><div style="font-size:8px;color:#4a5568;">HIGH</div></div>
+          <div class="stat"><div style="font-size:16px;color:#00ff88;">${stats.sources}</div><div style="font-size:8px;color:#4a5568;">SOURCES</div></div>
+        </div>
+
+        <div style="background:#0d1b2a;border:1px solid #1a2332;border-radius:4px;padding:12px;margin-bottom:16px;">
+          <div style="font-size:11px;color:#00e5ff;font-weight:bold;margin-bottom:4px;">TOP CATEGORIES</div>
+          <div style="font-size:10px;color:#e2e8f0;">${categorySummary}</div>
+        </div>
+
+        <div style="background:#0d1b2a;border:1px solid #1a2332;border-radius:4px;padding:12px;margin-bottom:16px;">
+          <div style="font-size:11px;color:#00e5ff;font-weight:bold;margin-bottom:8px;">WEEKLY ANALYSIS</div>
+          <div style="font-size:11px;color:#e2e8f0;line-height:1.6;">${aiAnalysis.replace(/\n/g, "<br/>")}</div>
+        </div>
+
+        <div style="font-size:11px;color:#00e5ff;font-weight:bold;margin-bottom:8px;">KEY EVENTS THIS WEEK</div>
+        ${itemsHtml}
+
+        <div style="text-align:center;margin-top:16px;">
+          <a href="https://troiamedia.com/analytics" style="display:inline-block;background:#00e5ff;color:#050a12;font-size:11px;font-weight:bold;padding:8px 24px;border-radius:4px;text-decoration:none;">
+            VIEW FULL ANALYTICS →
+          </a>
+        </div>
+
+        ${FOOTER}
+      </div>
+    </body></html>
+  `;
+
+  return {
+    subject: `[WorldScope] Weekly Report — ${stats.total} Events, ${stats.critical} Critical — ${weekRange}`,
     html,
   };
 }

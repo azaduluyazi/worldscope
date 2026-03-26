@@ -1,13 +1,13 @@
 /**
- * Paddle Payment Integration — Subscription management.
- * Handles Pro tier subscriptions for WorldScope.
+ * Paddle Payment Integration — Mail subscription management.
+ * WorldScope site is FREE (ad-supported). Premium = $1/mo mail service.
  *
  * Setup:
  * 1. Create Paddle account at paddle.com
- * 2. Add product + price in Paddle dashboard
+ * 2. Add product + price ($1/mo) in Paddle dashboard
  * 3. Set env vars: PADDLE_API_KEY, NEXT_PUBLIC_PADDLE_CLIENT_TOKEN,
  *    PADDLE_WEBHOOK_SECRET, NEXT_PUBLIC_PADDLE_PRICE_ID
- * 4. Configure webhook URL: https://worldscope-two.vercel.app/api/payments/webhook
+ * 4. Configure webhook URL: https://troiamedia.com/api/payments/webhook
  */
 
 export interface PaddleConfig {
@@ -42,28 +42,34 @@ export interface UserSubscription {
   cancelAtPeriodEnd: boolean;
 }
 
-export const FREE_TIER = {
-  name: "Free",
+/** Site is completely free — ad-supported, no login required */
+export const SITE_FREE = {
+  name: "WorldScope",
+  tagline: "Free forever — no signup needed",
   features: [
-    "Real-time intel feed (200 items)",
-    "2D tactical map",
-    "3 AI briefings/day",
-    "10 live TV channels",
+    "Full real-time intel feed (2000+ sources)",
+    "2D tactical map + 3D globe (5 modes)",
+    "AI briefings & summaries",
+    "232 live TV channels",
+    "Prediction markets & economics",
+    "37+ live intel sources",
+    "20 dashboard themes",
+    "30 languages",
   ],
 };
 
-export const PRO_TIER = {
-  name: "Pro",
+/** $1/month mail subscription — daily briefing + alerts + weekly report */
+export const MAIL_PREMIUM = {
+  name: "Premium Intel Mail",
+  price: 1,
+  period: "month" as const,
+  tagline: "AI intelligence delivered to your inbox",
   features: [
-    "Unlimited intel feed (2000+ items)",
-    "3D globe + all map modes",
-    "Unlimited AI briefings + summaries",
-    "232 live TV channels + HLS",
-    "Prediction markets panel",
-    "Economic indicators (IMF, BIS, Big Mac)",
-    "Weather globe mode",
-    "Priority OREF alerts",
-    "API access",
-    "No ads",
+    "Daily AI situation briefing (08:00 UTC)",
+    "Instant breaking critical alerts",
+    "Weekly trend analysis report",
+    "Weekly geopolitical analysis",
+    "Priority event notifications",
+    "Ad-free email content",
   ],
 };

@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkRateLimit } from "@/lib/middleware/rate-limit";
 import { cachedFetch } from "@/lib/cache/redis";
 import { fetchAllSportsScores } from "@/lib/api/espn-sports";
 import { fetchFootballIntel } from "@/lib/api/football-data";
@@ -18,9 +17,7 @@ const CACHE_TTL = 120;
 
 export async function GET(req: NextRequest) {
   try {
-    const rateLimited = await checkRateLimit(req);
-    if (rateLimited) return rateLimited;
-
+    // Rate limiting is handled by middleware — see src/middleware.ts
     const data = await cachedFetch<{ items: IntelItem[]; total: number; lastUpdated: string }>(
       CACHE_KEY,
       async () => {

@@ -19,7 +19,7 @@ export async function sendMail(params: SendMailParams): Promise<boolean> {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return false;
 
-  const fromEmail = process.env.MAIL_FROM || "WorldScope <noreply@worldscope.app>";
+  const fromEmail = process.env.MAIL_FROM || "WorldScope <noreply@troiamedia.com>";
 
   try {
     // Batch send for multiple recipients

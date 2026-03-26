@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldScope // Glass</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+  body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0c1222 0%, #1a0f2e 40%, #0f1b35 70%, #0d1525 100%); min-height: 100vh; }
+  .font-serif { font-family: 'Playfair Display', Georgia, serif; }
+  .glass {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+  }
+  .glass-strong {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+  }
+  .glass:hover { border-color: rgba(255,255,255,0.15); background: rgba(255,255,255,0.06); }
+  .pill { display: inline-flex; align-items: center; padding: 2px 10px; border-radius: 999px; font-size: 10px; font-weight: 500; letter-spacing: 0.5px; }
+  .pill-critical { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.2); }
+  .pill-high { background: rgba(251,146,60,0.12); color: #fdba74; border: 1px solid rgba(251,146,60,0.2); }
+  .pill-medium { background: rgba(250,204,21,0.1); color: #fde68a; border: 1px solid rgba(250,204,21,0.15); }
+  .pill-low { background: rgba(96,165,250,0.1); color: #93c5fd; border: 1px solid rgba(96,165,250,0.15); }
+  .market-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 6px 14px; }
+  .webcam-thumb { width: 100px; height: 100px; border-radius: 14px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); overflow: hidden; position: relative; }
+  .webcam-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 6px 8px; background: linear-gradient(transparent, rgba(0,0,0,0.7)); border-radius: 0 0 14px 14px; }
+  .fade-in { animation: fadeIn 0.8s ease-out both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .glow-orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+  .text-body { color: #c8d6e5; } .text-muted { color: #607080; } .text-heading { color: #e8f0ff; }
+  ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  .hover-lift { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+  .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+  .breaking-glass { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.15); }
+</style>
+</head>
+<body class="text-body overflow-hidden">
+
+<!-- Background orbs -->
+<div class="glow-orb" style="width:500px;height:500px;background:rgba(96,165,250,0.06);top:-100px;left:-100px;"></div>
+<div class="glow-orb" style="width:400px;height:400px;background:rgba(168,85,247,0.05);bottom:-80px;right:-80px;"></div>
+<div class="glow-orb" style="width:300px;height:300px;background:rgba(59,130,246,0.04);top:50%;left:50%;transform:translate(-50%,-50%);"></div>
+
+<div class="relative z-10 flex flex-col h-screen">
+
+<!-- HEADER -->
+<header class="flex items-center justify-between px-8 py-5 flex-shrink-0">
+  <div class="flex items-center gap-4">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/10 flex items-center justify-center">
+      <span class="font-serif font-bold text-heading text-sm">W</span>
+    </div>
+    <div>
+      <h1 class="font-serif text-heading text-xl font-bold tracking-wide">WorldScope</h1>
+      <p class="text-[10px] text-muted tracking-widest uppercase">Global Intelligence Editorial</p>
+    </div>
+  </div>
+  <div class="flex items-center gap-6">
+    <!-- Market pills -->
+    <div class="flex gap-2" id="market-pills"></div>
+    <div class="text-muted text-xs" id="clock"></div>
+  </div>
+</header>
+
+<!-- BREAKING ALERT -->
+<div class="mx-8 mb-4 glass breaking-glass rounded-2xl px-6 py-3 flex items-center gap-4 fade-in flex-shrink-0">
+  <span class="pill pill-critical">BREAKING</span>
+  <span class="text-heading font-serif text-sm">Major 7.8 earthquake strikes Indonesia &mdash; Tsunami warning active for 12 countries across the Pacific</span>
+  <span class="text-muted text-xs ml-auto flex-shrink-0">2 min ago</span>
+</div>
+
+<div class="flex flex-1 overflow-hidden px-8 pb-6 gap-6">
+
+  <!-- LEFT: NEWS FEED -->
+  <div class="w-[440px] flex-shrink-0 overflow-y-auto pr-2 space-y-4">
+    <h2 class="text-muted text-xs tracking-[0.25em] uppercase font-medium mb-2">Latest Intelligence</h2>
+    <div id="news-feed" class="space-y-4"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="flex-1 flex flex-col gap-6 overflow-hidden">
+    <!-- GLOBE + TV ROW -->
+    <div class="flex gap-6 flex-shrink-0" style="height:280px;">
+      <!-- GLOBE -->
+      <div class="flex-1 glass flex items-center justify-center relative hover-lift">
+        <div class="absolute inset-0 rounded-2xl" style="background: radial-gradient(circle at center, rgba(96,165,250,0.08) 0%, transparent 60%);"></div>
+        <div class="text-center relative z-10">
+          <div class="w-40 h-40 rounded-full mx-auto mb-3 flex items-center justify-center" style="background: radial-gradient(circle, rgba(96,165,250,0.12) 0%, transparent 70%); border: 1px solid rgba(96,165,250,0.15);">
+            <span class="font-serif text-heading text-3xl font-bold" style="opacity:0.7;">Globe</span>
+          </div>
+          <p class="text-muted text-[10px] tracking-widest uppercase">Interactive 3D View</p>
+        </div>
+      </div>
+
+      <!-- TV PANEL -->
+      <div class="w-[280px] glass flex flex-col hover-lift">
+        <div class="p-5 flex-1">
+          <div class="flex items-center justify-between mb-4">
+            <span class="text-muted text-[10px] tracking-widest uppercase">Live Broadcast</span>
+            <span class="pill" style="background:rgba(239,68,68,0.2);color:#fca5a5;border:1px solid rgba(239,68,68,0.3);font-size:9px;">LIVE</span>
+          </div>
+          <div class="w-full h-28 rounded-xl bg-black/30 border border-white/5 flex items-center justify-center mb-3">
+            <div class="text-center">
+              <div class="text-heading font-serif text-sm">TRT Haber</div>
+              <div class="text-muted text-[10px] mt-1">Live Coverage</div>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <div class="flex-1 glass text-center py-2 text-[10px] text-muted cursor-pointer rounded-lg">Al Jazeera</div>
+            <div class="flex-1 glass text-center py-2 text-[10px] text-muted cursor-pointer rounded-lg">BBC World</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="flex gap-6 flex-shrink-0" style="height:200px;">
+      <div class="flex-1 glass p-5 hover-lift">
+        <span class="text-muted text-[10px] tracking-widest uppercase">Event Frequency (24h)</span>
+        <canvas id="chart-line" class="mt-2" height="130"></canvas>
+      </div>
+      <div class="w-[200px] glass p-5 hover-lift">
+        <span class="text-muted text-[10px] tracking-widest uppercase">By Severity</span>
+        <canvas id="chart-donut" class="mt-2" height="130"></canvas>
+      </div>
+    </div>
+
+    <!-- WEBCAMS ROW -->
+    <div class="flex-shrink-0">
+      <h2 class="text-muted text-[10px] tracking-widest uppercase mb-3">Global Camera Feeds</h2>
+      <div class="flex gap-3 overflow-x-auto pb-2">
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">NYC</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">New York</span></div></div>
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">LON</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">London</span></div></div>
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">TYO</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">Tokyo</span></div></div>
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">IST</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">Istanbul</span></div></div>
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">DXB</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">Dubai</span></div></div>
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">SYD</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">Sydney</span></div></div>
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">BER</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">Berlin</span></div></div>
+        <div class="webcam-thumb hover-lift flex items-center justify-center"><span class="text-muted text-xs">SIN</span><div class="webcam-overlay"><span class="text-[9px] text-white/80">Singapore</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// Clock
+function updateClock(){const d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',timeZoneName:'short'});}
+setInterval(updateClock,1000);updateClock();
+
+// Market pills
+const markets=[{sym:'GOLD',price:'2,412',up:true,chg:'+0.6%'},{sym:'OIL',price:'89.40',up:true,chg:'+12.1%'},{sym:'BTC',price:'67.8K',up:true,chg:'+3.2%'},{sym:'S&P',price:'5,234',up:false,chg:'-1.4%'}];
+const mp=document.getElementById('market-pills');
+markets.forEach(m=>{
+  const d=document.createElement('div');
+  d.className='market-pill flex items-center gap-2 text-xs';
+  d.innerHTML=`<span class="text-muted">${m.sym}</span><span class="text-heading font-medium">${m.price}</span><span style="color:${m.up?'#86efac':'#fca5a5'}">${m.up?'&#9650;':'&#9660;'} ${m.chg}</span>`;
+  mp.appendChild(d);
+});
+
+// News
+const news=[
+  {title:"NATO deploys additional 40,000 troops to Eastern European border amid rising tensions",severity:"critical",source:"BBC News",time:"8 min ago",summary:"The alliance announced the largest force deployment since the Cold War in response to escalating military activity near member state borders."},
+  {title:"Oil prices surge 12% as Middle East shipping lanes face unprecedented disruption",severity:"high",source:"Bloomberg",time:"15 min ago",summary:"Crude oil benchmark soared past $89 per barrel as major shipping companies reroute vessels away from the Strait of Hormuz."},
+  {title:"Unprecedented monsoon flooding displaces over 2 million in Bangladesh",severity:"high",source:"Al Jazeera",time:"22 min ago",summary:"Dhaka and surrounding districts experience worst flooding in decades with water levels continuing to rise."},
+  {title:"EU leaders convene emergency summit on deepening energy crisis",severity:"high",source:"Deutsche Welle",time:"31 min ago",summary:"European Commission President calls for immediate coordinated action as natural gas reserves approach critical levels."},
+  {title:"Coordinated cyberattack takes down power grid across three European nations",severity:"critical",source:"Associated Press",time:"38 min ago",summary:"Critical infrastructure in France, Germany, and Poland simultaneously targeted in what officials describe as a state-sponsored attack."},
+  {title:"European Central Bank announces emergency interest rate decision",severity:"medium",source:"Financial Times",time:"45 min ago",summary:"Markets brace for an unscheduled rate adjustment as inflation data shows unexpected acceleration across the eurozone."},
+  {title:"Massive wildfire forces evacuation of 50,000 in southern France",severity:"medium",source:"France24",time:"52 min ago",summary:"Marseille airport temporarily closed as fire crews from five nations join containment efforts in Provence region."},
+  {title:"Peace negotiations resume in Geneva between rival factions",severity:"low",source:"UN News",time:"1h ago",summary:"United Nations special envoy expresses cautious optimism as both parties agree to humanitarian corridor provisions."},
+  {title:"Mount Etna volcanic activity escalates, flights diverted",severity:"medium",source:"ANSA",time:"1.2h ago",summary:"Italian civil protection raises alert level to orange as tremor intensity increases and ash plume reaches 8km altitude."},
+  {title:"Arctic ice coverage reaches new record seasonal low",severity:"medium",source:"NASA",time:"2h ago",summary:"Satellite data confirms sea ice extent is 2.1 million square kilometers below the 30-year average."},
+];
+
+const feed=document.getElementById('news-feed');
+news.forEach((item,i)=>{
+  const card=document.createElement('div');
+  card.className='glass p-5 hover-lift fade-in cursor-default';
+  card.style.animationDelay=`${i*0.1}s`;
+  card.innerHTML=`
+    <div class="flex items-center gap-2 mb-3">
+      <span class="pill pill-${item.severity}">${item.severity}</span>
+      <span class="text-muted text-[10px] ml-auto">${item.time}</span>
+    </div>
+    <h3 class="font-serif text-heading text-base leading-relaxed mb-2" style="line-height:1.6;">${item.title}</h3>
+    <p class="text-body text-xs leading-relaxed opacity-70 mb-3" style="line-height:1.7;">${item.summary}</p>
+    <div class="text-muted text-[10px]">${item.source}</div>`;
+  feed.appendChild(card);
+});
+
+// Charts
+const ctx1=document.getElementById('chart-line').getContext('2d');
+const grad1=ctx1.createLinearGradient(0,0,0,130);grad1.addColorStop(0,'rgba(96,165,250,0.2)');grad1.addColorStop(1,'rgba(96,165,250,0)');
+new Chart(ctx1,{type:'line',data:{labels:['00:00','04:00','08:00','12:00','16:00','20:00','Now'],datasets:[{data:[35,28,52,95,120,88,156],borderColor:'rgba(96,165,250,0.8)',backgroundColor:grad1,fill:true,tension:0.4,borderWidth:1.5,pointRadius:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'rgba(255,255,255,0.2)',font:{size:9}},grid:{display:false}},y:{ticks:{color:'rgba(255,255,255,0.15)',font:{size:9}},grid:{color:'rgba(255,255,255,0.04)'}}}}});
+
+const ctx2=document.getElementById('chart-donut').getContext('2d');
+new Chart(ctx2,{type:'doughnut',data:{labels:['Critical','High','Medium','Low'],datasets:[{data:[12,28,35,25],backgroundColor:['rgba(239,68,68,0.6)','rgba(251,146,60,0.5)','rgba(250,204,21,0.4)','rgba(96,165,250,0.4)'],borderWidth:0}]},options:{responsive:true,cutout:'70%',plugins:{legend:{display:true,position:'bottom',labels:{color:'rgba(255,255,255,0.3)',font:{size:8},padding:6,boxWidth:8}}}}});
+</script>
+</body>
+</html>

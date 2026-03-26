@@ -19,9 +19,14 @@ import { PredictionPanel } from "./PredictionPanel";
 import { EconomicsPanel } from "./EconomicsPanel";
 import { PremiumPopup } from "./PremiumPopup";
 import { ConnectionStatus } from "./ConnectionStatus";
+import { DefconBar } from "./DefconBar";
+import { NeonBreakingBanner } from "./NeonBreakingBanner";
+import { WarzoneBreakingAlert } from "./WarzoneBreakingAlert";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
+import { useIntelFeed } from "@/hooks/useIntelFeed";
+import { useTheme } from "@/components/shared/ThemeProvider";
 import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { VARIANTS, type VariantId } from "@/config/variants";
 import type { MapFilters } from "@/types/geo";
@@ -143,12 +148,27 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   );
   useKeyboardShortcuts(shortcuts);
 
+  // Theme-specific: get latest breaking item for banners
+  const { theme } = useTheme();
+  const { items: intelItems } = useIntelFeed();
+  const topBreaking = useMemo(() => {
+    return intelItems.find((i) => i.severity === "critical");
+  }, [intelItems]);
+
   return (
     <div
       className="h-screen w-screen flex flex-col overflow-hidden"
       style={{ "--variant-accent": variantConfig.accent } as React.CSSProperties}
     >
+      {/* Theme-specific: Neon gradient breaking banner */}
+      <NeonBreakingBanner text={topBreaking?.title} />
+      {/* Theme-specific: Warzone flashing red alert */}
+      <WarzoneBreakingAlert text={topBreaking?.title} time={topBreaking ? new Date(topBreaking.publishedAt).toUTCString().split(" ")[4] + " UTC" : undefined} />
+
       <TopBar variant={variant} />
+
+      {/* Theme-specific: DEFCON threat-level bar (Warzone only) */}
+      <DefconBar activeLevel={0} />
 
       <div className="flex-1 flex overflow-hidden">
         {/* Icon Sidebar — hidden on mobile, shown on md+ */}
@@ -254,6 +274,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
           <div className="flex-[3.5] flex flex-col gap-1 min-w-0 col-stagger-1">
             {/* Map — 2D tactical or 3D globe modes */}
             <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0">
+              {/* Warzone crosshair overlay on map/globe */}
+              {theme.effect === "warzone" && <div className="warzone-crosshair" aria-hidden="true" />}
               <MapViewToggle mode={mapMode} onModeChange={setMapMode} />
               {mapMode === "2d" ? (
                 <ErrorBoundary section="map" fallback={<MapSkeleton />}>

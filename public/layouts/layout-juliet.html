@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldScope — Juliet Layout</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#050a12;color:#c8d6e5;font-family:'JetBrains Mono','Courier New',monospace;overflow:hidden;height:100vh}
+  .panel{background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);border:1px solid #0d2137;border-radius:8px}
+  .glow{box-shadow:0 0 20px rgba(0,229,255,0.1)}
+  .sev-c{border-left:3px solid #ff4757}.sev-h{border-left:3px solid #ffd000}.sev-m{border-left:3px solid #00e5ff}.sev-l{border-left:3px solid #00ff88}.sev-i{border-left:3px solid #8a5cf6}
+  .card:hover{transform:translateY(-2px);transition:all .2s;box-shadow:0 4px 15px rgba(0,229,255,0.15)}
+  .ticker-scroll{animation:scroll 30s linear infinite}
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}.live-dot{animation:pulse 1.5s infinite}
+  .globe{width:100%;max-width:400px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,#0a2a4a,#050a12 70%);box-shadow:0 0 60px rgba(0,229,255,0.2),inset 0 0 40px rgba(0,229,255,0.05);position:relative;margin:auto}
+  .globe-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#00e5ff}
+  .globe-dot.alert{background:#ff4757;box-shadow:0 0 8px #ff4757}
+  .icon-strip{width:48px;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;background:rgba(0,0,0,0.8);border-right:1px solid #0d2137}
+  .icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;transition:all .2s;font-size:14px;color:#c8d6e5;opacity:.5}
+  .icon-btn:hover,.icon-btn.active{opacity:1;background:rgba(0,229,255,0.1)}
+  .scroll-area{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
+  .scroll-area::-webkit-scrollbar{height:4px}
+  .scroll-area::-webkit-scrollbar-track{background:#050a12}
+  .scroll-area::-webkit-scrollbar-thumb{background:#0d2137;border-radius:2px}
+  .scroll-panel{flex:0 0 100vw;scroll-snap-align:start;padding:12px;display:flex;align-items:stretch;justify-content:center}
+  @media(min-width:768px){.scroll-panel{flex:0 0 calc(100vw - 48px)}}
+</style>
+</head>
+<body class="flex flex-col">
+<a href="layouts-gallery.html" class="fixed top-9 left-14 z-50 text-xs text-cyan-400 hover:text-white transition">&larr; Back to Gallery</a>
+
+<!-- Status bar -->
+<div class="w-full h-7 bg-black/80 flex items-center justify-between px-4 text-[10px] border-b border-[#0d2137] shrink-0 z-30">
+  <span class="text-[#00e5ff]">WORLDSCOPE <span class="text-[#c8d6e5]/50">v2.4.1</span></span>
+  <span>JULIET LAYOUT &mdash; Horizontal Scroll &nbsp;(scroll &rarr;)</span>
+  <span class="text-[#00ff88]">&#9679; LIVE &nbsp;24 MAR 2026 14:32 UTC</span>
+</div>
+
+<div class="flex flex-1 overflow-hidden" style="height:calc(100vh - 62px)">
+  <!-- Icon strip -->
+  <div class="icon-strip shrink-0 hidden md:flex">
+    <div class="icon-btn active" title="Globe">&#127758;</div>
+    <div class="icon-btn" title="TV">&#128250;</div>
+    <div class="icon-btn" title="Feed">&#128220;</div>
+    <div class="icon-btn" title="Alerts">&#9888;</div>
+    <div class="icon-btn" title="Data">&#128200;</div>
+  </div>
+
+  <!-- Horizontal scroll panels -->
+  <div class="scroll-area flex-1">
+    <!-- Panel 1: Globe -->
+    <div class="scroll-panel">
+      <div class="panel glow flex-1 flex items-center justify-center relative max-w-[100%]">
+        <div class="globe">
+          <div class="globe-dot" style="top:28%;left:42%"></div><div class="globe-dot" style="top:38%;left:58%"></div>
+          <div class="globe-dot alert" style="top:33%;left:68%"></div><div class="globe-dot" style="top:52%;left:32%"></div>
+          <div class="globe-dot" style="top:48%;left:52%"></div><div class="globe-dot alert" style="top:22%;left:48%"></div>
+          <div class="globe-dot" style="top:58%;left:62%"></div><div class="globe-dot" style="top:42%;left:28%"></div>
+          <div class="globe-dot" style="top:68%;left:45%"></div><div class="globe-dot alert" style="top:36%;left:40%"></div>
+          <div class="globe-dot" style="top:15%;left:55%"></div><div class="globe-dot" style="top:75%;left:38%"></div>
+        </div>
+        <div class="absolute top-4 left-4 text-xs text-[#00e5ff]">&#9679; GLOBAL THREAT MAP</div>
+        <div class="absolute bottom-4 left-4 text-[10px] text-[#c8d6e5]/40">14 active incidents &bull; 3 critical zones</div>
+        <div class="absolute bottom-4 right-4 text-[10px] text-[#c8d6e5]/30">SCROLL &rarr; FOR MORE PANELS</div>
+      </div>
+    </div>
+
+    <!-- Panel 2: TV -->
+    <div class="scroll-panel">
+      <div class="panel glow flex-1 flex flex-col max-w-[100%]">
+        <div class="flex items-center gap-2 px-4 py-3 border-b border-[#0d2137]">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-500 live-dot"></span>
+          <span class="text-red-500 text-xs font-bold">LIVE</span>
+          <span class="text-xs text-[#c8d6e5]/60">BBC World Service</span>
+          <span class="ml-auto text-[10px] text-[#c8d6e5]/40">HD 1080p</span>
+        </div>
+        <div class="flex-1 bg-gradient-to-br from-[#0a1222] to-[#050a12] flex items-center justify-center text-[#c8d6e5]/20">
+          <div class="text-center"><div class="text-6xl mb-2">&#9654;</div><div class="text-lg">BBC WORLD SERVICE</div><div class="text-xs mt-1 text-[#c8d6e5]/30">Live International News Coverage</div></div>
+        </div>
+        <div class="px-4 py-2 border-t border-[#0d2137] text-xs text-[#ffd000]">
+          BREAKING: EU announces emergency climate summit after record flooding in Central Europe
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3: News Feed -->
+    <div class="scroll-panel">
+      <div class="panel flex-1 p-4 overflow-y-auto max-w-[100%]">
+        <div class="text-sm text-[#00e5ff] font-bold mb-3">&#9632; INTELLIGENCE FEED</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="card panel p-3 sev-c cursor-pointer"><div class="text-[10px] text-[#ff4757] font-bold">CRITICAL</div><div class="text-xs mt-1">Magnitude 7.2 earthquake strikes southern Turkey; casualties reported in Adana province</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">Reuters &bull; 3 min ago</div></div>
+          <div class="card panel p-3 sev-h cursor-pointer"><div class="text-[10px] text-[#ffd000] font-bold">HIGH</div><div class="text-xs mt-1">Russian naval fleet repositions near Baltic corridor; NATO raises alert level</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">BBC &bull; 12 min ago</div></div>
+          <div class="card panel p-3 sev-c cursor-pointer"><div class="text-[10px] text-[#ff4757] font-bold">CRITICAL</div><div class="text-xs mt-1">Cyberattack disrupts power grid across three EU nations; state actor suspected</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">AP News &bull; 18 min ago</div></div>
+          <div class="card panel p-3 sev-m cursor-pointer"><div class="text-[10px] text-[#00e5ff] font-bold">MEDIUM</div><div class="text-xs mt-1">Federal Reserve signals emergency rate adjustment amid inflation surge to 6.8%</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">Bloomberg &bull; 25 min ago</div></div>
+          <div class="card panel p-3 sev-h cursor-pointer"><div class="text-[10px] text-[#ffd000] font-bold">HIGH</div><div class="text-xs mt-1">Mass protests erupt in Tbilisi after parliament passes foreign agents law</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">Al Jazeera &bull; 31 min ago</div></div>
+          <div class="card panel p-3 sev-l cursor-pointer"><div class="text-[10px] text-[#00ff88] font-bold">LOW</div><div class="text-xs mt-1">SpaceX Starship completes 7th orbital test; FAA clears commercial missions</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">Space.com &bull; 42 min ago</div></div>
+          <div class="card panel p-3 sev-m cursor-pointer"><div class="text-[10px] text-[#00e5ff] font-bold">MEDIUM</div><div class="text-xs mt-1">China deploys additional coast guard vessels near Scarborough Shoal</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">Reuters &bull; 55 min ago</div></div>
+          <div class="card panel p-3 sev-i cursor-pointer"><div class="text-[10px] text-[#8a5cf6] font-bold">INFO</div><div class="text-xs mt-1">WHO upgrades H5N1 avian flu risk assessment following mammalian transmission</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">WHO &bull; 1h ago</div></div>
+          <div class="card panel p-3 sev-l cursor-pointer"><div class="text-[10px] text-[#00ff88] font-bold">LOW</div><div class="text-xs mt-1">India-Middle East-Europe corridor reaches construction milestone</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">FT &bull; 1.5h ago</div></div>
+          <div class="card panel p-3 sev-h cursor-pointer"><div class="text-[10px] text-[#ffd000] font-bold">HIGH</div><div class="text-xs mt-1">Sudan ceasefire collapses; RSF forces advance on El Fasher</div><div class="text-[10px] text-[#c8d6e5]/40 mt-2">CNN &bull; 2h ago</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 4: Alerts + Webcams -->
+    <div class="scroll-panel">
+      <div class="flex-1 flex flex-col md:flex-row gap-3 max-w-[100%]">
+        <!-- Alerts -->
+        <div class="panel p-4 flex-1 overflow-y-auto">
+          <div class="text-sm text-[#ff4757] font-bold mb-3">&#9888; BREAKING ALERTS</div>
+          <div class="space-y-3">
+            <div class="bg-[#ff4757]/10 border border-[#ff4757]/30 rounded p-3 text-xs"><span class="text-[#ff4757] font-bold">14:28 UTC</span> — M7.2 earthquake Turkey — Adana<br><span class="text-[10px] text-[#c8d6e5]/50">Depth: 12km | Pop affected: ~2.1M</span></div>
+            <div class="bg-[#ffd000]/10 border border-[#ffd000]/30 rounded p-3 text-xs"><span class="text-[#ffd000] font-bold">14:15 UTC</span> — NATO Baltic alert elevated<br><span class="text-[10px] text-[#c8d6e5]/50">Source: SACEUR</span></div>
+            <div class="bg-[#ff4757]/10 border border-[#ff4757]/30 rounded p-3 text-xs"><span class="text-[#ff4757] font-bold">13:52 UTC</span> — EU power grid cyberattack<br><span class="text-[10px] text-[#c8d6e5]/50">DE, PL, CZ — 4.7M affected</span></div>
+            <div class="bg-[#00e5ff]/10 border border-[#00e5ff]/30 rounded p-3 text-xs"><span class="text-[#00e5ff] font-bold">13:30 UTC</span> — Fed emergency rate signal<br><span class="text-[10px] text-[#c8d6e5]/50">CPI 6.8% YoY</span></div>
+            <div class="bg-[#ffd000]/10 border border-[#ffd000]/30 rounded p-3 text-xs"><span class="text-[#ffd000] font-bold">12:45 UTC</span> — Georgia protests mass escalation</div>
+          </div>
+        </div>
+        <!-- Webcams -->
+        <div class="panel p-4 flex-1">
+          <div class="text-sm text-[#00e5ff] font-bold mb-3">&#128247; LIVE WEBCAMS</div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-[#0a1222] rounded h-28 flex items-center justify-center text-xs text-[#c8d6e5]/30 border border-[#0d2137]"><div class="text-center"><div class="text-[#00e5ff]/50 text-2xl">&#9679;</div>Tokyo, JP<br><span class="text-[9px]">23:32 JST</span></div></div>
+            <div class="bg-[#0a1222] rounded h-28 flex items-center justify-center text-xs text-[#c8d6e5]/30 border border-[#0d2137]"><div class="text-center"><div class="text-[#ff4757]/50 text-2xl">&#9679;</div>Istanbul, TR<br><span class="text-[9px]">17:32 TRT</span></div></div>
+            <div class="bg-[#0a1222] rounded h-28 flex items-center justify-center text-xs text-[#c8d6e5]/30 border border-[#0d2137]"><div class="text-center"><div class="text-[#00e5ff]/50 text-2xl">&#9679;</div>London, UK<br><span class="text-[9px]">14:32 GMT</span></div></div>
+            <div class="bg-[#0a1222] rounded h-28 flex items-center justify-center text-xs text-[#c8d6e5]/30 border border-[#0d2137]"><div class="text-center"><div class="text-[#00e5ff]/50 text-2xl">&#9679;</div>New York, US<br><span class="text-[9px]">09:32 EST</span></div></div>
+            <div class="bg-[#0a1222] rounded h-28 flex items-center justify-center text-xs text-[#c8d6e5]/30 border border-[#0d2137]"><div class="text-center"><div class="text-[#ffd000]/50 text-2xl">&#9679;</div>Kyiv, UA<br><span class="text-[9px]">16:32 EET</span></div></div>
+            <div class="bg-[#0a1222] rounded h-28 flex items-center justify-center text-xs text-[#c8d6e5]/30 border border-[#0d2137]"><div class="text-center"><div class="text-[#00e5ff]/50 text-2xl">&#9679;</div>Sydney, AU<br><span class="text-[9px]">01:32 AEDT</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 5: Predictions + Economics -->
+    <div class="scroll-panel">
+      <div class="flex-1 flex flex-col md:flex-row gap-3 max-w-[100%]">
+        <!-- Predictions -->
+        <div class="panel p-4 flex-1 overflow-y-auto">
+          <div class="text-sm text-[#8a5cf6] font-bold mb-3">&#9733; PREDICTIONS</div>
+          <div class="space-y-3">
+            <div class="bg-[#0a1222] rounded p-3 text-xs border border-[#0d2137]"><div class="text-[#8a5cf6] font-bold">Conflict Escalation — Baltic Region</div><div class="flex items-center gap-2 mt-2"><div class="flex-1 bg-[#0d2137] rounded-full h-2"><div class="bg-[#ffd000] h-2 rounded-full" style="width:72%"></div></div><span class="text-[#ffd000] text-sm">72%</span></div></div>
+            <div class="bg-[#0a1222] rounded p-3 text-xs border border-[#0d2137]"><div class="text-[#8a5cf6] font-bold">US Recession Q3 2026</div><div class="flex items-center gap-2 mt-2"><div class="flex-1 bg-[#0d2137] rounded-full h-2"><div class="bg-[#ff4757] h-2 rounded-full" style="width:58%"></div></div><span class="text-[#ff4757] text-sm">58%</span></div></div>
+            <div class="bg-[#0a1222] rounded p-3 text-xs border border-[#0d2137]"><div class="text-[#8a5cf6] font-bold">H5N1 Pandemic Declaration</div><div class="flex items-center gap-2 mt-2"><div class="flex-1 bg-[#0d2137] rounded-full h-2"><div class="bg-[#00e5ff] h-2 rounded-full" style="width:34%"></div></div><span class="text-[#00e5ff] text-sm">34%</span></div></div>
+            <div class="bg-[#0a1222] rounded p-3 text-xs border border-[#0d2137]"><div class="text-[#8a5cf6] font-bold">EU Energy Crisis (Winter 26/27)</div><div class="flex items-center gap-2 mt-2"><div class="flex-1 bg-[#0d2137] rounded-full h-2"><div class="bg-[#ffd000] h-2 rounded-full" style="width:65%"></div></div><span class="text-[#ffd000] text-sm">65%</span></div></div>
+            <div class="bg-[#0a1222] rounded p-3 text-xs border border-[#0d2137]"><div class="text-[#8a5cf6] font-bold">BTC &gt; $100K by June 2026</div><div class="flex items-center gap-2 mt-2"><div class="flex-1 bg-[#0d2137] rounded-full h-2"><div class="bg-[#00ff88] h-2 rounded-full" style="width:41%"></div></div><span class="text-[#00ff88] text-sm">41%</span></div></div>
+          </div>
+        </div>
+        <!-- Economics -->
+        <div class="panel p-4 flex-1">
+          <div class="text-sm text-[#00e5ff] font-bold mb-3">&#9636; ECONOMICS</div>
+          <div class="grid grid-cols-2 gap-3 text-center mb-4">
+            <div class="bg-[#0a1222] rounded p-3 border border-[#0d2137]"><div class="text-[10px] text-[#c8d6e5]/50">US CPI</div><div class="text-xl text-[#ff4757]">6.8%</div></div>
+            <div class="bg-[#0a1222] rounded p-3 border border-[#0d2137]"><div class="text-[10px] text-[#c8d6e5]/50">VIX</div><div class="text-xl text-[#ffd000]">26.4</div></div>
+            <div class="bg-[#0a1222] rounded p-3 border border-[#0d2137]"><div class="text-[10px] text-[#c8d6e5]/50">10Y Yield</div><div class="text-xl text-[#ff4757]">4.87%</div></div>
+            <div class="bg-[#0a1222] rounded p-3 border border-[#0d2137]"><div class="text-[10px] text-[#c8d6e5]/50">DXY</div><div class="text-xl text-[#00ff88]">104.72</div></div>
+          </div>
+          <div class="text-[10px] text-[#c8d6e5]/40 mb-1">GDP GROWTH FORECAST 2026</div>
+          <canvas id="gdpChart" style="height:100px"></canvas>
+          <div class="mt-3 text-[10px] text-[#c8d6e5]/40 mb-1">THREAT INDEX 24H</div>
+          <canvas id="threatChart" style="height:80px"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ticker -->
+<div class="w-full h-7 bg-black/90 border-t border-[#0d2137] flex items-center overflow-hidden shrink-0 z-30">
+  <div class="ticker-scroll flex items-center gap-8 whitespace-nowrap text-[10px] px-4">
+    <span>BTC <span class="text-[#00ff88]">$87,432 &#9650;2.4%</span></span><span>ETH <span class="text-[#ff4757]">$3,218 &#9660;1.1%</span></span><span>GOLD <span class="text-[#00ff88]">$2,847 &#9650;0.8%</span></span><span>OIL <span class="text-[#ff4757]">$78.92 &#9660;3.2%</span></span><span>S&amp;P500 <span class="text-[#00ff88]">5,412 &#9650;0.3%</span></span><span>EUR/USD <span class="text-[#ff4757]">1.0823 &#9660;0.2%</span></span><span>NASDAQ <span class="text-[#00ff88]">17,832 &#9650;0.6%</span></span>
+    <span>BTC <span class="text-[#00ff88]">$87,432 &#9650;2.4%</span></span><span>ETH <span class="text-[#ff4757]">$3,218 &#9660;1.1%</span></span><span>GOLD <span class="text-[#00ff88]">$2,847 &#9650;0.8%</span></span><span>OIL <span class="text-[#ff4757]">$78.92 &#9660;3.2%</span></span>
+  </div>
+</div>
+
+<script>
+new Chart(document.getElementById('gdpChart'),{type:'bar',data:{labels:['US','EU','CN','IN','JP','BR'],datasets:[{data:[1.8,0.9,4.2,6.1,1.2,2.3],backgroundColor:['#00e5ff','#00e5ff','#00ff88','#00ff88','#00e5ff','#00e5ff'],borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#c8d6e5',font:{size:9}},grid:{display:false}},y:{display:false}}}});
+new Chart(document.getElementById('threatChart'),{type:'line',data:{labels:['00:00','04:00','08:00','12:00','14:00'],datasets:[{data:[42,38,45,62,71],borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,0.1)',fill:true,tension:.4,pointRadius:0,borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+</script>
+</body>
+</html>

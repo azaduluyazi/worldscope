@@ -1,0 +1,37 @@
+{
+  "description": "RepoScout'tan WorldScope'a entegre edilen repolar. Bu dosya takip amaçlıdır.",
+  "last_updated": "2026-03-23",
+  "integrated": [
+    { "repo": "Hexagon/entsoe-api-client", "file": "src/lib/api/entsoe.ts", "category": "energy", "variant": "energy", "date": "2026-03-23" },
+    { "repo": "orhanayd/kandilli-rasathanesi-api", "file": "src/lib/api/kandilli.ts", "category": "natural", "variant": "weather", "date": "2026-03-23" },
+    { "repo": "mkreiser/ESPN-Fantasy-Football-API", "file": "src/lib/api/espn-sports.ts", "category": "sports", "variant": "sports", "date": "2026-03-23" },
+    { "repo": "tstromberg/supplychain-attack-data", "file": "src/lib/api/supply-chain-threats.ts", "category": "cyber", "variant": "cyber", "date": "2026-03-23" },
+    { "repo": "hamid/dollar-tomans-api", "file": "src/lib/api/dollar-toman.ts", "category": "finance", "variant": "finance", "date": "2026-03-23" },
+    { "repo": "mra1385/EIA-python", "file": "src/lib/api/eia.ts", "category": "energy", "variant": "energy", "date": "2026-03-23", "note": "Native TS client, not the Python lib" },
+    { "repo": "yuiseki/crisis-news-map-next", "file": "src/lib/api/crisis-news.ts", "category": "natural", "variant": "world", "date": "2026-03-23" },
+    { "repo": "nirholas/free-crypto-news", "file": "src/lib/api/crypto-news.ts", "category": "finance", "variant": "finance", "date": "2026-03-23" },
+    { "repo": "tardis-dev/tardis-machine", "file": "src/lib/api/tardis-market.ts", "category": "finance", "variant": "finance", "date": "2026-03-23" },
+    { "repo": "coinconvert/crypto-convert", "file": "src/lib/api/crypto-convert.ts", "category": "finance", "variant": "finance", "date": "2026-03-23" },
+    { "repo": "electricitymaps/electricitymaps-contrib", "file": "src/lib/api/electricity-maps.ts", "category": "energy", "variant": "energy", "date": "2026-03-23", "note": "Global CO2 intensity - 80+ countries, fills gap beyond EU/US/UK" },
+    { "repo": "JMousqueton/ransomware.live", "file": "src/lib/api/ransomware-live.ts", "category": "cyber", "variant": "cyber", "date": "2026-03-23", "note": "First ransomware-specific feed, public JSON API" },
+    { "repo": "bellingcat/sar-interference-tracker", "file": "src/lib/api/sar-interference.ts", "category": "conflict", "variant": "conflict", "date": "2026-03-23", "note": "Live GPS/SAR interference from Sentinel-1 satellite - upgrades static gps-jamming.ts" },
+    { "repo": "openfootball/football.json", "file": "src/lib/api/football-data.ts", "category": "sports", "variant": "sports", "date": "2026-03-23", "note": "League standings and match results - complements ESPN live scores" },
+    { "repo": "deepentropy/tvscreener", "file": "src/lib/api/tv-screener.ts", "category": "finance", "variant": "finance", "date": "2026-03-23", "note": "Market screener - top gainers/losers/crypto movers, no individual price API provides this" },
+    { "repo": "guangxiangdebizi/FinanceMCP", "file": "src/lib/api/finance-mcp.ts", "category": "finance", "variant": "finance", "date": "2026-03-23", "note": "Major index batch quotes - S&P 500, NASDAQ, DAX, FTSE, Nikkei, BIST 100" }
+  ],
+  "skipped_with_reason": {
+    "ccxt/ccxt": "Crypto exchange trading - out of scope for read-only intel platform, already have 4 crypto price APIs",
+    "fawazahmed0/exchange-api": "Forex rates already covered by exchangerate.ts, frankfurter.ts, argento-fx.ts",
+    "r-spacex/SpaceX-API": "Already have spacex.ts",
+    "SpaceXLand/api": "Already have spacex.ts",
+    "TheSpaceDevs/spaceflightnewsapi": "Already have spaceflight.ts",
+    "mui/material-ui": "UI lib - project uses shadcn/ui",
+    "typicode/json-server": "Dev tool, not a data source",
+    "trpc/trpc": "API framework, not a data source",
+    "swar/nba_api": "Python only, ESPN already covers NBA",
+    "openfootball/football.json": "Static historical data, ESPN covers live",
+    "airbnb/visx": "Viz lib - conflicts with shadcn/ui architecture",
+    "tremorlabs/tremor-npm": "Dashboard lib - conflicts with existing stack",
+    "open-meteo/typescript": "Already have open-meteo.ts"
+  }
+}

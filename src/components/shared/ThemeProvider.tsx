@@ -17,11 +17,19 @@ const ThemeContext = createContext<ThemeContextType>({
   themes: THEMES,
 });
 
+// All known effect class names
+const EFFECT_CLASSES = [
+  "effect-glassmorphism", "effect-phosphor-glow", "effect-broadcast-bar", "effect-alert-mode",
+  "effect-neon-cyberpunk", "effect-bloomberg-terminal", "effect-warzone",
+];
+const CARD_RADIUS_MAP = { none: "0px", sm: "4px", md: "8px", lg: "12px" };
+
 /** Apply theme CSS variables to document root */
 function applyThemeToDOM(theme: DashboardTheme) {
   const root = document.documentElement;
   const c = theme.colors;
 
+  // Core color variables
   root.style.setProperty("--color-hud-base", c.base);
   root.style.setProperty("--color-hud-surface", c.surface);
   root.style.setProperty("--color-hud-panel", c.panel);
@@ -40,9 +48,54 @@ function applyThemeToDOM(theme: DashboardTheme) {
 
   if (theme.glow) root.style.setProperty("--color-hud-glow", theme.glow);
 
+  // Secondary accent (neon cyan, warzone orange, etc.)
+  if (theme.colors.accent2) {
+    root.style.setProperty("--color-hud-accent2", theme.colors.accent2);
+  }
+
+  // Custom severity color overrides
+  if (theme.severityColors) {
+    const sc = theme.severityColors;
+    if (sc.critical) root.style.setProperty("--color-severity-critical", sc.critical);
+    if (sc.high) root.style.setProperty("--color-severity-high", sc.high);
+    if (sc.medium) root.style.setProperty("--color-severity-medium", sc.medium);
+    if (sc.low) root.style.setProperty("--color-severity-low", sc.low);
+    if (sc.info) root.style.setProperty("--color-severity-info", sc.info);
+  }
+
+  // Card radius
+  const radius = CARD_RADIUS_MAP[theme.cardRadius || "none"];
+  root.style.setProperty("--card-radius", radius);
+
+  // Font mode (mono | sans | serif)
+  root.dataset.fontMode = theme.fontMode || "mono";
+
+  // Display font (orbitron | rajdhani | share-tech-mono)
+  if (theme.displayFont) {
+    root.dataset.displayFont = theme.displayFont;
+  } else {
+    delete root.dataset.displayFont;
+  }
+
+  // Light mode toggle
+  if (theme.lightMode) {
+    root.classList.add("light-theme");
+    root.classList.remove("dark");
+  } else {
+    root.classList.remove("light-theme");
+    root.classList.add("dark");
+  }
+
   // Toggle scanlines CRT overlay
   const scanlines = document.querySelector(".scanlines") as HTMLElement;
   if (scanlines) scanlines.style.display = theme.scanlines ? "block" : "none";
+
+  // Effect classes — remove all, then add current
+  EFFECT_CLASSES.forEach((cls) => root.classList.remove(cls));
+  if (theme.effect) root.classList.add(`effect-${theme.effect}`);
+
+  // Card shadow mode
+  root.dataset.cardShadow = theme.cardShadow || "none";
 
   // Update mobile status bar color
   const meta = document.querySelector('meta[name="theme-color"]');
@@ -91,7 +144,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   return (
     <ThemeContext.Provider value={{ theme, themeId, setTheme: handleSetTheme, themes: THEMES }}>
-      <div className="dark">{children}</div>
+      <div className={theme.lightMode ? "light-theme" : "dark"}>{children}</div>
     </ThemeContext.Provider>
   );
 }

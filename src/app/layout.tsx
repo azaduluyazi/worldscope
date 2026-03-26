@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Inter } from "next/font/google";
+import { JetBrains_Mono, Inter, Orbitron, Rajdhani, Share_Tech_Mono } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -21,6 +21,28 @@ const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+/** Theme-specific display fonts — loaded on demand via CSS variable */
+const orbitron = Orbitron({
+  subsets: ["latin"],
+  weight: ["400", "700", "900"],
+  variable: "--font-orbitron",
+  display: "swap",
+});
+
+const rajdhani = Rajdhani({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-rajdhani",
+  display: "swap",
+});
+
+const shareTechMono = Share_Tech_Mono({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-share-tech-mono",
   display: "swap",
 });
 
@@ -82,7 +104,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`dark ${jetbrainsMono.variable} ${inter.variable}`}>
+    <html lang={locale} className={`dark ${jetbrainsMono.variable} ${inter.variable} ${orbitron.variable} ${rajdhani.variable} ${shareTechMono.variable}`}>
       <head>
         {/* PWA & Mobile meta */}
         <meta name="theme-color" content="#050a12" />

@@ -333,7 +333,7 @@ function ShareButtons({
   dateStr: string;
   eventCount: number;
 }) {
-  const reportUrl = `https://worldscope-two.vercel.app/reports/${type}/${date}`;
+  const reportUrl = `https://troiamedia.com/reports/${type}/${date}`;
   const text = `WorldScope ${capitalize(type)} Intelligence Report — ${dateStr} — ${eventCount} events analyzed`;
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(reportUrl)}`;

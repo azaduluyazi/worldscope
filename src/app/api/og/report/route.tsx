@@ -226,7 +226,7 @@ export async function GET(request: NextRequest) {
               color: "#3a5a7a",
             }}
           >
-            worldscope-two.vercel.app
+            troiamedia.com
           </span>
         </div>
       </div>

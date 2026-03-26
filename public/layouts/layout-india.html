@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldScope — India Layout</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#050a12;color:#c8d6e5;font-family:'JetBrains Mono','Courier New',monospace;overflow:hidden;height:100vh}
+  .panel{background:rgba(0,0,0,0.7);backdrop-filter:blur(14px);border:1px solid #0d2137;border-radius:8px}
+  .sev-c{border-left:3px solid #ff4757}.sev-h{border-left:3px solid #ffd000}.sev-m{border-left:3px solid #00e5ff}.sev-l{border-left:3px solid #00ff88}.sev-i{border-left:3px solid #8a5cf6}
+  .card:hover{transform:translateY(-1px);transition:all .2s;box-shadow:0 4px 15px rgba(0,229,255,0.15)}
+  .ticker-scroll{animation:scroll 30s linear infinite}
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}.live-dot{animation:pulse 1.5s infinite}
+  @keyframes globeGlow{0%,100%{box-shadow:0 0 80px rgba(0,229,255,0.15),0 0 200px rgba(0,229,255,0.05)}50%{box-shadow:0 0 120px rgba(0,229,255,0.25),0 0 300px rgba(0,229,255,0.08)}}
+  .globe-bg{position:fixed;top:50%;left:50%;transform:translate(-50%,-52%);width:min(75vh,75vw);height:min(75vh,75vw);border-radius:50%;background:radial-gradient(circle at 35% 35%,#0a2a4a,#050a12 70%);animation:globeGlow 4s ease-in-out infinite;z-index:0}
+  .globe-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#00e5ff;opacity:.7}
+  .globe-dot.alert{background:#ff4757;box-shadow:0 0 10px #ff4757;opacity:1}
+  @keyframes ring{0%{transform:scale(1);opacity:.6}100%{transform:scale(4);opacity:0}}
+  .ring{position:absolute;width:10px;height:10px;border-radius:50%;border:1px solid #ff4757;animation:ring 2.5s infinite}
+  .pip{position:fixed;z-index:20;overflow:hidden;border-radius:8px;border:1px solid #0d2137;background:rgba(0,0,0,0.75);backdrop-filter:blur(14px);transition:all .3s}
+  .pip:hover{box-shadow:0 0 20px rgba(0,229,255,0.2)}
+  .pip-title{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;background:rgba(0,0,0,0.5);border-bottom:1px solid #0d2137;font-size:10px;cursor:move}
+  .pip-title .minimize{cursor:pointer;opacity:.5;transition:opacity .2s}
+  .pip-title .minimize:hover{opacity:1}
+</style>
+</head>
+<body>
+<a href="layouts-gallery.html" class="fixed top-3 left-3 z-50 text-xs text-cyan-400 hover:text-white transition">&larr; Back to Gallery</a>
+
+<!-- Globe fullscreen -->
+<div class="globe-bg">
+  <div class="globe-dot" style="top:28%;left:42%"></div><div class="globe-dot" style="top:38%;left:58%"></div>
+  <div class="globe-dot alert" style="top:33%;left:68%"></div><div class="ring" style="top:32%;left:67%"></div>
+  <div class="globe-dot" style="top:52%;left:32%"></div><div class="globe-dot" style="top:48%;left:52%"></div>
+  <div class="globe-dot alert" style="top:22%;left:48%"></div><div class="ring" style="top:21%;left:47%"></div>
+  <div class="globe-dot" style="top:58%;left:62%"></div><div class="globe-dot" style="top:42%;left:28%"></div>
+  <div class="globe-dot" style="top:68%;left:45%"></div><div class="globe-dot alert" style="top:36%;left:40%"></div>
+  <div class="ring" style="top:35%;left:39%"></div>
+  <div class="globe-dot" style="top:15%;left:55%"></div><div class="globe-dot" style="top:75%;left:38%"></div>
+</div>
+
+<!-- Status -->
+<div class="fixed top-0 left-0 w-full h-7 bg-black/60 backdrop-blur flex items-center justify-between px-4 text-[10px] z-30 border-b border-[#0d2137]/50">
+  <span class="text-[#00e5ff]">WORLDSCOPE INDIA &mdash; Picture-in-Picture</span>
+  <span class="text-[#00ff88]">&#9679; LIVE &nbsp;24 MAR 2026 14:32 UTC</span>
+</div>
+
+<!-- PiP: Top-right — TV (largest) -->
+<div class="pip" style="top:40px;right:16px;width:380px;height:260px">
+  <div class="pip-title">
+    <div class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span><span class="text-red-400 font-bold">LIVE TV</span><span class="text-[#c8d6e5]/50">Al Jazeera</span></div>
+    <span class="minimize" title="Minimize">&#9472;</span>
+  </div>
+  <div class="flex-1 bg-gradient-to-br from-[#0a1222]/80 to-[#050a12]/80 flex items-center justify-center text-[#c8d6e5]/20" style="height:calc(100% - 50px)">
+    <div class="text-center"><div class="text-4xl mb-1">&#9654;</div><div class="text-xs">AL JAZEERA ENGLISH</div></div>
+  </div>
+  <div class="px-2 py-1 border-t border-[#0d2137]/50 text-[9px] text-[#ffd000]">BREAKING: EU emergency climate summit</div>
+</div>
+
+<!-- PiP: Top-left — Predictions -->
+<div class="pip" style="top:40px;left:16px;width:280px;max-height:300px;overflow-y:auto">
+  <div class="pip-title">
+    <span class="text-[#8a5cf6]">&#9733; PREDICTIONS &amp; ECON</span>
+    <span class="minimize" title="Minimize">&#9472;</span>
+  </div>
+  <div class="p-3 space-y-2">
+    <div class="text-[10px]"><span class="text-[#c8d6e5]/60">Baltic Escalation</span><div class="flex items-center gap-2 mt-0.5"><div class="flex-1 bg-[#0d2137] rounded-full h-1.5"><div class="bg-[#ffd000] h-1.5 rounded-full" style="width:72%"></div></div><span class="text-[#ffd000]">72%</span></div></div>
+    <div class="text-[10px]"><span class="text-[#c8d6e5]/60">US Recession Q3</span><div class="flex items-center gap-2 mt-0.5"><div class="flex-1 bg-[#0d2137] rounded-full h-1.5"><div class="bg-[#ff4757] h-1.5 rounded-full" style="width:58%"></div></div><span class="text-[#ff4757]">58%</span></div></div>
+    <div class="text-[10px]"><span class="text-[#c8d6e5]/60">H5N1 Pandemic</span><div class="flex items-center gap-2 mt-0.5"><div class="flex-1 bg-[#0d2137] rounded-full h-1.5"><div class="bg-[#00e5ff] h-1.5 rounded-full" style="width:34%"></div></div><span class="text-[#00e5ff]">34%</span></div></div>
+    <div class="text-[10px]"><span class="text-[#c8d6e5]/60">EU Energy Crisis</span><div class="flex items-center gap-2 mt-0.5"><div class="flex-1 bg-[#0d2137] rounded-full h-1.5"><div class="bg-[#ffd000] h-1.5 rounded-full" style="width:65%"></div></div><span class="text-[#ffd000]">65%</span></div></div>
+    <div class="mt-2 pt-2 border-t border-[#0d2137]/50 space-y-1 text-[9px]">
+      <div class="flex justify-between"><span>US CPI</span><span class="text-[#ff4757]">6.8%</span></div>
+      <div class="flex justify-between"><span>VIX</span><span class="text-[#ffd000]">26.4</span></div>
+      <div class="flex justify-between"><span>10Y</span><span class="text-[#ff4757]">4.87%</span></div>
+    </div>
+    <canvas id="econChart" style="height:50px"></canvas>
+  </div>
+</div>
+
+<!-- PiP: Bottom-right — News Feed -->
+<div class="pip" style="bottom:40px;right:16px;width:300px;max-height:340px;overflow-y:auto">
+  <div class="pip-title">
+    <span class="text-[#00e5ff]">&#9632; INTEL FEED</span>
+    <span class="minimize" title="Minimize">&#9472;</span>
+  </div>
+  <div class="p-2 space-y-1.5">
+    <div class="card p-1.5 sev-c cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#ff4757] font-bold">CRT</span> M7.2 earthquake Turkey; casualties</div><div class="text-[9px] text-[#c8d6e5]/40">Reuters &bull; 3m</div></div>
+    <div class="card p-1.5 sev-h cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#ffd000] font-bold">HGH</span> Russian fleet Baltic corridor</div><div class="text-[9px] text-[#c8d6e5]/40">BBC &bull; 12m</div></div>
+    <div class="card p-1.5 sev-c cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#ff4757] font-bold">CRT</span> EU grid cyberattack — state actor</div><div class="text-[9px] text-[#c8d6e5]/40">AP &bull; 18m</div></div>
+    <div class="card p-1.5 sev-m cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#00e5ff] font-bold">MED</span> Fed emergency rate signal</div><div class="text-[9px] text-[#c8d6e5]/40">Bloomberg &bull; 25m</div></div>
+    <div class="card p-1.5 sev-h cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#ffd000] font-bold">HGH</span> Tbilisi protests escalate</div><div class="text-[9px] text-[#c8d6e5]/40">AJ &bull; 31m</div></div>
+    <div class="card p-1.5 sev-l cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#00ff88] font-bold">LOW</span> SpaceX Starship test 7</div><div class="text-[9px] text-[#c8d6e5]/40">Space.com &bull; 42m</div></div>
+    <div class="card p-1.5 sev-m cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#00e5ff] font-bold">MED</span> PH-China SCS tensions</div><div class="text-[9px] text-[#c8d6e5]/40">Reuters &bull; 55m</div></div>
+    <div class="card p-1.5 sev-i cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#8a5cf6] font-bold">NFO</span> WHO H5N1 risk upgrade</div><div class="text-[9px] text-[#c8d6e5]/40">WHO &bull; 1h</div></div>
+    <div class="card p-1.5 sev-l cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#00ff88] font-bold">LOW</span> IMEC milestone Saudi</div><div class="text-[9px] text-[#c8d6e5]/40">FT &bull; 1.5h</div></div>
+    <div class="card p-1.5 sev-h cursor-pointer rounded bg-black/40"><div class="text-[10px]"><span class="text-[#ffd000] font-bold">HGH</span> Sudan RSF El Fasher</div><div class="text-[9px] text-[#c8d6e5]/40">CNN &bull; 2h</div></div>
+  </div>
+</div>
+
+<!-- PiP: Bottom-left — Alerts + Webcams -->
+<div class="pip" style="bottom:40px;left:16px;width:280px;max-height:320px;overflow-y:auto">
+  <div class="pip-title">
+    <span class="text-[#ff4757]">&#9888; ALERTS &amp; CAMS</span>
+    <span class="minimize" title="Minimize">&#9472;</span>
+  </div>
+  <div class="p-2">
+    <div class="space-y-1.5 mb-3">
+      <div class="bg-[#ff4757]/10 border border-[#ff4757]/30 rounded p-1.5 text-[10px]"><span class="text-[#ff4757] font-bold">14:28</span> M7.2 Turkey earthquake</div>
+      <div class="bg-[#ffd000]/10 border border-[#ffd000]/30 rounded p-1.5 text-[10px]"><span class="text-[#ffd000] font-bold">14:15</span> NATO Baltic alert</div>
+      <div class="bg-[#ff4757]/10 border border-[#ff4757]/30 rounded p-1.5 text-[10px]"><span class="text-[#ff4757] font-bold">13:52</span> EU grid cyber attack</div>
+    </div>
+    <div class="text-[9px] text-[#00e5ff] font-bold mb-1">WEBCAMS</div>
+    <div class="grid grid-cols-2 gap-1.5">
+      <div class="bg-[#0a1222]/60 rounded h-12 flex items-center justify-center text-[9px] text-[#c8d6e5]/30 border border-[#0d2137]/50">Tokyo</div>
+      <div class="bg-[#0a1222]/60 rounded h-12 flex items-center justify-center text-[9px] text-[#c8d6e5]/30 border border-[#0d2137]/50">Istanbul</div>
+      <div class="bg-[#0a1222]/60 rounded h-12 flex items-center justify-center text-[9px] text-[#c8d6e5]/30 border border-[#0d2137]/50">London</div>
+      <div class="bg-[#0a1222]/60 rounded h-12 flex items-center justify-center text-[9px] text-[#c8d6e5]/30 border border-[#0d2137]/50">NYC</div>
+    </div>
+  </div>
+</div>
+
+<!-- Ticker -->
+<div class="fixed bottom-0 left-0 w-full h-8 bg-black/70 backdrop-blur border-t border-[#0d2137]/50 flex items-center overflow-hidden z-40">
+  <div class="ticker-scroll flex items-center gap-8 whitespace-nowrap text-xs px-4">
+    <span>BTC <span class="text-[#00ff88]">$87,432 &#9650;2.4%</span></span><span>ETH <span class="text-[#ff4757]">$3,218 &#9660;1.1%</span></span><span>GOLD <span class="text-[#00ff88]">$2,847 &#9650;0.8%</span></span><span>OIL <span class="text-[#ff4757]">$78.92 &#9660;3.2%</span></span><span>S&amp;P500 <span class="text-[#00ff88]">5,412 &#9650;0.3%</span></span><span>EUR/USD <span class="text-[#ff4757]">1.0823 &#9660;0.2%</span></span><span>DXY <span class="text-[#00ff88]">104.72 &#9650;0.4%</span></span>
+    <span>BTC <span class="text-[#00ff88]">$87,432 &#9650;2.4%</span></span><span>ETH <span class="text-[#ff4757]">$3,218 &#9660;1.1%</span></span><span>GOLD <span class="text-[#00ff88]">$2,847 &#9650;0.8%</span></span><span>OIL <span class="text-[#ff4757]">$78.92 &#9660;3.2%</span></span>
+  </div>
+</div>
+
+<script>
+new Chart(document.getElementById('econChart'),{type:'line',data:{labels:['','','','',''],datasets:[{data:[42,38,51,62,71],borderColor:'#8a5cf6',backgroundColor:'rgba(138,92,246,0.08)',fill:true,tension:.4,pointRadius:0,borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+</script>
+</body>
+</html>

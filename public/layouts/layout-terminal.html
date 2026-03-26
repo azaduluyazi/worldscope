@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldScope // TERMINAL</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+  * { font-family: 'JetBrains Mono', monospace; }
+  body { background: #000000; color: #ff8c00; margin: 0; line-height: 1.4; }
+  ::selection { background: #ff8c00; color: #000; }
+  ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: #000; } ::-webkit-scrollbar-thumb { background: #333; }
+  .c-crit { color: #ff2d2d; } .c-high { color: #ff8c00; } .c-med { color: #cccc00; } .c-low { color: #00cc66; } .c-info { color: #666; }
+  .c-header { color: #ff8c00; } .c-dim { color: #555; } .c-accent { color: #00ccff; }
+  .blink { animation: blink-anim 1s step-end infinite; }
+  @keyframes blink-anim { 0%,100%{opacity:1;} 50%{opacity:0;} }
+  .news-line { padding: 1px 0; border-bottom: 1px solid #111; cursor: default; }
+  .news-line:hover { background: #0d0d0d; }
+  .section-border { border: 1px solid #222; }
+  .section-header { background: #111; border-bottom: 1px solid #333; padding: 2px 8px; color: #ff8c00; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; }
+  .sparkline { font-size: 11px; letter-spacing: 1px; }
+  .market-up { color: #00ff66; } .market-down { color: #ff2d2d; }
+  .status-bar { background: #0a0a0a; border-top: 1px solid #222; font-size: 10px; color: #555; }
+  .ascii-map { font-size: 6px; line-height: 6px; color: #1a3a1a; letter-spacing: 0.5px; }
+  .threat-marker { color: #ff2d2d; font-weight: bold; }
+  .key-hint { color: #333; font-size: 10px; }
+  .key-hint span { color: #ff8c00; border: 1px solid #333; padding: 0 3px; margin-right: 2px; }
+</style>
+</head>
+<body class="text-xs">
+
+<!-- TOP BAR -->
+<div class="flex items-center justify-between px-2 py-1 bg-[#0a0a0a] border-b border-[#222]">
+  <div class="flex items-center gap-4">
+    <span class="text-[#ff8c00] font-bold text-sm tracking-widest">WORLDSCOPE TERMINAL v4.2.1</span>
+    <span class="c-dim">|</span>
+    <div class="key-hint"><span>F1</span>FEED <span>F2</span>ALERTS <span>F3</span>MARKET <span>F4</span>MAP <span>F5</span>SOURCES <span>ESC</span>MENU</div>
+  </div>
+  <div class="flex items-center gap-4">
+    <span class="c-crit font-bold">!! ALERTS: 12</span>
+    <span class="c-dim">|</span>
+    <span class="c-accent">SOURCES: 247</span>
+    <span class="c-dim">|</span>
+    <span id="clock" class="c-header"></span>
+    <span class="blink c-header">_</span>
+  </div>
+</div>
+
+<!-- BREAKING -->
+<div class="bg-[#1a0000] border-b border-[#ff2d2d33] px-2 py-1">
+  <span class="c-crit font-bold">*** BREAKING ***</span>
+  <span class="c-crit"> 7.8 EARTHQUAKE STRIKES INDONESIA // TSUNAMI WARNING ISSUED FOR 12 NATIONS // CASUALTIES FEARED IN THOUSANDS</span>
+</div>
+
+<div class="flex h-[calc(100vh-62px)]">
+
+  <!-- LEFT: MAIN FEED (60%) -->
+  <div class="flex-[3] flex flex-col border-r border-[#222] overflow-hidden">
+    <div class="section-header flex justify-between">
+      <span>INTELLIGENCE FEED [42 SOURCES]</span>
+      <span class="c-dim">SORTED: TIME DESC | FILTER: ALL</span>
+    </div>
+    <div class="flex-1 overflow-y-auto px-1" id="feed"></div>
+  </div>
+
+  <!-- RIGHT PANELS (40%) -->
+  <div class="flex-[2] flex flex-col overflow-hidden">
+
+    <!-- MARKET DATA -->
+    <div class="section-border flex-shrink-0">
+      <div class="section-header">MARKET DATA // REAL-TIME</div>
+      <div class="p-2">
+        <table class="w-full" style="border-collapse:collapse;">
+          <tr class="c-dim" style="border-bottom:1px solid #222;">
+            <td class="py-0.5 w-20">SYMBOL</td><td class="w-24 text-right">PRICE</td><td class="w-20 text-right">CHG%</td><td class="text-right">SPARK</td>
+          </tr>
+          <tr class="news-line"><td class="py-0.5">OIL/WTI</td><td class="text-right font-bold market-up">89.40</td><td class="text-right market-up">+12.10%</td><td class="text-right sparkline market-up">▁▂▃▃▅▆▇█</td></tr>
+          <tr class="news-line"><td class="py-0.5">GOLD</td><td class="text-right font-bold market-up">2,412.8</td><td class="text-right market-up">+0.62%</td><td class="text-right sparkline market-up">▅▅▆▅▆▆▇▇</td></tr>
+          <tr class="news-line"><td class="py-0.5">BTC/USD</td><td class="text-right font-bold market-up">67,842</td><td class="text-right market-up">+3.21%</td><td class="text-right sparkline market-up">▃▄▃▅▆▅▇█</td></tr>
+          <tr class="news-line"><td class="py-0.5">EUR/USD</td><td class="text-right font-bold market-down">1.0842</td><td class="text-right market-down">-0.31%</td><td class="text-right sparkline market-down">▆▅▅▄▄▃▃▂</td></tr>
+          <tr class="news-line"><td class="py-0.5">S&P 500</td><td class="text-right font-bold market-down">5,234</td><td class="text-right market-down">-1.42%</td><td class="text-right sparkline market-down">▇▆▅▅▄▃▃▂</td></tr>
+          <tr class="news-line"><td class="py-0.5">VIX</td><td class="text-right font-bold market-up">28.50</td><td class="text-right market-up">+15.20%</td><td class="text-right sparkline market-up">▂▃▃▄▅▆▇█</td></tr>
+          <tr class="news-line"><td class="py-0.5">NIKKEI</td><td class="text-right font-bold market-up">38,420</td><td class="text-right market-up">+0.82%</td><td class="text-right sparkline market-up">▅▅▅▆▆▆▇▆</td></tr>
+          <tr class="news-line"><td class="py-0.5">GBP/USD</td><td class="text-right font-bold market-down">1.2634</td><td class="text-right market-down">-0.15%</td><td class="text-right sparkline market-down">▆▆▅▅▅▅▅▄</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- ASCII MAP -->
+    <div class="section-border flex-shrink-0">
+      <div class="section-header">GLOBAL THREAT MAP</div>
+      <div class="p-2 text-center">
+<pre class="ascii-map inline-block text-left" style="color:#1a4a1a;">
+        . ._    _  .    .
+    .  .:::::. ::  . .:::.
+   .::::::::: ::::.::::::::
+  .::::'  ':::::::::::' '::
+  :::' <span class="threat-marker">*</span>  ':::::::::   '::
+  '::    <span class="threat-marker">*</span> :::::::  <span class="threat-marker">*</span>  ::
+   :::. .  :::::::::. .:::
+    ':::::::::::<span class="threat-marker">*</span>:::::::
+      '::::::::::::::'
+  . .   ':::::::::'    .
+    ::::.  ':::'  .::::.
+   ::::::::.. ..::::::::
+    '::::::::::::::::::
+      ':::::::::::::
+</pre>
+        <div class="text-left mt-1 c-dim" style="font-size:9px;">
+          <span class="c-crit">* INDONESIA</span> | <span class="c-crit">* E.EUROPE</span> | <span class="c-high">* M.EAST</span> | <span class="c-med">* E.ASIA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIVE BROADCAST -->
+    <div class="section-border flex-shrink-0">
+      <div class="section-header">BROADCAST MONITOR</div>
+      <div class="p-2 space-y-1">
+        <div class="news-line px-1"><span class="c-crit blink">REC</span> TRT HABER // LIVE // <span id="tv-time" class="c-accent"></span> UTC // EARTHQUAKE COVERAGE</div>
+        <div class="news-line px-1 c-dim">--- AL JAZEERA EN // STANDBY // MIDDLE EAST DESK</div>
+        <div class="news-line px-1 c-dim">--- BBC WORLD // STANDBY // LONDON STUDIO</div>
+        <div class="news-line px-1 c-dim">--- CNN INTL // STANDBY // BREAKING NEWS</div>
+      </div>
+    </div>
+
+    <!-- ALERT SUMMARY -->
+    <div class="section-border flex-1 overflow-y-auto">
+      <div class="section-header">SYSTEM STATUS</div>
+      <div class="p-2 space-y-1 text-[10px]">
+        <div><span class="c-crit font-bold">CRITICAL ALERTS:</span> 12</div>
+        <div><span class="c-high font-bold">HIGH PRIORITY:</span> 28</div>
+        <div><span class="c-med">MEDIUM ALERTS:</span> 35</div>
+        <div><span class="c-low">LOW PRIORITY:</span> 47</div>
+        <div class="c-dim mt-2">ACTIVE CONFLICTS: 7</div>
+        <div class="c-dim">NATURAL DISASTERS: 4 ACTIVE</div>
+        <div class="c-dim">FEEDS PROCESSING: 42/42</div>
+        <div class="c-dim">UPTIME: 99.97% (14d 7h 23m)</div>
+        <div class="c-dim">LAST SYNC: <span class="c-accent" id="last-sync"></span></div>
+        <div class="c-dim mt-2">--- WEBCAM STATUS ---</div>
+        <div class="c-dim">NYC: <span class="c-low">ONLINE</span> | LON: <span class="c-low">ONLINE</span> | TYO: <span class="c-low">ONLINE</span></div>
+        <div class="c-dim">IST: <span class="c-low">ONLINE</span> | DXB: <span class="c-low">ONLINE</span> | SYD: <span class="c-med">DEGRADED</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar flex justify-between px-2 py-0.5 fixed bottom-0 left-0 right-0">
+  <span>WORLDSCOPE TERMINAL // UNCLASSIFIED // FOR AUTHORIZED USE ONLY</span>
+  <span>MEM: 847MB | CPU: 23% | NET: 142Mbps | LATENCY: 12ms</span>
+</div>
+
+<script>
+// Clock
+function pad(n){return n<10?'0'+n:n;}
+function updateClock(){
+  const d=new Date();
+  document.getElementById('clock').textContent=pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+':'+pad(d.getUTCSeconds())+' UTC';
+  document.getElementById('tv-time').textContent=pad(d.getUTCHours())+':'+pad(d.getUTCMinutes());
+  document.getElementById('last-sync').textContent=pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+':'+pad(d.getUTCSeconds());
+}
+setInterval(updateClock,1000);updateClock();
+
+// Feed
+const severityMap={critical:'CRIT',high:'HIGH',medium:'MED ',low:'LOW '};
+const severityClass={critical:'c-crit',high:'c-high',medium:'c-med',low:'c-low'};
+const feedItems=[
+  {time:'14:42',severity:'critical',cat:'DISASTER ',title:'7.8 EARTHQUAKE SULAWESI INDONESIA // TSUNAMI WARNING 12 NATIONS // MAJOR CASUALTIES EXPECTED'},
+  {time:'14:38',severity:'critical',cat:'CONFLICT ',title:'NATO EMERGENCY DEPLOYMENT EASTERN BORDER // 40K TROOPS MOBILIZED // ART.5 DISCUSSIONS'},
+  {time:'14:35',severity:'critical',cat:'CYBER    ',title:'COORDINATED CYBERATTACK TARGETS POWER GRID IN 3 EU NATIONS // CRITICAL INFRASTRUCTURE OFFLINE'},
+  {time:'14:31',severity:'high',cat:'ECONOMY  ',title:'BRENT CRUDE SURGES 12.1% TO $89.40 ON STRAIT OF HORMUZ SHIPPING DISRUPTION'},
+  {time:'14:28',severity:'high',cat:'DISASTER ',title:'BANGLADESH FLOODING DISPLACES 2M+ // DHAKA PARTIALLY SUBMERGED // AID REQUESTED'},
+  {time:'14:24',severity:'high',cat:'POLITICS ',title:'EU EMERGENCY SUMMIT CALLED // ENERGY CRISIS ESCALATION // MINISTERS CONVERGING BRUSSELS'},
+  {time:'14:20',severity:'high',cat:'CONFLICT ',title:'HEAVY ARTILLERY EXCHANGE REPORTED NEAR BORDER ZONE // CIVILIAN EVACUATIONS UNDERWAY'},
+  {time:'14:17',severity:'medium',cat:'ECONOMY  ',title:'ECB ANNOUNCES EMERGENCY RATE DECISION // MARKETS VOLATILE // EURO WEAKENING'},
+  {time:'14:14',severity:'medium',cat:'DISASTER ',title:'WILDFIRE EVACUATION 50K PEOPLE SOUTHERN FRANCE // MARSEILLE AIRPORT CLOSED'},
+  {time:'14:10',severity:'medium',cat:'DISASTER ',title:'MT ETNA VOLCANIC ACTIVITY INCREASED // FLIGHTS DIVERTED // ASHFALL WARNING SICILY'},
+  {time:'14:06',severity:'medium',cat:'CLIMATE  ',title:'ARCTIC SEA ICE NEW SEASONAL LOW RECORDED // 2.1M KM2 BELOW AVERAGE'},
+  {time:'14:02',severity:'low',cat:'DIPLOMACY',title:'GENEVA PEACE TALKS RESUME BETWEEN RIVAL FACTIONS // UN MEDIATOR PRESENT'},
+  {time:'13:58',severity:'low',cat:'ECONOMY  ',title:'TECH SECTOR LAYOFFS ACCELERATE // 15K+ JOBS CUT THIS WEEK // SILICON VALLEY HIT'},
+  {time:'13:54',severity:'low',cat:'POLITICS ',title:'SOUTH AMERICAN TRADE BLOC ANNOUNCES NEW TARIFF AGREEMENT // 6 NATIONS SIGNED'},
+  {time:'13:50',severity:'medium',cat:'HEALTH   ',title:'WHO MONITORS NEW RESPIRATORY VIRUS CLUSTER IN SE ASIA // 200+ CASES'},
+  {time:'13:46',severity:'high',cat:'CONFLICT ',title:'NAVAL STANDOFF IN SOUTH CHINA SEA // MULTIPLE WARSHIPS DEPLOYED // TENSIONS ESCALATE'},
+  {time:'13:42',severity:'medium',cat:'DISASTER ',title:'MAJOR LANDSLIDE BLOCKS KEY HIGHWAY IN NEPAL // RESCUE OPERATIONS LAUNCHED'},
+  {time:'13:38',severity:'low',cat:'SCIENCE  ',title:'SPACE DEBRIS COLLISION RISK ELEVATED FOR ISS // ORBITAL ADJUSTMENT PLANNED'},
+  {time:'13:34',severity:'high',cat:'ECONOMY  ',title:'CHINESE YUAN DROPS TO 5-YEAR LOW // PBOC INTERVENTION EXPECTED // MARKETS REACT'},
+  {time:'13:30',severity:'medium',cat:'POLITICS ',title:'MASS PROTESTS IN CAPITAL CITY // 100K+ DEMONSTRATORS // POLICE DEPLOYED'},
+  {time:'13:26',severity:'low',cat:'TECH     ',title:'UNDERSEA CABLE DAMAGE REPORTED ATLANTIC OCEAN // INTERNET LATENCY INCREASED EU-US'},
+  {time:'13:22',severity:'critical',cat:'CONFLICT ',title:'REPORTS OF MISSILE LAUNCH DETECTED // TRAJECTORY ANALYSIS UNDERWAY // STANDBY'},
+  {time:'13:18',severity:'medium',cat:'ECONOMY  ',title:'GLOBAL SHIPPING RATES SURGE 40% // CONTAINER SHORTAGE WORSENS // SUPPLY CHAIN ALERT'},
+  {time:'13:14',severity:'low',cat:'HEALTH   ',title:'CHOLERA OUTBREAK CONFIRMED IN FLOOD-AFFECTED REGION // 500+ CASES // AID MOBILIZED'},
+  {time:'13:10',severity:'high',cat:'DISASTER ',title:'CATEGORY 4 HURRICANE FORMING IN ATLANTIC // PROJECTED PATH INCLUDES CARIBBEAN ISLANDS'},
+  {time:'13:06',severity:'medium',cat:'POLITICS ',title:'SANCTIONS PACKAGE EXPANDED AGAINST TARGET NATION // 200+ ENTITIES ADDED'},
+  {time:'13:02',severity:'low',cat:'DIPLOMACY',title:'G7 FOREIGN MINISTERS JOINT STATEMENT ON REGIONAL STABILITY // COORDINATED RESPONSE'},
+  {time:'12:58',severity:'medium',cat:'ECONOMY  ',title:'MAJOR BANK REPORTS SIGNIFICANT LOSSES // CREDIT DEFAULT SWAP SPREADS WIDEN'},
+  {time:'12:54',severity:'low',cat:'SCIENCE  ',title:'EARTHQUAKE EARLY WARNING SYSTEM UPGRADE COMPLETED FOR PACIFIC RING OF FIRE'},
+  {time:'12:50',severity:'high',cat:'CONFLICT ',title:'DRONE STRIKE REPORTED ON INFRASTRUCTURE TARGET // DETAILS EMERGING'},
+  {time:'12:46',severity:'medium',cat:'POLITICS ',title:'EMERGENCY PARLIAMENTARY SESSION CALLED // VOTE ON DEFENSE SPENDING INCREASE'},
+  {time:'12:42',severity:'low',cat:'CLIMATE  ',title:'CORAL BLEACHING EVENT CONFIRMED GREAT BARRIER REEF // 4TH MASS EVENT IN DECADE'},
+  {time:'12:38',severity:'medium',cat:'ECONOMY  ',title:'FOOD PRICES INDEX HITS 18-MONTH HIGH // WHEAT FUTURES UP 8%'},
+  {time:'12:34',severity:'high',cat:'DISASTER ',title:'DAM STRUCTURAL WARNING ISSUED CENTRAL ASIA // 500K AT RISK DOWNSTREAM'},
+  {time:'12:30',severity:'low',cat:'TECH     ',title:'GPS SIGNAL JAMMING DETECTED OVER BALTIC SEA // AVIATION ADVISORY ISSUED'},
+  {time:'12:26',severity:'medium',cat:'HEALTH   ',title:'HOSPITAL OVERWHELMED IN EARTHQUAKE ZONE // FIELD HOSPITALS BEING DEPLOYED'},
+  {time:'12:22',severity:'low',cat:'DIPLOMACY',title:'NUCLEAR NON-PROLIFERATION TALKS SCHEDULED FOR NEXT WEEK // 8 NATIONS'},
+  {time:'12:18',severity:'high',cat:'CONFLICT ',title:'ARMS SHIPMENT INTERCEPTED IN INTERNATIONAL WATERS // NAVAL BLOCKADE TIGHTENED'},
+  {time:'12:14',severity:'medium',cat:'ECONOMY  ',title:'RARE EARTH MINERALS EXPORT BAN ANNOUNCED // TECH MANUFACTURING AT RISK'},
+  {time:'12:10',severity:'low',cat:'POLITICS ',title:'ELECTION RESULTS CONTESTED IN REGIONAL VOTE // RECOUNT DEMANDED // OBSERVERS CALLED'},
+];
+
+const feed=document.getElementById('feed');
+feedItems.forEach(item=>{
+  const div=document.createElement('div');
+  div.className='news-line px-1';
+  div.innerHTML=`<span class="c-dim">[${item.time}]</span> <span class="${severityClass[item.severity]} font-bold">[${severityMap[item.severity]}]</span> <span class="c-dim">[${item.cat}]</span> <span class="${item.severity==='critical'?severityClass[item.severity]:''}">${item.title}</span>`;
+  feed.appendChild(div);
+});
+</script>
+</body>
+</html>

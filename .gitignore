@@ -51,3 +51,6 @@ AGENTS.md
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+.zip
+temp-*.json
+temp-*.html

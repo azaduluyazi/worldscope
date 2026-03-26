@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldScope // Magazine</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap');
+  body { font-family: 'DM Sans', sans-serif; background: #0d1117; color: #c9d1d9; }
+  .font-display { font-family: 'DM Serif Display', serif; }
+  .hero-card {
+    background: linear-gradient(135deg, #161b22 0%, #1a1f2e 100%);
+    border: 1px solid #21262d; border-radius: 16px; overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .hero-card:hover { transform: translateY(-2px); box-shadow: 0 16px 48px rgba(0,0,0,0.4); }
+  .medium-card {
+    background: #161b22; border: 1px solid #21262d; border-radius: 14px; overflow: hidden;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .medium-card:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.3); }
+  .small-card {
+    background: #161b22; border: 1px solid #21262d; border-radius: 12px; padding: 16px;
+    transition: transform 0.2s ease;
+  }
+  .small-card:hover { transform: translateY(-1px); border-color: #30363d; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .tag-conflict { background: #da3633/15; color: #f85149; border: 1px solid rgba(248,81,73,0.2); background: rgba(248,81,73,0.1); }
+  .tag-disaster { background: rgba(210,153,34,0.1); color: #d29922; border: 1px solid rgba(210,153,34,0.2); }
+  .tag-economy { background: rgba(56,139,253,0.1); color: #388bfd; border: 1px solid rgba(56,139,253,0.2); }
+  .tag-politics { background: rgba(163,113,247,0.1); color: #a371f7; border: 1px solid rgba(163,113,247,0.2); }
+  .tag-cyber { background: rgba(238,108,77,0.1); color: #ee6c4d; border: 1px solid rgba(238,108,77,0.2); }
+  .tag-health { background: rgba(63,185,80,0.1); color: #3fb950; border: 1px solid rgba(63,185,80,0.2); }
+  .tag-climate { background: rgba(121,192,255,0.1); color: #79c0ff; border: 1px solid rgba(121,192,255,0.2); }
+  .tag-diplomacy { background: rgba(187,128,179,0.1); color: #bb80b3; border: 1px solid rgba(187,128,179,0.2); }
+  .source-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
+  .src-reuters { background: #ff6b35; } .src-bbc { background: #bb1919; } .src-bloomberg { background: #5b3bdb; }
+  .src-aljazeera { background: #d4a843; } .src-ap { background: #e04040; } .src-ft { background: #ffcba4; }
+  .src-france24 { background: #1a8fdd; } .src-un { background: #5b9bd5; } .src-dw { background: #0088ce; }
+  .src-nasa { background: #fc3d21; } .src-noaa { background: #003087; }
+  .breaking-bar {
+    background: linear-gradient(90deg, #da3633, #f85149);
+    color: white; font-weight: 700; font-size: 12px; letter-spacing: 1px;
+  }
+  .ticker-pill {
+    background: #161b22; border: 1px solid #21262d; border-radius: 10px;
+    padding: 6px 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .mini-spark { width: 48px; height: 16px; }
+  .webcam-wide {
+    width: 160px; height: 90px; border-radius: 10px; background: #161b22;
+    border: 1px solid #21262d; overflow: hidden; flex-shrink: 0; position: relative;
+    transition: border-color 0.2s;
+  }
+  .webcam-wide:hover { border-color: #388bfd; }
+  .channel-thumb {
+    width: 140px; height: 80px; border-radius: 10px; background: #161b22;
+    border: 1px solid #21262d; flex-shrink: 0; overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .channel-thumb:hover { border-color: #388bfd; }
+  .image-placeholder { background: linear-gradient(135deg, #1a1f2e, #21262d); }
+  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0d1117; } ::-webkit-scrollbar-thumb { background: #21262d; border-radius: 3px; }
+  .read-time { color: #484f58; font-size: 11px; }
+  .fade-up { animation: fadeUp 0.5s ease-out both; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+</style>
+</head>
+<body>
+
+<!-- BREAKING BAR -->
+<div class="breaking-bar px-6 py-2 flex items-center gap-3">
+  <span class="bg-white text-red-600 px-2 py-0.5 rounded text-[10px] font-bold">BREAKING</span>
+  <span>Magnitude 7.8 earthquake strikes Indonesia &mdash; Tsunami warning issued for 12 Pacific nations</span>
+  <span class="text-red-200 text-[10px] ml-auto">LIVE UPDATES</span>
+</div>
+
+<!-- HEADER -->
+<header class="px-8 py-5 flex items-center justify-between border-b border-[#21262d]">
+  <div class="flex items-center gap-4">
+    <h1 class="font-display text-2xl text-white tracking-wide">WorldScope</h1>
+    <span class="text-[10px] text-[#484f58] border border-[#21262d] rounded px-2 py-0.5">NEWSROOM</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <!-- MARKET TICKER (horizontal pills) -->
+    <div class="flex gap-2 overflow-x-auto" id="ticker-row"></div>
+    <span class="text-[#484f58] text-xs ml-3" id="clock"></span>
+  </div>
+</header>
+
+<div class="overflow-y-auto" style="height: calc(100vh - 95px);">
+  <div class="max-w-[1400px] mx-auto px-8 py-6 space-y-8">
+
+    <!-- HERO CARD -->
+    <div class="hero-card flex fade-up" style="min-height:260px;">
+      <div class="w-[380px] image-placeholder flex items-center justify-center flex-shrink-0">
+        <div class="text-center px-6">
+          <div class="text-[#484f58] text-xs mb-2">FEATURED IMAGE</div>
+          <div class="w-16 h-16 rounded-full mx-auto bg-gradient-to-br from-red-900/30 to-orange-900/20 border border-red-900/20 flex items-center justify-center">
+            <span class="text-red-400 text-xl">!</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex-1 p-8 flex flex-col justify-center">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="tag tag-disaster">Disaster</span>
+          <span class="flex items-center gap-1.5 text-[11px] text-[#484f58]"><span class="source-dot src-reuters"></span>Reuters</span>
+          <span class="text-[#484f58] text-[11px]">2 min ago</span>
+          <span class="read-time ml-auto">3 min read</span>
+        </div>
+        <h2 class="font-display text-white text-[28px] leading-tight mb-3">Massive 7.8 Earthquake Strikes Indonesia's Sulawesi Region, Tsunami Warning Issued</h2>
+        <p class="text-[#8b949e] text-sm leading-relaxed mb-4" style="line-height:1.8;">A powerful earthquake has devastated coastal communities in Sulawesi, with early reports indicating significant structural damage and potential casualties in the thousands. Twelve nations across the Pacific Rim have been placed on tsunami alert.</p>
+        <div class="flex items-center gap-3">
+          <span class="text-[#388bfd] text-xs font-medium cursor-pointer hover:underline">Read full analysis &rarr;</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- TV CHANNELS ROW -->
+    <div>
+      <h3 class="text-[#484f58] text-[10px] tracking-widest uppercase mb-3 font-semibold">Live Broadcasts</h3>
+      <div class="flex gap-3 overflow-x-auto pb-2">
+        <div class="channel-thumb flex items-center justify-center relative">
+          <div class="text-center"><div class="text-white text-xs font-semibold">TRT Haber</div><div class="text-[9px] text-[#484f58] mt-0.5">Live</div></div>
+          <div class="absolute top-2 right-2 bg-red-600 text-white text-[7px] font-bold px-1.5 rounded">LIVE</div>
+        </div>
+        <div class="channel-thumb flex items-center justify-center"><div class="text-center"><div class="text-[#8b949e] text-xs">Al Jazeera</div><div class="text-[9px] text-[#484f58] mt-0.5">Middle East</div></div></div>
+        <div class="channel-thumb flex items-center justify-center"><div class="text-center"><div class="text-[#8b949e] text-xs">BBC World</div><div class="text-[9px] text-[#484f58] mt-0.5">London</div></div></div>
+        <div class="channel-thumb flex items-center justify-center"><div class="text-center"><div class="text-[#8b949e] text-xs">CNN Intl</div><div class="text-[9px] text-[#484f58] mt-0.5">Atlanta</div></div></div>
+        <div class="channel-thumb flex items-center justify-center"><div class="text-center"><div class="text-[#8b949e] text-xs">France 24</div><div class="text-[9px] text-[#484f58] mt-0.5">Paris</div></div></div>
+        <div class="channel-thumb flex items-center justify-center"><div class="text-center"><div class="text-[#8b949e] text-xs">DW News</div><div class="text-[9px] text-[#484f58] mt-0.5">Berlin</div></div></div>
+        <div class="channel-thumb flex items-center justify-center"><div class="text-center"><div class="text-[#8b949e] text-xs">NHK World</div><div class="text-[9px] text-[#484f58] mt-0.5">Tokyo</div></div></div>
+      </div>
+    </div>
+
+    <!-- MASONRY GRID -->
+    <div>
+      <h3 class="text-[#484f58] text-[10px] tracking-widest uppercase mb-4 font-semibold">Top Stories</h3>
+      <div id="story-grid" class="grid grid-cols-3 gap-5"></div>
+    </div>
+
+    <!-- WEBCAMS ROW -->
+    <div>
+      <h3 class="text-[#484f58] text-[10px] tracking-widest uppercase mb-3 font-semibold">Global Camera Feeds</h3>
+      <div class="flex gap-3 overflow-x-auto pb-2">
+        <div class="webcam-wide flex items-center justify-center"><span class="text-[#484f58] text-xs">New York</span><div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[9px] text-[#8b949e]">NYC &mdash; Times Square</div></div>
+        <div class="webcam-wide flex items-center justify-center"><span class="text-[#484f58] text-xs">London</span><div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[9px] text-[#8b949e]">LON &mdash; Tower Bridge</div></div>
+        <div class="webcam-wide flex items-center justify-center"><span class="text-[#484f58] text-xs">Tokyo</span><div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[9px] text-[#8b949e]">TYO &mdash; Shibuya</div></div>
+        <div class="webcam-wide flex items-center justify-center"><span class="text-[#484f58] text-xs">Istanbul</span><div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[9px] text-[#8b949e]">IST &mdash; Bosphorus</div></div>
+        <div class="webcam-wide flex items-center justify-center"><span class="text-[#484f58] text-xs">Dubai</span><div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[9px] text-[#8b949e]">DXB &mdash; Burj Khalifa</div></div>
+        <div class="webcam-wide flex items-center justify-center"><span class="text-[#484f58] text-xs">Sydney</span><div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[9px] text-[#8b949e]">SYD &mdash; Harbour</div></div>
+        <div class="webcam-wide flex items-center justify-center"><span class="text-[#484f58] text-xs">Singapore</span><div class="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[9px] text-[#8b949e]">SIN &mdash; Marina Bay</div></div>
+      </div>
+    </div>
+
+    <!-- GLOBE + CHART ROW -->
+    <div class="flex gap-6">
+      <div class="flex-1 bg-[#161b22] border border-[#21262d] rounded-2xl p-6 flex items-center justify-center" style="min-height:200px;">
+        <div class="text-center">
+          <div class="w-32 h-32 rounded-full mx-auto border border-[#21262d] flex items-center justify-center" style="background: radial-gradient(circle, rgba(56,139,253,0.08), transparent);">
+            <span class="font-display text-white text-xl opacity-50">Globe</span>
+          </div>
+          <p class="text-[#484f58] text-[10px] mt-3 tracking-widest uppercase">Interactive Map</p>
+        </div>
+      </div>
+      <div class="w-[400px] bg-[#161b22] border border-[#21262d] rounded-2xl p-6">
+        <h3 class="text-[#484f58] text-[10px] tracking-widest uppercase mb-3">Event Frequency (24h)</h3>
+        <canvas id="chart-main" height="150"></canvas>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Clock
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+setInterval(updateClock,1000);updateClock();
+
+// Ticker
+const markets=[
+  {sym:'OIL',price:'89.40',chg:'+12.1%',up:true,spark:[30,35,38,42,55,70,82,89]},
+  {sym:'GOLD',price:'2,412',chg:'+0.6%',up:true,spark:[2380,2385,2390,2395,2400,2405,2410,2412]},
+  {sym:'BTC',price:'67.8K',chg:'+3.2%',up:true,spark:[64,65,64,66,67,66,68,68]},
+  {sym:'S&P',price:'5,234',chg:'-1.4%',up:false,spark:[5310,5290,5280,5270,5260,5250,5240,5234]},
+  {sym:'VIX',price:'28.5',chg:'+15%',up:true,spark:[22,23,24,25,26,27,28,29]},
+];
+const tr=document.getElementById('ticker-row');
+markets.forEach(m=>{
+  const d=document.createElement('div');
+  d.className='ticker-pill flex-shrink-0';
+  d.innerHTML=`<span class="text-[#484f58] text-[10px]">${m.sym}</span><span class="text-white text-xs font-semibold">${m.price}</span><canvas class="mini-spark" id="spark-${m.sym}" width="48" height="16"></canvas><span class="text-[10px]" style="color:${m.up?'#3fb950':'#f85149'}">${m.chg}</span>`;
+  tr.appendChild(d);
+  // Mini sparkline
+  setTimeout(()=>{
+    const c=document.getElementById('spark-'+m.sym);if(!c)return;
+    const ctx=c.getContext('2d');const vals=m.spark;const max=Math.max(...vals);const min=Math.min(...vals);const range=max-min||1;
+    ctx.strokeStyle=m.up?'#3fb950':'#f85149';ctx.lineWidth=1.5;ctx.beginPath();
+    vals.forEach((v,i)=>{const x=(i/(vals.length-1))*48;const y=16-((v-min)/range)*14;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+    ctx.stroke();
+  },100);
+});
+
+// Stories
+const stories=[
+  {title:"NATO Deploys 40,000 Troops to Eastern Border in Largest Post-Cold War Mobilization",severity:"critical",tag:"tag-conflict",tagText:"Conflict",source:"BBC News",srcClass:"src-bbc",time:"8 min ago",read:"4 min read",summary:"The NATO alliance announced its most significant force deployment since the Cold War era, with rapid reaction forces converging on Eastern European positions.",size:"large"},
+  {title:"Oil Prices Surge 12% as Strait of Hormuz Shipping Faces Major Disruption",severity:"high",tag:"tag-economy",tagText:"Economy",source:"Bloomberg",srcClass:"src-bloomberg",time:"15 min ago",read:"3 min read",summary:"Crude oil benchmarks hit multi-month highs as commercial vessels are diverted around the critical shipping lane.",size:"medium"},
+  {title:"Coordinated Cyberattack Knocks Out Power Grid in Three EU Nations",severity:"critical",tag:"tag-cyber",tagText:"Cyber",source:"AP",srcClass:"src-ap",time:"38 min ago",read:"5 min read",summary:"Critical infrastructure in France, Germany, and Poland was simultaneously targeted.",size:"medium"},
+  {title:"Unprecedented Flooding Displaces 2 Million in Bangladesh",severity:"high",tag:"tag-disaster",tagText:"Disaster",source:"Al Jazeera",srcClass:"src-aljazeera",time:"22 min ago",read:"3 min read",summary:"Dhaka and surrounding districts experience worst flooding in decades with water levels continuing to rise rapidly.",size:"small"},
+  {title:"EU Emergency Summit Called Over Deepening Energy Crisis",severity:"high",tag:"tag-politics",tagText:"Politics",source:"DW",srcClass:"src-dw",time:"31 min ago",read:"2 min read",summary:"European Commission calls for immediate coordinated action.",size:"small"},
+  {title:"ECB Announces Emergency Interest Rate Decision",severity:"medium",tag:"tag-economy",tagText:"Economy",source:"Financial Times",srcClass:"src-ft",time:"45 min ago",read:"2 min read",summary:"Markets brace for unscheduled rate adjustment.",size:"small"},
+  {title:"Massive Wildfire Forces Evacuation of 50,000 in Southern France",severity:"medium",tag:"tag-disaster",tagText:"Disaster",source:"France24",srcClass:"src-france24",time:"52 min ago",read:"2 min read",summary:"Marseille airport closed as international crews join containment efforts.",size:"small"},
+  {title:"Peace Talks Resume in Geneva Between Rival Factions",severity:"low",tag:"tag-diplomacy",tagText:"Diplomacy",source:"UN News",srcClass:"src-un",time:"1h ago",read:"2 min read",summary:"UN mediator expresses cautious optimism as both parties agree to humanitarian corridors.",size:"small"},
+  {title:"Arctic Ice Coverage Hits New Record Seasonal Low",severity:"medium",tag:"tag-climate",tagText:"Climate",source:"NASA",srcClass:"src-nasa",time:"2h ago",read:"3 min read",summary:"Satellite data confirms extent is 2.1M sq km below average.",size:"small"},
+];
+
+const grid=document.getElementById('story-grid');
+stories.forEach((s,i)=>{
+  const card=document.createElement('div');
+  const isLarge=s.size==='large';
+  const isMedium=s.size==='medium';
+  if(isLarge){
+    card.className='col-span-3 hero-card fade-up';
+    card.style.animationDelay=`${i*0.08}s`;
+    card.innerHTML=`<div class="flex"><div class="w-[300px] image-placeholder flex items-center justify-center flex-shrink-0"><span class="text-[#484f58] text-xs">Image</span></div><div class="flex-1 p-6"><div class="flex items-center gap-2 mb-3"><span class="tag ${s.tag}">${s.tagText}</span><span class="flex items-center gap-1 text-[10px] text-[#484f58]"><span class="source-dot ${s.srcClass}"></span>${s.source}</span><span class="text-[10px] text-[#484f58]">${s.time}</span><span class="read-time ml-auto">${s.read}</span></div><h3 class="font-display text-white text-xl leading-snug mb-2">${s.title}</h3><p class="text-[#8b949e] text-sm leading-relaxed">${s.summary}</p></div></div>`;
+  } else if(isMedium){
+    card.className='col-span-1 medium-card fade-up';
+    card.style.animationDelay=`${i*0.08}s`;
+    card.innerHTML=`<div class="h-28 image-placeholder flex items-center justify-center"><span class="text-[#484f58] text-[10px]">Image</span></div><div class="p-4"><div class="flex items-center gap-2 mb-2"><span class="tag ${s.tag}">${s.tagText}</span><span class="read-time ml-auto">${s.read}</span></div><h3 class="text-white text-sm font-semibold leading-snug mb-2">${s.title}</h3><p class="text-[#8b949e] text-xs leading-relaxed mb-2">${s.summary}</p><div class="flex items-center gap-2 text-[10px] text-[#484f58]"><span class="source-dot ${s.srcClass}"></span><span>${s.source}</span><span>&bull;</span><span>${s.time}</span></div></div>`;
+  } else {
+    card.className='col-span-1 small-card fade-up';
+    card.style.animationDelay=`${i*0.08}s`;
+    card.innerHTML=`<div class="flex items-center gap-2 mb-2"><span class="tag ${s.tag}">${s.tagText}</span><span class="read-time ml-auto">${s.read}</span></div><h3 class="text-white text-[13px] font-semibold leading-snug mb-1.5">${s.title}</h3><p class="text-[#8b949e] text-xs leading-relaxed mb-2">${s.summary}</p><div class="flex items-center gap-2 text-[10px] text-[#484f58]"><span class="source-dot ${s.srcClass}"></span><span>${s.source}</span><span>&bull;</span><span>${s.time}</span></div>`;
+  }
+  grid.appendChild(card);
+});
+
+// Chart
+const ctx=document.getElementById('chart-main').getContext('2d');
+const grad=ctx.createLinearGradient(0,0,0,150);grad.addColorStop(0,'rgba(56,139,253,0.15)');grad.addColorStop(1,'rgba(56,139,253,0)');
+new Chart(ctx,{type:'line',data:{labels:['00:00','03:00','06:00','09:00','12:00','15:00','18:00','21:00','Now'],datasets:[{data:[28,22,35,68,95,120,88,110,156],borderColor:'#388bfd',backgroundColor:grad,fill:true,tension:0.4,borderWidth:2,pointRadius:0}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#484f58',font:{size:9}},grid:{display:false}},y:{ticks:{color:'#484f58',font:{size:9}},grid:{color:'rgba(33,38,45,0.8)'}}}}});
+</script>
+</body>
+</html>

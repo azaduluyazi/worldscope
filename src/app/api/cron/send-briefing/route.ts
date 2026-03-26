@@ -38,7 +38,7 @@ export async function GET(request: Request) {
     // 3. Generate AI summary
     let aiSummary = "Daily intelligence summary unavailable.";
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "https://worldscope-two.vercel.app"}/api/ai/brief`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || "https://troiamedia.com"}/api/ai/brief`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ lang: "en" }),

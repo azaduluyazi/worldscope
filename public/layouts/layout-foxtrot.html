@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldScope — Foxtrot Layout</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#050a12;color:#c8d6e5;font-family:'JetBrains Mono','Courier New',monospace;overflow-x:hidden}
+  .panel{background:rgba(0,0,0,0.7);backdrop-filter:blur(12px);border:1px solid #0d2137;border-radius:8px}
+  .glow{box-shadow:0 0 20px rgba(0,229,255,0.1)}
+  .sev-c{border-left:3px solid #ff4757}.sev-h{border-left:3px solid #ffd000}.sev-m{border-left:3px solid #00e5ff}.sev-l{border-left:3px solid #00ff88}.sev-i{border-left:3px solid #8a5cf6}
+  .card:hover{transform:translateY(-2px);transition:all .2s;box-shadow:0 4px 15px rgba(0,229,255,0.15)}
+  .ticker-scroll{animation:scroll 30s linear infinite}
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}.live-dot{animation:pulse 1.5s infinite}
+  .globe{width:100%;max-width:400px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 35%,#0a2a4a,#050a12 70%);box-shadow:0 0 60px rgba(0,229,255,0.2),inset 0 0 40px rgba(0,229,255,0.05);position:relative;margin:auto}
+  .globe-dot{position:absolute;width:4px;height:4px;border-radius:50%;background:#00e5ff}
+  .globe-dot.alert{background:#ff4757;box-shadow:0 0 8px #ff4757}
+  .tab{padding:8px 20px;cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;font-size:11px;letter-spacing:1px}
+  .tab:hover{color:#00e5ff}
+  .tab.active{color:#00e5ff;border-bottom-color:#00e5ff;background:rgba(0,229,255,0.05)}
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+<a href="layouts-gallery.html" class="fixed top-3 left-3 z-50 text-xs text-cyan-400 hover:text-white transition">&larr; Back to Gallery</a>
+
+<!-- Tab bar -->
+<div class="w-full bg-black/80 border-b border-[#0d2137] flex items-center shrink-0">
+  <div class="text-[#00e5ff] text-xs font-bold px-4 py-2">WORLDSCOPE</div>
+  <div class="flex-1 flex items-center gap-0">
+    <div class="tab active">MAP</div>
+    <div class="tab">INTEL</div>
+    <div class="tab">LIVE TV</div>
+    <div class="tab">ALERTS</div>
+    <div class="tab">DATA</div>
+  </div>
+  <div class="px-4 text-[10px] text-[#00ff88]">&#9679; CONNECTED</div>
+</div>
+
+<!-- MAP tab content -->
+<div class="flex-1 flex flex-col lg:flex-row gap-3 p-3 overflow-hidden" style="height:calc(100vh - 72px)">
+  <!-- Globe main area -->
+  <div class="flex-1 panel glow flex items-center justify-center relative">
+    <div class="globe">
+      <div class="globe-dot" style="top:28%;left:42%"></div><div class="globe-dot" style="top:38%;left:58%"></div>
+      <div class="globe-dot alert" style="top:33%;left:68%"></div><div class="globe-dot" style="top:52%;left:32%"></div>
+      <div class="globe-dot" style="top:48%;left:52%"></div><div class="globe-dot alert" style="top:22%;left:48%"></div>
+      <div class="globe-dot" style="top:58%;left:62%"></div><div class="globe-dot" style="top:42%;left:28%"></div>
+      <div class="globe-dot" style="top:68%;left:45%"></div><div class="globe-dot alert" style="top:36%;left:40%"></div>
+      <div class="globe-dot" style="top:15%;left:55%"></div><div class="globe-dot" style="top:75%;left:38%"></div>
+    </div>
+    <div class="absolute top-3 left-3 text-xs text-[#00e5ff]">&#9679; GLOBAL THREAT MAP</div>
+    <div class="absolute top-3 right-3 text-[10px] text-[#c8d6e5]/40">24 MAR 2026 14:32 UTC</div>
+    <div class="absolute bottom-3 left-3 text-[10px] text-[#c8d6e5]/40">14 active incidents &bull; 3 critical</div>
+    <!-- Legend -->
+    <div class="absolute bottom-3 right-3 flex gap-3 text-[9px]">
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ff4757]"></span>Critical</span>
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#ffd000]"></span>High</span>
+      <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-[#00e5ff]"></span>Active</span>
+    </div>
+
+    <!-- TV mini overlay -->
+    <div class="absolute top-12 right-3 panel w-48">
+      <div class="flex items-center gap-1 px-2 py-1 border-b border-[#0d2137] text-[9px]">
+        <span class="w-1.5 h-1.5 rounded-full bg-red-500 live-dot"></span>
+        <span class="text-red-500 font-bold">LIVE</span>
+        <span class="text-[#c8d6e5]/60">Al Jazeera</span>
+      </div>
+      <div class="h-20 bg-[#0a1222] flex items-center justify-center text-[#c8d6e5]/20 text-[10px]">&#9654; LIVE</div>
+    </div>
+  </div>
+
+  <!-- Sidebar feed -->
+  <div class="lg:w-72 w-full flex flex-col gap-3 overflow-hidden shrink-0">
+    <!-- Alerts -->
+    <div class="panel p-3">
+      <div class="text-xs text-[#ff4757] font-bold mb-2">&#9888; ALERTS</div>
+      <div class="space-y-1.5">
+        <div class="bg-[#ff4757]/10 border border-[#ff4757]/30 rounded p-1.5 text-[10px]"><span class="text-[#ff4757] font-bold">14:28</span> M7.2 Turkey</div>
+        <div class="bg-[#ffd000]/10 border border-[#ffd000]/30 rounded p-1.5 text-[10px]"><span class="text-[#ffd000] font-bold">14:15</span> NATO Baltic</div>
+        <div class="bg-[#ff4757]/10 border border-[#ff4757]/30 rounded p-1.5 text-[10px]"><span class="text-[#ff4757] font-bold">13:52</span> EU cyberattack</div>
+      </div>
+    </div>
+    <!-- Feed -->
+    <div class="panel p-3 flex-1 overflow-y-auto">
+      <div class="text-xs text-[#00e5ff] font-bold mb-2">&#9632; QUICK FEED</div>
+      <div class="space-y-1.5">
+        <div class="card panel p-1.5 sev-c cursor-pointer"><div class="text-[10px]"><span class="text-[#ff4757] font-bold">CRT</span> M7.2 earthquake Turkey; casualties in Adana</div><div class="text-[9px] text-[#c8d6e5]/40">Reuters &bull; 3m</div></div>
+        <div class="card panel p-1.5 sev-h cursor-pointer"><div class="text-[10px]"><span class="text-[#ffd000] font-bold">HGH</span> Russian fleet Baltic repositioning</div><div class="text-[9px] text-[#c8d6e5]/40">BBC &bull; 12m</div></div>
+        <div class="card panel p-1.5 sev-c cursor-pointer"><div class="text-[10px]"><span class="text-[#ff4757] font-bold">CRT</span> Cyberattack EU power grid</div><div class="text-[9px] text-[#c8d6e5]/40">AP &bull; 18m</div></div>
+        <div class="card panel p-1.5 sev-m cursor-pointer"><div class="text-[10px]"><span class="text-[#00e5ff] font-bold">MED</span> Fed emergency rate signal</div><div class="text-[9px] text-[#c8d6e5]/40">Bloomberg &bull; 25m</div></div>
+        <div class="card panel p-1.5 sev-h cursor-pointer"><div class="text-[10px]"><span class="text-[#ffd000] font-bold">HGH</span> Tbilisi mass protests</div><div class="text-[9px] text-[#c8d6e5]/40">AJ &bull; 31m</div></div>
+        <div class="card panel p-1.5 sev-l cursor-pointer"><div class="text-[10px]"><span class="text-[#00ff88] font-bold">LOW</span> SpaceX Starship test 7</div><div class="text-[9px] text-[#c8d6e5]/40">Space.com &bull; 42m</div></div>
+        <div class="card panel p-1.5 sev-m cursor-pointer"><div class="text-[10px]"><span class="text-[#00e5ff] font-bold">MED</span> PH-China tensions</div><div class="text-[9px] text-[#c8d6e5]/40">Reuters &bull; 55m</div></div>
+        <div class="card panel p-1.5 sev-i cursor-pointer"><div class="text-[10px]"><span class="text-[#8a5cf6] font-bold">NFO</span> WHO H5N1 upgrade</div><div class="text-[9px] text-[#c8d6e5]/40">WHO &bull; 1h</div></div>
+        <div class="card panel p-1.5 sev-l cursor-pointer"><div class="text-[10px]"><span class="text-[#00ff88] font-bold">LOW</span> IMEC milestone Saudi</div><div class="text-[9px] text-[#c8d6e5]/40">FT &bull; 1.5h</div></div>
+        <div class="card panel p-1.5 sev-h cursor-pointer"><div class="text-[10px]"><span class="text-[#ffd000] font-bold">HGH</span> Sudan RSF El Fasher</div><div class="text-[9px] text-[#c8d6e5]/40">CNN &bull; 2h</div></div>
+      </div>
+    </div>
+    <!-- Webcams mini -->
+    <div class="panel p-2">
+      <div class="grid grid-cols-4 gap-1">
+        <div class="bg-[#0a1222] rounded h-10 flex items-center justify-center text-[8px] text-[#c8d6e5]/30 border border-[#0d2137]">TYO</div>
+        <div class="bg-[#0a1222] rounded h-10 flex items-center justify-center text-[8px] text-[#c8d6e5]/30 border border-[#0d2137]">IST</div>
+        <div class="bg-[#0a1222] rounded h-10 flex items-center justify-center text-[8px] text-[#c8d6e5]/30 border border-[#0d2137]">LDN</div>
+        <div class="bg-[#0a1222] rounded h-10 flex items-center justify-center text-[8px] text-[#c8d6e5]/30 border border-[#0d2137]">NYC</div>
+      </div>
+    </div>
+    <!-- Mini predictions -->
+    <div class="panel p-2">
+      <div class="text-[9px] text-[#8a5cf6] font-bold mb-1">PREDICTIONS</div>
+      <div class="space-y-1 text-[9px]">
+        <div class="flex justify-between"><span>Baltic</span><span class="text-[#ffd000]">72%</span></div>
+        <div class="flex justify-between"><span>Recession</span><span class="text-[#ff4757]">58%</span></div>
+        <div class="flex justify-between"><span>H5N1</span><span class="text-[#00e5ff]">34%</span></div>
+      </div>
+      <canvas id="miniChart" class="mt-1" style="height:40px"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Ticker -->
+<div class="w-full h-7 bg-black/90 border-t border-[#0d2137] flex items-center overflow-hidden shrink-0">
+  <div class="ticker-scroll flex items-center gap-8 whitespace-nowrap text-[10px] px-4">
+    <span>BTC <span class="text-[#00ff88]">$87,432 &#9650;2.4%</span></span><span>ETH <span class="text-[#ff4757]">$3,218 &#9660;1.1%</span></span><span>GOLD <span class="text-[#00ff88]">$2,847 &#9650;0.8%</span></span><span>OIL <span class="text-[#ff4757]">$78.92 &#9660;3.2%</span></span><span>S&amp;P500 <span class="text-[#00ff88]">5,412 &#9650;0.3%</span></span><span>EUR/USD <span class="text-[#ff4757]">1.0823 &#9660;0.2%</span></span><span>NASDAQ <span class="text-[#00ff88]">17,832 &#9650;0.6%</span></span>
+    <span>BTC <span class="text-[#00ff88]">$87,432 &#9650;2.4%</span></span><span>ETH <span class="text-[#ff4757]">$3,218 &#9660;1.1%</span></span><span>GOLD <span class="text-[#00ff88]">$2,847 &#9650;0.8%</span></span><span>OIL <span class="text-[#ff4757]">$78.92 &#9660;3.2%</span></span><span>S&amp;P500 <span class="text-[#00ff88]">5,412 &#9650;0.3%</span></span>
+  </div>
+</div>
+
+<script>
+new Chart(document.getElementById('miniChart'),{type:'line',data:{labels:['','','','',''],datasets:[{data:[42,38,51,62,71],borderColor:'#00e5ff',backgroundColor:'rgba(0,229,255,0.08)',fill:true,tension:.4,pointRadius:0,borderWidth:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}});
+</script>
+</body>
+</html>
