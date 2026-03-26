@@ -22,7 +22,7 @@ const Globe3D = dynamic(
 import { IntelFeed } from "@/components/dashboard/IntelFeed";
 import { BreakingAlerts } from "@/components/dashboard/BreakingAlerts";
 import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
-import { LiveWebcams } from "@/components/dashboard/LiveWebcams";
+import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
@@ -129,7 +129,7 @@ export function AlphaLayout({ variant }: FullLayoutProps) {
           </div>
         </motion.div>
 
-        {/* Col 2: BreakingAlerts (top) + LiveWebcams (bottom) */}
+        {/* Col 2: BreakingAlerts (top) + ConvergencePanel (bottom) */}
         <motion.div
           {...stagger(3)}
           className="w-full md:w-1/3 h-1/3 md:h-full flex flex-col border-r border-cyan-900/30"
@@ -152,7 +152,7 @@ export function AlphaLayout({ variant }: FullLayoutProps) {
               LIVE WEBCAMS
             </PanelLabel>
             <div className="flex-1 overflow-hidden">
-              <LiveWebcams />
+              <ConvergencePanel />
             </div>
           </div>
         </motion.div>

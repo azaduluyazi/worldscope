@@ -1,7 +1,7 @@
 import type { ComponentType } from "react";
 import type { VariantId } from "@/config/variants";
 
-// Full layouts (include ALL components: TV, webcams, feed, alerts, globe, ticker)
+// Full layouts (include ALL components: TV, convergence, feed, alerts, globe, ticker)
 import { AlphaLayout } from "./AlphaLayout";
 import { BravoLayout } from "./BravoLayout";
 import { CharlieLayout } from "./CharlieLayout";
@@ -34,13 +34,13 @@ export interface LayoutEntry {
   name: string;
   description: string;
   icon: string;
-  full: boolean; // true = includes ALL components (TV, webcams, etc.)
+  full: boolean; // true = includes ALL components (TV, convergence, etc.)
   component: ComponentType<FullLayoutProps> | ComponentType<{ items: unknown[]; variant: string }>;
 }
 
 export const LAYOUTS: LayoutEntry[] = [
-  // ── Full Layouts (include TV, webcams, everything) ──
-  { id: "alpha", name: "Alpha", description: "Wide globe + triple column — TV, webcams, feed, alerts", icon: "🅰️", full: true, component: AlphaLayout },
+  // ── Full Layouts (include TV, convergence, everything) ──
+  { id: "alpha", name: "Alpha", description: "Wide globe + triple column — TV, convergence, feed, alerts", icon: "🅰️", full: true, component: AlphaLayout },
   { id: "bravo", name: "Bravo", description: "Centered globe + surrounding panels", icon: "🅱️", full: true, component: BravoLayout },
   { id: "charlie", name: "Charlie", description: "Full-width stacked sections", icon: "©️", full: true, component: CharlieLayout },
   { id: "delta", name: "Delta", description: "Dashboard grid — analytics inspired", icon: "🔷", full: true, component: DeltaLayout },
@@ -51,7 +51,7 @@ export const LAYOUTS: LayoutEntry[] = [
   { id: "india", name: "India", description: "Picture-in-Picture floating windows", icon: "🖼️", full: true, component: IndiaLayout },
   { id: "juliet", name: "Juliet", description: "Mission control horizontal scroll", icon: "🚀", full: true, component: JulietLayout },
 
-  // ── Globe-only Layouts (intel + globe, no TV/webcams) ──
+  // ── Globe-only Layouts (intel + globe, no TV/convergence) ──
   { id: "command-center", name: "Command Center", description: "Military ops — globe + floating intel panels", icon: "🎖️", full: false, component: CommandCenterLayout as ComponentType<FullLayoutProps> },
   { id: "war-room", name: "War Room", description: "Pentagon — 4-corner panels", icon: "🎯", full: false, component: WarRoomLayout as ComponentType<FullLayoutProps> },
   { id: "satellite", name: "Satellite", description: "Satellite ops — telemetry panels", icon: "🛰️", full: false, component: SatelliteLayout as ComponentType<FullLayoutProps> },

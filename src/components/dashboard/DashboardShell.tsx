@@ -8,7 +8,7 @@ import { MarketTicker } from "./MarketTicker";
 import { IntelFeed } from "./IntelFeed";
 import { BreakingAlerts } from "./BreakingAlerts";
 import { LiveBroadcasts } from "./LiveBroadcasts";
-import { LiveWebcams } from "./LiveWebcams";
+import { ConvergencePanel } from "./ConvergencePanel";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
 import { KeyboardHelp } from "./KeyboardHelp";
 import { StatusFooter } from "./StatusFooter";
@@ -47,7 +47,7 @@ const TacticalMap = dynamic(
 );
 
 /** Memoized child components — prevent re-renders when filters change */
-const MemoLiveWebcams = memo(LiveWebcams);
+const MemoConvergencePanel = memo(ConvergencePanel);
 const MemoLiveBroadcasts = memo(LiveBroadcasts);
 const MemoBreakingAlerts = memo(BreakingAlerts);
 const MemoMarketTicker = memo(MarketTicker);
@@ -248,8 +248,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                 </ErrorBoundary>
               </div>
               <div className="flex-1 min-h-[200px]">
-                <ErrorBoundary section="webcams">
-                  <MemoLiveWebcams />
+                <ErrorBoundary section="convergence">
+                  <MemoConvergencePanel />
                 </ErrorBoundary>
               </div>
             </div>
@@ -295,8 +295,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
             {/* Live Webcams */}
             <div className="flex-[4.5] min-h-0">
-              <ErrorBoundary section="webcams">
-                <MemoLiveWebcams />
+              <ErrorBoundary section="convergence">
+                <MemoConvergencePanel />
               </ErrorBoundary>
             </div>
           </div>

@@ -23,7 +23,7 @@ const Globe3D = dynamic(
 import { IntelFeed } from "@/components/dashboard/IntelFeed";
 import { BreakingAlerts } from "@/components/dashboard/BreakingAlerts";
 import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
-import { LiveWebcams } from "@/components/dashboard/LiveWebcams";
+import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
@@ -145,7 +145,7 @@ export function CharlieLayout({ variant }: FullLayoutProps) {
 
         {/* Col 3: Live Webcams */}
         <PanelBox title="LIVE WEBCAMS" icon={Activity} className="h-[30vh] md:h-[25vh] rounded-none border-0">
-          <LiveWebcams />
+          <ConvergencePanel />
         </PanelBox>
 
         {/* Col 4: Predictions */}

@@ -27,7 +27,7 @@ const Globe3D = dynamic(
 import { IntelFeed } from "@/components/dashboard/IntelFeed";
 import { BreakingAlerts } from "@/components/dashboard/BreakingAlerts";
 import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
-import { LiveWebcams } from "@/components/dashboard/LiveWebcams";
+import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
@@ -209,7 +209,7 @@ export const FoxtrotLayout = memo(function FoxtrotLayout({ variant }: FullLayout
                   </span>
                 </div>
                 <div className="h-[calc(100%-36px)] overflow-y-auto">
-                  <LiveWebcams />
+                  <ConvergencePanel />
                 </div>
               </div>
             </motion.div>

@@ -26,7 +26,7 @@ const Globe3D = dynamic(
 import { IntelFeed } from "@/components/dashboard/IntelFeed";
 import { BreakingAlerts } from "@/components/dashboard/BreakingAlerts";
 import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
-import { LiveWebcams } from "@/components/dashboard/LiveWebcams";
+import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
@@ -201,7 +201,7 @@ export const JulietLayout = memo(function JulietLayout({ variant }: FullLayoutPr
             </div>
           </motion.section>
 
-          {/* Panel 4: BreakingAlerts + LiveWebcams stacked */}
+          {/* Panel 4: BreakingAlerts + ConvergencePanel stacked */}
           <motion.section
             {...panelAnim(0.26)}
             className="flex flex-col w-[350px] min-w-[350px] h-full shrink-0 snap-start bg-black/70 backdrop-blur-lg border-r border-cyan-900/20"
@@ -219,7 +219,7 @@ export const JulietLayout = memo(function JulietLayout({ variant }: FullLayoutPr
               </div>
             </div>
 
-            {/* Bottom half: LiveWebcams */}
+            {/* Bottom half: ConvergencePanel */}
             <div className="flex flex-col h-1/2 min-h-0">
               <div className="flex items-center gap-1.5 px-3 py-2 border-b border-green-900/30 shrink-0">
                 <Camera className="w-3 h-3 text-green-400" />
@@ -228,7 +228,7 @@ export const JulietLayout = memo(function JulietLayout({ variant }: FullLayoutPr
                 </span>
               </div>
               <div className="flex-1 overflow-y-auto scrollbar-thin">
-                <LiveWebcams />
+                <ConvergencePanel />
               </div>
             </div>
           </motion.section>

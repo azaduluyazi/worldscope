@@ -24,7 +24,7 @@ const Globe3D = dynamic(
 import { IntelFeed } from "@/components/dashboard/IntelFeed";
 import { BreakingAlerts } from "@/components/dashboard/BreakingAlerts";
 import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
-import { LiveWebcams } from "@/components/dashboard/LiveWebcams";
+import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
@@ -132,7 +132,7 @@ function PanelContent({ id, variant }: { id: PanelId; variant: VariantId }) {
     case "intel":
       return <IntelFeed variant={variant} />;
     case "webcams":
-      return <LiveWebcams />;
+      return <ConvergencePanel />;
     case "alerts":
       return <BreakingAlerts />;
     case "predictions":

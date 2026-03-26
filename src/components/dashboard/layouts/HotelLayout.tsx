@@ -22,7 +22,7 @@ const Globe3D = dynamic(
 import { IntelFeed } from "@/components/dashboard/IntelFeed";
 import { BreakingAlerts } from "@/components/dashboard/BreakingAlerts";
 import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
-import { LiveWebcams } from "@/components/dashboard/LiveWebcams";
+import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
@@ -205,7 +205,7 @@ export const HotelLayout = memo(function HotelLayout({ variant }: FullLayoutProp
             </motion.div>
           </div>
 
-          {/* Bottom row (40%): BreakingAlerts + LiveWebcams + Predictions */}
+          {/* Bottom row (40%): BreakingAlerts + ConvergencePanel + Predictions */}
           <div className="flex flex-col md:flex-row flex-1 min-h-0 gap-px bg-cyan-900/10">
             <motion.div
               {...panelAnim(0.26)}
@@ -231,7 +231,7 @@ export const HotelLayout = memo(function HotelLayout({ variant }: FullLayoutProp
                 </span>
               </div>
               <div className="flex-1 overflow-y-auto scrollbar-thin">
-                <LiveWebcams />
+                <ConvergencePanel />
               </div>
             </motion.div>
 

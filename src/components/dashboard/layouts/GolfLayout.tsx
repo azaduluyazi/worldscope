@@ -20,7 +20,7 @@ const Globe3D = dynamic(
 import { IntelFeed } from "@/components/dashboard/IntelFeed";
 import { BreakingAlerts } from "@/components/dashboard/BreakingAlerts";
 import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
-import { LiveWebcams } from "@/components/dashboard/LiveWebcams";
+import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
@@ -129,14 +129,14 @@ export const GolfLayout = memo(function GolfLayout({ variant }: FullLayoutProps)
           </div>
         </motion.div>
 
-        {/* LiveWebcams — col 2 (25%) */}
+        {/* ConvergencePanel — col 2 (25%) */}
         <motion.div
           {...panelAnim(0.32)}
           className="flex-[1.25] min-w-0 flex flex-col bg-black/70 backdrop-blur-lg border-l border-cyan-900/20"
         >
           <PanelHeader title="Global Webcams" accent="green" />
           <div className="flex-1 overflow-y-auto scrollbar-thin">
-            <LiveWebcams />
+            <ConvergencePanel />
           </div>
         </motion.div>
 
