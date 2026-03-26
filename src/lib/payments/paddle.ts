@@ -29,8 +29,10 @@ export function getPaddleConfig(): PaddleConfig {
 }
 
 export function isPaddleConfigured(): boolean {
-  const config = getPaddleConfig();
-  return !!(config.apiKey && config.clientToken && config.priceId);
+  // Client-side: only NEXT_PUBLIC_ vars are available
+  const clientToken = process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN;
+  const priceId = process.env.NEXT_PUBLIC_PADDLE_PRICE_ID;
+  return !!(clientToken && priceId);
 }
 
 export type SubscriptionStatus = "active" | "trialing" | "past_due" | "paused" | "canceled" | "none";
