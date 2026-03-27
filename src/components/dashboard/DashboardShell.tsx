@@ -1,19 +1,25 @@
 "use client";
 
-import { useState, useCallback, useMemo, useEffect, memo, Suspense } from "react";
+import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
+import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { TopBar } from "./TopBar";
 import { IconSidebar } from "./IconSidebar";
-import { MarketTicker } from "./MarketTicker";
-import { IntelFeed } from "./IntelFeed";
-import { BreakingAlerts } from "./BreakingAlerts";
-import { LiveBroadcasts } from "./LiveBroadcasts";
-import { ConvergencePanel } from "./ConvergencePanel";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
-import { KeyboardHelp } from "./KeyboardHelp";
-import { StatusFooter } from "./StatusFooter";
-import { NewsTicker } from "./NewsTicker";
 import { BreakingToast } from "./BreakingToast";
+
+/** Heavy components — lazy loaded to reduce initial JS bundle */
+const MarketTicker = dynamic(() => import("./MarketTicker").then((m) => ({ default: m.MarketTicker })), { ssr: false });
+const IntelFeed = dynamic(
+  () => import("./IntelFeed").then((m) => ({ default: m.IntelFeed })),
+  { ssr: false, loading: () => <IntelFeedSkeleton /> }
+);
+const BreakingAlerts = dynamic(() => import("./BreakingAlerts").then((m) => ({ default: m.BreakingAlerts })), { ssr: false });
+const LiveBroadcasts = dynamic(() => import("./LiveBroadcasts").then((m) => ({ default: m.LiveBroadcasts })), { ssr: false });
+const ConvergencePanel = dynamic(() => import("./ConvergencePanel").then((m) => ({ default: m.ConvergencePanel })), { ssr: false });
+const KeyboardHelp = dynamic(() => import("./KeyboardHelp").then((m) => ({ default: m.KeyboardHelp })), { ssr: false });
+const StatusFooter = dynamic(() => import("./StatusFooter").then((m) => ({ default: m.StatusFooter })), { ssr: false });
+const NewsTicker = dynamic(() => import("./NewsTicker").then((m) => ({ default: m.NewsTicker })), { ssr: false });
 import { MapViewToggle, VARIANT_DEFAULT_GLOBE, type MapMode } from "./MapViewToggle";
 import { PremiumPopup } from "./PremiumPopup";
 import { ConnectionStatus } from "./ConnectionStatus";
@@ -48,11 +54,11 @@ const GeopoliticalAnalysis = dynamic(
   () => import("./GeopoliticalAnalysis").then((m) => ({ default: m.GeopoliticalAnalysis })),
   { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
 );
-import { DefconBar } from "./DefconBar";
-import { NeonBreakingBanner } from "./NeonBreakingBanner";
-import { WarzoneBreakingAlert } from "./WarzoneBreakingAlert";
+/** Theme-specific banners — only loaded when active theme needs them */
+const DefconBar = dynamic(() => import("./DefconBar").then((m) => ({ default: m.DefconBar })), { ssr: false });
+const NeonBreakingBanner = dynamic(() => import("./NeonBreakingBanner").then((m) => ({ default: m.NeonBreakingBanner })), { ssr: false });
+const WarzoneBreakingAlert = dynamic(() => import("./WarzoneBreakingAlert").then((m) => ({ default: m.WarzoneBreakingAlert })), { ssr: false });
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
-import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useTheme } from "@/components/shared/ThemeProvider";
@@ -75,11 +81,7 @@ const TacticalMap = dynamic(
   { ssr: false, loading: () => <MapSkeleton /> }
 );
 
-/** Memoized child components — prevent re-renders when filters change */
-const MemoConvergencePanel = memo(ConvergencePanel);
-const MemoLiveBroadcasts = memo(LiveBroadcasts);
-const MemoBreakingAlerts = memo(BreakingAlerts);
-const MemoMarketTicker = memo(MarketTicker);
+/* Note: memo() removed — dynamic() components already manage their own loading lifecycle */
 
 const DEFAULT_FILTERS: MapFilters = {
   categories: new Set<string>(),
@@ -223,7 +225,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
               <TacticalMap filters={filters} variant={variant} />
             </ErrorBoundary>
             <ErrorBoundary section="ticker">
-              <MemoMarketTicker />
+              <MarketTicker />
             </ErrorBoundary>
           </div>
 
@@ -274,12 +276,12 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             <div className="absolute inset-0 z-20 bg-hud-base overflow-auto pb-16 flex flex-col gap-1 p-1 mobile-panel-enter">
               <div className="flex-1 min-h-[200px]">
                 <ErrorBoundary section="broadcasts">
-                  <MemoLiveBroadcasts />
+                  <LiveBroadcasts />
                 </ErrorBoundary>
               </div>
               <div className="flex-1 min-h-[200px]">
                 <ErrorBoundary section="convergence">
-                  <MemoConvergencePanel />
+                  <ConvergencePanel />
                 </ErrorBoundary>
               </div>
             </div>
@@ -289,7 +291,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
           {mobilePanel === "alerts" && (
             <div className="absolute inset-0 z-20 bg-hud-base overflow-auto pb-16 mobile-panel-enter">
               <ErrorBoundary section="alerts">
-                <MemoBreakingAlerts />
+                <BreakingAlerts />
               </ErrorBoundary>
             </div>
           )}
@@ -319,7 +321,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
               )}
               {mapMode === "2d" && (
                 <ErrorBoundary section="ticker">
-                  <MemoMarketTicker />
+                  <MarketTicker />
                 </ErrorBoundary>
               )}
             </div>
@@ -327,7 +329,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             {/* Live Webcams */}
             <div className="flex-[4.5] min-h-0">
               <ErrorBoundary section="convergence">
-                <MemoConvergencePanel />
+                <ConvergencePanel />
               </ErrorBoundary>
             </div>
           </div>
@@ -337,14 +339,14 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             {/* Live Broadcasts */}
             <div className="flex-[5] min-h-0">
               <ErrorBoundary section="broadcasts">
-                <MemoLiveBroadcasts />
+                <LiveBroadcasts />
               </ErrorBoundary>
             </div>
 
             {/* Breaking Alerts */}
             <div className="flex-[5] min-h-0">
               <ErrorBoundary section="alerts">
-                <MemoBreakingAlerts />
+                <BreakingAlerts />
               </ErrorBoundary>
             </div>
           </div>

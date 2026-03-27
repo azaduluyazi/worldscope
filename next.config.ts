@@ -21,6 +21,9 @@ const nextConfig: NextConfig = {
     optimizePackageImports: [
       "mapbox-gl",
       "react-map-gl",
+      "three",
+      "react-globe.gl",
+      "three-globe",
       "lucide-react",
       "swr",
       "@supabase/supabase-js",
@@ -28,8 +31,11 @@ const nextConfig: NextConfig = {
       "@upstash/ratelimit",
       "next-intl",
       "recharts",
+      "@tremor/react",
       "jspdf",
       "resend",
+      "framer-motion",
+      "cmdk",
     ],
   },
   headers: async () => [
