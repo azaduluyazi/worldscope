@@ -11,8 +11,29 @@ import { rateLimiters, getTierForPath, getClientId } from "./lib/ratelimit";
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // ── Rate limiting for API routes ──
+  // ── CORS: restrict API origins to our domain ──
+  const ALLOWED_ORIGINS = [
+    "https://troiamedia.com",
+    "https://www.troiamedia.com",
+    process.env.NODE_ENV === "development" ? "http://localhost:3000" : "",
+  ].filter(Boolean);
+
   if (pathname.startsWith("/api/")) {
+    const origin = request.headers.get("origin") || "";
+
+    // Preflight OPTIONS
+    if (request.method === "OPTIONS") {
+      return new NextResponse(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
+          "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+        },
+      });
+    }
+
     const tier = getTierForPath(pathname);
 
     if (tier) {
@@ -31,6 +52,7 @@ export async function middleware(request: NextRequest) {
               status: 429,
               headers: {
                 "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0],
                 "X-RateLimit-Limit": String(limit),
                 "X-RateLimit-Remaining": "0",
                 "X-RateLimit-Reset": String(reset),
@@ -40,17 +62,25 @@ export async function middleware(request: NextRequest) {
           );
         }
 
-        // Attach rate limit headers to successful responses
+        // Attach rate limit + CORS headers to successful responses
         const response = NextResponse.next();
         response.headers.set("X-RateLimit-Limit", String(limit));
         response.headers.set("X-RateLimit-Remaining", String(remaining));
         response.headers.set("X-RateLimit-Reset", String(reset));
+        response.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]);
         return response;
       } catch {
         // If Redis is down, allow the request through (fail-open)
-        return NextResponse.next();
+        const response = NextResponse.next();
+        response.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]);
+        return response;
       }
     }
+
+    // Non-rate-limited API routes still get CORS
+    const response = NextResponse.next();
+    response.headers.set("Access-Control-Allow-Origin", ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0]);
+    return response;
   }
 
   // ── Security headers for all responses ──

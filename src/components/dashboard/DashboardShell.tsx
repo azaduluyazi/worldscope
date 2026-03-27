@@ -15,16 +15,39 @@ import { StatusFooter } from "./StatusFooter";
 import { NewsTicker } from "./NewsTicker";
 import { BreakingToast } from "./BreakingToast";
 import { MapViewToggle, VARIANT_DEFAULT_GLOBE, type MapMode } from "./MapViewToggle";
-import { PredictionPanel } from "./PredictionPanel";
-import { EconomicsPanel } from "./EconomicsPanel";
 import { PremiumPopup } from "./PremiumPopup";
 import { ConnectionStatus } from "./ConnectionStatus";
-import { CommandPalette } from "./CommandPalette";
 import { MapLayerPanel, useMapLayers } from "./MapLayerPanel";
-import { CountryRiskPanel } from "./CountryRiskPanel";
-import { EquityResearchPanel } from "./EquityResearchPanel";
-import { MarketComposite } from "./MarketComposite";
-import { GeopoliticalAnalysis } from "./GeopoliticalAnalysis";
+
+/** Lazy-loaded tab panels — only loaded when user clicks the tab */
+const PredictionPanel = dynamic(
+  () => import("./PredictionPanel").then((m) => ({ default: m.PredictionPanel })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
+const EconomicsPanel = dynamic(
+  () => import("./EconomicsPanel").then((m) => ({ default: m.EconomicsPanel })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
+const CommandPalette = dynamic(
+  () => import("./CommandPalette").then((m) => ({ default: m.CommandPalette })),
+  { ssr: false }
+);
+const CountryRiskPanel = dynamic(
+  () => import("./CountryRiskPanel").then((m) => ({ default: m.CountryRiskPanel })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
+const EquityResearchPanel = dynamic(
+  () => import("./EquityResearchPanel").then((m) => ({ default: m.EquityResearchPanel })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
+const MarketComposite = dynamic(
+  () => import("./MarketComposite").then((m) => ({ default: m.MarketComposite })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
+const GeopoliticalAnalysis = dynamic(
+  () => import("./GeopoliticalAnalysis").then((m) => ({ default: m.GeopoliticalAnalysis })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
 import { DefconBar } from "./DefconBar";
 import { NeonBreakingBanner } from "./NeonBreakingBanner";
 import { WarzoneBreakingAlert } from "./WarzoneBreakingAlert";

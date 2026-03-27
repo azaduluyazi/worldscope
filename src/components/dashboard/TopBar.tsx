@@ -78,7 +78,7 @@ export function TopBar({ variant = "world" }: TopBarProps) {
               className={`px-2 md:px-4 py-0.5 md:py-1 rounded-sm font-mono text-[8px] md:text-[10px] tracking-wider transition-colors ${
                 isActive
                   ? "font-bold"
-                  : "bg-hud-surface text-hud-muted border border-hud-border hover:border-hud-accent/30"
+                  : "bg-hud-surface text-hud-text/70 border border-hud-border hover:border-hud-accent/30 hover:text-hud-text"
               }`}
               style={
                 isActive
