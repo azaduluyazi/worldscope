@@ -80,3 +80,82 @@ export async function fetchFinnhubNews(category = "general"): Promise<Array<{
     return [];
   }
 }
+
+/** Search for stock symbols */
+export async function fetchSymbolSearch(query: string): Promise<Array<{
+  symbol: string;
+  description: string;
+  type: string;
+}>> {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  if (!apiKey) return [];
+  try {
+    const res = await fetch(
+      `${FINNHUB_BASE}/search?q=${encodeURIComponent(query)}&token=${apiKey}`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.result || []).slice(0, 10).map((r: Record<string, string>) => ({
+      symbol: r.symbol || "",
+      description: r.description || "",
+      type: r.type || "",
+    }));
+  } catch { return []; }
+}
+
+/** Fetch company profile */
+export async function fetchCompanyProfile(symbol: string): Promise<{
+  name: string; ticker: string; exchange: string; industry: string;
+  marketCap: number; logo: string; weburl: string; country: string;
+} | null> {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch(
+      `${FINNHUB_BASE}/stock/profile2?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return null;
+    const d = await res.json();
+    if (!d.name) return null;
+    return {
+      name: d.name, ticker: d.ticker, exchange: d.exchange, industry: d.finnhubIndustry,
+      marketCap: d.marketCapitalization, logo: d.logo, weburl: d.weburl, country: d.country,
+    };
+  } catch { return null; }
+}
+
+/** Fetch analyst price target */
+export async function fetchPriceTarget(symbol: string): Promise<{
+  targetHigh: number; targetLow: number; targetMean: number; targetMedian: number;
+} | null> {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch(
+      `${FINNHUB_BASE}/stock/price-target?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return null;
+    const d = await res.json();
+    return { targetHigh: d.targetHigh, targetLow: d.targetLow, targetMean: d.targetMean, targetMedian: d.targetMedian };
+  } catch { return null; }
+}
+
+/** Fetch analyst recommendations */
+export async function fetchRecommendation(symbol: string): Promise<Array<{
+  period: string; buy: number; hold: number; sell: number; strongBuy: number; strongSell: number;
+}>> {
+  const apiKey = process.env.FINNHUB_API_KEY;
+  if (!apiKey) return [];
+  try {
+    const res = await fetch(
+      `${FINNHUB_BASE}/stock/recommendation?symbol=${encodeURIComponent(symbol)}&token=${apiKey}`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data.slice(0, 4) : [];
+  } catch { return []; }
+}

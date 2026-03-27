@@ -19,6 +19,12 @@ import { PredictionPanel } from "./PredictionPanel";
 import { EconomicsPanel } from "./EconomicsPanel";
 import { PremiumPopup } from "./PremiumPopup";
 import { ConnectionStatus } from "./ConnectionStatus";
+import { CommandPalette } from "./CommandPalette";
+import { MapLayerPanel, useMapLayers } from "./MapLayerPanel";
+import { CountryRiskPanel } from "./CountryRiskPanel";
+import { EquityResearchPanel } from "./EquityResearchPanel";
+import { MarketComposite } from "./MarketComposite";
+import { GeopoliticalAnalysis } from "./GeopoliticalAnalysis";
 import { DefconBar } from "./DefconBar";
 import { NeonBreakingBanner } from "./NeonBreakingBanner";
 import { WarzoneBreakingAlert } from "./WarzoneBreakingAlert";
@@ -75,7 +81,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [mapMode, setMapMode] = useState<MapMode>("2d");
   const defaultGlobe = VARIANT_DEFAULT_GLOBE[variant] || "globe-intel";
-  const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics">("intel");
+  const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics">("intel");
+  const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];
 
   // Persist filter changes to localStorage
@@ -126,7 +133,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
     setFilters((prev) => ({ ...prev, clusters: !prev.clusters }));
   }, []);
 
-  const toggleLayer = useCallback((layer: "flights" | "vessels" | "gpsJamming" | "cables") => {
+  const toggleFilterLayer = useCallback((layer: "flights" | "vessels" | "gpsJamming" | "cables") => {
     setFilters((prev) => ({ ...prev, [layer]: !prev[layer] }));
   }, []);
 
@@ -179,7 +186,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             onToggleCategory={toggleCategory}
             onToggleHeatmap={toggleHeatmap}
             onToggleClusters={toggleClusters}
-            onToggleLayer={toggleLayer}
+            onToggleLayer={toggleFilterLayer}
           />
         </div>
 
@@ -277,13 +284,14 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
               {/* Warzone crosshair overlay on map/globe */}
               {theme.effect === "warzone" && <div className="warzone-crosshair" aria-hidden="true" />}
               <MapViewToggle mode={mapMode} onModeChange={setMapMode} />
+              <MapLayerPanel layers={layers} onToggleLayer={toggleMapLayer} />
               {mapMode === "2d" ? (
                 <ErrorBoundary section="map" fallback={<MapSkeleton />}>
                   <TacticalMap filters={filters} variant={variant} />
                 </ErrorBoundary>
               ) : (
                 <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
-                  <Globe3D variant={variant} globeMode={mapMode} />
+                  <Globe3D variant={variant} globeMode={mapMode} enabledLayers={enabledLayerIds} />
                 </ErrorBoundary>
               )}
               {mapMode === "2d" && (
@@ -326,6 +334,9 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                 { id: "intel" as const, label: "INTEL", icon: "📡" },
                 { id: "predictions" as const, label: "PREDICT", icon: "📊" },
                 { id: "economics" as const, label: "ECON", icon: "💹" },
+                { id: "risk" as const, label: "RISK", icon: "⚠️" },
+                { id: "equity" as const, label: "EQUITY", icon: "📈" },
+                { id: "geopolitics" as const, label: "GEO", icon: "🌐" },
               ]).map((tab) => (
                 <button
                   key={tab.id}
@@ -361,6 +372,24 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                   <EconomicsPanel />
                 </ErrorBoundary>
               )}
+              {rightTab === "risk" && (
+                <ErrorBoundary section="risk">
+                  <div className="h-full overflow-y-auto space-y-2 p-1">
+                    <MarketComposite />
+                    <CountryRiskPanel />
+                  </div>
+                </ErrorBoundary>
+              )}
+              {rightTab === "equity" && (
+                <ErrorBoundary section="equity">
+                  <EquityResearchPanel />
+                </ErrorBoundary>
+              )}
+              {rightTab === "geopolitics" && (
+                <ErrorBoundary section="geopolitics">
+                  <GeopoliticalAnalysis />
+                </ErrorBoundary>
+              )}
             </div>
           </div>
         </div>
@@ -389,6 +418,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       <BreakingToast />
       {/* Offline indicator */}
       <ConnectionStatus />
+      {/* Command Palette — Ctrl/Cmd+K */}
+      <CommandPalette />
       {/* Premium subscription popup */}
       <PremiumPopup />
     </div>

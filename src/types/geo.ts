@@ -12,12 +12,16 @@ export interface MapEvent {
   count?: number;
 }
 
+export type LayerGroup = "conflict" | "natural" | "cyber" | "finance" | "infrastructure" | "tracking" | "intel";
+
 export interface MapLayer {
   id: string;
   label: string;
   icon: string;
   color: string;
   enabled: boolean;
+  group: LayerGroup;
+  description?: string;
 }
 
 /** Active map filter state shared between sidebar and map */

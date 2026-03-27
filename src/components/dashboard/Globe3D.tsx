@@ -20,9 +20,10 @@ interface Globe3DProps {
   variant?: VariantId;
   onEventClick?: (item: IntelItem) => void;
   globeMode?: MapMode;
+  enabledLayers?: Set<string>;
 }
 
-export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-intel" }: Globe3DProps) {
+export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-intel", enabledLayers }: Globe3DProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
   const { items } = useIntelFeed();
@@ -34,6 +35,56 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   const variantConfig = VARIANTS[variant];
   const [searchedFlight, setSearchedFlight] = useState<FlightSearchResult | null>(null);
   const handleFlightResult = useCallback((r: FlightSearchResult | null) => setSearchedFlight(r), []);
+
+  // Layer-aware data sources for overlay points
+  const [firePoints, setFirePoints] = useState<Array<{ lat: number; lng: number; size: number; color: string; label: string }>>([]);
+  const [satellitePoints, setSatellitePoints] = useState<Array<{ lat: number; lng: number; size: number; color: string; label: string }>>([]);
+  const [darkVesselPoints, setDarkVesselPoints] = useState<Array<{ lat: number; lng: number; size: number; color: string; label: string }>>([]);
+
+  // Fetch overlay data when layers are enabled
+  useEffect(() => {
+    if (!enabledLayers?.has("fires")) { setFirePoints([]); return; }
+    fetch("/api/intel?source=NASA+FIRMS&limit=50").then(r => r.json()).then(data => {
+      const pts = (data.items || data || [])
+        .filter((i: Record<string, unknown>) => i.lat && i.lng)
+        .slice(0, 50)
+        .map((i: Record<string, unknown>) => ({
+          lat: Number(i.lat), lng: Number(i.lng), size: 0.25,
+          color: "#ff7675", label: "🔥 " + String(i.title || "Fire Hotspot"),
+        }));
+      setFirePoints(pts);
+    }).catch(() => setFirePoints([]));
+  }, [enabledLayers?.has("fires")]);
+
+  useEffect(() => {
+    if (!enabledLayers?.has("satellites")) { setSatellitePoints([]); return; }
+    fetch("/api/satellites").then(r => r.json()).then(data => {
+      const pts = (data.satellites || []).map((s: Record<string, unknown>) => ({
+        lat: Number(s.latitude), lng: Number(s.longitude), size: 0.08,
+        color: String(s.category) === "military" ? "#ff4757" : String(s.category) === "station" ? "#00e5ff" : "#dfe6e9",
+        label: "🛰️ " + String(s.name || "Satellite") + " | ALT " + Math.round(Number(s.altitude || 0)) + "km",
+      }));
+      setSatellitePoints(pts);
+    }).catch(() => setSatellitePoints([]));
+  }, [enabledLayers?.has("satellites")]);
+
+  useEffect(() => {
+    if (!enabledLayers?.has("vessels-dark")) { setDarkVesselPoints([]); return; }
+    // Dark vessels come from the vessel tracker diff — use a marker for known dark zones
+    const darkZones = [
+      { lat: 25.5, lng: 56, name: "Strait of Hormuz" },
+      { lat: 2.5, lng: 102, name: "Strait of Malacca" },
+      { lat: 3, lng: 1.5, name: "Gulf of Guinea" },
+      { lat: 6.5, lng: 48, name: "Horn of Africa" },
+      { lat: 13, lng: 113, name: "South China Sea" },
+      { lat: 43.5, lng: 34.5, name: "Black Sea" },
+      { lat: 34, lng: 31.5, name: "Eastern Mediterranean" },
+    ];
+    setDarkVesselPoints(darkZones.map(z => ({
+      lat: z.lat, lng: z.lng, size: 0.6, color: "#636e72",
+      label: "👻 Dark Zone: " + z.name,
+    })));
+  }, [enabledLayers?.has("vessels-dark")]);
 
   const geoItems = useMemo(() => items.filter((item) => item.lat != null && item.lng != null), [items]);
 
@@ -97,23 +148,33 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   }, [weatherCities, globeMode]);
 
   const pointsData = useMemo(() => {
+    let base: Array<{ lat: number; lng: number; size: number; color: string; label: string; item?: IntelItem }>;
     switch (globeMode) {
-      case "globe-flights": return flightPoints;
-      case "globe-ships": return shipPoints;
-      case "globe-cables": return weatherPoints;
-      default: return intelPoints;
+      case "globe-flights": base = flightPoints; break;
+      case "globe-ships": base = shipPoints; break;
+      case "globe-cables": base = weatherPoints; break;
+      default: base = intelPoints; break;
     }
-  }, [globeMode, intelPoints, flightPoints, shipPoints, weatherPoints]);
+    // Merge enabled overlay layers on top of base mode data
+    const overlays = [
+      ...firePoints,
+      ...satellitePoints,
+      ...darkVesselPoints,
+    ];
+    return overlays.length > 0 ? [...base, ...overlays] : base;
+  }, [globeMode, intelPoints, flightPoints, shipPoints, weatherPoints, firePoints, satellitePoints, darkVesselPoints]);
 
+  const overlayCount = firePoints.length + satellitePoints.length + darkVesselPoints.length;
   const modeInfo = useMemo(() => {
+    const suffix = overlayCount > 0 ? ` + ${overlayCount} OVERLAY` : "";
     switch (globeMode) {
-      case "globe-intel": return { label: geoItems.length + " EVENTS", color: "#00e5ff" };
-      case "globe-flights": return { label: flightPoints.length + " AIRCRAFT", color: "#ffd000" };
-      case "globe-ships": return { label: shipPoints.length + " VESSELS", color: "#00ff88" };
-      case "globe-cables": return { label: weatherPoints.length + " WEATHER STATIONS", color: "#ff9f43" };
-      default: return { label: "", color: "#00e5ff" };
+      case "globe-intel": return { label: geoItems.length + " EVENTS" + suffix, color: "#00e5ff" };
+      case "globe-flights": return { label: flightPoints.length + " AIRCRAFT" + suffix, color: "#ffd000" };
+      case "globe-ships": return { label: shipPoints.length + " VESSELS" + suffix, color: "#00ff88" };
+      case "globe-cables": return { label: weatherPoints.length + " WEATHER STATIONS" + suffix, color: "#ff9f43" };
+      default: return { label: overlayCount > 0 ? overlayCount + " OVERLAY POINTS" : "", color: "#00e5ff" };
     }
-  }, [globeMode, geoItems.length, flightPoints.length, shipPoints.length]);
+  }, [globeMode, geoItems.length, flightPoints.length, shipPoints.length, overlayCount]);
 
   useEffect(() => {
     const el = containerRef.current;

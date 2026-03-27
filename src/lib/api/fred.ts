@@ -28,6 +28,8 @@ const SERIES_IDS = [
   { id: "UMCSENT", title: "Consumer Sentiment", units: "Index" },
   { id: "MORTGAGE30US", title: "30-Year Mortgage Rate", units: "%" },
   { id: "DCOILWTICO", title: "WTI Crude Oil Price", units: "$/Barrel" },
+  { id: "VIXCLS", title: "VIX Volatility Index", units: "Index" },
+  { id: "GOLDAMGBD228NLBM", title: "Gold Price (London Fix)", units: "$/Oz" },
 ];
 
 /** Fetch latest FRED economic data */

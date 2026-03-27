@@ -1,7 +1,11 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from "react";
+import { useLocale } from "next-intl";
 import { getThemeById, type DashboardTheme, THEMES, DEFAULT_THEME } from "@/config/themes";
+
+/** Locales that require right-to-left layout */
+const RTL_LOCALES = ["ar", "fa"];
 
 interface ThemeContextType {
   theme: DashboardTheme;
@@ -106,6 +110,14 @@ function applyThemeToDOM(theme: DashboardTheme) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  let currentLocale = "en";
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    currentLocale = useLocale();
+  } catch {
+    // useLocale may throw if no IntlProvider is mounted yet — fall back to "en"
+  }
+
   const [themeId, setThemeId] = useState(() => {
     // SSR-safe: try to read from localStorage synchronously on client
     if (typeof window !== "undefined") {
@@ -134,6 +146,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       applyThemeToDOM(theme);
     }
   }, [theme]);
+
+  // RTL auto-detection based on locale
+  useEffect(() => {
+    const isRTL = RTL_LOCALES.includes(currentLocale);
+    document.documentElement.dir = isRTL ? "rtl" : "ltr";
+    document.documentElement.lang = currentLocale;
+  }, [currentLocale]);
 
   const handleSetTheme = useCallback((id: string) => {
     const t = getThemeById(id);
