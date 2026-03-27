@@ -189,6 +189,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
   return (
     <div
+      role="application"
+      aria-label={`WorldScope ${variantConfig.name} Dashboard`}
       className="h-screen w-screen flex flex-col overflow-hidden"
       style={{ "--variant-accent": variantConfig.accent } as React.CSSProperties}
     >

@@ -47,7 +47,7 @@ export function IconSidebar({
   const hasActiveFilters = filters.categories.size > 0;
 
   return (
-    <aside className="w-[52px] bg-hud-surface border-r border-hud-border flex flex-col items-center py-2 gap-1 z-50">
+    <aside role="navigation" aria-label="Map filter sidebar" className="w-[52px] bg-hud-surface border-r border-hud-border flex flex-col items-center py-2 gap-1 z-50">
       {CATEGORY_ITEMS
         .filter((item) => all.has(item.category as never))
         .map((item) => {

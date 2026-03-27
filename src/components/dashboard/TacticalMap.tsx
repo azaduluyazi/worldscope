@@ -462,7 +462,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
   const showDomMarkers = !filters.clusters && !filters.heatmap;
 
   return (
-    <div className="relative w-full h-full bg-hud-base overflow-hidden">
+    <div className="relative w-full h-full bg-hud-base overflow-hidden" role="application" aria-label="Interactive tactical map showing real-time global events">
       <Map
         ref={mapRef}
         {...viewState}

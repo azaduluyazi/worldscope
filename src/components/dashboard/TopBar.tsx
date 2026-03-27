@@ -67,7 +67,7 @@ export function TopBar({ variant = "world" }: TopBarProps) {
       </div>
 
       {/* Variant Tabs — all routes */}
-      <div className="flex-1 flex justify-center gap-0.5 md:gap-1 overflow-x-auto scrollbar-hide">
+      <nav aria-label="Dashboard variants" className="flex-1 flex justify-center gap-0.5 md:gap-1 overflow-x-auto scrollbar-hide">
         {VARIANT_ROUTES.map((route) => {
           const isActive = route.id === variant;
           const routeConfig = VARIANTS[route.id];
@@ -90,7 +90,7 @@ export function TopBar({ variant = "world" }: TopBarProps) {
             </Link>
           );
         })}
-      </div>
+      </nav>
 
       {/* Right section — search + locale + live + clock */}
       <div className="flex items-center gap-1.5 md:gap-3 font-mono text-[8px] md:text-[9px]">

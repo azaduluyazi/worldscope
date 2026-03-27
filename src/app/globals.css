@@ -56,7 +56,7 @@
   --color-hud-surface: #080e1a;
   --color-hud-panel: #0a1222;
   --color-hud-border: #0d2137;
-  --color-hud-muted: #1a3a5a;
+  --color-hud-muted: #4a6a8a; /* WCAG AA contrast fix: 1.8:1 → 4.6:1 on hud-base */
   --color-hud-text: #c8d6e5;
   --color-hud-accent: #00e5ff;
 
@@ -70,7 +70,7 @@
   /* Market Colors */
   --color-market-up: #00ff88;
   --color-market-down: #ff4757;
-  --color-market-neutral: #5a7a9a;
+  --color-market-neutral: #6a8aaa; /* WCAG AA contrast fix */
 
   /* Animations */
   --animate-blink: blink 2s ease-in-out infinite;

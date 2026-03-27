@@ -192,7 +192,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full h-full relative bg-black">
+    <div ref={containerRef} className="w-full h-full relative bg-black" role="img" aria-label="Interactive 3D globe showing global intelligence events, flight paths, and vessel positions">
       <Globe ref={globeRef} width={dimensions.w} height={dimensions.h}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
         bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
