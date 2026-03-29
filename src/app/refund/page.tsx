@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LegalFooter } from "@/components/shared/LegalFooter";
 
 export const metadata: Metadata = {
   title: "Refund Policy",
@@ -33,8 +34,8 @@ export default function RefundPolicyPage() {
             <h2 className="text-sm text-hud-text tracking-wider mb-3">1. SUBSCRIPTION OVERVIEW</h2>
             <p>
               WorldScope offers a premium mail subscription service at $1.00 USD per month.
-              This subscription includes daily intelligence briefings, breaking critical alerts,
-              weekly trend analysis reports, and geopolitical analysis delivered directly to your email.
+              This subscription includes daily news briefings, breaking news alerts,
+              weekly trend analysis reports, and global news digests delivered directly to your email.
             </p>
           </section>
 
@@ -48,8 +49,8 @@ export default function RefundPolicyPage() {
             <p className="mt-2">
               To cancel, use the subscription management link in any email we send you,
               or contact us at{" "}
-              <a href="mailto:noreply@troiamedia.com" className="text-hud-accent hover:underline">
-                noreply@troiamedia.com
+              <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
+                info@troiamedia.com
               </a>.
             </p>
           </section>
@@ -76,8 +77,8 @@ export default function RefundPolicyPage() {
             <h2 className="text-sm text-hud-text tracking-wider mb-3">4. HOW TO REQUEST A REFUND</h2>
             <p>
               To request a refund, please email us at{" "}
-              <a href="mailto:noreply@troiamedia.com" className="text-hud-accent hover:underline">
-                noreply@troiamedia.com
+              <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
+                info@troiamedia.com
               </a>{" "}
               with the subject line &ldquo;Refund Request&rdquo; and include:
             </p>
@@ -116,23 +117,14 @@ export default function RefundPolicyPage() {
             <h2 className="text-sm text-hud-text tracking-wider mb-3">7. CONTACT</h2>
             <p>
               For any questions regarding refunds or billing, please contact us at{" "}
-              <a href="mailto:noreply@troiamedia.com" className="text-hud-accent hover:underline">
-                noreply@troiamedia.com
+              <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
+                info@troiamedia.com
               </a>.
             </p>
           </section>
         </div>
 
-        {/* Footer */}
-        <div className="mt-16 pt-8 border-t border-hud-border">
-          <div className="flex flex-wrap gap-4 font-mono text-[9px] text-hud-muted">
-            <Link href="/privacy" className="hover:text-hud-accent">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-hud-accent">Terms of Service</Link>
-            <Link href="/about" className="hover:text-hud-accent">About</Link>
-            <Link href="/contact" className="hover:text-hud-accent">Contact</Link>
-            <Link href="/" className="hover:text-hud-accent">Dashboard</Link>
-          </div>
-        </div>
+        <LegalFooter />
       </div>
     </div>
   );

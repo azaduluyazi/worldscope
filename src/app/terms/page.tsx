@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LegalFooter } from "@/components/shared/LegalFooter";
 
 export const metadata: Metadata = {
   title: "Terms of Service — WorldScope",
   description:
-    "Terms of Service for WorldScope, a real-time global intelligence monitoring platform at troiamedia.com.",
+    "Terms of Service for WorldScope, a real-time global news monitoring platform at troiamedia.com.",
   openGraph: {
     title: "Terms of Service — WorldScope",
     description:
-      "Terms of Service for the WorldScope global intelligence monitoring platform.",
+      "Terms of Service for the WorldScope global news monitoring platform.",
     type: "website",
   },
 };
@@ -39,10 +40,10 @@ export default function TermsPage() {
           </Section>
 
           <Section title="2. Description of Service">
-            WorldScope is a real-time global intelligence monitoring platform
-            that aggregates publicly available data from APIs, RSS feeds, and
-            open-source intelligence (OSINT) sources. The Service is provided
-            free of charge with optional premium features.
+            WorldScope is a real-time global news monitoring platform
+            that aggregates publicly available data from news agencies, APIs, RSS feeds, and
+            open data sources. The Service is provided free of charge with
+            optional premium features.
           </Section>
 
           <Section title="3. Use of Service">
@@ -89,7 +90,7 @@ export default function TermsPage() {
                 refunds are provided for partial billing periods.
               </li>
               <li>
-                Subscription includes daily AI-curated intelligence briefings
+                Subscription includes daily AI-curated news briefings
                 delivered to your email.
               </li>
               <li>
@@ -175,16 +176,16 @@ export default function TermsPage() {
             <p>
               For questions about these Terms of Service, contact us at:{" "}
               <a
-                href="mailto:noreply@troiamedia.com"
+                href="mailto:info@troiamedia.com"
                 className="text-hud-accent hover:underline"
               >
-                noreply@troiamedia.com
+                info@troiamedia.com
               </a>
             </p>
           </Section>
         </div>
 
-        <Footer />
+        <LegalFooter />
       </div>
     </div>
   );
@@ -203,25 +204,6 @@ function Section({
         {title}
       </h2>
       <div className="text-hud-text/80">{children}</div>
-    </div>
-  );
-}
-
-function Footer() {
-  return (
-    <div className="mt-10 pt-4 border-t border-hud-border text-xs text-hud-muted flex flex-wrap gap-4">
-      <Link href="/" className="hover:text-hud-accent transition-colors">
-        Dashboard
-      </Link>
-      <Link href="/about" className="hover:text-hud-accent transition-colors">
-        About
-      </Link>
-      <Link href="/privacy" className="hover:text-hud-accent transition-colors">
-        Privacy
-      </Link>
-      <Link href="/contact" className="hover:text-hud-accent transition-colors">
-        Contact
-      </Link>
     </div>
   );
 }

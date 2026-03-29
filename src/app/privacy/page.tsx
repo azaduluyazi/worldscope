@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LegalFooter } from "@/components/shared/LegalFooter";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — WorldScope",
   description:
-    "WorldScope privacy policy. Learn how we collect, use, and protect your data on our global intelligence monitoring platform.",
+    "WorldScope privacy policy. Learn how we collect, use, and protect your data on our global news monitoring platform.",
   openGraph: {
     title: "Privacy Policy — WorldScope",
     description:
@@ -34,7 +35,7 @@ export default function PrivacyPage() {
         <div className="space-y-6 text-sm leading-relaxed text-hud-text/90">
           <Section title="1. Introduction">
             WorldScope (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) operates
-            the global intelligence monitoring platform at troiamedia.com. This
+            the global news monitoring platform at troiamedia.com. This
             Privacy Policy explains how we collect, use, and protect information
             when you use our service. By accessing WorldScope, you agree to this
             policy.
@@ -175,16 +176,16 @@ export default function PrivacyPage() {
             <p>
               For privacy-related inquiries, contact us at:{" "}
               <a
-                href="mailto:noreply@troiamedia.com"
+                href="mailto:info@troiamedia.com"
                 className="text-hud-accent hover:underline"
               >
-                noreply@troiamedia.com
+                info@troiamedia.com
               </a>
             </p>
           </Section>
         </div>
 
-        <Footer />
+        <LegalFooter />
       </div>
     </div>
   );
@@ -223,24 +224,5 @@ function ExtLink({
     >
       {children}
     </a>
-  );
-}
-
-function Footer() {
-  return (
-    <div className="mt-10 pt-4 border-t border-hud-border text-xs text-hud-muted flex flex-wrap gap-4">
-      <Link href="/" className="hover:text-hud-accent transition-colors">
-        Dashboard
-      </Link>
-      <Link href="/about" className="hover:text-hud-accent transition-colors">
-        About
-      </Link>
-      <Link href="/terms" className="hover:text-hud-accent transition-colors">
-        Terms
-      </Link>
-      <Link href="/contact" className="hover:text-hud-accent transition-colors">
-        Contact
-      </Link>
-    </div>
   );
 }

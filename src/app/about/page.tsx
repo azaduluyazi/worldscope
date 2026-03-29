@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LegalFooter } from "@/components/shared/LegalFooter";
 
 export const metadata: Metadata = {
   title: "About — WorldScope",
   description:
-    "WorldScope is a real-time global intelligence monitoring platform aggregating 2000+ sources, 37 live feeds, and 232 TV channels across 30 languages.",
+    "WorldScope is a real-time global news monitoring platform aggregating 2000+ sources across 30 languages. Operated by Troia Media.",
   openGraph: {
     title: "About — WorldScope",
     description:
-      "Real-time global intelligence monitoring platform. 2000+ sources, 30 languages, free to use.",
+      "Real-time global news monitoring platform. 2000+ sources, 30 languages, free to use.",
     type: "website",
   },
 };
@@ -28,16 +29,33 @@ export default function AboutPage() {
           About WorldScope
         </h1>
         <p className="text-hud-muted text-xs mb-8">
-          Real-Time Global Intelligence Monitoring
+          Real-Time Global News &amp; Data Monitoring
         </p>
 
         <div className="space-y-6 text-sm leading-relaxed text-hud-text/90">
+          {/* Operator Info — Paddle requirement */}
+          <Section title="Operator">
+            <div className="space-y-1">
+              <p><strong>Service:</strong> WorldScope — troiamedia.com</p>
+              <p><strong>Operated by:</strong> Azad Uluyazi (Sole Proprietor)</p>
+              <p><strong>Trading as:</strong> Troia Media</p>
+              <p><strong>Location:</strong> Istanbul, Turkey</p>
+              <p>
+                <strong>Contact:</strong>{" "}
+                <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
+                  info@troiamedia.com
+                </a>
+              </p>
+            </div>
+          </Section>
+
           <Section title="Mission">
             <p>
-              WorldScope exists to democratize access to global intelligence.
-              We aggregate, process, and present real-time data from thousands
-              of sources worldwide — making critical information accessible to
-              everyone, not just institutions with expensive data terminals.
+              WorldScope makes global news and public data accessible to
+              everyone. We aggregate, organize, and present real-time information
+              from thousands of publicly available sources worldwide — news
+              agencies, government data feeds, financial markets, weather
+              services, and more — in a single, easy-to-use dashboard.
             </p>
           </Section>
 
@@ -52,27 +70,27 @@ export default function AboutPage() {
             </div>
           </Section>
 
-          <Section title="Coverage">
+          <Section title="Coverage Areas">
             <ul className="list-disc list-inside space-y-1 text-hud-text/80">
               <li>
-                <strong>Geopolitics &amp; Conflict:</strong> Armed conflicts,
-                diplomatic events, threat assessments, rocket alerts
+                <strong>World News:</strong> Breaking news, diplomatic events,
+                humanitarian updates from global agencies
               </li>
               <li>
-                <strong>Finance &amp; Markets:</strong> Crypto, indices,
-                commodities, macro economics, prediction markets
+                <strong>Finance &amp; Markets:</strong> Cryptocurrencies, stock
+                indices, commodities, macroeconomic indicators
               </li>
               <li>
-                <strong>Technology:</strong> Cybersecurity threats, CVEs,
-                ransomware tracking, tech industry news
+                <strong>Technology:</strong> Cybersecurity advisories, software
+                vulnerabilities, tech industry updates
               </li>
               <li>
-                <strong>Weather &amp; Environment:</strong> Natural disasters,
-                seismic activity, climate data, energy grids
+                <strong>Weather &amp; Environment:</strong> Natural disaster
+                alerts, seismic activity, climate data, energy grid status
               </li>
               <li>
-                <strong>Health:</strong> Disease outbreaks, WHO alerts, radiation
-                monitoring
+                <strong>Health:</strong> Disease outbreak tracking, WHO
+                bulletins, public health alerts
               </li>
               <li>
                 <strong>Sports:</strong> Live scores across football, basketball,
@@ -83,53 +101,68 @@ export default function AboutPage() {
 
           <Section title="Platform Features">
             <ul className="list-disc list-inside space-y-1 text-hud-text/80">
-              <li>Interactive 2D and 3D globe with multiple visualization modes</li>
-              <li>AI-powered intelligence summaries and anomaly detection</li>
-              <li>Real-time event streaming with severity classification</li>
+              <li>Interactive 2D and 3D map with multiple visualization modes</li>
+              <li>AI-powered news summaries and trend detection</li>
+              <li>Real-time event streaming with category filtering</li>
               <li>232 live TV channels from global broadcasters</li>
-              <li>10 specialized dashboard variants (Finance, Conflict, Cyber, etc.)</li>
-              <li>20 customizable HUD themes</li>
-              <li>Text-to-speech for hands-free intelligence briefings</li>
+              <li>10 specialized dashboard views (Finance, Weather, Sports, etc.)</li>
+              <li>20 customizable visual themes</li>
+              <li>Text-to-speech for hands-free news reading</li>
+              <li>Available in 30 languages</li>
             </ul>
           </Section>
 
           <Section title="Pricing">
             <p className="mb-2">
               WorldScope is <strong>free to use</strong> and supported by
-              advertising. All core features — live feeds, maps, TV channels,
-              and AI analysis — are available at no cost.
+              advertising. All core features — live news feeds, interactive maps,
+              TV channels, and AI summaries — are available at no cost.
             </p>
+            <p className="mb-2">
+              A <strong>premium email subscription</strong> is available for
+              $1/month, delivering daily AI-curated news briefings to your inbox.
+              Cancel anytime. See our{" "}
+              <Link href="/pricing" className="text-hud-accent hover:underline">
+                Pricing page
+              </Link>{" "}
+              for details.
+            </p>
+          </Section>
+
+          <Section title="Data Sources">
             <p>
-              A <strong>premium mail subscription</strong> is available for
-              $1/month, delivering daily AI-curated intelligence briefings to
-              your inbox. Cancel anytime.
+              WorldScope aggregates content exclusively from publicly available
+              sources: official government data feeds, licensed news agency RSS
+              feeds, public financial market APIs, weather service APIs, and
+              other open data providers. We do not create or editorialize news
+              content — we organize and present information from established
+              sources.
             </p>
           </Section>
 
           <Section title="Independence">
             <p>
-              WorldScope is an independent project. We are not affiliated with,
-              sponsored by, or endorsed by any government, military, intelligence
-              agency, or political organization. Our data comes exclusively from
-              publicly available APIs, RSS feeds, and open-source intelligence
-              (OSINT) sources.
+              WorldScope is an independent project operated by Azad Uluyazi. It
+              is not affiliated with, sponsored by, or endorsed by any
+              government, military, or political organization. All data comes
+              from publicly available APIs, RSS feeds, and open data sources.
             </p>
           </Section>
 
           <Section title="Contact">
             <p>
-              For questions, feedback, or advertising inquiries:{" "}
+              For questions, feedback, or business inquiries:{" "}
               <a
-                href="mailto:noreply@troiamedia.com"
+                href="mailto:info@troiamedia.com"
                 className="text-hud-accent hover:underline"
               >
-                noreply@troiamedia.com
+                info@troiamedia.com
               </a>
             </p>
           </Section>
         </div>
 
-        <Footer />
+        <LegalFooter />
       </div>
     </div>
   );
@@ -159,25 +192,6 @@ function StatBlock({ label, value }: { label: string; value: string }) {
       <div className="text-[10px] text-hud-muted uppercase tracking-wider">
         {label}
       </div>
-    </div>
-  );
-}
-
-function Footer() {
-  return (
-    <div className="mt-10 pt-4 border-t border-hud-border text-xs text-hud-muted flex flex-wrap gap-4">
-      <Link href="/" className="hover:text-hud-accent transition-colors">
-        Dashboard
-      </Link>
-      <Link href="/privacy" className="hover:text-hud-accent transition-colors">
-        Privacy
-      </Link>
-      <Link href="/terms" className="hover:text-hud-accent transition-colors">
-        Terms
-      </Link>
-      <Link href="/contact" className="hover:text-hud-accent transition-colors">
-        Contact
-      </Link>
     </div>
   );
 }

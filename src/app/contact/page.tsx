@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { LegalFooter } from "@/components/shared/LegalFooter";
 
 export const metadata: Metadata = {
   title: "Contact — WorldScope",
@@ -42,10 +43,10 @@ export default function ContactPage() {
                   Email
                 </h2>
                 <a
-                  href="mailto:noreply@troiamedia.com"
+                  href="mailto:info@troiamedia.com"
                   className="text-hud-text hover:text-hud-accent transition-colors"
                 >
-                  noreply@troiamedia.com
+                  info@troiamedia.com
                 </a>
               </div>
             </div>
@@ -95,7 +96,7 @@ export default function ContactPage() {
           </div>
         </div>
 
-        <Footer />
+        <LegalFooter />
       </div>
     </div>
   );
@@ -109,25 +110,6 @@ function ContactItem({ label, desc }: { label: string; desc: string }) {
         <span className="text-hud-text font-medium">{label}</span>
         <span className="text-hud-muted"> — {desc}</span>
       </div>
-    </div>
-  );
-}
-
-function Footer() {
-  return (
-    <div className="mt-10 pt-4 border-t border-hud-border text-xs text-hud-muted flex flex-wrap gap-4">
-      <Link href="/" className="hover:text-hud-accent transition-colors">
-        Dashboard
-      </Link>
-      <Link href="/about" className="hover:text-hud-accent transition-colors">
-        About
-      </Link>
-      <Link href="/privacy" className="hover:text-hud-accent transition-colors">
-        Privacy
-      </Link>
-      <Link href="/terms" className="hover:text-hud-accent transition-colors">
-        Terms
-      </Link>
     </div>
   );
 }
