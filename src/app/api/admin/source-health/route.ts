@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 export const maxDuration = 120;
 
 // ─── All API Sources ───────────────────────────────────────
-const API_SOURCES: Array<{
+const _API_SOURCES: Array<{
   id: string;
   name: string;
   fetcher: () => Promise<unknown[]>;
@@ -14,7 +14,7 @@ const API_SOURCES: Array<{
 
 // Lazy-load all sources to avoid import side effects at module level
 async function loadApiSources() {
-  const sources: typeof API_SOURCES = [
+  const sources: typeof _API_SOURCES = [
     // Tier 1 — Critical
     { id: "gdelt-articles", name: "GDELT Articles", fetcher: async () => (await import("@/lib/api/gdelt")).fetchGdeltArticles(undefined, 10, "en") },
     { id: "usgs-4.5w", name: "USGS Earthquakes 4.5", fetcher: async () => (await import("@/lib/api/usgs")).fetchEarthquakes("4.5_week") },

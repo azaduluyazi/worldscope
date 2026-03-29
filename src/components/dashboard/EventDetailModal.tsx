@@ -12,12 +12,8 @@ interface EventDetailModalProps {
 }
 
 export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
-  if (!event) return null;
-
-  const color = SEVERITY_COLORS[event.severity];
-  const bookmarked = isBookmarked(event.id);
-
   const handleBookmark = useCallback(() => {
+    if (!event) return;
     addBookmark({
       id: event.id,
       title: event.title,
@@ -27,6 +23,11 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
       source: event.source,
     });
   }, [event]);
+
+  if (!event) return null;
+
+  const color = SEVERITY_COLORS[event.severity];
+  const bookmarked = isBookmarked(event.id);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={onClose}>

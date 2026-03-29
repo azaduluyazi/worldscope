@@ -208,7 +208,7 @@ export function OrbitalLayout({ items, variant }: LayoutProps) {
           {recentItems.map((item) => (
             <div key={item.id} className="border-l-2 bg-black/30 rounded-r px-2 py-1" style={{ borderLeftColor: SEVERITY_COLORS[item.severity] }}>
               <div className="font-mono text-[8px] text-gray-200 line-clamp-2">{item.title}</div>
-              <div className="font-mono text-[6px] text-gray-500 mt-0.5">{item.source} // {item.category.toUpperCase()}</div>
+              <div className="font-mono text-[6px] text-gray-500 mt-0.5">{item.source} {`// ${item.category.toUpperCase()}`}</div>
             </div>
           ))}
         </div>

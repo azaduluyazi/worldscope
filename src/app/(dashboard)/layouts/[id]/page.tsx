@@ -1,11 +1,9 @@
 "use client";
 
-import { useParams, useRouter } from "next/navigation";
-import dynamic, { type DynamicOptions, type Loader as DynLoader } from "next/dynamic";
+import { useParams } from "next/navigation";
+import dynamic, { type Loader as DynLoader } from "next/dynamic";
 import Link from "next/link";
 import type { ComponentType } from "react";
-
-interface FullLayoutProps { variant: string }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const dyn = (loader: () => Promise<{ default: ComponentType<any> }>) =>

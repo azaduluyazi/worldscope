@@ -140,7 +140,7 @@ export function CICLayout({ items, variant }: LayoutProps) {
                     <div className="flex-1 min-w-0">
                       <div className="font-mono text-[9px] text-gray-200 line-clamp-1">{item.title}</div>
                       <div className="font-mono text-[7px] text-gray-500 mt-0.5">
-                        {item.source} // {item.category.toUpperCase()} // {new Date(item.publishedAt).toISOString().slice(11, 16)} UTC
+                        {`${item.source} // ${item.category.toUpperCase()} // ${new Date(item.publishedAt).toISOString().slice(11, 16)} UTC`}
                       </div>
                     </div>
                   </div>

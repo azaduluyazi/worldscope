@@ -96,7 +96,7 @@ export function SatelliteLayout({ items, variant }: LayoutProps) {
               <span key={item.id} className="font-mono text-[10px]">
                 <span style={{ color: SEVERITY_COLORS[item.severity] }}>[{item.severity.toUpperCase()}]</span>
                 <span className="text-gray-300 ml-2">{item.title}</span>
-                <span className="text-gray-600 ml-2">// {item.source}</span>
+                <span className="text-gray-600 ml-2">{`// ${item.source}`}</span>
               </span>
             ))}
           </motion.div>

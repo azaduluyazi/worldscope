@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { VARIANTS, type VariantId } from "@/config/variants";
@@ -28,7 +29,7 @@ export default function ShowcasePage() {
               UI Components & Globe/Map Enhancement Demos
             </p>
           </div>
-          <a href="/" className="text-xs text-[#00e5ff] hover:underline">← Dashboard</a>
+          <Link href="/" className="text-xs text-[#00e5ff] hover:underline">← Dashboard</Link>
         </div>
       </header>
 

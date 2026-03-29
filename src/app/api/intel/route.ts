@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
         // This endpoint reads persisted events + fast real-time APIs
         // ═══════════════════════════════════════════════════════
 
-        const startTime = Date.now();
+        const _startTime = Date.now();
 
         // Load disabled sources from Redis (admin toggle)
         const disabledRaw = await redis.get<string[]>("disabled-sources").catch(() => null);

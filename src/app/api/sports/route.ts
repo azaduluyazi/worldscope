@@ -15,7 +15,7 @@ export const runtime = "nodejs";
 const CACHE_KEY = "sports:aggregated";
 const CACHE_TTL = 120;
 
-export async function GET(req: NextRequest) {
+export async function GET(_req: NextRequest) {
   try {
     // Rate limiting is handled by middleware — see src/middleware.ts
     const data = await cachedFetch<{ items: IntelItem[]; total: number; lastUpdated: string }>(
