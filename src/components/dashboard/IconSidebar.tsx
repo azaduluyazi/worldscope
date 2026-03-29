@@ -134,6 +134,30 @@ export function IconSidebar({
       >
         ⚙️
       </button>
+
+      <div className="w-6 border-t border-hud-border my-1" />
+
+      <a
+        href="/terms"
+        title="Terms of Service"
+        className="w-9 h-9 rounded-md bg-hud-panel border border-hud-border flex items-center justify-center text-[9px] font-mono text-hud-muted hover:text-hud-accent hover:border-hud-muted transition-colors"
+      >
+        TOS
+      </a>
+      <a
+        href="/privacy"
+        title="Privacy Policy"
+        className="w-9 h-9 rounded-md bg-hud-panel border border-hud-border flex items-center justify-center text-[9px] font-mono text-hud-muted hover:text-hud-accent hover:border-hud-muted transition-colors"
+      >
+        PRV
+      </a>
+      <a
+        href="/refund"
+        title="Refund Policy"
+        className="w-9 h-9 rounded-md bg-hud-panel border border-hud-border flex items-center justify-center text-[9px] font-mono text-hud-muted hover:text-hud-accent hover:border-hud-muted transition-colors"
+      >
+        RFD
+      </a>
     </aside>
   );
 }

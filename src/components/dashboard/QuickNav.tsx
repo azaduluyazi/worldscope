@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+// Policy links added for Paddle compliance
 
 const NAV_ITEMS = [
   { href: "/analytics", icon: "📊", label: "Analytics" },
@@ -12,6 +13,14 @@ const NAV_ITEMS = [
   { href: "/reports", icon: "📄", label: "Reports" },
   { href: "/bookmarks", icon: "🔖", label: "Bookmarks" },
   { href: "/admin", icon: "🔐", label: "Admin" },
+];
+
+const POLICY_ITEMS = [
+  { href: "/terms", label: "Terms of Service" },
+  { href: "/privacy", label: "Privacy Policy" },
+  { href: "/refund", label: "Refund Policy" },
+  { href: "/contact", label: "Contact" },
+  { href: "/about", label: "About" },
 ];
 
 export function QuickNav() {
@@ -43,7 +52,7 @@ export function QuickNav() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-9 z-50 bg-hud-surface border border-hud-border rounded-md shadow-lg w-40 py-1">
+        <div className="absolute right-0 top-9 z-50 bg-hud-surface border border-hud-border rounded-md shadow-lg w-44 py-1">
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
@@ -53,6 +62,17 @@ export function QuickNav() {
             >
               <span className="text-sm">{item.icon}</span>
               <span>{item.label}</span>
+            </Link>
+          ))}
+          <div className="border-t border-hud-border my-1" />
+          {POLICY_ITEMS.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setIsOpen(false)}
+              className="block px-3 py-1 font-mono text-[8px] text-hud-muted/50 hover:text-hud-accent hover:bg-hud-panel/50 transition-colors"
+            >
+              {item.label}
             </Link>
           ))}
         </div>

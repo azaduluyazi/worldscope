@@ -1,24 +1,55 @@
 "use client";
 
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { useLocale } from "next-intl";
 import {
-  getChannelsByLocale, getAvailableCountries, getChannelsByCountry,
-  getChannelsByCategory, CHANNEL_CATEGORIES,
-  type LiveChannel, type ChannelCategory,
-} from "@/config/live-channels";
+  YOUTUBE_CHANNELS,
+  getChannelsByLocale,
+  getAvailableCountries,
+  getChannelsByCountry,
+  getChannelsByCategory,
+  sortChannelsByVariant,
+  loadIPTVChannels,
+  CHANNEL_CATEGORIES,
+  type LiveChannel,
+  type ChannelCategory,
+} from "@/config/channels";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const HlsPlayer = dynamic(() => import("./HlsPlayer"), { ssr: false });
 
 /**
  * Live news broadcast panel — YouTube + HLS embeds with channel tabs.
- * Locale-aware with country picker + category filter for targeted viewing.
+ * Tier-aware: free users see only YouTube channels.
+ * Premium users see YouTube + IPTV (HLS) channels.
  */
-export function LiveBroadcasts() {
+export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) {
   const locale = useLocale();
-  const allChannels = useMemo(() => getChannelsByLocale(locale), [locale]);
-  const countries = useMemo(() => getAvailableCountries(), []);
+  const { isPremium } = useSubscription();
+
+  // IPTV channels — loaded only for premium users
+  const [iptvChannels, setIptvChannels] = useState<LiveChannel[]>([]);
+  useEffect(() => {
+    if (isPremium) {
+      loadIPTVChannels().then(setIptvChannels);
+    } else {
+      setIptvChannels([]);
+    }
+  }, [isPremium]);
+
+  // Merge YouTube (always) + IPTV (premium only), apply locale + variant sort
+  const allChannels = useMemo(() => {
+    const merged = [...YOUTUBE_CHANNELS, ...iptvChannels];
+    const localeFiltered = getChannelsByLocale(locale, merged);
+    return sortChannelsByVariant(localeFiltered, variantId);
+  }, [locale, iptvChannels, variantId]);
+
+  const countries = useMemo(
+    () => getAvailableCountries([...YOUTUBE_CHANNELS, ...iptvChannels]),
+    [iptvChannels]
+  );
+
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<ChannelCategory>("all");
   const [showCountryPicker, setShowCountryPicker] = useState(false);
@@ -26,25 +57,31 @@ export function LiveBroadcasts() {
   const channels = useMemo(() => {
     let filtered = allChannels;
     if (selectedCountry) {
-      const countryChannels = getChannelsByCountry(selectedCountry);
+      const countryChannels = getChannelsByCountry(
+        selectedCountry,
+        [...YOUTUBE_CHANNELS, ...iptvChannels]
+      );
       if (countryChannels.length > 0) filtered = countryChannels;
     }
     return getChannelsByCategory(filtered, selectedCategory);
-  }, [allChannels, selectedCountry, selectedCategory]);
+  }, [allChannels, selectedCountry, selectedCategory, iptvChannels]);
 
-  const [activeChannel, setActiveChannel] = useState<LiveChannel>(allChannels[0]);
+  const [activeChannel, setActiveChannel] = useState<LiveChannel>(YOUTUBE_CHANNELS[0]);
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [showFlash, setShowFlash] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleChannelSwitch = useCallback((channel: LiveChannel) => {
-    if (channel.id === activeChannel.id) return;
-    setShowFlash(true);
-    setIsLoading(true);
-    setActiveChannel(channel);
-    setTimeout(() => setShowFlash(false), 500);
-  }, [activeChannel.id]);
+  const handleChannelSwitch = useCallback(
+    (channel: LiveChannel) => {
+      if (channel.id === activeChannel.id) return;
+      setShowFlash(true);
+      setIsLoading(true);
+      setActiveChannel(channel);
+      setTimeout(() => setShowFlash(false), 500);
+    },
+    [activeChannel.id]
+  );
 
   const handleFullscreen = useCallback(() => {
     const el = containerRef.current;
@@ -57,11 +94,15 @@ export function LiveBroadcasts() {
   }, []);
 
   // Build embed URL based on channel type
-  const embedUrl = activeChannel.type === "hls" && activeChannel.hlsUrl
-    ? activeChannel.hlsUrl // HLS streams handled via video element
-    : activeChannel.videoId
-      ? `https://www.youtube.com/embed/${activeChannel.videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=1&modestbranding=1&rel=0&showinfo=0`
-      : `https://www.youtube.com/embed/live_stream?channel=${activeChannel.channelId}&autoplay=1&mute=${isMuted ? 1 : 0}`;
+  const embedUrl =
+    activeChannel.type === "hls" && activeChannel.hlsUrl
+      ? activeChannel.hlsUrl
+      : activeChannel.videoId
+        ? `https://www.youtube.com/embed/${activeChannel.videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=1&modestbranding=1&rel=0&showinfo=0`
+        : `https://www.youtube.com/embed/live_stream?channel=${activeChannel.channelId}&autoplay=1&mute=${isMuted ? 1 : 0}`;
+
+  const ytCount = YOUTUBE_CHANNELS.length;
+  const totalCount = channels.length;
 
   return (
     <div className="h-full flex flex-col bg-hud-surface/50 border border-hud-border rounded-lg overflow-hidden">
@@ -100,20 +141,26 @@ export function LiveBroadcasts() {
               }`}
               title="Filter by country"
             >
-              🌍 {selectedCountry || "ALL"}
+              {selectedCountry || "ALL"}
             </button>
             {showCountryPicker && (
               <div className="absolute right-0 top-6 z-50 bg-hud-surface border border-hud-border rounded-md shadow-lg w-32 max-h-48 overflow-y-auto py-1">
                 <button
-                  onClick={() => { setSelectedCountry(null); setShowCountryPicker(false); }}
+                  onClick={() => {
+                    setSelectedCountry(null);
+                    setShowCountryPicker(false);
+                  }}
                   className={`w-full text-left px-2 py-1 font-mono text-[7px] hover:bg-hud-panel/50 transition-colors ${!selectedCountry ? "text-hud-accent" : "text-hud-muted"}`}
                 >
-                  🌍 ALL ({allChannels.length})
+                  ALL ({allChannels.length})
                 </button>
                 {countries.map((c) => (
                   <button
                     key={c.code}
-                    onClick={() => { setSelectedCountry(c.code); setShowCountryPicker(false); }}
+                    onClick={() => {
+                      setSelectedCountry(c.code);
+                      setShowCountryPicker(false);
+                    }}
                     className={`w-full text-left px-2 py-1 font-mono text-[7px] hover:bg-hud-panel/50 transition-colors ${selectedCountry === c.code ? "text-hud-accent" : "text-hud-muted"}`}
                   >
                     {c.name} ({c.count})
@@ -137,7 +184,12 @@ export function LiveBroadcasts() {
             ⛶
           </button>
           <span className="font-mono text-[8px] text-hud-muted">
-            {channels.length} ch
+            {totalCount} ch
+            {isPremium && iptvChannels.length > 0 && (
+              <span className="text-hud-accent ml-0.5" title="Premium channels active">
+                +
+              </span>
+            )}
           </span>
         </div>
       </div>
@@ -164,6 +216,9 @@ export function LiveBroadcasts() {
                   : undefined
               }
             >
+              {ch.type === "hls" && (
+                <span className="text-[5px] mr-0.5 opacity-60">HLS</span>
+              )}
               {ch.label}
             </button>
           );
@@ -213,12 +268,17 @@ export function LiveBroadcasts() {
           <div className="flex items-center gap-2">
             <span
               className="w-1.5 h-1.5 rounded-full live-glow"
-              style={{ backgroundColor: activeChannel.color || "#ff4757", color: activeChannel.color || "#ff4757" }}
+              style={{
+                backgroundColor: activeChannel.color || "#ff4757",
+                color: activeChannel.color || "#ff4757",
+              }}
             />
             <span className="font-mono text-[10px] text-white font-bold tracking-wider">
               {activeChannel.label}
             </span>
-            <span className="font-mono text-[7px] text-white/50 tracking-wider">LIVE</span>
+            <span className="font-mono text-[7px] text-white/50 tracking-wider">
+              LIVE
+            </span>
           </div>
           <span className="font-mono text-[7px] text-white/40">
             {activeChannel.region.toUpperCase()}

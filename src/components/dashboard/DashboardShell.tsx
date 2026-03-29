@@ -430,6 +430,14 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       {/* Status Footer — desktop only */}
       <div className="hidden md:block">
         <StatusFooter />
+        {/* Policy links for Paddle compliance */}
+        <div className="h-4 bg-hud-surface/60 border-t border-hud-border/50 flex items-center justify-center gap-4 font-mono text-[6px] text-hud-muted/40">
+          <a href="/terms" className="hover:text-hud-accent/60 transition-colors">Terms</a>
+          <a href="/privacy" className="hover:text-hud-accent/60 transition-colors">Privacy</a>
+          <a href="/refund" className="hover:text-hud-accent/60 transition-colors">Refund</a>
+          <a href="/contact" className="hover:text-hud-accent/60 transition-colors">Contact</a>
+          <a href="/about" className="hover:text-hud-accent/60 transition-colors">About</a>
+        </div>
       </div>
 
       {/* Mobile Bottom Navigation */}
