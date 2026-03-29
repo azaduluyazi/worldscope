@@ -5,7 +5,7 @@ import { LegalFooter } from "@/components/shared/LegalFooter";
 export const metadata: Metadata = {
   title: "About — WorldScope",
   description:
-    "WorldScope is a real-time global news monitoring platform aggregating 2000+ sources across 30 languages. Operated by Troia Media.",
+    "WorldScope is a real-time global news monitoring SaaS platform aggregating 2000+ sources across 30 languages. Operated by Troia Media.",
   openGraph: {
     title: "About — WorldScope",
     description:
@@ -29,7 +29,7 @@ export default function AboutPage() {
           About WorldScope
         </h1>
         <p className="text-hud-muted text-xs mb-8">
-          Real-Time Global News &amp; Data Monitoring
+          Real-Time Global News Monitoring Software
         </p>
 
         <div className="space-y-6 text-sm leading-relaxed text-hud-text/90">
@@ -51,11 +51,12 @@ export default function AboutPage() {
 
           <Section title="Mission">
             <p>
-              WorldScope makes global news and public data accessible to
-              everyone. We aggregate, organize, and present real-time information
-              from thousands of publicly available sources worldwide — news
-              agencies, government data feeds, financial markets, weather
-              services, and more — in a single, easy-to-use dashboard.
+              WorldScope is a web-based software platform (SaaS) that makes
+              global news and public data accessible to everyone. Our software
+              aggregates, organizes, and presents real-time information from
+              thousands of publicly available sources worldwide — news agencies,
+              government data feeds, financial markets, weather services, and
+              more — in a single, interactive dashboard application.
             </p>
           </Section>
 
@@ -119,13 +120,14 @@ export default function AboutPage() {
               TV channels, and AI summaries — are available at no cost.
             </p>
             <p className="mb-2">
-              A <strong>premium email subscription</strong> is available for
-              $1/month, delivering daily AI-curated news briefings to your inbox.
-              Cancel anytime. See our{" "}
+              The <strong>Pro plan</strong> ($1/month) unlocks advanced features
+              including ad-free experience, AI-powered analytics, daily situation
+              reports, breaking news alerts, data export, and priority data
+              refresh. See our{" "}
               <Link href="/pricing" className="text-hud-accent hover:underline">
                 Pricing page
               </Link>{" "}
-              for details.
+              for a full comparison.
             </p>
           </Section>
 

@@ -33,9 +33,10 @@ export default function RefundPolicyPage() {
           <section>
             <h2 className="text-sm text-hud-text tracking-wider mb-3">1. SUBSCRIPTION OVERVIEW</h2>
             <p>
-              WorldScope offers a premium mail subscription service at $1.00 USD per month.
-              This subscription includes daily news briefings, breaking news alerts,
-              weekly trend analysis reports, and global news digests delivered directly to your email.
+              WorldScope offers a Pro software subscription at $1.00 USD per month.
+              The Pro plan unlocks premium platform features including ad-free experience,
+              advanced AI analytics, priority data refresh, data export, custom notifications,
+              and email-delivered daily situation reports and breaking news alerts.
             </p>
           </section>
 
@@ -94,11 +95,11 @@ export default function RefundPolicyPage() {
           </section>
 
           <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">5. FREE SITE ACCESS</h2>
+            <h2 className="text-sm text-hud-text tracking-wider mb-3">5. FREE PLAN</h2>
             <p>
-              The WorldScope dashboard at troiamedia.com is completely free to use and does not
-              require any payment or subscription. The refund policy applies only to the optional
-              premium mail subscription service.
+              The WorldScope Free plan at troiamedia.com provides full access to the core
+              platform features at no cost. The refund policy applies only to the optional
+              Pro subscription plan.
             </p>
           </section>
 

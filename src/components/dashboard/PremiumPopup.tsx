@@ -107,8 +107,8 @@ export function PremiumPopup() {
             <div className="flex items-center gap-2 mb-3">
               <span className="text-lg">⚡</span>
               <div>
-                <p className="font-mono text-[10px] text-hud-accent font-bold tracking-wider">PREMIUM INTEL MAIL</p>
-                <p className="font-mono text-[8px] text-hud-muted">AI-powered daily briefings</p>
+                <p className="font-mono text-[10px] text-hud-accent font-bold tracking-wider">WORLDSCOPE PRO</p>
+                <p className="font-mono text-[8px] text-hud-muted">Unlock advanced features</p>
               </div>
             </div>
 
@@ -116,16 +116,17 @@ export function PremiumPopup() {
             <div className="bg-hud-surface/50 rounded px-3 py-2 mb-3 text-center">
               <span className="font-mono text-xl text-hud-text font-bold">$1</span>
               <span className="font-mono text-[9px] text-hud-muted">/month</span>
-              <p className="font-mono text-[7px] text-hud-muted mt-1">AI-powered intelligence to your inbox</p>
+              <p className="font-mono text-[7px] text-hud-muted mt-1">Ad-free + AI analytics + alerts</p>
             </div>
 
             {/* Features */}
             <ul className="space-y-1 mb-3">
               {[
-                "Daily AI situation briefing",
-                "Breaking critical alerts (instant)",
-                "Weekly trend analysis report",
-                "Weekly geopolitical analysis",
+                "Ad-free dashboard experience",
+                "Advanced AI-powered analytics",
+                "Daily situation report (email)",
+                "Breaking news alerts (email)",
+                "Data export + priority refresh",
               ].map((f) => (
                 <li key={f} className="flex items-center gap-1.5">
                   <span className="text-hud-accent text-[8px]">●</span>

@@ -76,26 +76,29 @@ export default function TermsPage() {
             </p>
           </Section>
 
-          <Section title="5. Premium Newsletter Subscription">
+          <Section title="5. Pro Subscription">
             <ul className="list-disc list-inside space-y-1 text-hud-text/80">
               <li>
-                The premium mail briefing is available for $1.00 USD per month.
+                The WorldScope Pro plan is a software subscription available for
+                $1.00 USD per month.
+              </li>
+              <li>
+                Pro unlocks premium platform features including ad-free
+                experience, advanced AI analytics, priority data refresh, data
+                export, custom notifications, and email-delivered situation
+                reports and alerts.
               </li>
               <li>
                 Payment is processed securely through Paddle, our authorized
-                payment processor.
+                Merchant of Record.
               </li>
               <li>
                 You may cancel your subscription at any time through Paddle. No
                 refunds are provided for partial billing periods.
               </li>
               <li>
-                Subscription includes daily AI-curated news briefings
-                delivered to your email.
-              </li>
-              <li>
-                You can unsubscribe from emails at any time via the unsubscribe
-                link in each briefing.
+                You can manage your subscription via the Paddle customer portal
+                or by contacting us.
               </li>
             </ul>
           </Section>
