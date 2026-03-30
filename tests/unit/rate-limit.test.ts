@@ -15,7 +15,8 @@ vi.mock("@upstash/ratelimit", () => ({
 describe("Rate limiting", () => {
   it("allows requests under the limit", async () => {
     const { Ratelimit } = await import("@upstash/ratelimit");
-    const limiter = new Ratelimit({} as unknown);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const limiter = new Ratelimit({} as any);
     const result = await limiter.limit("127.0.0.1");
     expect(result.success).toBe(true);
     expect(result.remaining).toBe(59);
