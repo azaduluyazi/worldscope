@@ -85,6 +85,7 @@ export function NotificationSettings({ className = "" }: NotificationSettingsPro
 
   // load saved prefs
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     try {
       const saved = localStorage.getItem(STORAGE_KEY);

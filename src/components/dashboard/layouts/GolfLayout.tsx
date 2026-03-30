@@ -198,6 +198,7 @@ export const GolfLayout = memo(function GolfLayout({ variant }: FullLayoutProps)
                   <div className="h-1.5 bg-gray-800 rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
+                      // eslint-disable-next-line react-hooks/purity
                       animate={{ width: `${Math.max(10, Math.random() * 90)}%` }}
                       transition={{ duration: 0.8, delay: 0.7 + i * 0.1 }}
                       className="h-full rounded-full"

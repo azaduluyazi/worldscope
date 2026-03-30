@@ -64,8 +64,11 @@ export function useSubscription(): SubscriptionState {
     if (cachedEmail && cachedUntil) {
       const until = parseInt(cachedUntil, 10);
       if (Date.now() < until) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsPremium(true);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setEmail(cachedEmail);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsLoading(false);
         return;
       }

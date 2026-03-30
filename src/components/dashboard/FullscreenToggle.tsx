@@ -11,6 +11,14 @@ export function FullscreenToggle() {
     return () => document.removeEventListener("fullscreenchange", handler);
   }, []);
 
+  const toggleFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.documentElement.requestFullscreen?.();
+    }
+  }, []);
+
   // F11 shortcut
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -21,15 +29,7 @@ export function FullscreenToggle() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
-
-  const toggleFullscreen = useCallback(() => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      document.documentElement.requestFullscreen?.();
-    }
-  }, []);
+  }, [toggleFullscreen]);
 
   return (
     <button

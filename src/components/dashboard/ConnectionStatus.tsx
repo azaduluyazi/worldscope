@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 
 export function ConnectionStatus() {
-  const [online, setOnline] = useState(true);
+  const [online, setOnline] = useState(() => typeof navigator !== "undefined" ? navigator.onLine : true);
   const [sseConnected, setSseConnected] = useState(false);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
   const [eventCount, setEventCount] = useState(0);
@@ -13,7 +13,6 @@ export function ConnectionStatus() {
   useEffect(() => {
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
-    setOnline(navigator.onLine);
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
     return () => {

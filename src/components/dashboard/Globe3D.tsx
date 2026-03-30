@@ -43,6 +43,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
 
   // Fetch overlay data when layers are enabled
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!enabledLayers?.has("fires")) { setFirePoints([]); return; }
     fetch("/api/intel?source=NASA+FIRMS&limit=50").then(r => r.json()).then(data => {
       const pts = (data.items || data || [])
@@ -57,6 +58,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   }, [enabledLayers?.has("fires")]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!enabledLayers?.has("satellites")) { setSatellitePoints([]); return; }
     fetch("/api/satellites").then(r => r.json()).then(data => {
       const pts = (data.satellites || []).map((s: Record<string, unknown>) => ({
@@ -69,6 +71,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   }, [enabledLayers?.has("satellites")]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (!enabledLayers?.has("vessels-dark")) { setDarkVesselPoints([]); return; }
     // Dark vessels come from the vessel tracker diff — use a marker for known dark zones
     const darkZones = [

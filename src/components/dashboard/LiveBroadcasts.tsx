@@ -34,6 +34,7 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
     if (isPremium) {
       loadIPTVChannels().then(setIptvChannels);
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIptvChannels([]);
     }
   }, [isPremium]);

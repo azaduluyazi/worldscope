@@ -1,19 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 type Theme = "dark" | "light";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>("dark");
-
-  useEffect(() => {
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (typeof window === "undefined") return "dark";
     const saved = localStorage.getItem("worldscope_theme") as Theme | null;
     if (saved) {
-      setTheme(saved);
       document.documentElement.classList.toggle("light-mode", saved === "light");
+      return saved;
     }
-  }, []);
+    return "dark";
+  });
 
   const toggle = useCallback(() => {
     const next = theme === "dark" ? "light" : "dark";

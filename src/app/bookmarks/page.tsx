@@ -1,15 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { getBookmarks, removeBookmark, clearBookmarks, type Bookmark } from "@/lib/bookmarks";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import type { Category, Severity } from "@/types/intel";
 
 export default function BookmarksPage() {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-
-  useEffect(() => { setBookmarks(getBookmarks()); }, []);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>(() => getBookmarks());
 
   const handleRemove = useCallback((id: string) => {
     removeBookmark(id);

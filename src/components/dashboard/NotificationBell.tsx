@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import {
   isNotificationSupported,
   getNotificationPermission,
@@ -13,15 +13,9 @@ import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 import type { IntelItem } from "@/types/intel";
 
 export function NotificationBell() {
-  const [enabled, setEnabled] = useState(false);
-  const [permission, setPermission] = useState<string>("default");
-  const [supported, setSupported] = useState(false);
-
-  useEffect(() => {
-    setSupported(isNotificationSupported());
-    setPermission(getNotificationPermission());
-    setEnabled(isNotificationEnabled());
-  }, []);
+  const [enabled, setEnabled] = useState(() => isNotificationEnabled());
+  const [permission, setPermission] = useState(() => getNotificationPermission());
+  const [supported, setSupported] = useState(() => isNotificationSupported());
 
   const handleToggle = useCallback(async () => {
     if (!supported) return;

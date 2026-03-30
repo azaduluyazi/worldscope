@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 
 const WATCHLIST_KEY = "worldscope_watchlist";
 
@@ -31,12 +31,7 @@ function persistWatchlist(items: WatchlistItem[]) {
  * No login required.
  */
 export function useWatchlist() {
-  const [items, setItems] = useState<WatchlistItem[]>([]);
-
-  // Load on mount
-  useEffect(() => {
-    setItems(loadWatchlist());
-  }, []);
+  const [items, setItems] = useState<WatchlistItem[]>(() => loadWatchlist());
 
   const isWatched = useCallback(
     (type: WatchlistItem["type"], value: string) =>

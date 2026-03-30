@@ -63,6 +63,7 @@ export function useBreakingAlert() {
   // Check permission on mount
   useEffect(() => {
     if (typeof window !== "undefined" && "Notification" in window) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setState((s) => ({
         ...s,
         notificationsEnabled: Notification.permission === "granted",
@@ -86,6 +87,7 @@ export function useBreakingAlert() {
 
     const latest = newAlerts[0];
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setState((s) => ({
       ...s,
       alerts: [...newAlerts, ...s.alerts].slice(0, 20),

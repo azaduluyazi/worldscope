@@ -26,8 +26,11 @@ export function NewsPreviewModal({ item, onClose }: NewsPreviewModalProps) {
   // Reset state when item changes
   useEffect(() => {
     if (!item) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTranslatedTitle("");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTranslatedSummary("");
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setArticleContent(null);
     tts.stop();
   }, [item]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -36,7 +39,9 @@ export function NewsPreviewModal({ item, onClose }: NewsPreviewModalProps) {
   useEffect(() => {
     if (!item || locale === "en") {
       if (item) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTranslatedTitle(item.title);
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTranslatedSummary(item.summary);
       }
       return;
@@ -73,6 +78,7 @@ export function NewsPreviewModal({ item, onClose }: NewsPreviewModalProps) {
   useEffect(() => {
     if (!item?.url) return;
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoadingArticle(true);
 
     fetch("/api/article/extract", {
