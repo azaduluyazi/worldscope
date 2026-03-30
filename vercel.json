@@ -17,6 +17,14 @@
     { "path": "/api/cron/generate-reports", "schedule": "0 6 * * *" },
     { "path": "/api/cron/send-briefing", "schedule": "0 8 * * *" },
     { "path": "/api/admin/source-health", "schedule": "0 */6 * * *" },
-    { "path": "/api/cron/convergence", "schedule": "*/5 * * * *" }
+    { "path": "/api/cron/convergence", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/seed-market", "schedule": "*/2 * * * *" },
+    { "path": "/api/cron/seed-aviation", "schedule": "*/3 * * * *" },
+    { "path": "/api/cron/seed-natural", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/seed-cyber", "schedule": "*/10 * * * *" },
+    { "path": "/api/cron/seed-conflict", "schedule": "*/15 * * * *" },
+    { "path": "/api/cron/seed-economic", "schedule": "0 */1 * * *" },
+    { "path": "/api/cron/seed-radiation", "schedule": "*/15 * * * *" },
+    { "path": "/api/cron/cache-warm", "schedule": "*/15 * * * *" }
   ]
 }

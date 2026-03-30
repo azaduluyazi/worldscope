@@ -1,10 +1,15 @@
 /**
  * API Gateway — Centralized request handling for all data sources.
- * Provides: circuit breaker, timeout, retry, metrics.
  *
- * When migrating to a separate backend, this module becomes
- * the core of the new service — no route changes needed.
+ * Dual-layer circuit breaker:
+ *   L1: In-memory Map (fast path, no Redis round-trip)
+ *   L2: Redis persistence (survives serverless cold starts)
+ *
+ * On state change (failure/open/close), writes to Redis.
+ * On cold start, restores from Redis.
  */
+
+import { redis } from "@/lib/cache/redis";
 
 interface CircuitState {
   failures: number;
@@ -12,21 +17,58 @@ interface CircuitState {
   isOpen: boolean;
 }
 
+/* L1: In-memory fast cache */
 const circuits: Map<string, CircuitState> = new Map();
 
 const CIRCUIT_THRESHOLD = 5;     // failures before opening
 const CIRCUIT_RESET_MS = 60_000; // 1 min cooldown
+const CIRCUIT_REDIS_TTL = 120;   // Redis state expires after 2 min
 
 /**
- * Execute a data source fetch with circuit breaker protection.
+ * Restore circuit state from Redis (cold start recovery).
+ * Called lazily on first access per sourceId.
+ */
+async function restoreFromRedis(sourceId: string): Promise<CircuitState> {
+  try {
+    const stored = await redis.get<CircuitState>(`circuit:${sourceId}`);
+    if (stored) {
+      circuits.set(sourceId, stored);
+      return stored;
+    }
+  } catch {
+    // Redis unavailable — proceed with clean state
+  }
+  return { failures: 0, lastFailure: 0, isOpen: false };
+}
+
+/**
+ * Persist circuit state to Redis (fire-and-forget on state change).
+ */
+function persistToRedis(sourceId: string, state: CircuitState): void {
+  redis
+    .set(`circuit:${sourceId}`, state, { ex: CIRCUIT_REDIS_TTL })
+    .catch(() => {
+      // Non-critical — L1 still works
+    });
+}
+
+/**
+ * Execute a data source fetch with dual-layer circuit breaker.
  * If a source fails repeatedly, it's temporarily disabled.
+ *
+ * L1 (memory): checked first, zero latency
+ * L2 (Redis): checked on cold start, ~2ms latency
  */
 export async function gatewayFetch<T>(
   sourceId: string,
   fetcher: () => Promise<T>,
   options?: { timeoutMs?: number; fallback?: T }
 ): Promise<T> {
-  const state = circuits.get(sourceId) || { failures: 0, lastFailure: 0, isOpen: false };
+  // L1: Check in-memory state, or restore from Redis
+  let state = circuits.get(sourceId);
+  if (!state) {
+    state = await restoreFromRedis(sourceId);
+  }
 
   // Check circuit breaker
   if (state.isOpen) {
@@ -51,19 +93,29 @@ export async function gatewayFetch<T>(
     ]);
 
     // Success — reset failures
+    const wasOpen = state.isOpen;
     state.failures = 0;
     state.isOpen = false;
     circuits.set(sourceId, state);
+
+    // Persist recovery to Redis (only if state changed)
+    if (wasOpen) persistToRedis(sourceId, state);
 
     return result;
   } catch {
     // Failure — increment counter
     state.failures++;
     state.lastFailure = Date.now();
+    const becameOpen = !state.isOpen && state.failures >= CIRCUIT_THRESHOLD;
     if (state.failures >= CIRCUIT_THRESHOLD) {
       state.isOpen = true;
     }
     circuits.set(sourceId, state);
+
+    // Persist state change to Redis
+    if (becameOpen || state.failures === 1) {
+      persistToRedis(sourceId, state);
+    }
 
     if (options?.fallback !== undefined) return options.fallback;
     return [] as unknown as T;
@@ -71,7 +123,7 @@ export async function gatewayFetch<T>(
 }
 
 /**
- * Get health status of all data sources.
+ * Get health status of all tracked data sources.
  */
 export function getGatewayHealth(): Array<{
   sourceId: string;
@@ -89,7 +141,9 @@ export function getGatewayHealth(): Array<{
 
 /**
  * Reset a specific circuit (for manual recovery).
+ * Clears both L1 and L2.
  */
 export function resetCircuit(sourceId: string): void {
   circuits.delete(sourceId);
+  redis.del(`circuit:${sourceId}`).catch(() => {});
 }

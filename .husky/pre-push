@@ -1,0 +1,17 @@
+#!/bin/sh
+
+echo "Pre-push checks..."
+
+# 1. TypeScript check
+echo "Running typecheck..."
+npx tsc --noEmit || { echo "TypeScript errors found. Fix them before pushing."; exit 1; }
+
+# 2. Lint (strict mode)
+echo "Running lint..."
+npx eslint . --max-warnings 0 || { echo "Lint errors found. Fix them before pushing."; exit 1; }
+
+# 3. Unit tests
+echo "Running tests..."
+npx vitest run || { echo "Tests failed. Fix them before pushing."; exit 1; }
+
+echo "All pre-push checks passed!"

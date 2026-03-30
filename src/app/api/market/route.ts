@@ -3,12 +3,28 @@ import { cachedFetch, TTL } from "@/lib/cache/redis";
 import { fetchCryptoQuotes } from "@/lib/api/coingecko";
 import { fetchStockQuote, fetchForexQuote } from "@/lib/api/alpha-vantage";
 import { fetchFearGreedIndex } from "@/lib/api/fear-greed";
+import { seedRead } from "@/lib/seed/seed-utils";
 import type { MarketQuote } from "@/types/market";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
+    // Seed-first: try pre-populated cache
+    const [seededQuotes, seededFearGreed, seededCrypto] = await Promise.all([
+      seedRead<MarketQuote[]>("seed:market:quotes"),
+      seedRead<unknown>("seed:market:fear-greed"),
+      seedRead<MarketQuote[]>("seed:market:crypto"),
+    ]);
+    if (seededQuotes && seededFearGreed) {
+      return NextResponse.json({
+        quotes: seededQuotes,
+        fearGreed: seededFearGreed,
+        lastUpdated: new Date().toISOString(),
+        fromSeed: true,
+      });
+    }
+
     const quotes = await cachedFetch<MarketQuote[]>(
       "market:quotes:mvp",
       async () => {
