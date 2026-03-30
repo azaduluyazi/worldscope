@@ -6,11 +6,9 @@ echo "Pre-push checks..."
 echo "Running typecheck..."
 npx tsc --noEmit || { echo "TypeScript errors found. Fix them before pushing."; exit 1; }
 
-# 2. Lint (baseline mode — current codebase has 19 legacy errors + 110 warnings)
-# TODO: Fix legacy lint errors, then reduce threshold to 0
+# 2. Lint (strict — 0 errors, 0 warnings enforced)
 echo "Running lint..."
-npx eslint . 2>&1 | tail -3
-echo "(Lint check informational — legacy issues tracked separately)"
+npx eslint . --max-warnings 0 || { echo "Lint errors or warnings found. Fix them before pushing."; exit 1; }
 
 # 3. Unit tests
 echo "Running tests..."
