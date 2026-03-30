@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit, CarbonAd, AdConsentBanner } from "@/components/ads";
+import { ShareButtons as SocialShareButtons } from "@/components/shared/ShareButtons";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 3600; // ISR: revalidate every hour
@@ -144,6 +145,8 @@ export default async function ReportPage({
             <span>•</span>
             <span>AI-powered analysis</span>
           </div>
+
+          <SocialShareButtons url={`https://troiamedia.com/reports/${type}/${date}`} title={`${capitalize(report.type)} Intelligence Report — ${dateStr} — WorldScope`} className="mt-2" />
         </div>
       </header>
 

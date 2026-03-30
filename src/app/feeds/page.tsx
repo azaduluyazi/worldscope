@@ -5,6 +5,8 @@ import { useFeedHealth, useFeedList } from "@/hooks/useFeedHealth";
 import { FeedHealthTable } from "@/components/feeds/FeedHealthTable";
 import { FeedCategoryChart } from "@/components/feeds/FeedCategoryChart";
 import { FeedAdminPanel } from "@/components/feeds/FeedAdminPanel";
+import { AdSenseUnit, AdConsentBanner } from "@/components/ads";
+import { NewsletterPopup } from "@/components/shared/NewsletterPopup";
 import Link from "next/link";
 
 export default function FeedsPage() {
@@ -53,6 +55,9 @@ export default function FeedsPage() {
       </header>
 
       <div className="max-w-7xl mx-auto px-6 py-6 space-y-6">
+        {/* Top ad */}
+        <AdSenseUnit slot="4455667788" format="horizontal" />
+
         {/* Stats Cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard
@@ -118,6 +123,9 @@ export default function FeedsPage() {
           WORLDSCOPE // FEED HEALTH MONITOR // REAL-TIME
         </p>
       </div>
+
+      <AdConsentBanner />
+      <NewsletterPopup />
     </div>
   );
 }

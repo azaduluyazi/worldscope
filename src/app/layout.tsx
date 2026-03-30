@@ -145,6 +145,8 @@ export default async function RootLayout({
         {/* PWA & Mobile meta */}
         <meta name="theme-color" content="#050a12" />
         <link rel="apple-touch-icon" href="/icons/icon-192.svg" />
+        {/* RSS autodiscovery */}
+        <link rel="alternate" type="application/rss+xml" title="WorldScope RSS Feed" href="/feed.xml" />
         {/* Performance: DNS prefetch + preconnect for external APIs */}
         <link rel="dns-prefetch" href="https://api.mapbox.com" />
         <link rel="dns-prefetch" href="https://img.youtube.com" />

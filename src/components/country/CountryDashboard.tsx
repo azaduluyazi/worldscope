@@ -12,6 +12,7 @@ import { CountryFilters } from "./CountryFilters";
 import { CountryEventList } from "./CountryEventList";
 import { getFlagEmoji } from "@/lib/utils/country-helpers";
 import { AdSenseUnit, CarbonAd, AffiliateBanner, AdConsentBanner } from "@/components/ads";
+import { ShareButtons } from "@/components/shared/ShareButtons";
 import Link from "next/link";
 
 /** Lazy-load Mapbox mini-map — heavy dependency */
@@ -87,6 +88,7 @@ export function CountryDashboard({ country }: CountryDashboardProps) {
               <p className="font-mono text-[10px] text-hud-muted mt-0.5">
                 {country.nameTr} • {country.region} • {t("events72h", { count: allItems.length })}
               </p>
+              <ShareButtons url={`https://troiamedia.com/country/${country.code.toLowerCase()}`} title={`${country.name} Intelligence Report — WorldScope`} className="mt-2" />
             </div>
             {isLoading && (
               <span className="font-mono text-[9px] text-hud-accent animate-pulse">◆ SYNCING...</span>

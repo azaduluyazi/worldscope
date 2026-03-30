@@ -31,7 +31,30 @@ export const AD_PLACEMENTS = {
   reportsList: [
     { id: "reports-top", type: "adsense" as const, slot: "5566778899", format: "horizontal", position: "top" as const, enabled: true },
   ],
+  // ── New ad placements (Session 7 — Revenue Maximization) ──
+  landing: [
+    { id: "landing-bottom", type: "adsense" as const, slot: "2233445566", format: "horizontal", position: "bottom" as const, enabled: true },
+  ],
+  analytics: [
+    { id: "analytics-bottom", type: "adsense" as const, slot: "3344556677", format: "horizontal", position: "bottom" as const, enabled: true },
+  ],
+  feeds: [
+    { id: "feeds-top", type: "adsense" as const, slot: "4455667788", format: "horizontal", position: "top" as const, enabled: true },
+  ],
+  search: [
+    { id: "search-inline", type: "adsense" as const, slot: "5566778800", format: "rectangle", position: "inline" as const, enabled: true },
+  ],
+  variant: [
+    { id: "variant-bottom", type: "adsense" as const, slot: "6677889900", format: "horizontal", position: "bottom" as const, enabled: true },
+  ],
+  /** Native ad inserted every N items in IntelFeed */
+  feed: [
+    { id: "feed-native", type: "adsense" as const, slot: "7788990011", format: "auto", position: "inline" as const, enabled: true },
+  ],
 } satisfies Record<string, AdPlacement[]>;
+
+/** How often to show native ads in feed (every N items) */
+export const FEED_AD_INTERVAL = 15;
 
 /** Affiliate links — rotated randomly */
 export const AFFILIATE_BANNERS = [

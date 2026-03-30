@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect, Fragment } from "react";
 import { useTranslations } from "next-intl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { IntelCard } from "./IntelCard";
@@ -8,6 +8,8 @@ import { AIBrief } from "./AIBrief";
 import { NewsPreviewModal } from "./NewsPreviewModal";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
+import { NativeAdCard } from "@/components/ads/NativeAdCard";
+import { FEED_AD_INTERVAL } from "@/config/ads";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getVariantCategories, type VariantId } from "@/config/variants";
 
@@ -146,8 +148,11 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
           </div>
         ) : activeTab === "feed" ? (
           <div className="p-2 flex flex-col gap-1">
-            {visibleItems.map((item) => (
-              <IntelCard key={item.id} item={item} onPreview={setPreviewItem} />
+            {visibleItems.map((item, index) => (
+              <Fragment key={item.id}>
+                <IntelCard item={item} onPreview={setPreviewItem} />
+                {(index + 1) % FEED_AD_INTERVAL === 0 && <NativeAdCard />}
+              </Fragment>
             ))}
             {/* Infinite scroll sentinel */}
             {visibleCount < items.length && (

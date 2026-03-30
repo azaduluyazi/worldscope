@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalFooter } from "@/components/shared/LegalFooter";
+import { AdSenseUnit, AdConsentBanner } from "@/components/ads";
+import { NewsletterPopup } from "@/components/shared/NewsletterPopup";
 
 export const metadata: Metadata = {
   title: "About — WorldScope",
@@ -165,7 +167,12 @@ export default function AboutPage() {
         </div>
 
         <LegalFooter />
+
+        <AdSenseUnit slot="3344556677" format="horizontal" className="mt-4" />
       </div>
+
+      <AdConsentBanner />
+      <NewsletterPopup />
     </div>
   );
 }
