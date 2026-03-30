@@ -11,7 +11,7 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     // Seed-first: try pre-populated cache
-    const [seededQuotes, seededFearGreed, seededCrypto] = await Promise.all([
+    const [seededQuotes, seededFearGreed, _seededCrypto] = await Promise.all([
       seedRead<MarketQuote[]>("seed:market:quotes"),
       seedRead<unknown>("seed:market:fear-greed"),
       seedRead<MarketQuote[]>("seed:market:crypto"),
