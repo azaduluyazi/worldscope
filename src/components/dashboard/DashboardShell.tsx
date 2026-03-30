@@ -233,7 +233,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
           {/* Intel / Predictions / Economics panel (mobile) */}
           {mobilePanel === "feed" && (
-            <div className="absolute inset-0 z-20 bg-hud-base overflow-hidden pb-16 flex flex-col mobile-panel-enter">
+            <div className="absolute inset-0 z-20 bg-hud-base overflow-y-auto pb-16 flex flex-col mobile-panel-enter">
               {/* Mobile tab bar */}
               <div className="flex border-b border-hud-border/50 shrink-0">
                 {([
@@ -381,7 +381,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </div>
 
             {/* Tab content */}
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="flex-1 min-h-0 overflow-y-auto">
               {rightTab === "intel" && (
                 <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
                   <Suspense fallback={<IntelFeedSkeleton />}>
