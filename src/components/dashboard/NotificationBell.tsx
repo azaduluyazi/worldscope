@@ -15,7 +15,7 @@ import type { IntelItem } from "@/types/intel";
 export function NotificationBell() {
   const [enabled, setEnabled] = useState(() => isNotificationEnabled());
   const [permission, setPermission] = useState(() => getNotificationPermission());
-  const [supported, setSupported] = useState(() => isNotificationSupported());
+  const [supported] = useState(() => isNotificationSupported());
 
   const handleToggle = useCallback(async () => {
     if (!supported) return;

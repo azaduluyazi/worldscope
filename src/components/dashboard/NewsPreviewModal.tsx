@@ -27,10 +27,8 @@ export function NewsPreviewModal({ item, onClose }: NewsPreviewModalProps) {
   useEffect(() => {
     if (!item) return;
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTranslatedTitle("");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTranslatedTitle(""); // reset on item change
     setTranslatedSummary("");
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setArticleContent(null);
     tts.stop();
   }, [item]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -41,7 +39,6 @@ export function NewsPreviewModal({ item, onClose }: NewsPreviewModalProps) {
       if (item) {
         // eslint-disable-next-line react-hooks/set-state-in-effect
         setTranslatedTitle(item.title);
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setTranslatedSummary(item.summary);
       }
       return;
@@ -115,7 +112,7 @@ export function NewsPreviewModal({ item, onClose }: NewsPreviewModalProps) {
     if (!item) return;
     const textToRead = articleContent || translatedSummary || translatedTitle;
     if (tts.isPlaying) {
-      tts.isPaused ? tts.resume() : tts.pause();
+      if (tts.isPaused) { tts.resume(); } else { tts.pause(); }
     } else {
       tts.speak(textToRead, locale);
     }

@@ -41,11 +41,8 @@ const OSINT_CHANNELS: TelegramChannel[] = [
   { username: "HackYourMom", name: "Hack News", category: "cyber", defaultSeverity: "medium", tier: 3 },
 ];
 
-// Public Telegram RSS proxy services
-const RSS_PROXIES = [
-  "https://rsshub.app/telegram/channel",
-  "https://tg.i-c-a.su/rss",
-];
+// Public Telegram RSS proxy services (reserved for RSS fallback implementation)
+// const RSS_PROXIES = ["https://rsshub.app/telegram/channel", "https://tg.i-c-a.su/rss"];
 
 /** Fetch latest posts from a single Telegram channel via public preview */
 async function fetchChannelPosts(channel: TelegramChannel): Promise<IntelItem[]> {

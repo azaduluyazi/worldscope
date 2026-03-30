@@ -5,7 +5,7 @@ import { useState, useEffect, useRef } from "react";
 export function ConnectionStatus() {
   const [online, setOnline] = useState(() => typeof navigator !== "undefined" ? navigator.onLine : true);
   const [sseConnected, setSseConnected] = useState(false);
-  const [lastEvent, setLastEvent] = useState<string | null>(null);
+  const [, setLastEvent] = useState<string | null>(null);
   const [eventCount, setEventCount] = useState(0);
   const esRef = useRef<EventSource | null>(null);
 

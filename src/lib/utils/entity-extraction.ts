@@ -35,7 +35,8 @@ const EVENT_PATTERNS = [
 function extractFromText(
   text: string,
   patterns: RegExp[],
-  type: ExtractedEntity["type"]
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _type: ExtractedEntity["type"]
 ): Map<string, { count: number; contexts: string[] }> {
   const found = new Map<string, { count: number; contexts: string[] }>();
 

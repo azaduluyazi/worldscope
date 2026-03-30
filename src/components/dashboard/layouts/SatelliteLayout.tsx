@@ -4,9 +4,9 @@ import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { AreaChart, BarChart } from "@tremor/react";
-import { Shield, Radio, AlertTriangle, Activity, Satellite, Globe } from "lucide-react";
+import { Radio, AlertTriangle, Activity, Satellite } from "lucide-react";
 import type { IntelItem } from "@/types/intel";
-import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
+import { SEVERITY_COLORS } from "@/types/intel";
 import { IntelCard } from "@/components/dashboard/IntelCard";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 

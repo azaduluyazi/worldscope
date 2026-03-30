@@ -3,10 +3,9 @@
 import { useMemo, useRef } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
-import { Shield, Radio, AlertTriangle, Activity, Layers, ChevronLeft, ChevronRight } from "lucide-react";
+import { Radio, Layers, ChevronLeft, ChevronRight } from "lucide-react";
 import type { IntelItem } from "@/types/intel";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
-import { MarketTicker } from "@/components/dashboard/MarketTicker";
 
 const Globe3D = dynamic(() => import("@/components/dashboard/Globe3D").then((m) => m.Globe3D), { ssr: false });
 

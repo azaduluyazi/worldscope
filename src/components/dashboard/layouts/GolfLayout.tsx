@@ -5,10 +5,6 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import {
   Radio,
-  Shield,
-  AlertTriangle,
-  BarChart3,
-  Activity,
 } from "lucide-react";
 import type { VariantId } from "@/config/variants";
 
@@ -213,7 +209,7 @@ export const GolfLayout = memo(function GolfLayout({ variant }: FullLayoutProps)
               <span className="font-mono text-[9px] font-bold text-cyan-400 tracking-wider uppercase">
                 Categories
               </span>
-              {["conflict", "natural", "cyber", "health", "energy", "diplomacy"].map((cat, i) => (
+              {["conflict", "natural", "cyber", "health", "energy", "diplomacy"].map((cat) => (
                 <div key={cat} className="flex items-center justify-between">
                   <span className="font-mono text-[8px] text-gray-500 uppercase">{cat}</span>
                   <span className="font-mono text-[9px] text-gray-400">--</span>

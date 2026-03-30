@@ -223,6 +223,7 @@ function Demo3_AnimatedCounters() {
     }, interval);
 
     return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const stats = [

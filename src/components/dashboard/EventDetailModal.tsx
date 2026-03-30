@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
-import type { IntelItem, Category, Severity } from "@/types/intel";
+import type { IntelItem, Category } from "@/types/intel";
 import { timeAgo } from "@/lib/utils/date";
 import { addBookmark, isBookmarked } from "@/lib/bookmarks";
 

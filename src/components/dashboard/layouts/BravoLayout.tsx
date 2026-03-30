@@ -1,19 +1,15 @@
 "use client";
 
-import { useState, useEffect, memo, Suspense } from "react";
+import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Shield, Radio, AlertTriangle, Activity, Satellite, BarChart3,
-  Brain, TrendingUp, Clock, Eye,
+  Brain, Clock, Eye,
 } from "lucide-react";
 import type { VariantId } from "@/config/variants";
 
 /* ---------- dynamic heavy imports ---------- */
-const TacticalMap = dynamic(
-  () => import("@/components/dashboard/TacticalMap").then((m) => m.TacticalMap),
-  { ssr: false },
-);
 const Globe3D = dynamic(
   () => import("@/components/dashboard/Globe3D").then((m) => m.Globe3D),
   { ssr: false },
@@ -26,8 +22,6 @@ import { LiveBroadcasts } from "@/components/dashboard/LiveBroadcasts";
 import { ConvergencePanel } from "@/components/dashboard/ConvergencePanel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 import { NewsTicker } from "@/components/dashboard/NewsTicker";
-import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
-import { StatusFooter } from "@/components/dashboard/StatusFooter";
 import { PredictionPanel } from "@/components/dashboard/PredictionPanel";
 import { EconomicsPanel } from "@/components/dashboard/EconomicsPanel";
 

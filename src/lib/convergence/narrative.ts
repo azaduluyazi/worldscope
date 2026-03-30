@@ -44,7 +44,7 @@ Write a tactical intelligence brief. Be specific about what the convergence mean
     });
 
     return text.trim();
-  } catch (error) {
+  } catch {
     // Fallback: generate a mechanical summary without LLM
     return generateFallbackNarrative(convergence);
   }

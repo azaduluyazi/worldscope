@@ -8,7 +8,7 @@ import { useVesselTracker } from "@/hooks/useVesselTracker";
 import { useWeatherData, type WeatherCity } from "@/hooks/useWeatherData";
 import { SEVERITY_COLORS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
-import { VARIANTS, type VariantId } from "@/config/variants";
+import type { VariantId } from "@/config/variants";
 import { FlightSearch, type FlightSearchResult } from "./FlightSearch";
 import type { MapMode } from "./MapViewToggle";
 
@@ -23,7 +23,8 @@ interface Globe3DProps {
   enabledLayers?: Set<string>;
 }
 
-export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-intel", enabledLayers }: Globe3DProps) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export function Globe3D({ variant: _variant = "world", onEventClick, globeMode = "globe-intel", enabledLayers }: Globe3DProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
   const { items } = useIntelFeed();
@@ -32,7 +33,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
   const { cities: weatherCities } = useWeatherData();
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
-  const variantConfig = VARIANTS[variant];
+  // Variant config available via VARIANTS[variant] when needed
   const [searchedFlight, setSearchedFlight] = useState<FlightSearchResult | null>(null);
   const handleFlightResult = useCallback((r: FlightSearchResult | null) => setSearchedFlight(r), []);
 
@@ -43,7 +44,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
 
   // Fetch overlay data when layers are enabled
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     if (!enabledLayers?.has("fires")) { setFirePoints([]); return; }
     fetch("/api/intel?source=NASA+FIRMS&limit=50").then(r => r.json()).then(data => {
       const pts = (data.items || data || [])
@@ -55,10 +56,11 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
         }));
       setFirePoints(pts);
     }).catch(() => setFirePoints([]));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabledLayers?.has("fires")]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     if (!enabledLayers?.has("satellites")) { setSatellitePoints([]); return; }
     fetch("/api/satellites").then(r => r.json()).then(data => {
       const pts = (data.satellites || []).map((s: Record<string, unknown>) => ({
@@ -68,10 +70,11 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
       }));
       setSatellitePoints(pts);
     }).catch(() => setSatellitePoints([]));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabledLayers?.has("satellites")]);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+     
     if (!enabledLayers?.has("vessels-dark")) { setDarkVesselPoints([]); return; }
     // Dark vessels come from the vessel tracker diff — use a marker for known dark zones
     const darkZones = [
@@ -87,6 +90,7 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
       lat: z.lat, lng: z.lng, size: 0.6, color: "#636e72",
       label: "👻 Dark Zone: " + z.name,
     })));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabledLayers?.has("vessels-dark")]);
 
   const geoItems = useMemo(() => items.filter((item) => item.lat != null && item.lng != null), [items]);
@@ -177,7 +181,8 @@ export function Globe3D({ variant = "world", onEventClick, globeMode = "globe-in
       case "globe-cables": return { label: weatherPoints.length + " WEATHER STATIONS" + suffix, color: "#ff9f43" };
       default: return { label: overlayCount > 0 ? overlayCount + " OVERLAY POINTS" : "", color: "#00e5ff" };
     }
-  }, [globeMode, geoItems.length, flightPoints.length, shipPoints.length, overlayCount]);
+   
+  }, [globeMode, geoItems.length, flightPoints.length, shipPoints.length, weatherPoints.length, overlayCount]);
 
   useEffect(() => {
     const el = containerRef.current;

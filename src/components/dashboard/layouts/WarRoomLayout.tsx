@@ -3,11 +3,9 @@
 import { useMemo, useState } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { AreaChart } from "@tremor/react";
-import { Shield, Radio, AlertTriangle, Activity, Crosshair, Wifi, WifiOff } from "lucide-react";
+import { Shield, Radio, AlertTriangle, Activity, Crosshair, Wifi } from "lucide-react";
 import type { IntelItem } from "@/types/intel";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
-import { IntelCard } from "@/components/dashboard/IntelCard";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 
 const Globe3D = dynamic(() => import("@/components/dashboard/Globe3D").then((m) => m.Globe3D), { ssr: false });
@@ -23,7 +21,6 @@ export function WarRoomLayout({ items, variant }: LayoutProps) {
   const [visiblePanels, setVisiblePanels] = useState({ tl: true, tr: true, bl: true, br: true });
 
   const criticalItems = useMemo(() => items.filter((i) => i.severity === "critical"), [items]);
-  const highItems = useMemo(() => items.filter((i) => i.severity === "high"), [items]);
   const severityCounts = useMemo(() => {
     const counts = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
     items.forEach((i) => counts[i.severity]++);

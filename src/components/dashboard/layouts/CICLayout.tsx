@@ -4,12 +4,9 @@ import { useMemo } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { AreaChart } from "@tremor/react";
-import { Shield, Radio, AlertTriangle, Activity, Anchor, Radar } from "lucide-react";
+import { Radio, Anchor, Radar } from "lucide-react";
 import type { IntelItem } from "@/types/intel";
-import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
-import { IntelCard } from "@/components/dashboard/IntelCard";
-import { MarketTicker } from "@/components/dashboard/MarketTicker";
-
+import { SEVERITY_COLORS } from "@/types/intel";
 const Globe3D = dynamic(() => import("@/components/dashboard/Globe3D").then((m) => m.Globe3D), { ssr: false });
 
 interface LayoutProps {

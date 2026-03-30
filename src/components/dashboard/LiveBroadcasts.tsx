@@ -102,7 +102,6 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
         ? `https://www.youtube.com/embed/${activeChannel.videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=1&modestbranding=1&rel=0&showinfo=0`
         : `https://www.youtube.com/embed/live_stream?channel=${activeChannel.channelId}&autoplay=1&mute=${isMuted ? 1 : 0}`;
 
-  const ytCount = YOUTUBE_CHANNELS.length;
   const totalCount = channels.length;
 
   return (

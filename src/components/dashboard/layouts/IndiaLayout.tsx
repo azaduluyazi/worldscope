@@ -12,7 +12,6 @@ import {
   FileText,
   AlertTriangle,
   BarChart3,
-  Camera,
 } from "lucide-react";
 import type { VariantId } from "@/config/variants";
 

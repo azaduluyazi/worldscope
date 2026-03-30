@@ -7,12 +7,12 @@
 
 import type { IntelItem } from "@/types/intel";
 
-const NBA_API = "https://www.balldontlie.io/api/v1";
-
 // ESPN NBA scoreboard (already proven in espn-sports.ts)
 const ESPN_NBA = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
 
-interface NbaStanding {
+// NBA types reserved for balldontlie.io API migration
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface _NbaStanding {
   team: { full_name: string; abbreviation: string; conference: string; division: string };
   wins: number;
   losses: number;
@@ -20,7 +20,8 @@ interface NbaStanding {
   conference_rank: number;
 }
 
-interface NbaGame {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+interface _NbaGame {
   id: number;
   date: string;
   home_team: { full_name: string; abbreviation: string };

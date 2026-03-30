@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Command } from "cmdk";
 import { useRouter } from "next/navigation";
 import { COUNTRIES } from "@/config/countries";
-import { VARIANTS, type VariantId } from "@/config/variants";
+import type { VariantId } from "@/config/variants";
 import { DEFAULT_LAYERS } from "@/config/map-layers";
 
 /* ═══ Types ═══ */

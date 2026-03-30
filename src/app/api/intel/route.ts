@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { limit, hours: _hours, lang, category: rawCategory, severity: _severity } = parsed.data;
+    const { limit, hours: _hours, lang, category: rawCategory } = parsed.data;
     const category = rawCategory && VALID_CATEGORIES.has(rawCategory as Category)
       ? (rawCategory as Category)
       : null;
@@ -107,8 +107,6 @@ export async function GET(request: NextRequest) {
         // RSS feeds are fetched by /api/cron/fetch-feeds (background)
         // This endpoint reads persisted events + fast real-time APIs
         // ═══════════════════════════════════════════════════════
-
-        const _startTime = Date.now();
 
         // Load disabled sources from Redis (admin toggle)
         const disabledRaw = await redis.get<string[]>("disabled-sources").catch(() => null);

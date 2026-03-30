@@ -7,9 +7,7 @@ import {
   Radio,
   PanelLeftClose,
   PanelLeftOpen,
-  AlertTriangle,
   Activity,
-  Zap,
   Shield,
 } from "lucide-react";
 import type { VariantId } from "@/config/variants";
@@ -28,7 +26,6 @@ import { NewsTicker } from "@/components/dashboard/NewsTicker";
 import { MapViewToggle } from "@/components/dashboard/MapViewToggle";
 import { StatusFooter } from "@/components/dashboard/StatusFooter";
 import { PredictionPanel } from "@/components/dashboard/PredictionPanel";
-import { EconomicsPanel } from "@/components/dashboard/EconomicsPanel";
 
 /* ------------------------------------------------------------------ */
 

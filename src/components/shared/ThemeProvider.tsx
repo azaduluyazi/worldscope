@@ -145,7 +145,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } else {
       applyThemeToDOM(theme);
     }
-  }, [theme]);
+  }, [theme, themeId]);
 
   // RTL auto-detection based on locale
   useEffect(() => {

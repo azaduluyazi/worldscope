@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       })),
       total: users?.length || 0,
     });
-  } catch (_err) {
+  } catch {
     return NextResponse.json({ users: [], total: 0, error: "Failed to fetch users" }, { status: 500 });
   }
 }

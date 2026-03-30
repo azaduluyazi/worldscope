@@ -26,7 +26,7 @@ interface CryptoPanicPost {
   };
 }
 
-function votesToSeverity(votes: CryptoPanicPost["votes"], kind: string): Severity {
+function votesToSeverity(votes: CryptoPanicPost["votes"], kind: string): Severity { // eslint-disable-line @typescript-eslint/no-unused-vars
   if (votes.important > 5) return "high";
   if (votes.important > 2 || votes.positive > 10) return "medium";
   if (kind === "analysis") return "low";

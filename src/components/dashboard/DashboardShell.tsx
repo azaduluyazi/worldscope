@@ -20,7 +20,7 @@ const ConvergencePanel = dynamic(() => import("./ConvergencePanel").then((m) => 
 const KeyboardHelp = dynamic(() => import("./KeyboardHelp").then((m) => ({ default: m.KeyboardHelp })), { ssr: false });
 const StatusFooter = dynamic(() => import("./StatusFooter").then((m) => ({ default: m.StatusFooter })), { ssr: false });
 const NewsTicker = dynamic(() => import("./NewsTicker").then((m) => ({ default: m.NewsTicker })), { ssr: false });
-import { MapViewToggle, VARIANT_DEFAULT_GLOBE, type MapMode } from "./MapViewToggle";
+import { MapViewToggle, type MapMode } from "./MapViewToggle";
 import { PremiumPopup } from "./PremiumPopup";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { MapLayerPanel, useMapLayers } from "./MapLayerPanel";
@@ -105,7 +105,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [mapMode, setMapMode] = useState<MapMode>("2d");
-  const defaultGlobe = VARIANT_DEFAULT_GLOBE[variant] || "globe-intel";
+  // Globe mode determined by variant via MapViewToggle
   const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics">("intel");
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];

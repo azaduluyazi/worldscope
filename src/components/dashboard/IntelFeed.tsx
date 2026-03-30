@@ -21,7 +21,7 @@ interface IntelFeedProps {
 
 export function IntelFeed({ variant = "world" }: IntelFeedProps) {
   const t = useTranslations();
-  const { items: allItems, isLoading, total: rawTotal } = useIntelFeed();
+  const { items: allItems, isLoading } = useIntelFeed();
   const TAB_LABELS: Record<TabId, string> = {
     feed: t("intel.title"),
     analysis: t("intel.analysis"),
@@ -34,7 +34,7 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
     const { all } = getVariantCategories(variant);
     const filtered = allItems.filter((item) => all.has(item.category as never));
     return { items: filtered, total: filtered.length };
-  }, [allItems, rawTotal, variant]);
+  }, [allItems, variant]);  
 
   const [activeTab, setActiveTab] = useState<TabId>("feed");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);

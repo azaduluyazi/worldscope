@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { DEFAULT_LAYERS, LAYER_GROUPS } from "@/config/map-layers";
-import type { MapLayer, LayerGroup } from "@/types/geo";
+import type { MapLayer } from "@/types/geo";
 
 interface MapLayerPanelProps {
   layers: MapLayer[];

@@ -7,7 +7,6 @@ import { SparkAreaChart } from "@tremor/react";
 import { Shield, Radio, AlertTriangle, Activity, Grid3X3, X } from "lucide-react";
 import type { IntelItem } from "@/types/intel";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
-import { IntelCard } from "@/components/dashboard/IntelCard";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 
 const Globe3D = dynamic(() => import("@/components/dashboard/Globe3D").then((m) => m.Globe3D), { ssr: false });

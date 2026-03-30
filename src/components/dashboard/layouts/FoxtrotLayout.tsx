@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, memo, Suspense } from "react";
+import { useState, memo } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,15 +10,9 @@ import {
   Tv,
   AlertTriangle,
   BarChart3,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import type { VariantId } from "@/config/variants";
 
-const TacticalMap = dynamic(
-  () => import("@/components/dashboard/TacticalMap").then((m) => m.TacticalMap),
-  { ssr: false }
-);
 const Globe3D = dynamic(
   () => import("@/components/dashboard/Globe3D").then((m) => m.Globe3D),
   { ssr: false }

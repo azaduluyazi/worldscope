@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { SparkAreaChart } from "@tremor/react";
 import { Shield, Radio, AlertTriangle, Activity, Orbit, Zap } from "lucide-react";
 import type { IntelItem } from "@/types/intel";
-import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
+import { SEVERITY_COLORS } from "@/types/intel";
 import { MarketTicker } from "@/components/dashboard/MarketTicker";
 
 const Globe3D = dynamic(() => import("@/components/dashboard/Globe3D").then((m) => m.Globe3D), { ssr: false });
@@ -57,10 +57,6 @@ export function OrbitalLayout({ items, variant }: LayoutProps) {
     animate: { opacity: 1, scale: 1 },
     transition: { type: "spring" as const, damping: 18, stiffness: 140, delay },
   });
-
-  // Center of viewport for SVG lines
-  const cx = "50%";
-  const cy = "50%";
 
   return (
     <div className="relative w-full h-screen bg-black overflow-hidden">
