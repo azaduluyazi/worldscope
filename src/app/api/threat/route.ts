@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cachedFetch, TTL } from "@/lib/cache/redis";
+import { seedRead } from "@/lib/seed/seed-utils";
 import { calculateThreatIndex } from "@/lib/utils/threat-scoring";
 import { detectTrends } from "@/lib/utils/trend-detection";
 import type { IntelItem } from "@/types/intel";
@@ -8,6 +9,12 @@ export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {
+    // Seed-first: try pre-populated cyber threat cache
+    const seededThreats = await seedRead<unknown>("seed:cyber:threats");
+    if (seededThreats) {
+      return NextResponse.json({ ...seededThreats as object, fromSeed: true });
+    }
+
     const baseUrl = new URL(request.url).origin;
 
     const result = await cachedFetch(

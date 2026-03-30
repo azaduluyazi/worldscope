@@ -11,7 +11,7 @@ import type { IntelItem } from "@/types/intel";
 const ESPN_NBA = "https://site.api.espn.com/apis/site/v2/sports/basketball/nba";
 
 // NBA types reserved for balldontlie.io API migration
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 interface _NbaStanding {
   team: { full_name: string; abbreviation: string; conference: string; division: string };
   wins: number;
@@ -20,7 +20,7 @@ interface _NbaStanding {
   conference_rank: number;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 interface _NbaGame {
   id: number;
   date: string;

@@ -23,7 +23,7 @@ interface Globe3DProps {
   enabledLayers?: Set<string>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 export function Globe3D({ variant: _variant = "world", onEventClick, globeMode = "globe-intel", enabledLayers }: Globe3DProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);

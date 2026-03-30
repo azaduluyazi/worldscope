@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { cachedFetch } from "@/lib/cache/redis";
+import { seedRead } from "@/lib/seed/seed-utils";
 
 export const runtime = "nodejs";
 
@@ -70,6 +71,13 @@ function isExtremeWeather(code: number, temp: number, wind: number): boolean {
 
 export async function GET() {
   try {
+    // Seed-first: try pre-populated cache
+    const seeded = await seedRead<WeatherAlert[]>("seed:natural:weather");
+    if (seeded && seeded.length > 0) {
+      const extreme = seeded.filter((w) => w.isExtreme);
+      return NextResponse.json({ alerts: seeded, extremeCount: extreme.length, total: seeded.length, fromSeed: true });
+    }
+
     const data = await cachedFetch(
       "weather:global",
       async () => {
