@@ -5,19 +5,27 @@ import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import { timeAgo } from "@/lib/utils/date";
 import { truncate } from "@/lib/utils/sanitize";
 import { isBookmarked, addBookmark, removeBookmark } from "@/lib/bookmarks";
-import { useState, useCallback } from "react";
+import { calculateImpactScore } from "@/lib/utils/impact-scoring";
+import { ImpactBadge } from "./ImpactBadge";
+import { useState, useCallback, useMemo } from "react";
 
 interface IntelCardProps {
   item: IntelItem;
+  allItems?: IntelItem[];
   onPreview?: (item: IntelItem) => void;
   onSpeak?: (text: string) => void;
 }
 
-export function IntelCard({ item, onPreview, onSpeak }: IntelCardProps) {
+export function IntelCard({ item, allItems, onPreview, onSpeak }: IntelCardProps) {
   const severityColor = SEVERITY_COLORS[item.severity];
   const icon = CATEGORY_ICONS[item.category] || "📄";
   const hasGeo = item.lat != null && item.lng != null;
   const [bookmarked, setBookmarked] = useState(() => isBookmarked(item.id));
+
+  const impact = useMemo(
+    () => calculateImpactScore(item, allItems),
+    [item, allItems]
+  );
 
   const handleClick = (e: React.MouseEvent) => {
     if (onPreview) {
@@ -67,6 +75,7 @@ export function IntelCard({ item, onPreview, onSpeak }: IntelCardProps) {
           {item.severity.toUpperCase()} — {item.category.toUpperCase()}
           {hasGeo && <span className="text-hud-accent text-[7px] ml-1" title="Geo-located">📍</span>}
         </span>
+        <ImpactBadge score={impact.score} level={impact.level} compact />
         <div className="flex items-center gap-1.5">
           {/* TTS button */}
           {onSpeak && (

@@ -7,6 +7,8 @@ import type { HeatmapLayer, CircleLayer } from "mapbox-gl";
 import { MapHUD } from "./MapHUD";
 import { ThreatIndex } from "./ThreatIndex";
 import { FinanceOverlay } from "./FinanceOverlay";
+import { TimelineSlider } from "./TimelineSlider";
+import { useTimelineData } from "@/hooks/useTimelineData";
 import { MAP_STYLE, VARIANT_MAP_VIEWS, VARIANT_FLY_TO } from "@/config/map-layers";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useFlightTracker } from "@/hooks/useFlightTracker";
@@ -249,6 +251,9 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
   const [ripples, setRipples] = useState<RippleEvent[]>([]);
   const prevItemCountRef = useRef(0);
 
+  // ── Timeline scrub state ──
+  const [timelineActive, setTimelineActive] = useState(false);
+
   // ── Auto-rotate state ──
   const [isAutoRotating, setIsAutoRotating] = useState(false);
   const lastInteractionRef = useRef(0);
@@ -313,6 +318,9 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
     return allItems.filter((item) => all.has(item.category as Category));
   }, [allItems, variant]);
 
+  // ── Timeline hook — bins items for 48h scrubbing ──
+  const timeline = useTimelineData({ items });
+
   // ── Detect new events → trigger ripple ──
   useEffect(() => {
     if (prevItemCountRef.current === 0) {
@@ -350,9 +358,16 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
     return () => clearTimeout(timer);
   }, [ripples]);
 
+  // ── Resolve source items: when timeline active, use current bin; otherwise all ──
+  const sourceItems = useMemo(() => {
+    if (!timelineActive) return items;
+    const bin = timeline.bins[timeline.currentBinIndex];
+    return bin ? bin.items : [];
+  }, [timelineActive, items, timeline.bins, timeline.currentBinIndex]);
+
   // ── Filter events by active filters ──
   const geoEvents = useMemo(() => {
-    return items.filter(
+    return sourceItems.filter(
       (item): item is IntelItem & { lat: number; lng: number } => {
         if (item.lat == null || item.lng == null) return false;
         if (filters.categories.size > 0 && !filters.categories.has(item.category)) return false;
@@ -360,7 +375,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         return true;
       }
     );
-  }, [items, filters.categories, filters.severities]);
+  }, [sourceItems, filters.categories, filters.severities]);
 
   // ── GeoJSON for heatmap ──
   const heatmapGeoJSON = useMemo(() => ({
@@ -833,6 +848,43 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
               {cat.toUpperCase()}
             </span>
           ))}
+        </div>
+      )}
+
+      {/* ── Timeline toggle button ── */}
+      <button
+        type="button"
+        onClick={() => {
+          setTimelineActive((prev) => {
+            if (prev) timeline.pause();
+            return !prev;
+          });
+        }}
+        className={`absolute bottom-3 right-14 z-30 flex items-center gap-1 px-2 py-1 rounded text-[8px] font-mono tracking-wider transition-all border backdrop-blur-sm ${
+          timelineActive
+            ? "bg-[#00e5ff15] border-[#00e5ff40] text-[#00e5ff]"
+            : "bg-hud-surface/80 border-hud-border text-hud-muted hover:text-hud-accent hover:border-[#00e5ff30]"
+        }`}
+        title="Toggle 48h timeline scrubber"
+      >
+        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        TIMELINE
+      </button>
+
+      {/* ── Timeline Slider (absolute bottom of map) ── */}
+      {timelineActive && (
+        <div className="absolute bottom-8 left-3 right-3 z-30 bg-hud-surface/90 backdrop-blur-sm border border-hud-border rounded px-1 py-1">
+          <TimelineSlider
+            bins={timeline.bins}
+            currentIndex={timeline.currentBinIndex}
+            onChange={timeline.setCurrentBinIndex}
+            isPlaying={timeline.isPlaying}
+            onPlay={timeline.play}
+            onPause={timeline.pause}
+          />
         </div>
       )}
     </div>
