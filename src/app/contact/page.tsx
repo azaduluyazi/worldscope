@@ -89,9 +89,9 @@ export default function ContactPage() {
               Newsletter Support
             </h2>
             <p className="text-hud-text/80">
-              Premium mail subscribers can manage their subscription or
+              Newsletter subscribers can manage their subscription or
               unsubscribe at any time through the link provided in each briefing
-              email. For billing questions, contact us at the email above.
+              email. For questions, contact us at the email above.
             </p>
           </div>
         </div>

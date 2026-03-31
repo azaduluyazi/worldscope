@@ -21,7 +21,7 @@ const KeyboardHelp = dynamic(() => import("./KeyboardHelp").then((m) => ({ defau
 const StatusFooter = dynamic(() => import("./StatusFooter").then((m) => ({ default: m.StatusFooter })), { ssr: false });
 const NewsTicker = dynamic(() => import("./NewsTicker").then((m) => ({ default: m.NewsTicker })), { ssr: false });
 import { MapViewToggle, type MapMode } from "./MapViewToggle";
-import { PremiumPopup } from "./PremiumPopup";
+import { NewsletterPopup } from "./NewsletterPopup";
 import { ConnectionStatus } from "./ConnectionStatus";
 import { MapLayerPanel, useMapLayers } from "./MapLayerPanel";
 
@@ -455,8 +455,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       <ConnectionStatus />
       {/* Command Palette — Ctrl/Cmd+K */}
       <CommandPalette />
-      {/* Premium subscription popup */}
-      <PremiumPopup />
+      {/* Newsletter signup popup */}
+      <NewsletterPopup />
     </div>
   );
 }

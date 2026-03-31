@@ -7,9 +7,8 @@ import { useSubscription } from "@/hooks/useSubscription";
  * Free newsletter signup popup — sleek dark HUD aesthetic.
  * Appears in bottom-right corner after 30 seconds.
  * Shows once per session, remembers dismissal via sessionStorage.
- * Component name kept as PremiumPopup to avoid breaking DashboardShell import.
  */
-export function PremiumPopup() {
+export function NewsletterPopup() {
   const { isSubscribed, subscribe } = useSubscription();
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState("");
@@ -17,14 +16,14 @@ export function PremiumPopup() {
 
   useEffect(() => {
     if (isSubscribed) return;
-    if (sessionStorage.getItem("premium-dismissed")) return;
+    if (sessionStorage.getItem("newsletter-dismissed")) return;
     const timer = setTimeout(() => setIsVisible(true), 30000);
     return () => clearTimeout(timer);
   }, [isSubscribed]);
 
   const dismiss = () => {
     setIsVisible(false);
-    sessionStorage.setItem("premium-dismissed", "1");
+    sessionStorage.setItem("newsletter-dismissed", "1");
   };
 
   const handleSubscribe = async () => {

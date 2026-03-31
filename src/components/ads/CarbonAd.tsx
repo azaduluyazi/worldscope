@@ -8,7 +8,7 @@ interface CarbonAdProps {
 }
 
 /**
- * Carbon Ads unit — premium developer-focused ads.
+ * Carbon Ads unit — developer-focused ads.
  * Loads the Carbon Ads script dynamically.
  */
 export function CarbonAd({ className = "" }: CarbonAdProps) {

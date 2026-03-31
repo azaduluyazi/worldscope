@@ -58,8 +58,8 @@ export default function PrivacyPage() {
               </li>
               <li>
                 <strong>Newsletter subscription:</strong> If you opt in to the
-                premium mail briefing, we collect your email address and payment
-                information via our payment processor.
+                daily briefing, we collect your email address to deliver the
+                newsletter. No payment information is collected.
               </li>
               <li>
                 <strong>Device information:</strong> Browser type, operating
@@ -116,7 +116,7 @@ export default function PrivacyPage() {
           <Section title="5. How We Use Your Information">
             <ul className="list-disc list-inside space-y-1 text-hud-text/80">
               <li>To provide and maintain the WorldScope platform</li>
-              <li>To deliver premium newsletter briefings to subscribers</li>
+              <li>To deliver free daily newsletter briefings to subscribers</li>
               <li>To improve platform performance and user experience</li>
               <li>To display relevant advertisements via Google AdSense</li>
               <li>To detect and prevent abuse or technical issues</li>
