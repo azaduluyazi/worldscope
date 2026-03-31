@@ -81,7 +81,7 @@ export const GolfLayout = memo(function GolfLayout({ variant }: FullLayoutProps)
             <Globe3D variant={variant} />
           </div>
           <div className="absolute top-12 left-3 z-20">
-            <MapViewToggle mode="globe-intel" onModeChange={() => {}} />
+            <MapViewToggle mode="3d" onModeChange={() => {}} />
           </div>
           <div className="absolute top-2 right-3 z-20 flex items-center gap-1.5">
             <Radio className="w-3 h-3 text-green-400 animate-pulse" />

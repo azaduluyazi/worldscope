@@ -164,7 +164,7 @@ export const JulietLayout = memo(function JulietLayout({ variant }: FullLayoutPr
               </span>
             </div>
             <div className="absolute top-10 left-3 z-20">
-              <MapViewToggle mode="globe-intel" onModeChange={() => {}} />
+              <MapViewToggle mode="3d" onModeChange={() => {}} />
             </div>
             <Globe3D variant={variant} />
           </motion.section>

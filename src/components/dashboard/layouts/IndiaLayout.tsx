@@ -95,7 +95,7 @@ export const IndiaLayout = memo(function IndiaLayout({ variant }: FullLayoutProp
 
       {/* Globe controls */}
       <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30">
-        <MapViewToggle mode="globe-intel" onModeChange={() => {}} />
+        <MapViewToggle mode="3d" onModeChange={() => {}} />
       </div>
 
       {/* Live indicator */}

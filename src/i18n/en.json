@@ -263,11 +263,7 @@
     "fiscalData": "Fiscal Data"
   },
   "mapModes": {
-    "tactical": "2D TACTICAL",
-    "intel": "3D INTEL GLOBE",
-    "flights": "3D FLIGHT TRACKER",
-    "ships": "3D SHIP TRACKER",
-    "cables": "3D WEATHER",
-    "weather": "3D WEATHER"
+    "tactical": "2D MAP",
+    "globe": "3D GLOBE"
   }
 }

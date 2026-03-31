@@ -31,7 +31,6 @@ interface IconSidebarProps {
   onToggleCategory: (cat: string) => void;
   onToggleHeatmap: () => void;
   onToggleClusters: () => void;
-  onToggleLayer: (layer: "flights" | "vessels" | "gpsJamming" | "cables") => void;
 }
 
 export function IconSidebar({
@@ -40,7 +39,6 @@ export function IconSidebar({
   onToggleCategory,
   onToggleHeatmap,
   onToggleClusters,
-  onToggleLayer,
 }: IconSidebarProps) {
   const t = useTranslations();
   const { all } = useMemo(() => getVariantCategories(variant), [variant]);
@@ -105,28 +103,6 @@ export function IconSidebar({
       </button>
 
       <div className="flex-1" />
-
-      <button
-        title={t("tracking.vessels")}
-        aria-label={t("tracking.vessels")}
-        aria-pressed={!!filters.vessels}
-        onClick={() => onToggleLayer("vessels")}
-        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
-          ${filters.vessels ? "bg-[#00ff88]/10 border border-[#00ff88]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
-      >
-        🚢
-      </button>
-
-      <button
-        title="GPS"
-        aria-label="GPS"
-        aria-pressed={!!filters.gpsJamming}
-        onClick={() => onToggleLayer("gpsJamming")}
-        className={`w-9 h-9 rounded-md flex items-center justify-center text-sm transition-all
-          ${filters.gpsJamming ? "bg-[#ff4757]/10 border border-[#ff4757]/30" : "bg-hud-panel border border-hud-border hover:border-hud-muted opacity-50"}`}
-      >
-        📡
-      </button>
 
       <button
         title={t("sidebar.settings")}

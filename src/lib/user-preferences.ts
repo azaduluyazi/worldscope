@@ -8,15 +8,13 @@ export interface UserPreferences {
   variant: string;
   /** Locale */
   locale: string;
-  /** Map layer visibility */
+  /** Map filter visibility */
   mapLayers: {
     heatmap: boolean;
     clusters: boolean;
-    flights: boolean;
-    vessels: boolean;
-    gpsJamming: boolean;
-    cables: boolean;
   };
+  /** Enabled layer IDs (persisted from MapLayerPanel) */
+  enabledLayerIds: string[];
   /** Active category filters */
   categoryFilters: string[];
   /** Muted state for broadcasts */
@@ -37,11 +35,8 @@ const DEFAULT_PREFS: UserPreferences = {
   mapLayers: {
     heatmap: false,
     clusters: true,
-    flights: true,
-    vessels: true,
-    gpsJamming: true,
-    cables: false,
   },
+  enabledLayerIds: ["conflicts", "natural"],
   categoryFilters: [],
   broadcastMuted: true,
   lastCountry: null,

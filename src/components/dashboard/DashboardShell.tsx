@@ -88,10 +88,6 @@ const DEFAULT_FILTERS: MapFilters = {
   severities: new Set<string>(),
   heatmap: false,
   clusters: true,
-  flights: true,
-  vessels: true,
-  gpsJamming: true,
-  cables: false,
 };
 
 interface DashboardShellProps {
@@ -101,11 +97,10 @@ interface DashboardShellProps {
 export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   const [filters, setFilters] = useState<MapFilters>(() => {
     const prefs = loadPreferences();
-    return { ...DEFAULT_FILTERS, ...prefs.mapLayers, categories: new Set(prefs.categoryFilters), severities: new Set() };
+    return { ...DEFAULT_FILTERS, heatmap: prefs.mapLayers.heatmap, clusters: prefs.mapLayers.clusters, categories: new Set(prefs.categoryFilters), severities: new Set() };
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
-  const [mapMode, setMapMode] = useState<MapMode>("2d");
-  // Globe mode determined by variant via MapViewToggle
+  const [mapMode, setMapMode] = useState<MapMode>("3d");
   const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics">("intel");
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];
@@ -116,10 +111,6 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       mapLayers: {
         heatmap: filters.heatmap,
         clusters: filters.clusters,
-        flights: filters.flights,
-        vessels: filters.vessels,
-        gpsJamming: filters.gpsJamming,
-        cables: filters.cables,
       },
       categoryFilters: [...filters.categories],
     });
@@ -158,9 +149,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
     setFilters((prev) => ({ ...prev, clusters: !prev.clusters }));
   }, []);
 
-  const toggleFilterLayer = useCallback((layer: "flights" | "vessels" | "gpsJamming" | "cables") => {
-    setFilters((prev) => ({ ...prev, [layer]: !prev[layer] }));
-  }, []);
+  // Layer toggles now handled by useMapLayers (MapLayerPanel)
 
   const clearFilters = useCallback(() => {
     setFilters(DEFAULT_FILTERS);
@@ -213,7 +202,6 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             onToggleCategory={toggleCategory}
             onToggleHeatmap={toggleHeatmap}
             onToggleClusters={toggleClusters}
-            onToggleLayer={toggleFilterLayer}
           />
         </div>
 
@@ -318,7 +306,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                 </ErrorBoundary>
               ) : (
                 <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
-                  <Globe3D variant={variant} globeMode={mapMode} enabledLayers={enabledLayerIds} />
+                  <Globe3D variant={variant} enabledLayers={enabledLayerIds} />
                 </ErrorBoundary>
               )}
               {mapMode === "2d" && (

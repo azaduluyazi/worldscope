@@ -133,7 +133,7 @@ export const FoxtrotLayout = memo(function FoxtrotLayout({ variant }: FullLayout
                   <MarketTicker />
                 </div>
                 <div className="absolute top-12 left-4 z-20">
-                  <MapViewToggle mode="globe-intel" onModeChange={() => {}} />
+                  <MapViewToggle mode="3d" onModeChange={() => {}} />
                 </div>
               </div>
               {/* Mini IntelFeed sidebar */}

@@ -263,11 +263,7 @@
     "fiscalData": "Mali Veriler"
   },
   "mapModes": {
-    "tactical": "2D TAKTİK",
-    "intel": "3D İSTİHBARAT",
-    "flights": "3D UÇUŞ TAKİP",
-    "ships": "3D GEMİ TAKİP",
-    "cables": "3D HAVA DURUMU",
-    "weather": "3D HAVA DURUMU"
+    "tactical": "2D HARİTA",
+    "globe": "3D KÜRE"
   }
 }

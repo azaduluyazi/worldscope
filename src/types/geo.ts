@@ -12,7 +12,34 @@ export interface MapEvent {
   count?: number;
 }
 
-export type LayerGroup = "conflict" | "natural" | "cyber" | "finance" | "infrastructure" | "tracking" | "intel";
+export type LayerGroup =
+  | "intel"
+  | "conflict"
+  | "military"
+  | "natural"
+  | "environmental"
+  | "maritime"
+  | "tracking"
+  | "cyber"
+  | "infrastructure"
+  | "finance"
+  | "geopolitical"
+  | "indices";
+
+export type LayerSourceType =
+  | "builtin"       // existing intel-based layers
+  | "static"        // GeoJSON/JSON files in public/geo/
+  | "api"           // dynamic API endpoints
+  | "computed"      // client-side computed (e.g. day/night terminator)
+  | "promoted"      // existing data promoted to layer (finance-geo)
+  | "choropleth";   // country-fill by index value
+
+export type LayerRenderType =
+  | "points"
+  | "polygons"
+  | "lines"
+  | "choropleth"
+  | "heatmap";
 
 export interface MapLayer {
   id: string;
@@ -22,6 +49,20 @@ export interface MapLayer {
   enabled: boolean;
   group: LayerGroup;
   description?: string;
+  /** i18n key — falls back to label if missing */
+  labelKey?: string;
+  /** Data source type */
+  sourceType?: LayerSourceType;
+  /** URL for static GeoJSON files in /geo/ */
+  sourceUrl?: string;
+  /** API route for dynamic layers */
+  apiEndpoint?: string;
+  /** Refresh interval in ms for dynamic layers */
+  refreshInterval?: number;
+  /** Render type on map */
+  renderType?: LayerRenderType;
+  /** Max points to render (performance cap) */
+  maxPoints?: number;
 }
 
 /** Active map filter state shared between sidebar and map */
@@ -34,12 +75,4 @@ export interface MapFilters {
   heatmap: boolean;
   /** Show cluster grouping */
   clusters: boolean;
-  /** Show ADS-B aircraft markers */
-  flights: boolean;
-  /** Show AIS vessel markers */
-  vessels: boolean;
-  /** Show GPS jamming zones */
-  gpsJamming: boolean;
-  /** Show submarine cable landing points */
-  cables: boolean;
 }
