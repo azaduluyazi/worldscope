@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useState } from "react";
 import { useIntelFeed } from "./useIntelFeed";
+import { useAlertRules } from "./useAlertRules";
 import type { IntelItem } from "@/types/intel";
 
 /**
@@ -45,6 +46,7 @@ interface BreakingAlertState {
  */
 export function useBreakingAlert() {
   const { items } = useIntelFeed();
+  const { matchesRules } = useAlertRules();
   const seenIdsRef = useRef(new Set<string>());
   const [state, setState] = useState<BreakingAlertState>({
     alerts: [],
@@ -71,13 +73,24 @@ export function useBreakingAlert() {
     }
   }, []);
 
-  // Monitor for new critical events
+  // Monitor for new critical events + custom alert rules
   useEffect(() => {
     const criticalItems = items.filter((item) => item.severity === "critical");
 
     const newAlerts: IntelItem[] = [];
     for (const item of criticalItems) {
       if (!seenIdsRef.current.has(item.id)) {
+        seenIdsRef.current.add(item.id);
+        newAlerts.push(item);
+      }
+    }
+
+    // Also check custom alert rules for non-critical items
+    for (const item of items) {
+      if (seenIdsRef.current.has(item.id)) continue;
+      if (item.severity === "critical") continue; // already handled above
+      const matchedRule = matchesRules(item);
+      if (matchedRule) {
         seenIdsRef.current.add(item.id);
         newAlerts.push(item);
       }
@@ -116,7 +129,7 @@ export function useBreakingAlert() {
     }, 8000);
 
     return () => clearTimeout(timer);
-  }, [items, state.notificationsEnabled]);
+  }, [items, state.notificationsEnabled, matchesRules]);
 
   const dismissToast = useCallback(() => {
     setState((s) => ({ ...s, showToast: false }));

@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-    const { limit, hours: _hours, lang, category: rawCategory } = parsed.data;
+    const { limit, hours: _hours, lang, category: rawCategory, dateFrom, dateTo, severity: severityParam, country: countryParam2 } = parsed.data;
     const category = rawCategory && VALID_CATEGORIES.has(rawCategory as Category)
       ? (rawCategory as Category)
       : null;
@@ -343,7 +343,7 @@ export async function GET(request: NextRequest) {
     persistEvents(items).catch(() => {});
 
     // Country filter (optional query param — applied after cache)
-    const countryParam = searchParams.get("country");
+    const countryParam = searchParams.get("country") || countryParam2;
     let filtered = items;
     if (countryParam) {
       filtered = filtered.filter(
@@ -377,6 +377,33 @@ export async function GET(request: NextRequest) {
       filtered = filtered.filter(
         (i) => new Date(i.publishedAt).getTime() >= since
       );
+    }
+
+    // Date range filters (dateFrom / dateTo)
+    if (dateFrom) {
+      const fromMs = new Date(dateFrom).getTime();
+      if (!isNaN(fromMs)) {
+        filtered = filtered.filter(
+          (i) => new Date(i.publishedAt).getTime() >= fromMs
+        );
+      }
+    }
+    if (dateTo) {
+      // dateTo is inclusive — include the full day
+      const toMs = new Date(dateTo).getTime() + 24 * 60 * 60 * 1000;
+      if (!isNaN(toMs)) {
+        filtered = filtered.filter(
+          (i) => new Date(i.publishedAt).getTime() <= toMs
+        );
+      }
+    }
+
+    // Severity filter (comma-separated list)
+    if (severityParam) {
+      const sevSet = new Set(severityParam.split(",").map((s) => s.trim().toLowerCase()));
+      if (sevSet.size > 0) {
+        filtered = filtered.filter((i) => sevSet.has(i.severity));
+      }
     }
 
     // Apply limit AFTER cache so different limit params don't cause stale results

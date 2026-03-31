@@ -13,6 +13,9 @@ import { CountryEventList } from "./CountryEventList";
 import { getFlagEmoji } from "@/lib/utils/country-helpers";
 import { AdSenseUnit, CarbonAd, AffiliateBanner, AdConsentBanner } from "@/components/ads";
 import { ShareButtons } from "@/components/shared/ShareButtons";
+import { CountryEconomics } from "./CountryEconomics";
+import { CountryConflictHistory } from "./CountryConflictHistory";
+import { CountrySanctions } from "./CountrySanctions";
 import Link from "next/link";
 
 /** Lazy-load Mapbox mini-map — heavy dependency */
@@ -138,6 +141,13 @@ export function CountryDashboard({ country }: CountryDashboardProps) {
             {/* Event List */}
             <CountryEventList items={items} />
           </div>
+        </div>
+
+        {/* ── Enhanced Country Intel: Economics, Conflicts, Sanctions ── */}
+        <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+          <CountryEconomics countryCode={country.code} />
+          <CountryConflictHistory countryCode={country.code} />
+          <CountrySanctions countryCode={country.code} />
         </div>
 
         {/* Bottom affiliate banner */}

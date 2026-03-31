@@ -3,7 +3,9 @@
 import { useState, useMemo, useCallback, useRef, useEffect, Fragment } from "react";
 import { useTranslations } from "next-intl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
+import { useFeedRanking } from "@/hooks/useFeedRanking";
 import { IntelCard } from "./IntelCard";
+import { VoteButtons } from "./VoteButtons";
 import { AIBrief } from "./AIBrief";
 import { NewsPreviewModal } from "./NewsPreviewModal";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
@@ -24,6 +26,7 @@ interface IntelFeedProps {
 export function IntelFeed({ variant = "world" }: IntelFeedProps) {
   const t = useTranslations();
   const { items: allItems, isLoading } = useIntelFeed();
+  const { getRankingWeight } = useFeedRanking();
   const TAB_LABELS: Record<TabId, string> = {
     feed: t("intel.title"),
     analysis: t("intel.analysis"),
@@ -36,7 +39,17 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
     const { all } = getVariantCategories(variant);
     const filtered = allItems.filter((item) => all.has(item.category as never));
     return { items: filtered, total: filtered.length };
-  }, [allItems, variant]);  
+  }, [allItems, variant]);
+
+  // Apply personalized ranking weights to sort order
+  const rankedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
+      const weightDiff = getRankingWeight(b.id) - getRankingWeight(a.id);
+      if (weightDiff !== 0) return weightDiff;
+      // Preserve original chronological order for equal weights
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
+    });
+  }, [items, getRankingWeight]);
 
   const [activeTab, setActiveTab] = useState<TabId>("feed");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
@@ -44,20 +57,20 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
 
   // Reset visible count when items change significantly
   useEffect(() => {
-    if (visibleCount > items.length && items.length > 0) {
+    if (visibleCount > rankedItems.length && rankedItems.length > 0) {
       const timer = setTimeout(() => {
-        setVisibleCount(Math.min(PAGE_SIZE, items.length));
+        setVisibleCount(Math.min(PAGE_SIZE, rankedItems.length));
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [items.length, visibleCount]);
+  }, [rankedItems.length, visibleCount]);
 
   // ── Infinite scroll: IntersectionObserver on sentinel ──
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   const loadMore = useCallback(() => {
-    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, items.length));
-  }, [items.length]);
+    setVisibleCount((prev) => Math.min(prev + PAGE_SIZE, rankedItems.length));
+  }, [rankedItems.length]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -77,8 +90,8 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
   }, [loadMore]);
 
   const visibleItems = useMemo(
-    () => items.slice(0, visibleCount),
-    [items, visibleCount]
+    () => rankedItems.slice(0, visibleCount),
+    [rankedItems, visibleCount]
   );
 
   // Compute analysis data (memoized, only recalcs when items change)
@@ -150,19 +163,24 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
           <div className="p-2 flex flex-col gap-1">
             {visibleItems.map((item, index) => (
               <Fragment key={item.id}>
-                <IntelCard item={item} onPreview={setPreviewItem} />
+                <div className="flex items-stretch gap-1">
+                  <VoteButtons itemId={item.id} compact />
+                  <div className="flex-1 min-w-0">
+                    <IntelCard item={item} onPreview={setPreviewItem} />
+                  </div>
+                </div>
                 {(index + 1) % FEED_AD_INTERVAL === 0 && <NativeAdCard />}
               </Fragment>
             ))}
             {/* Infinite scroll sentinel */}
-            {visibleCount < items.length && (
+            {visibleCount < rankedItems.length && (
               <div ref={sentinelRef} className="py-3 text-center">
                 <span className="font-mono text-[8px] text-hud-muted animate-pulse">
                   ◆ {t("app.loadingMore")}
                 </span>
               </div>
             )}
-            {visibleCount >= items.length && items.length > PAGE_SIZE && (
+            {visibleCount >= rankedItems.length && rankedItems.length > PAGE_SIZE && (
               <div className="py-2 text-center">
                 <span className="font-mono text-[7px] text-hud-muted/50">
                   — {t("app.allEventsLoaded", { count: items.length })} —

@@ -65,11 +65,50 @@ export function useWatchlist() {
   const watchedCategories = items.filter((i) => i.type === "category").map((i) => i.value);
   const watchedRegions = items.filter((i) => i.type === "region").map((i) => i.value);
 
+  /**
+   * Share current watchlist via a short URL code.
+   * Posts items to /api/watchlist/share, returns the share URL.
+   */
+  const shareWatchlist = useCallback(async (): Promise<string | null> => {
+    if (items.length === 0) return null;
+    try {
+      const res = await fetch("/api/watchlist/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items }),
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.url as string;
+    } catch {
+      return null;
+    }
+  }, [items]);
+
+  /**
+   * Import external watchlist items, merging into local storage.
+   * Deduplicates by type+value.
+   */
+  const importWatchlist = useCallback(
+    (newItems: WatchlistItem[]) => {
+      setItems((prev) => {
+        const existingKeys = new Set(prev.map((i) => `${i.type}:${i.value}`));
+        const deduped = newItems.filter((i) => !existingKeys.has(`${i.type}:${i.value}`));
+        const merged = [...prev, ...deduped];
+        persistWatchlist(merged);
+        return merged;
+      });
+    },
+    []
+  );
+
   return {
     items,
     isWatched,
     toggle,
     clear,
+    shareWatchlist,
+    importWatchlist,
     watchedCountries,
     watchedCategories,
     watchedRegions,
