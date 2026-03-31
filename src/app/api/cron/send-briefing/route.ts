@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { fetchPersistedEvents } from "@/lib/db/events";
 import { detectAnomalies } from "@/lib/utils/anomaly-detection";
 import { buildDailyBriefingEmail } from "@/lib/mail/templates";
-import { sendMail, getDailySubscribers } from "@/lib/mail/sender";
+import { sendMail, getActiveSubscribers } from "@/lib/mail/sender";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -16,7 +16,7 @@ function isAuthorized(request: Request): boolean {
 
 /**
  * GET /api/cron/send-briefing
- * Sends daily intelligence briefing to premium subscribers.
+ * Sends daily intelligence briefing to all active subscribers (free).
  * Scheduled via Vercel cron: every day at 08:00 UTC.
  */
 export async function GET(request: Request) {
@@ -26,13 +26,13 @@ export async function GET(request: Request) {
 
   try {
     // 1. Get subscribers
-    const subscribers = await getDailySubscribers();
+    const subscribers = await getActiveSubscribers();
     if (subscribers.length === 0) {
       return NextResponse.json({ success: true, sent: 0, reason: "No subscribers" });
     }
 
     // 2. Get intel data
-    const items = await fetchPersistedEvents({ limit: 500, hoursBack: 24 });
+    const items = await fetchPersistedEvents({ limit: 2000, hoursBack: 24 });
     const anomalies = detectAnomalies(items, 24, 6);
 
     // 3. Generate AI summary

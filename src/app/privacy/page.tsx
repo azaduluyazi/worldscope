@@ -90,11 +90,7 @@ export default function PrivacyPage() {
                 display.
               </li>
               <li>
-                <strong>Paddle:</strong> Payment processing for premium
-                subscriptions. Paddle handles all payment data directly.
-              </li>
-              <li>
-                <strong>Resend:</strong> Email delivery for premium newsletter
+                <strong>Resend:</strong> Email delivery for daily newsletter
                 briefings.
               </li>
               <li>

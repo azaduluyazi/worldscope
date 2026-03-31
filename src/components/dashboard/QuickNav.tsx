@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-// Policy links added for Paddle compliance
+// Policy links added for compliance
 
 const NAV_ITEMS = [
   { href: "/analytics", icon: "📊", label: "Analytics" },

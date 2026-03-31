@@ -46,7 +46,6 @@ Real-time global intelligence dashboard.
 - `ADMIN_KEY` — Admin panel access key
 - `RESEND_API_KEY` — Email sending (optional)
 - `NEXT_PUBLIC_SENTRY_DSN` — Sentry error tracking (optional)
-- `PADDLE_API_KEY` — Payment processing (optional)
 
 ### Vercel Deployment
 1. Connect GitHub repo to Vercel

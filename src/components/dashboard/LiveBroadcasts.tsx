@@ -1,73 +1,80 @@
 "use client";
 
-import { useState, useCallback, useRef, useMemo, useEffect } from "react";
+import { useState, useCallback, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { useLocale } from "next-intl";
 import {
-  YOUTUBE_CHANNELS,
+  ALL_CHANNELS,
   getChannelsByLocale,
   getAvailableCountries,
   getChannelsByCountry,
   getChannelsByCategory,
   sortChannelsByVariant,
-  loadIPTVChannels,
+  getCountryFlag,
   CHANNEL_CATEGORIES,
   type LiveChannel,
   type ChannelCategory,
 } from "@/config/channels";
-import { useSubscription } from "@/hooks/useSubscription";
 
 const HlsPlayer = dynamic(() => import("./HlsPlayer"), { ssr: false });
 
+const PAGE_SIZE = 40;
+
 /**
- * Live news broadcast panel — YouTube + HLS embeds with channel tabs.
- * Tier-aware: free users see only YouTube channels.
- * Premium users see YouTube + IPTV (HLS) channels.
+ * Live broadcast panel — YouTube + HLS embeds with channel tabs.
+ * All channels are free — no tier gating.
  */
 export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) {
   const locale = useLocale();
-  const { isPremium } = useSubscription();
 
-  // IPTV channels — loaded only for premium users
-  const [iptvChannels, setIptvChannels] = useState<LiveChannel[]>([]);
-  useEffect(() => {
-    if (isPremium) {
-      loadIPTVChannels().then(setIptvChannels);
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIptvChannels([]);
-    }
-  }, [isPremium]);
-
-  // Merge YouTube (always) + IPTV (premium only), apply locale + variant sort
+  // All channels with locale + variant sort applied
   const allChannels = useMemo(() => {
-    const merged = [...YOUTUBE_CHANNELS, ...iptvChannels];
-    const localeFiltered = getChannelsByLocale(locale, merged);
+    const localeFiltered = getChannelsByLocale(locale, ALL_CHANNELS);
     return sortChannelsByVariant(localeFiltered, variantId);
-  }, [locale, iptvChannels, variantId]);
+  }, [locale, variantId]);
 
   const countries = useMemo(
-    () => getAvailableCountries([...YOUTUBE_CHANNELS, ...iptvChannels]),
-    [iptvChannels]
+    () => getAvailableCountries(ALL_CHANNELS),
+    []
   );
 
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<ChannelCategory>("all");
   const [showCountryPicker, setShowCountryPicker] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  // Filtered channels
   const channels = useMemo(() => {
     let filtered = allChannels;
+
     if (selectedCountry) {
-      const countryChannels = getChannelsByCountry(
-        selectedCountry,
-        [...YOUTUBE_CHANNELS, ...iptvChannels]
-      );
+      const countryChannels = getChannelsByCountry(selectedCountry, ALL_CHANNELS);
       if (countryChannels.length > 0) filtered = countryChannels;
     }
-    return getChannelsByCategory(filtered, selectedCategory);
-  }, [allChannels, selectedCountry, selectedCategory, iptvChannels]);
 
-  const [activeChannel, setActiveChannel] = useState<LiveChannel>(YOUTUBE_CHANNELS[0]);
+    filtered = getChannelsByCategory(filtered, selectedCategory);
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (ch) =>
+          ch.label.toLowerCase().includes(q) ||
+          ch.country?.toLowerCase().includes(q) ||
+          ch.lang.toLowerCase().includes(q)
+      );
+    }
+
+    return filtered;
+  }, [allChannels, selectedCountry, selectedCategory, searchQuery]);
+
+  // Reset visible count when filters change
+  const visibleChannels = useMemo(
+    () => channels.slice(0, visibleCount),
+    [channels, visibleCount]
+  );
+
+  const [activeChannel, setActiveChannel] = useState<LiveChannel>(ALL_CHANNELS[0]);
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [showFlash, setShowFlash] = useState(false);
@@ -102,8 +109,6 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
         ? `https://www.youtube.com/embed/${activeChannel.videoId}?autoplay=1&mute=${isMuted ? 1 : 0}&controls=1&modestbranding=1&rel=0&showinfo=0`
         : `https://www.youtube.com/embed/live_stream?channel=${activeChannel.channelId}&autoplay=1&mute=${isMuted ? 1 : 0}`;
 
-  const totalCount = channels.length;
-
   return (
     <div className="h-full flex flex-col bg-hud-surface/50 border border-hud-border rounded-lg overflow-hidden">
       {/* Header */}
@@ -113,24 +118,18 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
           LIVE BROADCASTS
         </span>
         <div className="flex items-center gap-1.5">
-          {/* Category Filter */}
-          <div className="flex gap-0.5">
-            {CHANNEL_CATEGORIES.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
-                className={`font-mono text-[6px] px-1 h-5 flex items-center gap-0.5 rounded border transition-colors ${
-                  selectedCategory === cat.id
-                    ? "bg-hud-accent/15 border-hud-accent/30 text-hud-accent"
-                    : "border-hud-border text-hud-muted hover:border-hud-accent/20"
-                }`}
-              >
-                <span className="text-[7px]">{cat.icon}</span>
-                {cat.label}
-              </button>
-            ))}
-          </div>
-          {/* Country Picker */}
+          {/* Search */}
+          <input
+            type="text"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setVisibleCount(PAGE_SIZE);
+            }}
+            className="font-mono text-[7px] h-5 w-20 px-1.5 rounded border border-hud-border bg-hud-base text-hud-text placeholder:text-hud-muted/40 focus:border-hud-accent/50 focus:outline-none"
+          />
+          {/* Country Picker with flags */}
           <div className="relative">
             <button
               onClick={() => setShowCountryPicker(!showCountryPicker)}
@@ -141,18 +140,26 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
               }`}
               title="Filter by country"
             >
-              {selectedCountry || "ALL"}
+              {selectedCountry ? (
+                <>
+                  <span className="text-[9px]">{getCountryFlag(selectedCountry)}</span>
+                  {selectedCountry}
+                </>
+              ) : (
+                "🌍 ALL"
+              )}
             </button>
             {showCountryPicker && (
-              <div className="absolute right-0 top-6 z-50 bg-hud-surface border border-hud-border rounded-md shadow-lg w-32 max-h-48 overflow-y-auto py-1">
+              <div className="absolute right-0 top-6 z-50 bg-hud-surface border border-hud-border rounded-md shadow-lg w-44 max-h-64 overflow-y-auto py-1">
                 <button
                   onClick={() => {
                     setSelectedCountry(null);
                     setShowCountryPicker(false);
+                    setVisibleCount(PAGE_SIZE);
                   }}
-                  className={`w-full text-left px-2 py-1 font-mono text-[7px] hover:bg-hud-panel/50 transition-colors ${!selectedCountry ? "text-hud-accent" : "text-hud-muted"}`}
+                  className={`w-full text-left px-2 py-1 font-mono text-[8px] hover:bg-hud-panel/50 transition-colors ${!selectedCountry ? "text-hud-accent" : "text-hud-muted"}`}
                 >
-                  ALL ({allChannels.length})
+                  🌍 ALL ({allChannels.length})
                 </button>
                 {countries.map((c) => (
                   <button
@@ -160,10 +167,12 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
                     onClick={() => {
                       setSelectedCountry(c.code);
                       setShowCountryPicker(false);
+                      setVisibleCount(PAGE_SIZE);
                     }}
-                    className={`w-full text-left px-2 py-1 font-mono text-[7px] hover:bg-hud-panel/50 transition-colors ${selectedCountry === c.code ? "text-hud-accent" : "text-hud-muted"}`}
+                    className={`w-full text-left px-2 py-1 font-mono text-[8px] hover:bg-hud-panel/50 transition-colors ${selectedCountry === c.code ? "text-hud-accent" : "text-hud-muted"}`}
                   >
-                    {c.name} ({c.count})
+                    <span className="text-[10px] mr-1">{getCountryFlag(c.code)}</span>
+                    {c.name} <span className="text-hud-muted/50">({c.count})</span>
                   </button>
                 ))}
               </div>
@@ -184,19 +193,35 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
             ⛶
           </button>
           <span className="font-mono text-[8px] text-hud-muted">
-            {totalCount} ch
-            {isPremium && iptvChannels.length > 0 && (
-              <span className="text-hud-accent ml-0.5" title="Premium channels active">
-                +
-              </span>
-            )}
+            {channels.length} ch
           </span>
         </div>
       </div>
 
-      {/* Channel tabs — scrollable */}
+      {/* Category filter — scrollable pills */}
       <div className="flex gap-0.5 px-2 py-1 border-b border-hud-border overflow-x-auto scrollbar-hide">
-        {channels.map((ch) => {
+        {CHANNEL_CATEGORIES.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => {
+              setSelectedCategory(cat.id);
+              setVisibleCount(PAGE_SIZE);
+            }}
+            className={`shrink-0 font-mono text-[7px] px-1.5 h-5 flex items-center gap-0.5 rounded border transition-colors ${
+              selectedCategory === cat.id
+                ? "bg-hud-accent/15 border-hud-accent/30 text-hud-accent"
+                : "border-hud-border text-hud-muted hover:border-hud-accent/20"
+            }`}
+          >
+            <span className="text-[8px]">{cat.icon}</span>
+            {cat.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Channel tabs — scrollable with load more */}
+      <div className="flex flex-wrap gap-0.5 px-2 py-1 border-b border-hud-border max-h-16 overflow-y-auto scrollbar-hide">
+        {visibleChannels.map((ch) => {
           const isActive = activeChannel.id === ch.id;
           return (
             <button
@@ -215,6 +240,7 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
                     }
                   : undefined
               }
+              title={`${ch.label} (${ch.country || ch.region})`}
             >
               {ch.type === "hls" && (
                 <span className="text-[5px] mr-0.5 opacity-60">HLS</span>
@@ -223,11 +249,18 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
             </button>
           );
         })}
+        {visibleCount < channels.length && (
+          <button
+            onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}
+            className="shrink-0 px-2 py-0.5 font-mono text-[7px] text-hud-accent border border-hud-accent/30 rounded hover:bg-hud-accent/10"
+          >
+            +{channels.length - visibleCount} more
+          </button>
+        )}
       </div>
 
       {/* Video player */}
       <div ref={containerRef} className="flex-1 relative bg-hud-base min-h-0">
-        {/* Loading shimmer */}
         {isLoading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center loading-shimmer">
             <div className="text-center">
@@ -239,7 +272,6 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
           </div>
         )}
 
-        {/* Channel switch flash */}
         {showFlash && <div className="channel-flash z-20" />}
 
         {activeChannel.type === "hls" && activeChannel.hlsUrl ? (
@@ -281,6 +313,9 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
             </span>
           </div>
           <span className="font-mono text-[7px] text-white/40">
+            {activeChannel.country && (
+              <span className="mr-1">{getCountryFlag(activeChannel.country)}</span>
+            )}
             {activeChannel.region.toUpperCase()}
           </span>
         </div>

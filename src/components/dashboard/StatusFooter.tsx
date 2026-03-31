@@ -3,7 +3,7 @@
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useEffect, useState } from "react";
 
-/* Updated: policy links for Paddle compliance */
+/* Updated: policy links for legal compliance */
 export function StatusFooter() {
   const { total, lastUpdated, isLoading } = useIntelFeed();
   const [uptime, setUptime] = useState("0:00");

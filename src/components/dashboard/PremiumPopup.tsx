@@ -1,30 +1,26 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { isPaddleConfigured } from "@/lib/payments/paddle";
 import { useSubscription } from "@/hooks/useSubscription";
 
 /**
- * Premium mail subscription popup — small, non-intrusive.
+ * Free newsletter signup popup — sleek dark HUD aesthetic.
  * Appears in bottom-right corner after 30 seconds.
- * Shows once per session, remembers dismissal.
- * Functional: email input + Paddle checkout or free subscribe.
+ * Shows once per session, remembers dismissal via sessionStorage.
+ * Component name kept as PremiumPopup to avoid breaking DashboardShell import.
  */
 export function PremiumPopup() {
-  const { isPremium, isWaitingForWebhook, waitForWebhook, restore } = useSubscription();
+  const { isSubscribed, subscribe } = useSubscription();
   const [isVisible, setIsVisible] = useState(false);
   const [email, setEmail] = useState("");
-  const [restoreEmail, setRestoreEmail] = useState("");
-  const [showRestore, setShowRestore] = useState(false);
-  const [status, setStatus] = useState<"idle" | "loading" | "waiting" | "success" | "error" | "timeout">("idle");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   useEffect(() => {
-    // Don't show popup for premium users
-    if (isPremium) return;
+    if (isSubscribed) return;
     if (sessionStorage.getItem("premium-dismissed")) return;
     const timer = setTimeout(() => setIsVisible(true), 30000);
     return () => clearTimeout(timer);
-  }, [isPremium]);
+  }, [isSubscribed]);
 
   const dismiss = () => {
     setIsVisible(false);
@@ -34,37 +30,9 @@ export function PremiumPopup() {
   const handleSubscribe = async () => {
     if (!email || !email.includes("@")) return;
     setStatus("loading");
-
     try {
-      if (isPaddleConfigured()) {
-        const { initializePaddle } = await import("@paddle/paddle-js");
-        const paddle = await initializePaddle({
-          token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_TOKEN!,
-          environment: process.env.NODE_ENV === "production" ? "production" : "sandbox",
-        });
-        paddle?.Checkout.open({
-          items: [{ priceId: process.env.NEXT_PUBLIC_PADDLE_PRICE_ID!, quantity: 1 }],
-          customer: { email },
-          customData: { source: "premium_popup" },
-          settings: {
-            successUrl: `${window.location.origin}?subscribed=true`,
-            displayMode: "overlay",
-            theme: "dark",
-          },
-        });
-        // Wait for Paddle webhook to confirm subscription (polls every 5s, max 60s)
-        setStatus("waiting");
-        const confirmed = await waitForWebhook(email);
-        setStatus(confirmed ? "success" : "timeout");
-      } else {
-        // Free subscription fallback
-        const res = await fetch("/api/newsletter/subscribe", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, frequency: "weekly", tier: "free" }),
-        });
-        setStatus(res.ok ? "success" : "error");
-      }
+      const ok = await subscribe(email);
+      setStatus(ok ? "success" : "error");
     } catch {
       setStatus("error");
     }
@@ -73,144 +41,139 @@ export function PremiumPopup() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-20 right-4 z-[150] w-72 animate-in slide-in-from-right-4 duration-500">
-      <div className="bg-hud-panel/95 backdrop-blur-md border border-hud-accent/30 rounded-lg shadow-2xl shadow-black/50 p-4">
-        <button onClick={dismiss} className="absolute top-2 right-2 text-hud-muted hover:text-hud-text text-xs">✕</button>
+    <div className="fixed bottom-20 right-4 z-[150] w-80 animate-in slide-in-from-right-4 duration-500">
+      <div
+        style={{
+          background: "#0a1628",
+          border: "1px solid #1a2332",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.08)",
+        }}
+        className="relative rounded-lg p-5"
+      >
+        {/* Close button */}
+        <button
+          onClick={dismiss}
+          className="absolute top-3 right-3 transition-colors"
+          style={{ color: "#4a5568" }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#e2e8f0")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#4a5568")}
+          aria-label="Dismiss"
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
+        </button>
 
-        {status === "waiting" || isWaitingForWebhook ? (
-          <div className="text-center py-4">
-            <div className="w-8 h-8 border-2 border-hud-accent/30 border-t-hud-accent rounded-full animate-spin mx-auto mb-3" />
-            <p className="font-mono text-[10px] text-hud-accent font-bold">CONFIRMING PAYMENT...</p>
-            <p className="font-mono text-[7px] text-hud-muted mt-2">Waiting for payment confirmation.</p>
-            <p className="font-mono text-[7px] text-hud-muted">This may take up to 60 seconds.</p>
-          </div>
-        ) : status === "success" ? (
-          <div className="text-center py-2">
-            <span className="text-2xl">✓</span>
-            <p className="font-mono text-[10px] text-green-400 font-bold mt-2">PREMIUM ACTIVATED!</p>
-            <p className="font-mono text-[7px] text-hud-muted mt-1">Daily briefing active — check your inbox</p>
-            <p className="font-mono text-[7px] text-hud-muted">Check your inbox for confirmation</p>
-            <button onClick={dismiss} className="mt-3 font-mono text-[8px] text-hud-muted hover:text-hud-text">Close</button>
-          </div>
-        ) : status === "timeout" ? (
-          <div className="text-center py-2">
-            <span className="text-2xl">⏳</span>
-            <p className="font-mono text-[10px] text-yellow-400 font-bold mt-2">PAYMENT PROCESSING</p>
-            <p className="font-mono text-[7px] text-hud-muted mt-1">Payment received but activation is taking longer than usual.</p>
-            <p className="font-mono text-[7px] text-hud-muted">Your premium will activate within a few minutes.</p>
-            <p className="font-mono text-[7px] text-hud-muted mt-1">Try refreshing the page shortly.</p>
-            <button onClick={dismiss} className="mt-3 font-mono text-[8px] text-hud-muted hover:text-hud-text">Close</button>
+        {status === "success" ? (
+          /* ---------- Success state ---------- */
+          <div className="text-center py-3">
+            <div
+              className="w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center"
+              style={{ background: "rgba(0, 255, 136, 0.1)", border: "1px solid rgba(0, 255, 136, 0.3)" }}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M5 13L9 17L19 7" stroke="#00ff88" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+            <p className="font-mono text-xs font-bold tracking-wider" style={{ color: "#00ff88" }}>
+              SUBSCRIBED
+            </p>
+            <p className="font-mono text-[11px] mt-2" style={{ color: "#4a5568" }}>
+              Check your inbox tomorrow for your first briefing.
+            </p>
+            <button
+              onClick={dismiss}
+              className="mt-4 font-mono text-[10px] tracking-wider transition-colors"
+              style={{ color: "#4a5568" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#e2e8f0")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#4a5568")}
+            >
+              CLOSE
+            </button>
           </div>
         ) : (
+          /* ---------- Signup form ---------- */
           <>
             {/* Header */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-lg">⚡</span>
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                style={{ background: "rgba(0, 229, 255, 0.1)", border: "1px solid rgba(0, 229, 255, 0.2)" }}
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="3" stroke="#00e5ff" strokeWidth="1.5" />
+                  <circle cx="12" cy="12" r="8" stroke="#00e5ff" strokeWidth="1" strokeDasharray="4 3" opacity="0.6" />
+                  <line x1="12" y1="1" x2="12" y2="5" stroke="#00e5ff" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+                  <line x1="12" y1="19" x2="12" y2="23" stroke="#00e5ff" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+                  <line x1="1" y1="12" x2="5" y2="12" stroke="#00e5ff" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+                  <line x1="19" y1="12" x2="23" y2="12" stroke="#00e5ff" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+                </svg>
+              </div>
               <div>
-                <p className="font-mono text-[10px] text-hud-accent font-bold tracking-wider">WORLDSCOPE PRO</p>
-                <p className="font-mono text-[8px] text-hud-muted">Unlock advanced features</p>
+                <p className="font-mono text-[11px] font-bold tracking-widest" style={{ color: "#00e5ff" }}>
+                  DAILY INTEL BRIEFING
+                </p>
+                <p className="font-mono text-[10px] mt-0.5" style={{ color: "#4a5568" }}>
+                  Free daily intelligence delivered to your inbox
+                </p>
               </div>
             </div>
 
-            {/* Price */}
-            <div className="bg-hud-surface/50 rounded px-3 py-2 mb-3 text-center">
-              <span className="font-mono text-xl text-hud-text font-bold">$1</span>
-              <span className="font-mono text-[9px] text-hud-muted">/month</span>
-              <p className="font-mono text-[7px] text-hud-muted mt-1">Ad-free + AI analytics + alerts</p>
-            </div>
-
-            {/* Features */}
-            <ul className="space-y-1 mb-3">
+            {/* Feature bullets */}
+            <ul className="space-y-2 mb-4">
               {[
-                "Ad-free dashboard experience",
-                "Advanced AI-powered analytics",
-                "Daily situation report (email)",
-                "Breaking news alerts (email)",
-                "Data export + priority refresh",
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-1.5">
-                  <span className="text-hud-accent text-[8px]">●</span>
-                  <span className="font-mono text-[8px] text-hud-muted">{f}</span>
+                "All daily news categorized",
+                "AI situation assessment",
+                "One-click unsubscribe",
+              ].map((feature) => (
+                <li key={feature} className="flex items-center gap-2">
+                  <span
+                    className="w-1.5 h-1.5 rounded-full flex-shrink-0"
+                    style={{ background: "#00e5ff", boxShadow: "0 0 6px rgba(0, 229, 255, 0.4)" }}
+                  />
+                  <span className="font-mono text-[10px]" style={{ color: "#e2e8f0" }}>
+                    {feature}
+                  </span>
                 </li>
               ))}
             </ul>
 
-            {/* Subscribe form */}
-            {showRestore ? (
-              <div className="space-y-2">
-                <p className="font-mono text-[8px] text-hud-muted text-center">Enter subscription email</p>
-                <input
-                  type="email"
-                  value={restoreEmail}
-                  onChange={(e) => setRestoreEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full px-3 py-1.5 bg-hud-surface border border-hud-border rounded font-mono text-[9px] text-hud-text placeholder:text-hud-muted/50 focus:border-hud-accent focus:outline-none"
-                  onKeyDown={async (e) => {
-                    if (e.key === "Enter" && restoreEmail) {
-                      setStatus("loading");
-                      const ok = await restore(restoreEmail);
-                      setStatus(ok ? "success" : "error");
-                    }
-                  }}
-                />
-                <button
-                  onClick={async () => {
-                    if (!restoreEmail) return;
-                    setStatus("loading");
-                    const ok = await restore(restoreEmail);
-                    setStatus(ok ? "success" : "error");
-                  }}
-                  disabled={status === "loading" || !restoreEmail}
-                  className={`w-full py-1.5 rounded font-mono text-[8px] font-bold tracking-wider transition-all ${
-                    status === "loading"
-                      ? "bg-hud-accent/30 text-hud-accent cursor-wait"
-                      : "bg-hud-accent text-hud-base hover:bg-hud-accent/80"
-                  }`}
-                >
-                  {status === "loading" ? "CHECKING..." : "RESTORE ACCESS"}
-                </button>
-                <button
-                  onClick={() => setShowRestore(false)}
-                  className="w-full font-mono text-[7px] text-hud-muted hover:text-hud-text"
-                >
-                  Back
-                </button>
-                {status === "error" && (
-                  <p className="font-mono text-[7px] text-red-400 text-center">No active subscription found.</p>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="w-full px-3 py-1.5 bg-hud-surface border border-hud-border rounded font-mono text-[9px] text-hud-text placeholder:text-hud-muted/50 focus:border-hud-accent focus:outline-none"
-                  onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
-                />
-                <button
-                  onClick={handleSubscribe}
-                  disabled={status === "loading" || !email}
-                  className={`w-full py-1.5 rounded font-mono text-[8px] font-bold tracking-wider transition-all ${
-                    status === "loading"
-                      ? "bg-hud-accent/30 text-hud-accent cursor-wait"
-                      : "bg-hud-accent text-hud-base hover:bg-hud-accent/80"
-                  }`}
-                >
-                  {status === "loading" ? "PROCESSING..." : isPaddleConfigured() ? "SUBSCRIBE — $1/MO" : "GET FREE WEEKLY DIGEST"}
-                </button>
-                <button
-                  onClick={() => setShowRestore(true)}
-                  className="w-full font-mono text-[7px] text-hud-muted hover:text-hud-accent transition-colors"
-                >
-                  Already subscribed? Restore access
-                </button>
-                {status === "error" && (
-                  <p className="font-mono text-[7px] text-red-400 text-center">Error. Try again.</p>
-                )}
-              </div>
-            )}
+            {/* Email input + subscribe button */}
+            <div className="space-y-2.5">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="your@email.com"
+                onKeyDown={(e) => e.key === "Enter" && handleSubscribe()}
+                className="w-full px-3 py-2 rounded font-mono text-[11px] focus:outline-none transition-colors"
+                style={{
+                  background: "rgba(26, 35, 50, 0.6)",
+                  border: "1px solid #1a2332",
+                  color: "#e2e8f0",
+                }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = "#00e5ff")}
+                onBlur={(e) => (e.currentTarget.style.borderColor = "#1a2332")}
+              />
+              <button
+                onClick={handleSubscribe}
+                disabled={status === "loading" || !email}
+                className="w-full py-2 rounded font-mono text-[10px] font-bold tracking-widest transition-all"
+                style={{
+                  background: status === "loading" ? "rgba(0, 229, 255, 0.15)" : "#00e5ff",
+                  color: status === "loading" ? "#00e5ff" : "#0a1628",
+                  cursor: status === "loading" || !email ? "not-allowed" : "pointer",
+                  opacity: !email ? 0.5 : 1,
+                }}
+              >
+                {status === "loading" ? "SUBSCRIBING..." : "SUBSCRIBE FREE"}
+              </button>
+              {status === "error" && (
+                <p className="font-mono text-[10px] text-center" style={{ color: "#ff4757" }}>
+                  Something went wrong. Please try again.
+                </p>
+              )}
+            </div>
           </>
         )}
       </div>

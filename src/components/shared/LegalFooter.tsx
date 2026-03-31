@@ -2,7 +2,7 @@ import Link from "next/link";
 
 /**
  * Consistent footer for all legal/static pages.
- * Visible, accessible, Paddle-compliant.
+ * Visible, accessible, accessible.
  */
 export function LegalFooter() {
   return (

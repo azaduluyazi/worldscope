@@ -42,8 +42,8 @@ export default function TermsPage() {
           <Section title="2. Description of Service">
             WorldScope is a real-time global news monitoring platform
             that aggregates publicly available data from news agencies, APIs, RSS feeds, and
-            open data sources. The Service is provided free of charge with
-            optional premium features.
+            open data sources. The Service is provided entirely free of charge
+            and supported by advertising.
           </Section>
 
           <Section title="3. Use of Service">
@@ -76,29 +76,23 @@ export default function TermsPage() {
             </p>
           </Section>
 
-          <Section title="5. Pro Subscription">
+          <Section title="5. Free Newsletter Service">
             <ul className="list-disc list-inside space-y-1 text-hud-text/80">
               <li>
-                The WorldScope Pro plan is a software subscription available for
-                $1.00 USD per month.
+                WorldScope offers a free email newsletter service including daily
+                AI-generated situation reports and breaking news alerts.
               </li>
               <li>
-                Pro unlocks premium platform features including ad-free
-                experience, advanced AI analytics, priority data refresh, data
-                export, custom notifications, and email-delivered situation
-                reports and alerts.
+                The newsletter is entirely free and requires only an email address
+                to subscribe.
               </li>
               <li>
-                Payment is processed securely through Paddle, our authorized
-                Merchant of Record.
+                You may unsubscribe at any time using the link in any email we
+                send you, or by contacting us.
               </li>
               <li>
-                You may cancel your subscription at any time through Paddle. No
-                refunds are provided for partial billing periods.
-              </li>
-              <li>
-                You can manage your subscription via the Paddle customer portal
-                or by contacting us.
+                No payment information is collected. WorldScope does not charge
+                users for any features.
               </li>
             </ul>
           </Section>

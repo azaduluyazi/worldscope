@@ -3,11 +3,11 @@ import Link from "next/link";
 import { LegalFooter } from "@/components/shared/LegalFooter";
 
 export const metadata: Metadata = {
-  title: "Refund Policy",
-  description: "WorldScope refund and cancellation policy for premium mail subscriptions.",
+  title: "Refund Policy — WorldScope",
+  description: "WorldScope is a completely free platform. No charges, no refunds needed.",
   openGraph: {
     title: "Refund Policy — WorldScope",
-    description: "WorldScope refund and cancellation policy.",
+    description: "WorldScope is free. No payments are collected.",
   },
 };
 
@@ -18,7 +18,7 @@ export default function RefundPolicyPage() {
         {/* Header */}
         <div className="mb-12">
           <Link href="/" className="font-mono text-[10px] text-hud-accent hover:underline">
-            ← BACK TO DASHBOARD
+            &larr; BACK TO DASHBOARD
           </Link>
           <h1 className="font-mono text-2xl text-hud-accent tracking-wider mt-6 mb-2">
             REFUND POLICY
@@ -31,93 +31,36 @@ export default function RefundPolicyPage() {
         <div className="space-y-8 font-mono text-[11px] leading-relaxed text-hud-muted">
 
           <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">1. SUBSCRIPTION OVERVIEW</h2>
+            <h2 className="text-sm text-hud-text tracking-wider mb-3">1. FREE SERVICE</h2>
             <p>
-              WorldScope offers a Pro software subscription at $1.00 USD per month.
-              The Pro plan unlocks premium platform features including ad-free experience,
-              advanced AI analytics, priority data refresh, data export, custom notifications,
-              and email-delivered daily situation reports and breaking news alerts.
+              WorldScope is a completely free platform. We do not charge users for
+              any features, and no payment information is collected. Because there
+              are no charges, no refund policy is applicable.
             </p>
           </section>
 
           <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">2. FREE CANCELLATION</h2>
+            <h2 className="text-sm text-hud-text tracking-wider mb-3">2. NO PAYMENTS COLLECTED</h2>
             <p>
-              You may cancel your subscription at any time with no questions asked.
-              Cancellation takes effect at the end of your current billing period.
-              You will continue to receive emails until the end of the period you have already paid for.
-            </p>
-            <p className="mt-2">
-              To cancel, use the subscription management link in any email we send you,
-              or contact us at{" "}
-              <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
-                info@troiamedia.com
-              </a>.
+              WorldScope does not process any payments. The platform is entirely
+              ad-supported and all features are available at no cost. There are no
+              subscriptions, no premium tiers, and no in-app purchases.
             </p>
           </section>
 
           <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">3. REFUND POLICY</h2>
+            <h2 className="text-sm text-hud-text tracking-wider mb-3">3. NEWSLETTER</h2>
             <p>
-              Due to the low cost of the subscription ($1/month) and the digital nature of the service,
-              we generally do not offer refunds for past billing periods. However, we understand that
-              issues can arise, and we handle refund requests on a case-by-case basis.
-            </p>
-            <div className="mt-3 bg-hud-surface border border-hud-border rounded p-4">
-              <p className="text-hud-text font-bold mb-2">We will issue a full refund if:</p>
-              <ul className="space-y-1 list-disc list-inside">
-                <li>You were charged in error or experienced a technical billing issue</li>
-                <li>You did not receive the promised email service for a billing period</li>
-                <li>You request a refund within 7 days of your first subscription payment</li>
-                <li>Duplicate charges occurred</li>
-              </ul>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">4. HOW TO REQUEST A REFUND</h2>
-            <p>
-              To request a refund, please email us at{" "}
-              <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
-                info@troiamedia.com
-              </a>{" "}
-              with the subject line &ldquo;Refund Request&rdquo; and include:
-            </p>
-            <ul className="mt-2 space-y-1 list-disc list-inside">
-              <li>Your email address used for the subscription</li>
-              <li>The date of the charge</li>
-              <li>Reason for the refund request</li>
-            </ul>
-            <p className="mt-2">
-              We aim to process all refund requests within 5-7 business days.
-              Approved refunds will be returned to your original payment method via Paddle.
+              WorldScope offers a free email newsletter. No payment is required to
+              subscribe. You may unsubscribe at any time using the link in any
+              email or by contacting us.
             </p>
           </section>
 
           <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">5. FREE PLAN</h2>
+            <h2 className="text-sm text-hud-text tracking-wider mb-3">4. CONTACT</h2>
             <p>
-              The WorldScope Free plan at troiamedia.com provides full access to the core
-              platform features at no cost. The refund policy applies only to the optional
-              Pro subscription plan.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">6. PAYMENT PROCESSOR</h2>
-            <p>
-              All payments are processed securely by{" "}
-              <a href="https://paddle.com" className="text-hud-accent hover:underline" target="_blank" rel="noopener noreferrer">
-                Paddle.com
-              </a>, our Merchant of Record. Paddle handles all billing, tax compliance,
-              and payment processing. For billing inquiries, you may also contact Paddle directly.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-sm text-hud-text tracking-wider mb-3">7. CONTACT</h2>
-            <p>
-              For any questions regarding refunds or billing, please contact us at{" "}
+              For any questions, please contact us at{" "}
               <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
                 info@troiamedia.com
               </a>.

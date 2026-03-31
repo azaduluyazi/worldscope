@@ -35,7 +35,7 @@ export default function AboutPage() {
         </p>
 
         <div className="space-y-6 text-sm leading-relaxed text-hud-text/90">
-          {/* Operator Info — Paddle requirement */}
+          {/* Operator Info */}
           <Section title="Operator">
             <div className="space-y-1">
               <p><strong>Service:</strong> WorldScope — troiamedia.com</p>
@@ -116,20 +116,16 @@ export default function AboutPage() {
           </Section>
 
           <Section title="Pricing">
-            <p className="mb-2">
-              WorldScope is <strong>free to use</strong> and supported by
-              advertising. All core features — live news feeds, interactive maps,
-              TV channels, and AI summaries — are available at no cost.
-            </p>
-            <p className="mb-2">
-              The <strong>Pro plan</strong> ($1/month) unlocks advanced features
-              including ad-free experience, AI-powered analytics, daily situation
-              reports, breaking news alerts, data export, and priority data
-              refresh. See our{" "}
+            <p>
+              WorldScope is <strong>completely free</strong> and supported by
+              advertising. Every feature — live news feeds, interactive maps,
+              TV channels, AI analytics, data export, daily email briefings,
+              and more — is available at no cost with no account required. See
+              our{" "}
               <Link href="/pricing" className="text-hud-accent hover:underline">
                 Pricing page
               </Link>{" "}
-              for a full comparison.
+              for the full feature list.
             </p>
           </Section>
 

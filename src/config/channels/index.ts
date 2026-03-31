@@ -1,11 +1,9 @@
 /**
- * Channel index — tier-aware helpers + backward-compatible exports.
- *
- * Free tier: YouTube channels only (static import, always in bundle)
- * Premium tier: YouTube + IPTV channels (IPTV loaded via dynamic import)
+ * Channel index — all channels merged, no tier gating.
  */
 
 import { YOUTUBE_CHANNELS } from "./youtube-channels";
+import { IPTV_CHANNELS } from "./iptv-channels";
 import { VARIANT_CHANNEL_PREFS } from "./variant-mapping";
 
 // Re-export types and constants
@@ -14,30 +12,26 @@ export { CHANNEL_CATEGORIES } from "./types";
 export { VARIANT_CHANNEL_PREFS } from "./variant-mapping";
 export type { VariantChannelPrefs } from "./variant-mapping";
 
-// Re-export webcams from original file (free tier, YouTube-based)
+// Re-export webcams
 export { LIVE_WEBCAMS, WEBCAM_REGIONS } from "./webcams";
 
-// ─── Free tier channels (always available) ─────────────────────
+// ─── All channels merged ──────────────────────────────────────
 export { YOUTUBE_CHANNELS };
+export { IPTV_CHANNELS };
 
-// ─── Premium tier channels (lazy-loaded) ───────────────────────
+/** All channels — YouTube + IPTV merged */
+export const ALL_CHANNELS = [...YOUTUBE_CHANNELS, ...IPTV_CHANNELS];
 
-/** Dynamically load IPTV channels — only call when user is premium */
-export async function loadIPTVChannels() {
-  const { IPTV_CHANNELS } = await import("./iptv-channels");
-  return IPTV_CHANNELS;
-}
-
-// ─── Tier-aware helpers ────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────
 
 import type { LiveChannel, ChannelCategory } from "./types";
 
-/** Get channels filtered by locale — tier-aware */
+/** Get channels filtered by locale */
 export function getChannelsByLocale(
   locale: string,
   channels?: LiveChannel[]
 ): LiveChannel[] {
-  const source = channels ?? YOUTUBE_CHANNELS;
+  const source = channels ?? ALL_CHANNELS;
   const intl = source.filter((ch) => ch.lang === "en");
   if (locale === "en") return intl;
   const localized = source.filter((ch) => ch.lang === locale);
@@ -49,7 +43,7 @@ export function getChannelsByCountry(
   countryCode: string,
   channels?: LiveChannel[]
 ): LiveChannel[] {
-  const source = channels ?? YOUTUBE_CHANNELS;
+  const source = channels ?? ALL_CHANNELS;
   return source.filter(
     (ch) => ch.country?.toUpperCase() === countryCode.toUpperCase()
   );
@@ -57,7 +51,7 @@ export function getChannelsByCountry(
 
 /** Get all unique countries that have channels */
 export function getAvailableCountries(channels?: LiveChannel[]) {
-  const source = channels ?? YOUTUBE_CHANNELS;
+  const source = channels ?? ALL_CHANNELS;
   const countryMap = new Map<string, number>();
   source.forEach((ch) => {
     if (ch.country) {
@@ -92,17 +86,14 @@ export function sortChannelsByVariant(
   if (!prefs) return channels;
 
   return [...channels].sort((a, b) => {
-    // Channels with matching variantAffinity come first
     const aHasAffinity = a.variantAffinity?.includes(variantId) ? 1 : 0;
     const bHasAffinity = b.variantAffinity?.includes(variantId) ? 1 : 0;
     if (aHasAffinity !== bHasAffinity) return bHasAffinity - aHasAffinity;
 
-    // Then channels matching primary categories
     const aMatchesCat = prefs.primaryCategories.includes(a.category || "") ? 1 : 0;
     const bMatchesCat = prefs.primaryCategories.includes(b.category || "") ? 1 : 0;
     if (aMatchesCat !== bMatchesCat) return bMatchesCat - aMatchesCat;
 
-    // Then boost countries
     if (prefs.boostCountries) {
       const aBoosted = prefs.boostCountries.includes(a.country || "") ? 1 : 0;
       const bBoosted = prefs.boostCountries.includes(b.country || "") ? 1 : 0;
@@ -113,7 +104,14 @@ export function sortChannelsByVariant(
   });
 }
 
-const COUNTRY_NAMES: Record<string, string> = {
+/** Convert ISO country code to flag emoji */
+export function getCountryFlag(code: string): string {
+  return [...code.toUpperCase()].map((c) =>
+    String.fromCodePoint(0x1f1e6 - 65 + c.charCodeAt(0))
+  ).join("");
+}
+
+export const COUNTRY_NAMES: Record<string, string> = {
   US: "USA", GB: "UK", TR: "Turkey", QA: "Qatar", AE: "UAE", SA: "Saudi Arabia",
   DE: "Germany", FR: "France", ES: "Spain", CL: "Chile", JP: "Japan",
   KR: "Korea", RU: "Russia", CN: "China", IN: "India",
@@ -123,4 +121,19 @@ const COUNTRY_NAMES: Record<string, string> = {
   NL: "Netherlands", SE: "Sweden", NO: "Norway", GR: "Greece", RO: "Romania",
   PT: "Portugal", PH: "Philippines", MY: "Malaysia", ID: "Indonesia", TH: "Thailand",
   VN: "Vietnam", CO: "Colombia", PE: "Peru", GH: "Ghana",
+  AF: "Afghanistan", AL: "Albania", DZ: "Algeria", AO: "Angola", AT: "Austria",
+  AZ: "Azerbaijan", BH: "Bahrain", BD: "Bangladesh", BY: "Belarus", BE: "Belgium",
+  BO: "Bolivia", BA: "Bosnia", BG: "Bulgaria", KH: "Cambodia", CM: "Cameroon",
+  HR: "Croatia", CU: "Cuba", CY: "Cyprus", CZ: "Czech Republic", DK: "Denmark",
+  DO: "Dominican Republic", EC: "Ecuador", ET: "Ethiopia", FI: "Finland",
+  GE: "Georgia", GT: "Guatemala", HN: "Honduras", HK: "Hong Kong", HU: "Hungary",
+  IS: "Iceland", IE: "Ireland", JO: "Jordan", KZ: "Kazakhstan", KE: "Kenya",
+  KW: "Kuwait", LB: "Lebanon", LY: "Libya", LT: "Lithuania", LU: "Luxembourg",
+  MK: "N. Macedonia", MG: "Madagascar", MW: "Malawi", ML: "Mali", MT: "Malta",
+  MA: "Morocco", MZ: "Mozambique", MM: "Myanmar", NP: "Nepal", NZ: "New Zealand",
+  NI: "Nicaragua", OM: "Oman", PA: "Panama", PY: "Paraguay", QC: "Quebec",
+  RS: "Serbia", SG: "Singapore", SK: "Slovakia", SI: "Slovenia", SO: "Somalia",
+  LK: "Sri Lanka", SD: "Sudan", CH: "Switzerland", SY: "Syria", TW: "Taiwan",
+  TZ: "Tanzania", TN: "Tunisia", TM: "Turkmenistan", UG: "Uganda", UY: "Uruguay",
+  UZ: "Uzbekistan", VE: "Venezuela", YE: "Yemen", ZM: "Zambia", ZW: "Zimbabwe",
 };

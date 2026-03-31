@@ -5,8 +5,7 @@ import { rateLimiters } from "@/lib/ratelimit";
 /**
  * GET /api/subscription/check?email=user@example.com
  *
- * Checks if the given email has an active premium subscription.
- * Used by the client-side useSubscription hook to gate IPTV access.
+ * Checks if the given email has an active newsletter subscription.
  * Rate limited to prevent email enumeration.
  */
 export async function GET(req: NextRequest) {
@@ -21,47 +20,21 @@ export async function GET(req: NextRequest) {
 
   const email = req.nextUrl.searchParams.get("email");
   if (!email || !email.includes("@")) {
-    return NextResponse.json({ isPremium: false });
+    return NextResponse.json({ isSubscribed: false });
   }
 
   try {
     const supabase = createServerClient();
 
-    // Check newsletter_subscribers table
     const { data: subscriber } = await supabase
       .from("newsletter_subscribers")
-      .select("tier, is_active")
+      .select("is_active")
       .eq("email", email.toLowerCase())
       .eq("is_active", true)
       .single();
 
-    if (subscriber?.tier === "premium") {
-      return NextResponse.json({ isPremium: true });
-    }
-
-    // Fallback: check subscriptions table via user_profiles email match
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("id")
-      .eq("email", email.toLowerCase())
-      .single();
-
-    if (profile) {
-      const { data: subscription } = await supabase
-        .from("subscriptions")
-        .select("plan, status")
-        .eq("user_id", profile.id)
-        .eq("status", "active")
-        .in("plan", ["pro", "enterprise"])
-        .maybeSingle();
-
-      if (subscription) {
-        return NextResponse.json({ isPremium: true });
-      }
-    }
-
-    return NextResponse.json({ isPremium: false });
+    return NextResponse.json({ isSubscribed: !!subscriber });
   } catch {
-    return NextResponse.json({ isPremium: false });
+    return NextResponse.json({ isSubscribed: false });
   }
 }

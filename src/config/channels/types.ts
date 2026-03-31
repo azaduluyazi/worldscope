@@ -1,7 +1,6 @@
 /**
- * Channel types for the 2-tier TV system.
- * Free tier: YouTube channels only (Paddle-safe)
- * Premium tier: YouTube + HLS/IPTV channels
+ * Channel types for the TV system.
+ * All channels are free — no tier gating.
  */
 
 export interface LiveChannel {
@@ -24,20 +23,42 @@ export interface LiveChannel {
   /** Accent color for the tab */
   color?: string;
   /** Channel category */
-  category?: "news" | "business" | "documentary" | "sports";
-  /** Access tier — free channels are always visible, premium requires subscription */
-  tier: "free" | "premium";
+  category?: ChannelCategory;
   /** Variant affinity — which dashboard variants prioritize this channel */
   variantAffinity?: string[];
 }
 
-export type ChannelCategory = "all" | "news" | "business" | "documentary" | "sports";
+export type ChannelCategory =
+  | "all"
+  | "news"
+  | "business"
+  | "sports"
+  | "documentary"
+  | "entertainment"
+  | "music"
+  | "kids"
+  | "religious"
+  | "weather"
+  | "education"
+  | "general";
 
-export const CHANNEL_CATEGORIES: Array<{ id: ChannelCategory; label: string; icon: string }> = [
+export const CHANNEL_CATEGORIES: Array<{
+  id: ChannelCategory;
+  label: string;
+  icon: string;
+}> = [
   { id: "all", label: "ALL", icon: "📺" },
   { id: "news", label: "NEWS", icon: "📰" },
   { id: "business", label: "BIZ", icon: "💰" },
   { id: "sports", label: "SPORTS", icon: "⚽" },
+  { id: "entertainment", label: "ENTERTAINMENT", icon: "🎬" },
+  { id: "music", label: "MUSIC", icon: "🎵" },
+  { id: "documentary", label: "DOCS", icon: "🎥" },
+  { id: "kids", label: "KIDS", icon: "🧸" },
+  { id: "religious", label: "RELIGIOUS", icon: "🕌" },
+  { id: "weather", label: "WEATHER", icon: "🌦️" },
+  { id: "education", label: "EDUCATION", icon: "📚" },
+  { id: "general", label: "GENERAL", icon: "📡" },
 ];
 
 export interface LiveWebcam {

@@ -1,6 +1,6 @@
 /**
  * Mail sender using Resend API.
- * Sends daily briefings and breaking alerts to premium subscribers.
+ * Sends daily briefings to all active subscribers (free).
  */
 
 const RESEND_API = "https://api.resend.com/emails";
@@ -22,10 +22,8 @@ export async function sendMail(params: SendMailParams): Promise<boolean> {
   const fromEmail = process.env.MAIL_FROM || "WorldScope <noreply@troiamedia.com>";
 
   try {
-    // Batch send for multiple recipients
     const recipients = Array.isArray(params.to) ? params.to : [params.to];
 
-    // Resend batch: up to 100 per request
     for (let i = 0; i < recipients.length; i += 100) {
       const batch = recipients.slice(i, i + 100);
 
@@ -58,35 +56,16 @@ export async function sendMail(params: SendMailParams): Promise<boolean> {
 }
 
 /**
- * Get active premium subscribers from Supabase.
+ * Get all active newsletter subscribers from Supabase.
  */
-export async function getPremiumSubscribers(): Promise<string[]> {
+export async function getActiveSubscribers(): Promise<string[]> {
   const { createServerClient } = await import("@/lib/db/supabase");
   const db = createServerClient();
 
   const { data, error } = await db
     .from("newsletter_subscribers")
     .select("email")
-    .eq("is_active", true)
-    .eq("tier", "premium");
-
-  if (error || !data) return [];
-  return data.map((r) => r.email);
-}
-
-/**
- * Get daily subscribers (premium only for daily).
- */
-export async function getDailySubscribers(): Promise<string[]> {
-  const { createServerClient } = await import("@/lib/db/supabase");
-  const db = createServerClient();
-
-  const { data, error } = await db
-    .from("newsletter_subscribers")
-    .select("email")
-    .eq("is_active", true)
-    .eq("tier", "premium")
-    .in("frequency", ["daily"]);
+    .eq("is_active", true);
 
   if (error || !data) return [];
   return data.map((r) => r.email);
