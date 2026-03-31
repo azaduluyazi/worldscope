@@ -7,6 +7,7 @@ const DATA_CACHE = "worldscope-data-v1";
 // Static assets to precache on install
 const PRECACHE_URLS = [
   "/",
+  "/offline",
   "/manifest.json",
   "/icons/icon-192.svg",
 ];
@@ -105,6 +106,8 @@ async function networkFirstWithCache(request, cacheName) {
 
     // Offline fallback for navigation requests
     if (request.mode === "navigate") {
+      const offlinePage = await caches.match("/offline");
+      if (offlinePage) return offlinePage;
       const fallback = await caches.match("/");
       if (fallback) return fallback;
     }

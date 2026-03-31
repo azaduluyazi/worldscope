@@ -102,6 +102,8 @@ export function getTierForPath(pathname: string): RateLimitTier | null {
   // Skip webhooks — external services need unrestricted access
   if (pathname.startsWith("/api/webhooks")) return null;
   if (pathname.startsWith("/api/payments/webhook")) return null;
+  // Skip v1 Developer API — uses per-key rate limiting in route handlers
+  if (pathname.startsWith("/api/v1/")) return null;
 
   for (const [pattern, tier] of ROUTE_TIERS) {
     if (pattern.test(pathname)) return tier;
