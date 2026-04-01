@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useRef } from "react";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import type { IntelItem, Category } from "@/types/intel";
 import { timeAgo } from "@/lib/utils/date";
@@ -28,10 +28,13 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
   const { webcams, isLoading: webcamsLoading } = useNearbyWebcams(event?.lat, event?.lng);
   const [showPlayer, setShowPlayer] = useState<string | null>(null);
 
-  // Reset player when event changes
-  useEffect(() => {
-    setShowPlayer(null);
-  }, [event?.id]);
+  // Reset player when event changes (render-phase ref check, no effect needed)
+  const eventId = event?.id;
+  const prevEventIdRef = useRef(eventId);
+  if (prevEventIdRef.current !== eventId) {
+    prevEventIdRef.current = eventId;
+    if (showPlayer) setShowPlayer(null);
+  }
 
   if (!event) return null;
 
@@ -93,6 +96,7 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
                   className="relative w-full rounded overflow-hidden border border-hud-border hover:border-hud-accent/40 transition-colors group"
                 >
                   {webcams[0].imageUrl ? (
+                    /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={webcams[0].imageUrl}
                       alt={webcams[0].title}
