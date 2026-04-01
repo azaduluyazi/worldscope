@@ -10,6 +10,7 @@ import { SEVERITY_COLORS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
 import type { VariantId } from "@/config/variants";
 import { FlightSearch, type FlightSearchResult } from "./FlightSearch";
+import { useGlobeOverlays } from "@/hooks/useGlobeOverlays";
 
 const SEVERITY_SIZE: Record<string, number> = {
   critical: 0.8, high: 0.5, medium: 0.3, low: 0.15, info: 0.08,
@@ -45,6 +46,9 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
   const [searchedFlight, setSearchedFlight] = useState<FlightSearchResult | null>(null);
+
+  // Generic overlay hook for static/api layers (military-bases, volcanoes, ports, etc.)
+  const genericOverlayPoints = useGlobeOverlays(enabledLayers);
   const handleFlightResult = useCallback((r: FlightSearchResult | null) => setSearchedFlight(r), []);
 
   // ── Overlay state for non-builtin layers ──
@@ -160,7 +164,7 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
       .map((c: WeatherCity) => ({ lat: c.lat, lng: c.lng, maxR: 5, propagationSpeed: 2, repeatPeriod: 2000 }));
   }, [weatherCities, enabledLayers]);
 
-  // ── MERGE: intel (always) + all enabled overlays ──
+  // ── MERGE: intel (always) + builtin overlays + generic layer overlays ──
   const pointsData = useMemo(() => {
     const overlays: GlobePoint[] = [
       ...flightPoints,
@@ -169,9 +173,10 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
       ...firePoints,
       ...satellitePoints,
       ...darkVesselPoints,
+      ...genericOverlayPoints,
     ];
     return overlays.length > 0 ? [...intelPoints, ...overlays] : intelPoints;
-  }, [intelPoints, flightPoints, shipPoints, weatherPoints, firePoints, satellitePoints, darkVesselPoints]);
+  }, [intelPoints, flightPoints, shipPoints, weatherPoints, firePoints, satellitePoints, darkVesselPoints, genericOverlayPoints]);
 
   const ringsData = useMemo(() => {
     return [...intelRings, ...weatherRings];

@@ -1,0 +1,22 @@
+[
+{"name":"MINUSMA","lat":12.6392,"lng":-8.0029,"country":"ML","full_name":"UN Multidimensional Integrated Stabilization Mission in Mali","personnel":13000,"established":"2013"},
+{"name":"MONUSCO","lat":-4.3217,"lng":15.3125,"country":"CD","full_name":"UN Organization Stabilization Mission in the DR Congo","personnel":14000,"established":"2010"},
+{"name":"UNMISS","lat":4.8517,"lng":31.6046,"country":"SS","full_name":"UN Mission in South Sudan","personnel":17000,"established":"2011"},
+{"name":"UNIFIL","lat":33.2719,"lng":35.2037,"country":"LB","full_name":"UN Interim Force in Lebanon","personnel":10500,"established":"1978"},
+{"name":"UNDOF","lat":33.25,"lng":35.85,"country":"SY","full_name":"UN Disengagement Observer Force","personnel":1250,"established":"1974"},
+{"name":"MINURSO","lat":27.163,"lng":-13.203,"country":"EH","full_name":"UN Mission for the Referendum in Western Sahara","personnel":480,"established":"1991"},
+{"name":"UNFICYP","lat":35.1753,"lng":33.3642,"country":"CY","full_name":"UN Peacekeeping Force in Cyprus","personnel":1000,"established":"1964"},
+{"name":"UNISFA","lat":10.55,"lng":28.67,"country":"SS","full_name":"UN Interim Security Force for Abyei","personnel":3500,"established":"2011"},
+{"name":"MINUSCA","lat":4.3947,"lng":18.5582,"country":"CF","full_name":"UN Multidimensional Integrated Stabilization Mission in the Central African Republic","personnel":15000,"established":"2014"},
+{"name":"UNTSO","lat":31.7683,"lng":35.2137,"country":"IL","full_name":"UN Truce Supervision Organization","personnel":150,"established":"1948"},
+{"name":"UNMOGIP","lat":34.0837,"lng":74.7973,"country":"IN","full_name":"UN Military Observer Group in India and Pakistan","personnel":44,"established":"1949"},
+{"name":"UNSOM","lat":2.0469,"lng":45.3182,"country":"SO","full_name":"UN Assistance Mission in Somalia","personnel":580,"established":"2013"},
+{"name":"BINUH","lat":18.5425,"lng":-72.339,"country":"HT","full_name":"UN Integrated Office in Haiti","personnel":350,"established":"2019"},
+{"name":"UNAMI","lat":33.3128,"lng":44.3615,"country":"IQ","full_name":"UN Assistance Mission for Iraq","personnel":800,"established":"2003"},
+{"name":"UNMIK","lat":42.6629,"lng":21.1655,"country":"XK","full_name":"UN Interim Administration Mission in Kosovo","personnel":400,"established":"1999"},
+{"name":"UNAMA","lat":34.5553,"lng":69.2075,"country":"AF","full_name":"UN Assistance Mission in Afghanistan","personnel":1200,"established":"2002"},
+{"name":"UNOWAS","lat":14.6928,"lng":-17.4467,"country":"SN","full_name":"UN Office for West Africa and the Sahel","personnel":120,"established":"2016"},
+{"name":"UNOCA","lat":-4.2634,"lng":15.2429,"country":"CG","full_name":"UN Regional Office for Central Africa","personnel":80,"established":"2011"},
+{"name":"UNITAMS","lat":15.5007,"lng":32.5599,"country":"SD","full_name":"UN Integrated Transition Assistance Mission in Sudan","personnel":300,"established":"2021"},
+{"name":"MFO Sinai","lat":29.95,"lng":33.82,"country":"EG","full_name":"Multinational Force and Observers (Sinai)","personnel":1150,"established":"1981"}
+]

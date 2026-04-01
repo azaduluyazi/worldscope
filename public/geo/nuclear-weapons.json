@@ -1,0 +1,11 @@
+[
+{"code":"US","warheads":5244,"deployed":1770,"status":"declared"},
+{"code":"RU","warheads":5889,"deployed":1674,"status":"declared"},
+{"code":"CN","warheads":500,"deployed":0,"status":"estimated"},
+{"code":"FR","warheads":290,"deployed":280,"status":"declared"},
+{"code":"GB","warheads":225,"deployed":120,"status":"declared"},
+{"code":"PK","warheads":170,"deployed":0,"status":"estimated"},
+{"code":"IN","warheads":172,"deployed":0,"status":"estimated"},
+{"code":"IL","warheads":90,"deployed":0,"status":"undeclared"},
+{"code":"KP","warheads":50,"deployed":0,"status":"estimated"}
+]

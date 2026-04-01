@@ -1,0 +1,22 @@
+[
+{"code":"RU","level":"comprehensive","sanctions_by":["US","EU","UK","CA","AU","JP"],"since":"2014","reason":"Ukraine conflict"},
+{"code":"IR","level":"comprehensive","sanctions_by":["US","EU","UK"],"since":"1979","reason":"Nuclear program, human rights"},
+{"code":"KP","level":"comprehensive","sanctions_by":["UN","US","EU","UK","JP","KR"],"since":"2006","reason":"Nuclear weapons, missiles"},
+{"code":"SY","level":"comprehensive","sanctions_by":["US","EU","UK"],"since":"2011","reason":"Civil war, chemical weapons"},
+{"code":"CU","level":"comprehensive","sanctions_by":["US"],"since":"1960","reason":"Communist regime"},
+{"code":"VE","level":"targeted","sanctions_by":["US","EU","CA"],"since":"2017","reason":"Democratic erosion"},
+{"code":"MM","level":"targeted","sanctions_by":["US","EU","UK"],"since":"2021","reason":"Military coup"},
+{"code":"BY","level":"targeted","sanctions_by":["US","EU","UK","CA"],"since":"2020","reason":"Election fraud, repression"},
+{"code":"AF","level":"targeted","sanctions_by":["UN","US"],"since":"2001","reason":"Taliban regime"},
+{"code":"YE","level":"targeted","sanctions_by":["UN","US"],"since":"2014","reason":"Houthi conflict"},
+{"code":"LY","level":"targeted","sanctions_by":["UN","US","EU"],"since":"2011","reason":"Civil war"},
+{"code":"SD","level":"partial","sanctions_by":["US","EU"],"since":"1997","reason":"Terrorism, human rights"},
+{"code":"SS","level":"targeted","sanctions_by":["UN","US","EU"],"since":"2015","reason":"Civil war"},
+{"code":"SO","level":"targeted","sanctions_by":["UN"],"since":"1992","reason":"Al-Shabaab, instability"},
+{"code":"CD","level":"targeted","sanctions_by":["UN","US","EU"],"since":"2005","reason":"Armed groups, conflict minerals"},
+{"code":"CF","level":"targeted","sanctions_by":["UN"],"since":"2013","reason":"Civil conflict"},
+{"code":"ML","level":"targeted","sanctions_by":["UN","EU"],"since":"2017","reason":"Armed groups"},
+{"code":"ZW","level":"targeted","sanctions_by":["US","EU"],"since":"2002","reason":"Human rights, governance"},
+{"code":"NI","level":"targeted","sanctions_by":["US","EU"],"since":"2018","reason":"Democratic erosion"},
+{"code":"CN","level":"targeted","sanctions_by":["US"],"since":"2020","reason":"Xinjiang, Hong Kong, tech"}
+]
