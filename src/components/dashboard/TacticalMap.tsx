@@ -254,6 +254,9 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
   // ── Timeline scrub state ──
   const [timelineActive, setTimelineActive] = useState(false);
 
+  // ── 3D Terrain state ──
+  const [terrain3D, setTerrain3D] = useState(false);
+
   // ── Auto-rotate state ──
   const [isAutoRotating, setIsAutoRotating] = useState(false);
   const lastInteractionRef = useRef(0);
@@ -493,6 +496,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         attributionControl={false}
         projection="globe"
         interactiveLayerIds={filters.clusters ? ["cluster-circles", "unclustered-point"] : []}
+        terrain={terrain3D ? { source: "mapbox-dem", exaggeration: 1.5 } : undefined}
         fog={{
           color: "#050a12",
           "high-color": "#0a1a3a",
@@ -502,6 +506,36 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         }}
       >
         <NavigationControl position="bottom-right" showCompass visualizePitch />
+
+        {/* ── 3D Terrain: DEM source, sky, buildings ── */}
+        <Source id="mapbox-dem" type="raster-dem" url="mapbox://mapbox.mapbox-terrain-dem-v1" tileSize={512} maxzoom={14} />
+        {terrain3D && (
+          <>
+            <Layer
+              id="sky"
+              type="sky"
+              paint={{
+                "sky-type": "atmosphere",
+                "sky-atmosphere-sun": [0.0, 0.0],
+                "sky-atmosphere-sun-intensity": 15,
+              }}
+            />
+            <Layer
+              id="3d-buildings"
+              type="fill-extrusion"
+              source="composite"
+              source-layer="building"
+              minzoom={12}
+              filter={["==", "extrude", "true"]}
+              paint={{
+                "fill-extrusion-color": "#0a1a3a",
+                "fill-extrusion-height": ["get", "height"],
+                "fill-extrusion-base": ["get", "min_height"],
+                "fill-extrusion-opacity": 0.7,
+              }}
+            />
+          </>
+        )}
 
         {/* ── Finance Overlay — exchanges, banks, hubs (Finance variant only) ── */}
         {variant === "finance" && <FinanceOverlay />}
@@ -850,6 +884,34 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
           ))}
         </div>
       )}
+
+      {/* ── 3D Terrain toggle button ── */}
+      <button
+        type="button"
+        onClick={() => {
+          setTerrain3D((prev) => {
+            const next = !prev;
+            mapRef.current?.getMap()?.flyTo({
+              pitch: next ? 60 : 35,
+              duration: 1000,
+            });
+            return next;
+          });
+        }}
+        className={`absolute bottom-3 right-28 z-30 flex items-center gap-1 px-2 py-1 rounded text-[8px] font-mono tracking-wider transition-all border backdrop-blur-sm ${
+          terrain3D
+            ? "bg-[#00e5ff15] border-[#00e5ff40] text-[#00e5ff]"
+            : "bg-hud-surface/80 border-hud-border text-hud-muted hover:text-hud-accent hover:border-[#00e5ff30]"
+        }`}
+        title="Toggle 3D terrain, sky & buildings"
+      >
+        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z" />
+          <path d="M2 12l10 5 10-5" />
+          <path d="M2 17l10 5 10-5" />
+        </svg>
+        3D
+      </button>
 
       {/* ── Timeline toggle button ── */}
       <button

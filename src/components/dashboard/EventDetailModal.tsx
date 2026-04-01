@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import type { IntelItem, Category } from "@/types/intel";
 import { timeAgo } from "@/lib/utils/date";
 import { addBookmark, isBookmarked } from "@/lib/bookmarks";
+import { useNearbyWebcams } from "@/hooks/useNearbyWebcams";
 
 interface EventDetailModalProps {
   event: IntelItem | null;
@@ -23,6 +24,14 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
       source: event.source,
     });
   }, [event]);
+
+  const { webcams, isLoading: webcamsLoading } = useNearbyWebcams(event?.lat, event?.lng);
+  const [showPlayer, setShowPlayer] = useState<string | null>(null);
+
+  // Reset player when event changes
+  useEffect(() => {
+    setShowPlayer(null);
+  }, [event?.id]);
 
   if (!event) return null;
 
@@ -67,6 +76,75 @@ export function EventDetailModal({ event, onClose }: EventDetailModalProps) {
             <div>COORDS: <span className="text-hud-accent">{event.lat.toFixed(4)}°, {event.lng.toFixed(4)}°</span></div>
           )}
         </div>
+
+        {/* Nearby Webcam */}
+        {event.lat != null && event.lng != null && (
+          <div className="border-t border-hud-border pt-3 mt-3">
+            {webcamsLoading && (
+              <div className="font-mono text-[8px] text-hud-muted tracking-wider animate-pulse">
+                SCANNING NEARBY WEBCAMS...
+              </div>
+            )}
+            {!webcamsLoading && webcams.length > 0 && !showPlayer && (
+              <div>
+                <div className="font-mono text-[8px] text-hud-muted tracking-wider mb-1.5">NEARBY WEBCAM</div>
+                <button
+                  onClick={() => setShowPlayer(webcams[0].playerUrl)}
+                  className="relative w-full rounded overflow-hidden border border-hud-border hover:border-hud-accent/40 transition-colors group"
+                >
+                  {webcams[0].imageUrl ? (
+                    <img
+                      src={webcams[0].imageUrl}
+                      alt={webcams[0].title}
+                      className="w-full h-28 object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                    />
+                  ) : (
+                    <div className="w-full h-28 bg-hud-base flex items-center justify-center">
+                      <span className="text-hud-muted text-[10px] font-mono">NO PREVIEW</span>
+                    </div>
+                  )}
+                  {/* Play button overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-black/50 border border-white/30 flex items-center justify-center group-hover:bg-[#00e5ff]/20 group-hover:border-[#00e5ff]/50 transition-colors">
+                      <svg width={14} height={14} viewBox="0 0 24 24" fill="white">
+                        <polygon points="6,3 20,12 6,21" />
+                      </svg>
+                    </div>
+                  </div>
+                  {/* Bottom info bar */}
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent px-2 py-1.5">
+                    <div className="font-mono text-[8px] text-white truncate">{webcams[0].title}</div>
+                    <div className="font-mono text-[7px] text-white/60">
+                      {webcams[0].location.city}{webcams[0].location.country ? `, ${webcams[0].location.country}` : ""}
+                    </div>
+                  </div>
+                </button>
+              </div>
+            )}
+            {showPlayer && (
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <div className="font-mono text-[8px] text-[#00e5ff] tracking-wider flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                    LIVE WEBCAM
+                  </div>
+                  <button
+                    onClick={() => setShowPlayer(null)}
+                    className="font-mono text-[8px] text-hud-muted hover:text-hud-text"
+                  >
+                    ✕ CLOSE
+                  </button>
+                </div>
+                <iframe
+                  src={showPlayer}
+                  className="w-full h-48 rounded border border-hud-border"
+                  allow="autoplay"
+                  allowFullScreen
+                />
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex gap-2 mt-4 pt-3 border-t border-hud-border">
