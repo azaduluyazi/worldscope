@@ -1,9 +1,6 @@
-import type { Metadata } from "next";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Offline",
-  description: "You are currently offline. Cached data may be available.",
-};
+// Note: metadata export not supported in client components — handled by layout
 
 export default function OfflinePage() {
   return (
