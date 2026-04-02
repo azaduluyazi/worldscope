@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 
 /** Regions for filtering sources by geographic focus */
