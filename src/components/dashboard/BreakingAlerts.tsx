@@ -8,6 +8,18 @@ import type { IntelItem } from "@/types/intel";
 import { timeAgo } from "@/lib/utils/date";
 import { truncate } from "@/lib/utils/sanitize";
 
+/** Play alert sound if user has enabled it */
+function playAlertSound(severity: "critical" | "high") {
+  try {
+    const enabled = typeof window !== "undefined" && localStorage.getItem("ws-sound-alerts") !== "false";
+    if (!enabled) return;
+    const src = severity === "critical" ? "/sounds/alert-critical.wav" : "/sounds/alert-high.wav";
+    const audio = new Audio(src);
+    audio.volume = severity === "critical" ? 0.6 : 0.4;
+    audio.play().catch(() => {/* user hasn't interacted yet — silent fail */});
+  } catch {/* SSR or blocked */}
+}
+
 /** Auto-rotating breaking news with urgency animations and smooth transitions */
 export function BreakingAlerts() {
   const t = useTranslations();
@@ -16,6 +28,13 @@ export function BreakingAlerts() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const prevCountRef = useRef(0);
   const [hasNewAlert, setHasNewAlert] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Load sound preference
+  useEffect(() => {
+    const stored = localStorage.getItem("ws-sound-alerts");
+    if (stored === "false") setSoundEnabled(false);
+  }, []);
 
   // Filter critical and high severity items
   const alerts = useMemo(() => {
@@ -24,9 +43,13 @@ export function BreakingAlerts() {
       .slice(0, 20);
   }, [items]);
 
-  // Detect new alerts arriving — use timeout to avoid setState-in-effect lint
+  // Detect new alerts arriving — play sound + flash
   useEffect(() => {
     if (alerts.length > prevCountRef.current && prevCountRef.current > 0) {
+      // Play sound for the newest alert
+      const newest = alerts[0];
+      if (newest) playAlertSound(newest.severity === "critical" ? "critical" : "high");
+
       const flashTimer = setTimeout(() => {
         setHasNewAlert(true);
         setHighlightIdx(0);
@@ -39,7 +62,7 @@ export function BreakingAlerts() {
       };
     }
     prevCountRef.current = alerts.length;
-  }, [alerts.length]);
+  }, [alerts.length, alerts]);
 
   // Auto-rotate featured alert every 6s with transition
   useEffect(() => {
@@ -80,6 +103,22 @@ export function BreakingAlerts() {
               {t("alerts.new")}
             </span>
           )}
+          <button
+            onClick={() => {
+              const next = !soundEnabled;
+              setSoundEnabled(next);
+              localStorage.setItem("ws-sound-alerts", String(next));
+              if (next) playAlertSound("high"); // preview sound
+            }}
+            className={`font-mono text-[8px] px-1 py-0.5 rounded border transition-colors ${
+              soundEnabled
+                ? "text-hud-accent border-hud-accent/30 bg-hud-accent/10"
+                : "text-hud-muted border-hud-border"
+            }`}
+            title={soundEnabled ? "Disable sound alerts" : "Enable sound alerts"}
+          >
+            {soundEnabled ? "🔊" : "🔇"}
+          </button>
           <span className="font-mono text-[8px] text-hud-muted">
             {t("alerts.active", { count: alerts.length })}
           </span>

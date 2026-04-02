@@ -12,6 +12,16 @@ import { QuickNav } from "./QuickNav";
 import { FullscreenToggle } from "./FullscreenToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { ThemeSelector } from "./ThemeSelector";
+import { useThreatIndex } from "@/hooks/useThreatIndex";
+
+/** Map threat score to DEFCON level (1=max threat, 5=lowest) */
+function scoreToDefcon(score: number): { level: number; color: string; label: string } {
+  if (score >= 80) return { level: 1, color: "#ff4757", label: "DEFCON 1" };
+  if (score >= 60) return { level: 2, color: "#ff7e3e", label: "DEFCON 2" };
+  if (score >= 40) return { level: 3, color: "#ffd000", label: "DEFCON 3" };
+  if (score >= 20) return { level: 4, color: "#00e5ff", label: "DEFCON 4" };
+  return { level: 5, color: "#00ff88", label: "DEFCON 5" };
+}
 
 const VARIANT_ROUTES: { id: VariantId; href: string }[] = [
   { id: "world", href: "/" },
@@ -33,6 +43,8 @@ export function TopBar({ variant = "world" }: TopBarProps) {
   const [time, setTime] = useState(formatUTC());
   const config = VARIANTS[variant];
   const t = useTranslations();
+  const { score } = useThreatIndex();
+  const defcon = scoreToDefcon(score);
 
   useEffect(() => {
     const interval = setInterval(() => setTime(formatUTC()), 1000);
@@ -105,6 +117,19 @@ export function TopBar({ variant = "world" }: TopBarProps) {
         </div>
         {/* Language selector — dropdown for 30 languages */}
         <LanguageSelector />
+        {/* DEFCON Badge */}
+        <span
+          className="hidden sm:inline-flex items-center gap-1 font-mono text-[8px] font-bold tracking-wider px-1.5 py-0.5 rounded border"
+          style={{
+            color: defcon.color,
+            borderColor: `${defcon.color}40`,
+            backgroundColor: `${defcon.color}10`,
+            textShadow: `0 0 8px ${defcon.color}30`,
+          }}
+          title={`Global Threat Level: ${score}/100`}
+        >
+          ◆ {defcon.label} <span className="text-[7px] opacity-70">{score}%</span>
+        </span>
         <span className="text-severity-low animate-blink">● {t("app.live")}</span>
         <span className="text-hud-muted hidden sm:inline">{time}</span>
         <button className="w-5 h-5 md:w-6 md:h-6 border border-hud-border rounded flex items-center justify-center hover:border-hud-accent/30 transition-colors text-xs md:text-base">

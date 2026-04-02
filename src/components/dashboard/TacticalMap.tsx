@@ -248,6 +248,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
   const [viewState, setViewState] = useState(VARIANT_MAP_VIEWS[variant]);
   const [selectedEvent, setSelectedEvent] = useState<IntelItem | null>(null);
   const [mapLoaded, setMapLoaded] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const [ripples, setRipples] = useState<RippleEvent[]>([]);
   const prevItemCountRef = useRef(0);
 
@@ -884,6 +885,36 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
           ))}
         </div>
       )}
+
+      {/* ── Share Link button ── */}
+      <button
+        type="button"
+        onClick={() => {
+          const params = new URLSearchParams({
+            lat: viewState.latitude.toFixed(4),
+            lng: viewState.longitude.toFixed(4),
+            z: viewState.zoom.toFixed(2),
+            p: (viewState.pitch || 0).toFixed(0),
+          });
+          const url = `${window.location.origin}${window.location.pathname}?${params}`;
+          navigator.clipboard.writeText(url).then(() => {
+            setLinkCopied(true);
+            setTimeout(() => setLinkCopied(false), 2000);
+          });
+        }}
+        className={`absolute bottom-3 right-[10.5rem] z-30 flex items-center gap-1 px-2 py-1 rounded text-[8px] font-mono tracking-wider transition-all border backdrop-blur-sm ${
+          linkCopied
+            ? "bg-[#00ff8815] border-[#00ff8840] text-[#00ff88]"
+            : "bg-hud-surface/80 border-hud-border text-hud-muted hover:text-hud-accent hover:border-[#00e5ff30]"
+        }`}
+        title="Copy shareable link with current map position"
+      >
+        <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+        </svg>
+        {linkCopied ? "✓ COPIED" : "LINK"}
+      </button>
 
       {/* ── 3D Terrain toggle button ── */}
       <button

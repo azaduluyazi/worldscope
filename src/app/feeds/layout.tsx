@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Feed Health Monitor | WorldScope",
-  description:
-    "Real-time monitoring of 500+ intelligence data feeds across 10 categories",
+  title: "Feed Sources — WorldScope",
+  description: "Browse and discover all intelligence feed sources powering WorldScope real-time data.",
 };
 
 export default function FeedsLayout({
