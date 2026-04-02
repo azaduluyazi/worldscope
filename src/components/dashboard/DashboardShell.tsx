@@ -54,6 +54,14 @@ const GeopoliticalAnalysis = dynamic(
   () => import("./GeopoliticalAnalysis").then((m) => ({ default: m.GeopoliticalAnalysis })),
   { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
 );
+const EscalationMonitor = dynamic(
+  () => import("./EscalationMonitor").then((m) => ({ default: m.EscalationMonitor })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
+const AIStrategicBrief = dynamic(
+  () => import("./AIStrategicBrief").then((m) => ({ default: m.AIStrategicBrief })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
 /** Theme-specific banners — only loaded when active theme needs them */
 const DefconBar = dynamic(() => import("./DefconBar").then((m) => ({ default: m.DefconBar })), { ssr: false });
 const NeonBreakingBanner = dynamic(() => import("./NeonBreakingBanner").then((m) => ({ default: m.NeonBreakingBanner })), { ssr: false });
@@ -101,7 +109,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [mapMode, setMapMode] = useState<MapMode>("3d");
-  const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics">("intel");
+  const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];
 
@@ -350,6 +358,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                 { id: "predictions" as const, label: "PREDICT", icon: "📊" },
                 { id: "economics" as const, label: "ECON", icon: "💹" },
                 { id: "risk" as const, label: "RISK", icon: "⚠️" },
+                { id: "escalation" as const, label: "ESCAL", icon: "🔺" },
                 { id: "equity" as const, label: "EQUITY", icon: "📈" },
                 { id: "geopolitics" as const, label: "GEO", icon: "🌐" },
               ]).map((tab) => (
@@ -398,6 +407,14 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
               {rightTab === "equity" && (
                 <ErrorBoundary section="equity">
                   <EquityResearchPanel />
+                </ErrorBoundary>
+              )}
+              {rightTab === "escalation" && (
+                <ErrorBoundary section="escalation">
+                  <div className="h-full overflow-y-auto space-y-2 p-1">
+                    <EscalationMonitor />
+                    <AIStrategicBrief />
+                  </div>
                 </ErrorBoundary>
               )}
               {rightTab === "geopolitics" && (
