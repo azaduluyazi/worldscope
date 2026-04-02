@@ -28,7 +28,7 @@ export function AffiliateBanner({ className = "" }: AffiliateBannerProps) {
   if (!banner) return null;
 
   // Check consent
-  if (typeof window !== "undefined" && !window.localStorage.getItem("ws-ad-consent")) {
+  if (typeof window !== "undefined" && window.localStorage.getItem("ws-ad-consent") !== "granted") {
     return null;
   }
 

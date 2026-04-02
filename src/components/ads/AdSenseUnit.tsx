@@ -20,8 +20,8 @@ export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUn
   useEffect(() => {
     if (!ADSENSE_PUB_ID || pushed.current) return;
 
-    // Check consent
-    if (typeof window !== "undefined" && !window.localStorage.getItem("ws-ad-consent")) {
+    // Check consent — only show ads if user explicitly granted consent
+    if (typeof window !== "undefined" && window.localStorage.getItem("ws-ad-consent") !== "granted") {
       return;
     }
 

@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { ADSENSE_PUB_ID } from "@/config/ads";
+import { AdConsentBanner } from "@/components/ads";
 import "./globals.css";
 
 /** Self-hosted fonts via next/font — eliminates render-blocking external requests */
@@ -191,6 +192,7 @@ export default async function RootLayout({
               {children}
             </main>
             <ScrollToTop />
+            <AdConsentBanner />
             <div className="scanlines" aria-hidden="true" />
           </ThemeProvider>
         </NextIntlClientProvider>
