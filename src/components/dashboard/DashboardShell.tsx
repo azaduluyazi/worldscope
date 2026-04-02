@@ -66,6 +66,7 @@ const AIStrategicBrief = dynamic(
 const DefconBar = dynamic(() => import("./DefconBar").then((m) => ({ default: m.DefconBar })), { ssr: false });
 const NeonBreakingBanner = dynamic(() => import("./NeonBreakingBanner").then((m) => ({ default: m.NeonBreakingBanner })), { ssr: false });
 const WarzoneBreakingAlert = dynamic(() => import("./WarzoneBreakingAlert").then((m) => ({ default: m.WarzoneBreakingAlert })), { ssr: false });
+import { SourceSelector } from "./SourceSelector";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
@@ -112,6 +113,30 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];
+
+  // Source filtering state (persisted in localStorage)
+  const [excludedSources, setExcludedSources] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    try {
+      const stored = localStorage.getItem("ws-excluded-sources");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
+
+  const toggleSource = useCallback((source: string) => {
+    setExcludedSources((prev) => {
+      const next = new Set(prev);
+      if (next.has(source)) next.delete(source);
+      else next.add(source);
+      localStorage.setItem("ws-excluded-sources", JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+
+  const clearSourceFilters = useCallback(() => {
+    setExcludedSources(new Set());
+    localStorage.removeItem("ws-excluded-sources");
+  }, []);
 
   // Persist filter changes to localStorage
   useEffect(() => {
@@ -255,7 +280,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                 {rightTab === "intel" && (
                   <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
                     <Suspense fallback={<IntelFeedSkeleton />}>
-                      <IntelFeed variant={variant} />
+                      <IntelFeed variant={variant} excludedSources={excludedSources} />
                     </Suspense>
                   </ErrorBoundary>
                 )}
@@ -381,8 +406,15 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             <div className="flex-1 min-h-0 overflow-y-auto">
               {rightTab === "intel" && (
                 <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
+                  <div className="px-1 pt-1 pb-0.5">
+                    <SourceSelector
+                      excludedSources={excludedSources}
+                      onToggleSource={toggleSource}
+                      onClearFilters={clearSourceFilters}
+                    />
+                  </div>
                   <Suspense fallback={<IntelFeedSkeleton />}>
-                    <IntelFeed variant={variant} />
+                    <IntelFeed variant={variant} excludedSources={excludedSources} />
                   </Suspense>
                 </ErrorBoundary>
               )}

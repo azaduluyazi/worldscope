@@ -21,9 +21,10 @@ const PAGE_SIZE = 30;
 
 interface IntelFeedProps {
   variant?: VariantId;
+  excludedSources?: Set<string>;
 }
 
-export function IntelFeed({ variant = "world" }: IntelFeedProps) {
+export function IntelFeed({ variant = "world", excludedSources }: IntelFeedProps) {
   const t = useTranslations();
   const { items: allItems, isLoading } = useIntelFeed();
   const { getRankingWeight } = useFeedRanking();
@@ -33,13 +34,18 @@ export function IntelFeed({ variant = "world" }: IntelFeedProps) {
     brief: t("intel.aiBrief"),
   };
 
-  // Filter items by variant categories (critical items also shown in BreakingAlerts but kept here too)
+  // Filter items by variant categories + excluded sources
   const { items, total } = useMemo(() => {
-    if (variant === "world") return { items: allItems, total: allItems.length };
-    const { all } = getVariantCategories(variant);
-    const filtered = allItems.filter((item) => all.has(item.category as never));
+    let filtered = allItems;
+    if (variant !== "world") {
+      const { all } = getVariantCategories(variant);
+      filtered = filtered.filter((item) => all.has(item.category as never));
+    }
+    if (excludedSources && excludedSources.size > 0) {
+      filtered = filtered.filter((item) => !excludedSources.has(item.source));
+    }
     return { items: filtered, total: filtered.length };
-  }, [allItems, variant]);
+  }, [allItems, variant, excludedSources]);
 
   // Apply personalized ranking weights to sort order
   const rankedItems = useMemo(() => {
