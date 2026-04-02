@@ -16,6 +16,7 @@ import { ShareButtons } from "@/components/shared/ShareButtons";
 import { CountryEconomics } from "./CountryEconomics";
 import { CountryConflictHistory } from "./CountryConflictHistory";
 import { CountrySanctions } from "./CountrySanctions";
+import { CountryRiskScore } from "./CountryRiskScore";
 import Link from "next/link";
 
 /** Lazy-load Mapbox mini-map — heavy dependency */
@@ -112,6 +113,9 @@ export function CountryDashboard({ country }: CountryDashboardProps) {
         <div className="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* ── Left Column: Map + Filters + Stats ── */}
           <div className="lg:col-span-4 space-y-4">
+            {/* Instability Score */}
+            <CountryRiskScore countryCode={country.code} />
+
             {/* Mini Map */}
             <div className="h-[280px] lg:h-[320px]">
               <CountryMiniMap country={country} items={allItems} />
