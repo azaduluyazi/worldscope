@@ -28,13 +28,10 @@ export function BreakingAlerts() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const prevCountRef = useRef(0);
   const [hasNewAlert, setHasNewAlert] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(true);
-
-  // Load sound preference
-  useEffect(() => {
-    const stored = localStorage.getItem("ws-sound-alerts");
-    if (stored === "false") setSoundEnabled(false);
-  }, []);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return localStorage.getItem("ws-sound-alerts") !== "false";
+  });
 
   // Filter critical and high severity items
   const alerts = useMemo(() => {
