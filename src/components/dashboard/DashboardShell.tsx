@@ -67,6 +67,7 @@ const DefconBar = dynamic(() => import("./DefconBar").then((m) => ({ default: m.
 const NeonBreakingBanner = dynamic(() => import("./NeonBreakingBanner").then((m) => ({ default: m.NeonBreakingBanner })), { ssr: false });
 const WarzoneBreakingAlert = dynamic(() => import("./WarzoneBreakingAlert").then((m) => ({ default: m.WarzoneBreakingAlert })), { ssr: false });
 import { SourceSelector } from "./SourceSelector";
+import { SortablePanels } from "./SortablePanels";
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
@@ -357,21 +358,31 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </div>
           </div>
 
-          {/* ── Column 2: Live TV + Breaking ── */}
-          <div className="flex-[3.5] flex flex-col gap-1 min-w-0 col-stagger-2">
-            {/* Live Broadcasts */}
-            <div className="flex-[5] min-h-0">
-              <ErrorBoundary section="broadcasts">
-                <LiveBroadcasts />
-              </ErrorBoundary>
-            </div>
-
-            {/* Breaking Alerts */}
-            <div className="flex-[5] min-h-0">
-              <ErrorBoundary section="alerts">
-                <BreakingAlerts />
-              </ErrorBoundary>
-            </div>
+          {/* ── Column 2: Live TV + Breaking (Drag & Drop sortable) ── */}
+          <div className="flex-[3.5] min-w-0 col-stagger-2">
+            <SortablePanels
+              className="h-full"
+              panels={[
+                {
+                  id: "broadcasts",
+                  label: "LIVE TV",
+                  node: (
+                    <ErrorBoundary section="broadcasts">
+                      <LiveBroadcasts />
+                    </ErrorBoundary>
+                  ),
+                },
+                {
+                  id: "alerts",
+                  label: "ALERTS",
+                  node: (
+                    <ErrorBoundary section="alerts">
+                      <BreakingAlerts />
+                    </ErrorBoundary>
+                  ),
+                },
+              ]}
+            />
           </div>
 
           {/* ── Column 3: Tabbed Panel (Intel / Predictions / Economics) ── */}
