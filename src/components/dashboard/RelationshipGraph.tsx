@@ -1,16 +1,15 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef, type MouseEvent as ReactMouseEvent } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
+import * as d3 from "d3";
 
 // ── Types ──────────────────────────────────────────────────────────
 
-interface GraphNode {
+interface GraphNode extends d3.SimulationNodeDatum {
   id: string;
   label: string;
   region: string;
   size: number;
-  x: number;
-  y: number;
 }
 
 interface GraphEdge {
@@ -20,7 +19,7 @@ interface GraphEdge {
   type: "conflict" | "trade" | "alliance" | "diplomatic";
 }
 
-interface RelationshipGraph {
+interface RelationshipGraphData {
   nodes: GraphNode[];
   edges: GraphEdge[];
 }
@@ -69,19 +68,19 @@ const COUNTRY_FLAGS: Record<string, string> = {
   NZ: "\uD83C\uDDF3\uD83C\uDDFF",
 };
 
-const SVG_W = 800;
-const SVG_H = 600;
+const SVG_W = 900;
+const SVG_H = 650;
 
 // ── Component ──────────────────────────────────────────────────────
 
 export default function RelationshipGraph() {
-  const [graph, setGraph] = useState<RelationshipGraph | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const simulationRef = useRef<d3.Simulation<GraphNode, d3.SimulationLinkDatum<GraphNode>> | null>(null);
+  const [graph, setGraph] = useState<RelationshipGraphData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [zoom, setZoom] = useState(1);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const [tooltip, setTooltip] = useState<{ x: number; y: number; text: string } | null>(null);
-  const [dragNode, setDragNode] = useState<string | null>(null);
-  const svgRef = useRef<SVGSVGElement>(null);
 
   // Fetch graph data
   useEffect(() => {
@@ -90,7 +89,7 @@ export default function RelationshipGraph() {
       try {
         const res = await fetch("/api/geo/relationships");
         if (!res.ok) throw new Error("Failed to fetch");
-        const data: RelationshipGraph = await res.json();
+        const data: RelationshipGraphData = await res.json();
         if (!cancelled) {
           setGraph(data);
           setLoading(false);
@@ -105,91 +104,207 @@ export default function RelationshipGraph() {
     return () => { cancelled = true; };
   }, []);
 
-  // Get SVG point from mouse event
-  const getSVGPoint = useCallback((e: ReactMouseEvent) => {
-    const svg = svgRef.current;
-    if (!svg) return { x: 0, y: 0 };
-    const rect = svg.getBoundingClientRect();
-    return {
-      x: ((e.clientX - rect.left) / rect.width) * SVG_W / zoom,
-      y: ((e.clientY - rect.top) / rect.height) * SVG_H / zoom,
-    };
-  }, [zoom]);
+  // Get connected node IDs for highlight
+  const getConnectedIds = useCallback((nodeId: string) => {
+    if (!graph) return new Set<string>();
+    const ids = new Set<string>([nodeId]);
+    for (const e of graph.edges) {
+      if (e.source === nodeId || (e.source as unknown as GraphNode)?.id === nodeId) {
+        const tid = typeof e.target === "string" ? e.target : (e.target as unknown as GraphNode).id;
+        ids.add(tid);
+      }
+      if (e.target === nodeId || (e.target as unknown as GraphNode)?.id === nodeId) {
+        const sid = typeof e.source === "string" ? e.source : (e.source as unknown as GraphNode).id;
+        ids.add(sid);
+      }
+    }
+    return ids;
+  }, [graph]);
 
-  // Drag handlers
-  const handleMouseDown = useCallback((nodeId: string) => {
-    setDragNode(nodeId);
-  }, []);
+  // D3 Force Simulation
+  useEffect(() => {
+    if (!graph || !svgRef.current || graph.nodes.length === 0) return;
 
-  const handleMouseMove = useCallback((e: ReactMouseEvent) => {
-    if (!dragNode || !graph) return;
-    const pt = getSVGPoint(e);
-    setGraph((prev) => {
-      if (!prev) return prev;
-      return {
-        ...prev,
-        nodes: prev.nodes.map((n) =>
-          n.id === dragNode
-            ? { ...n, x: Math.max(20, Math.min(SVG_W - 20, pt.x)), y: Math.max(20, Math.min(SVG_H - 20, pt.y)) }
-            : n
-        ),
-      };
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
+
+    const maxSize = Math.max(1, ...graph.nodes.map((n) => n.size));
+    const maxWeight = Math.max(1, ...graph.edges.map((e) => e.weight));
+    const getRadius = (size: number) => 10 + (size / maxSize) * 18;
+
+    // Background
+    svg.append("rect").attr("width", SVG_W).attr("height", SVG_H).attr("fill", "#050a12");
+
+    // Grid
+    const gridG = svg.append("g").attr("class", "grid");
+    for (let i = 1; i < 10; i++) {
+      gridG.append("line").attr("x1", i * 90).attr("y1", 0).attr("x2", i * 90).attr("y2", SVG_H).attr("stroke", "#0a1628").attr("stroke-width", 0.5);
+    }
+    for (let i = 1; i < 8; i++) {
+      gridG.append("line").attr("x1", 0).attr("y1", i * 81).attr("x2", SVG_W).attr("y2", i * 81).attr("stroke", "#0a1628").attr("stroke-width", 0.5);
+    }
+
+    // Defs for glow filter
+    const defs = svg.append("defs");
+    const filter = defs.append("filter").attr("id", "glow");
+    filter.append("feGaussianBlur").attr("stdDeviation", "3").attr("result", "coloredBlur");
+    const feMerge = filter.append("feMerge");
+    feMerge.append("feMergeNode").attr("in", "coloredBlur");
+    feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
+    // Container for zoom
+    const container = svg.append("g");
+
+    // Zoom behavior
+    const zoomBehavior = d3.zoom<SVGSVGElement, unknown>()
+      .scaleExtent([0.4, 3])
+      .on("zoom", (event) => {
+        container.attr("transform", event.transform);
+      });
+    svg.call(zoomBehavior);
+
+    // Create links
+    const linkG = container.append("g").attr("class", "links");
+    const links = linkG.selectAll("line")
+      .data(graph.edges)
+      .join("line")
+      .attr("stroke", (d) => EDGE_COLORS[d.type] || "#ffffff")
+      .attr("stroke-width", (d) => 1 + (d.weight / maxWeight) * 2.5)
+      .attr("stroke-opacity", (d) => 0.15 + (d.weight / maxWeight) * 0.5)
+      .attr("stroke-dasharray", (d) => d.type === "conflict" ? "6,3" : d.type === "trade" ? "none" : "3,3");
+
+    // Create node groups
+    const nodeG = container.append("g").attr("class", "nodes");
+    const nodes = nodeG.selectAll("g")
+      .data(graph.nodes)
+      .join("g")
+      .attr("cursor", "grab")
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      .call(d3.drag<any, GraphNode>()
+        .on("start", (event, d) => {
+          if (!event.active) simulation.alphaTarget(0.3).restart();
+          d.fx = d.x;
+          d.fy = d.y;
+        })
+        .on("drag", (event, d) => {
+          d.fx = event.x;
+          d.fy = event.y;
+        })
+        .on("end", (event, d) => {
+          if (!event.active) simulation.alphaTarget(0);
+          d.fx = null;
+          d.fy = null;
+        })
+      );
+
+    // Node glow circle
+    nodes.append("circle")
+      .attr("r", (d) => getRadius(d.size) + 6)
+      .attr("fill", (d) => REGION_COLORS[d.region] || "#ffffff")
+      .attr("opacity", 0.12)
+      .attr("filter", "url(#glow)");
+
+    // Node main circle
+    nodes.append("circle")
+      .attr("r", (d) => getRadius(d.size))
+      .attr("fill", "#0a1628")
+      .attr("stroke", (d) => REGION_COLORS[d.region] || "#ffffff")
+      .attr("stroke-width", 2);
+
+    // Node label
+    nodes.append("text")
+      .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "central")
+      .attr("fill", (d) => REGION_COLORS[d.region] || "#ffffff")
+      .attr("font-size", (d) => getRadius(d.size) > 16 ? 11 : 9)
+      .attr("font-family", "var(--font-mono), monospace")
+      .attr("font-weight", 600)
+      .attr("pointer-events", "none")
+      .text((d) => d.id);
+
+    // Hover handlers
+    nodes.on("mouseenter", (event, d) => {
+      setHoveredNode(d.id);
+      const rect = svgRef.current?.getBoundingClientRect();
+      if (rect) {
+        setTooltip({
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top - 36,
+          text: `${COUNTRY_FLAGS[d.id] || ""} ${d.label} — ${d.size} events`,
+        });
+      }
+    }).on("mouseleave", () => {
+      setHoveredNode(null);
+      setTooltip(null);
     });
-  }, [dragNode, graph, getSVGPoint]);
 
-  const handleMouseUp = useCallback(() => {
-    setDragNode(null);
-  }, []);
+    // Force simulation
+    const simulation = d3.forceSimulation(graph.nodes)
+      .force("link", d3.forceLink(graph.edges)
+        .id((d) => (d as GraphNode).id)
+        .distance((d) => 80 - ((d as GraphEdge).weight / maxWeight) * 30)
+        .strength((d) => 0.3 + ((d as GraphEdge).weight / maxWeight) * 0.4)
+      )
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("center", d3.forceCenter(SVG_W / 2, SVG_H / 2))
+      .force("collision", d3.forceCollide().radius((d) => getRadius((d as GraphNode).size) + 8))
+      .force("x", d3.forceX(SVG_W / 2).strength(0.05))
+      .force("y", d3.forceY(SVG_H / 2).strength(0.05))
+      .alpha(1)
+      .alphaDecay(0.02);
 
-  // Zoom handlers
-  const zoomIn = useCallback(() => setZoom((z) => Math.min(z * 1.25, 3)), []);
-  const zoomOut = useCallback(() => setZoom((z) => Math.max(z / 1.25, 0.5)), []);
+    simulation.on("tick", () => {
+      links
+        .attr("x1", (d) => ((d.source as unknown as GraphNode).x ?? 0))
+        .attr("y1", (d) => ((d.source as unknown as GraphNode).y ?? 0))
+        .attr("x2", (d) => ((d.target as unknown as GraphNode).x ?? 0))
+        .attr("y2", (d) => ((d.target as unknown as GraphNode).y ?? 0));
 
-  // Node lookup for edges
-  const nodeMap = new Map<string, GraphNode>();
-  if (graph) {
-    for (const n of graph.nodes) nodeMap.set(n.id, n);
-  }
+      nodes.attr("transform", (d) => `translate(${d.x ?? 0},${d.y ?? 0})`);
+    });
 
-  // Max edge weight for opacity scaling
-  const maxWeight = graph
-    ? Math.max(1, ...graph.edges.map((e) => e.weight))
-    : 1;
+    simulationRef.current = simulation;
 
-  // Node radius scaling
-  const maxSize = graph
-    ? Math.max(1, ...graph.nodes.map((n) => n.size))
-    : 1;
+    return () => {
+      simulation.stop();
+    };
+  }, [graph]);
 
-  const getNodeRadius = (size: number) => 8 + (size / maxSize) * 16;
+  // Highlight connected nodes on hover
+  useEffect(() => {
+    if (!svgRef.current || !graph) return;
+    const svg = d3.select(svgRef.current);
 
-  // ── Render ────────────────────────────────────────────────────────
+    if (hoveredNode) {
+      const connected = getConnectedIds(hoveredNode);
+      svg.selectAll(".nodes g").attr("opacity", (d) =>
+        connected.has((d as GraphNode).id) ? 1 : 0.15
+      );
+      svg.selectAll(".links line").attr("opacity", (d) => {
+        const edge = d as GraphEdge;
+        const sid = typeof edge.source === "string" ? edge.source : (edge.source as unknown as GraphNode).id;
+        const tid = typeof edge.target === "string" ? edge.target : (edge.target as unknown as GraphNode).id;
+        return (sid === hoveredNode || tid === hoveredNode) ? 0.9 : 0.05;
+      });
+    } else {
+      svg.selectAll(".nodes g").attr("opacity", 1);
+      svg.selectAll(".links line").attr("opacity", null);
+    }
+  }, [hoveredNode, graph, getConnectedIds]);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px] bg-hud-base/80 rounded-lg border border-hud-border">
-        <div className="text-hud-muted font-mono text-xs animate-pulse">
-          Loading relationship graph...
-        </div>
+        <div className="text-hud-muted font-mono text-xs animate-pulse">Loading relationship graph...</div>
       </div>
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-full min-h-[400px] bg-hud-base/80 rounded-lg border border-hud-border">
-        <div className="text-red-400 font-mono text-xs">
-          Error: {error}
-        </div>
-      </div>
-    );
-  }
-
-  if (!graph || graph.nodes.length === 0) {
+  if (error || !graph || graph.nodes.length === 0) {
     return (
       <div className="flex items-center justify-center h-full min-h-[400px] bg-hud-base/80 rounded-lg border border-hud-border">
         <div className="text-hud-muted font-mono text-xs">
-          No relationship data available. Events need country codes to build the graph.
+          {error ? `Error: ${error}` : "No relationship data available."}
         </div>
       </div>
     );
@@ -207,146 +322,18 @@ export default function RelationshipGraph() {
             {graph.nodes.length} nations / {graph.edges.length} links
           </span>
         </div>
-        {/* Zoom controls */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={zoomOut}
-            className="w-6 h-6 flex items-center justify-center rounded bg-hud-base/80 border border-hud-border text-hud-muted hover:text-hud-text hover:border-hud-accent transition-colors text-xs font-mono"
-            aria-label="Zoom out"
-          >
-            -
-          </button>
-          <span className="text-[10px] font-mono text-hud-muted w-10 text-center">
-            {Math.round(zoom * 100)}%
-          </span>
-          <button
-            onClick={zoomIn}
-            className="w-6 h-6 flex items-center justify-center rounded bg-hud-base/80 border border-hud-border text-hud-muted hover:text-hud-text hover:border-hud-accent transition-colors text-xs font-mono"
-            aria-label="Zoom in"
-          >
-            +
-          </button>
-        </div>
+        <span className="text-[9px] font-mono text-hud-muted">Scroll to zoom / Drag nodes</span>
       </div>
 
-      {/* SVG Graph */}
+      {/* D3 SVG */}
       <svg
         ref={svgRef}
         viewBox={`0 0 ${SVG_W} ${SVG_H}`}
         className="w-full"
-        style={{ aspectRatio: `${SVG_W}/${SVG_H}`, cursor: dragNode ? "grabbing" : "default" }}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        {/* Background */}
-        <rect width={SVG_W} height={SVG_H} fill="#050a12" />
+        style={{ aspectRatio: `${SVG_W}/${SVG_H}` }}
+      />
 
-        {/* Grid lines */}
-        {Array.from({ length: 9 }, (_, i) => (
-          <line
-            key={`vg-${i}`}
-            x1={(i + 1) * 80}
-            y1={0}
-            x2={(i + 1) * 80}
-            y2={SVG_H}
-            stroke="#0a1628"
-            strokeWidth={0.5}
-          />
-        ))}
-        {Array.from({ length: 7 }, (_, i) => (
-          <line
-            key={`hg-${i}`}
-            x1={0}
-            y1={(i + 1) * 75}
-            x2={SVG_W}
-            y2={(i + 1) * 75}
-            stroke="#0a1628"
-            strokeWidth={0.5}
-          />
-        ))}
-
-        {/* Zoom transform group */}
-        <g transform={`scale(${zoom})`}>
-          {/* Edges */}
-          {graph.edges.map((edge) => {
-            const src = nodeMap.get(edge.source);
-            const tgt = nodeMap.get(edge.target);
-            if (!src || !tgt) return null;
-            const opacity = 0.2 + (edge.weight / maxWeight) * 0.6;
-            return (
-              <line
-                key={`${edge.source}-${edge.target}`}
-                x1={src.x}
-                y1={src.y}
-                x2={tgt.x}
-                y2={tgt.y}
-                stroke={EDGE_COLORS[edge.type]}
-                strokeWidth={1 + (edge.weight / maxWeight) * 2}
-                strokeOpacity={opacity}
-              />
-            );
-          })}
-
-          {/* Nodes */}
-          {graph.nodes.map((node) => {
-            const r = getNodeRadius(node.size);
-            const color = REGION_COLORS[node.region] || "#ffffff";
-            return (
-              <g
-                key={node.id}
-                style={{ cursor: "grab" }}
-                onMouseDown={() => handleMouseDown(node.id)}
-                onMouseEnter={(e) => {
-                  const rect = svgRef.current?.getBoundingClientRect();
-                  if (rect) {
-                    setTooltip({
-                      x: e.clientX - rect.left,
-                      y: e.clientY - rect.top - 30,
-                      text: `${COUNTRY_FLAGS[node.id] || ""} ${node.label} — ${node.size} events`,
-                    });
-                  }
-                }}
-                onMouseLeave={() => setTooltip(null)}
-              >
-                {/* Glow */}
-                <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r={r + 4}
-                  fill={color}
-                  opacity={0.15}
-                />
-                {/* Node circle */}
-                <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r={r}
-                  fill="#0a1628"
-                  stroke={color}
-                  strokeWidth={1.5}
-                />
-                {/* Country code label */}
-                <text
-                  x={node.x}
-                  y={node.y + 1}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fill={color}
-                  fontSize={r > 14 ? 10 : 8}
-                  fontFamily="var(--font-mono), monospace"
-                  fontWeight={500}
-                  style={{ pointerEvents: "none", userSelect: "none" }}
-                >
-                  {node.id}
-                </text>
-              </g>
-            );
-          })}
-        </g>
-      </svg>
-
-      {/* Tooltip overlay */}
+      {/* Tooltip */}
       {tooltip && (
         <div
           className="absolute pointer-events-none bg-black/90 border border-hud-border rounded px-2 py-1 text-[10px] font-mono text-hud-text whitespace-nowrap z-10"
@@ -356,11 +343,9 @@ export default function RelationshipGraph() {
         </div>
       )}
 
-      {/* Legend */}
+      {/* Edge Legend */}
       <div className="absolute bottom-2 left-2 flex flex-col gap-1 bg-black/70 rounded px-2 py-1.5 border border-hud-border/50">
-        <span className="text-[8px] font-mono text-hud-muted uppercase tracking-wider mb-0.5">
-          Edge Types
-        </span>
+        <span className="text-[8px] font-mono text-hud-muted uppercase tracking-wider mb-0.5">Edge Types</span>
         {Object.entries(EDGE_COLORS).map(([type, color]) => (
           <div key={type} className="flex items-center gap-1.5">
             <span className="w-3 h-0.5 inline-block rounded" style={{ backgroundColor: color }} />
@@ -369,17 +354,13 @@ export default function RelationshipGraph() {
         ))}
       </div>
 
-      {/* Region legend */}
+      {/* Region Legend */}
       <div className="absolute bottom-2 right-2 flex flex-col gap-1 bg-black/70 rounded px-2 py-1.5 border border-hud-border/50">
-        <span className="text-[8px] font-mono text-hud-muted uppercase tracking-wider mb-0.5">
-          Regions
-        </span>
+        <span className="text-[8px] font-mono text-hud-muted uppercase tracking-wider mb-0.5">Regions</span>
         {Object.entries(REGION_COLORS).map(([region, color]) => (
           <div key={region} className="flex items-center gap-1.5">
             <span className="w-2 h-2 inline-block rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-[8px] font-mono text-hud-muted capitalize">
-              {region.replace("_", " ")}
-            </span>
+            <span className="text-[8px] font-mono text-hud-muted capitalize">{region.replace("_", " ")}</span>
           </div>
         ))}
       </div>

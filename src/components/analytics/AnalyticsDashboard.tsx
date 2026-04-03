@@ -11,6 +11,9 @@ import { TrendIndicators } from "./TrendIndicators";
 import { GeoHotspots } from "./GeoHotspots";
 import { ExportPanel } from "./ExportPanel";
 import { InsightsPanel } from "./InsightsPanel";
+import { SourceDistributionPie } from "./SourceDistributionPie";
+import { SeverityRadar } from "./SeverityRadar";
+import { ActivityHeatmap } from "./ActivityHeatmap";
 import Link from "next/link";
 
 export function AnalyticsDashboard() {
@@ -68,6 +71,11 @@ export function AnalyticsDashboard() {
               <CategoryBreakdownChart data={analytics.categoryCounts} />
               <TopSourcesChart data={analytics.topSources} />
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <SourceDistributionPie data={analytics.categoryCounts} />
+              <SeverityRadar data={analytics.categoryCounts} />
+            </div>
+            <ActivityHeatmap items={analytics.items} />
           </div>
 
           {/* Right column: Trends + Insights + Geo + Export */}
