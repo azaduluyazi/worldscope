@@ -4,7 +4,7 @@
  * Keys are stored in localStorage only (never sent to our server).
  */
 
-export type AIProvider = "groq" | "openai" | "anthropic";
+export type AIProvider = "groq" | "openai" | "anthropic" | "ollama";
 
 export interface BYOKConfig {
   provider: AIProvider;
@@ -29,6 +29,11 @@ export const PROVIDER_MODELS: Record<AIProvider, { name: string; defaultModel: s
     name: "Anthropic",
     defaultModel: "claude-sonnet-4-20250514",
     models: ["claude-sonnet-4-20250514", "claude-haiku-4-5-20251001"],
+  },
+  ollama: {
+    name: "Ollama (Local)",
+    defaultModel: "llama3.2",
+    models: ["llama3.2", "llama3.1", "mistral", "gemma2", "qwen2.5", "phi3", "codellama"],
   },
 };
 
@@ -130,6 +135,25 @@ export async function generateWithBYOK(
       });
       const data = await res.json();
       return data.content?.[0]?.text || "No response generated.";
+    }
+
+    case "ollama": {
+      // Ollama runs locally — no API key needed, uses localhost by default
+      const ollamaUrl = config.apiKey || "http://localhost:11434";
+      const res = await fetch(`${ollamaUrl}/api/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model,
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: userPrompt },
+          ],
+          stream: false,
+        }),
+      });
+      const data = await res.json();
+      return data.message?.content || "No response generated.";
     }
 
     default:
