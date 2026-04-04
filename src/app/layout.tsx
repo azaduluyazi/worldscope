@@ -117,20 +117,43 @@ export const metadata: Metadata = {
   },
 };
 
-/** WebSite JSON-LD for Google rich results */
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  name: "WorldScope",
-  url: siteUrl,
-  description:
-    "Real-time global intelligence dashboard monitoring conflicts, cybersecurity, finance, and geopolitics.",
-  potentialAction: {
-    "@type": "SearchAction",
-    target: `${siteUrl}/country/{search_term_string}`,
-    "query-input": "required name=search_term_string",
+/** WebSite + Organization JSON-LD for Google rich results */
+const jsonLd = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "WorldScope",
+    url: siteUrl,
+    description:
+      "Real-time global intelligence dashboard monitoring conflicts, cybersecurity, finance, and geopolitics across 195 countries with 570+ verified sources.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${siteUrl}/country/{search_term_string}`,
+      "query-input": "required name=search_term_string",
+    },
+    inLanguage: ["en", "tr", "ar", "zh", "ja", "ko", "de", "fr", "es", "pt", "ru"],
   },
-};
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "WorldScope",
+    url: siteUrl,
+    logo: `${siteUrl}/icons/icon-512.svg`,
+    description:
+      "Global intelligence monitoring platform providing real-time event tracking, threat analysis, and geopolitical risk assessment.",
+    sameAs: [
+      "https://x.com/Troiamediacom",
+      "https://troiamedia.bsky.social",
+      "https://mastodon.social/@troiamedia",
+      "https://github.com/AzadUluyazi",
+    ],
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer service",
+      url: `${siteUrl}/contact`,
+    },
+  },
+];
 
 export default async function RootLayout({
   children,
