@@ -14,6 +14,9 @@ export const metadata: Metadata = {
       "Real-time global news monitoring platform. 2000+ sources, 30 languages, free to use.",
     type: "website",
   },
+  alternates: {
+    canonical: "/about",
+  },
 };
 
 export default function AboutPage() {

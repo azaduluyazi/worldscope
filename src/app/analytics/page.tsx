@@ -11,6 +11,9 @@ export const metadata: Metadata = {
     description: "Advanced event analytics and trend monitoring dashboard.",
     type: "website",
   },
+  alternates: {
+    canonical: "/analytics",
+  },
 };
 
 export default function AnalyticsPage() {

@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     description:
       "Real-time AI, cybersecurity, semiconductors, space, and technology monitoring dashboard.",
   },
+  alternates: {
+    canonical: "/tech",
+  },
 };
 
 export default function TechLayout({

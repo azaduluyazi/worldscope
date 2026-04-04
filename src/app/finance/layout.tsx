@@ -17,6 +17,9 @@ export const metadata: Metadata = {
     description:
       "Real-time markets, crypto, commodities, central banks, and economic monitoring dashboard.",
   },
+  alternates: {
+    canonical: "/finance",
+  },
 };
 
 export default function FinanceLayout({
