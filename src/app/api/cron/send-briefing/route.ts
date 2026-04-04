@@ -2,12 +2,17 @@ import { NextResponse } from "next/server";
 import { fetchPersistedEvents } from "@/lib/db/events";
 import { detectAnomalies } from "@/lib/utils/anomaly-detection";
 import { buildDailyBriefingEmail } from "@/lib/mail/templates";
+import type { BriefingData, Earthquake, WeatherAlert } from "@/lib/mail/templates";
 import {
   sendMail,
   getActiveSubscribersWithPrefs,
   type DigestPreferences,
 } from "@/lib/mail/sender";
+import { seedRead } from "@/lib/seed/seed-utils";
+import { redis } from "@/lib/cache/redis";
 import type { IntelItem } from "@/types/intel";
+import type { MarketQuote } from "@/types/market";
+import type { ConvergenceResponse } from "@/lib/convergence/types";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -20,8 +25,43 @@ function isAuthorized(request: Request): boolean {
 }
 
 /**
+ * Fetch all enrichment data from Redis seed cache.
+ * Each source is fetched independently — failures don't block others.
+ */
+async function fetchEnrichmentData() {
+  const [marketQuotes, cryptoQuotes, fearGreed, earthquakes, weather, convergenceData, radiationReadings] = await Promise.allSettled([
+    seedRead<MarketQuote[]>("seed:market:quotes"),
+    seedRead<MarketQuote[]>("seed:market:crypto"),
+    seedRead<{ value: number; classification: string }>("seed:market:fear-greed"),
+    seedRead<Earthquake[]>("seed:natural:earthquakes"),
+    seedRead<WeatherAlert[]>("seed:natural:weather"),
+    redis.get<ConvergenceResponse>("convergence:latest"),
+    seedRead<Array<{ value?: number; unit?: string }>>("seed:radiation:readings"),
+  ]);
+
+  // Count elevated radiation readings (> 0.5 µSv/h is notable)
+  let radiationAlerts = 0;
+  if (radiationReadings.status === "fulfilled" && radiationReadings.value) {
+    radiationAlerts = radiationReadings.value.filter(
+      (r) => typeof r.value === "number" && r.value > 0.5
+    ).length;
+  }
+
+  return {
+    marketQuotes: marketQuotes.status === "fulfilled" ? marketQuotes.value ?? undefined : undefined,
+    cryptoQuotes: cryptoQuotes.status === "fulfilled" ? cryptoQuotes.value ?? undefined : undefined,
+    fearGreed: fearGreed.status === "fulfilled" ? fearGreed.value ?? undefined : undefined,
+    earthquakes: earthquakes.status === "fulfilled" ? earthquakes.value ?? undefined : undefined,
+    weather: weather.status === "fulfilled" ? weather.value ?? undefined : undefined,
+    convergences: convergenceData.status === "fulfilled" ? convergenceData.value?.convergences ?? undefined : undefined,
+    radiationAlerts: radiationAlerts > 0 ? radiationAlerts : undefined,
+  };
+}
+
+/**
  * GET /api/cron/send-briefing
- * Sends daily intelligence briefing to all active subscribers (free).
+ * Sends daily intelligence briefing to all active subscribers.
+ * Enriched with market data, natural hazards, convergence analysis.
  * Scheduled via Vercel cron: every day at 08:00 UTC.
  */
 export async function GET(request: Request) {
@@ -36,8 +76,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, sent: 0, reason: "No subscribers" });
     }
 
-    // 2. Get intel data
-    const allItems = await fetchPersistedEvents({ limit: 2000, hoursBack: 24 });
+    // 2. Fetch intel events + enrichment data in parallel
+    const [allItems, enrichment] = await Promise.all([
+      fetchPersistedEvents({ limit: 2000, hoursBack: 24 }),
+      fetchEnrichmentData(),
+    ]);
+
     const anomalies = detectAnomalies(allItems, 24, 6);
 
     // 3. Generate AI summary
@@ -63,7 +107,6 @@ export async function GET(request: Request) {
     function filterItemsByPrefs(items: IntelItem[], prefs: DigestPreferences): IntelItem[] {
       let filtered = items;
 
-      // Filter by categories
       if (prefs.categories.length > 0) {
         filtered = filtered.filter((item) => {
           const cat = item.category?.toLowerCase() || "";
@@ -71,7 +114,6 @@ export async function GET(request: Request) {
         });
       }
 
-      // Filter by minimum severity
       if (prefs.minSeverity !== "all") {
         const minIdx = SEVERITY_ORDER.indexOf(prefs.minSeverity);
         if (minIdx > 0) {
@@ -82,7 +124,6 @@ export async function GET(request: Request) {
         }
       }
 
-      // Limit items
       return filtered.slice(0, prefs.maxItems);
     }
 
@@ -91,7 +132,6 @@ export async function GET(request: Request) {
       return `${prefs.categories.sort().join(",")}_${prefs.minSeverity}_${prefs.maxItems}`;
     }
 
-    // Group subscribers by their preference signature
     const groups = new Map<string, { prefs?: DigestPreferences; emails: string[] }>();
     for (const sub of subscribers) {
       const key = prefsKey(sub.preferences);
@@ -122,13 +162,16 @@ export async function GET(request: Request) {
 
       if (!defaultStats) defaultStats = stats;
 
-      const { subject, html } = buildDailyBriefingEmail({
+      const briefingData: BriefingData = {
         items,
         aiSummary,
         anomalies,
         stats,
         date,
-      });
+        ...enrichment,
+      };
+
+      const { subject, html } = buildDailyBriefingEmail(briefingData);
 
       await sendMail({ to: group.emails, subject, html });
       totalSent += group.emails.length;
@@ -140,6 +183,14 @@ export async function GET(request: Request) {
       groups: groups.size,
       stats: defaultStats,
       anomalies: anomalies.length,
+      enrichment: {
+        hasMarket: !!enrichment.marketQuotes?.length,
+        hasCrypto: !!enrichment.cryptoQuotes?.length,
+        hasEarthquakes: !!enrichment.earthquakes?.length,
+        hasWeather: !!enrichment.weather?.length,
+        hasConvergence: !!enrichment.convergences?.length,
+        radiationAlerts: enrichment.radiationAlerts || 0,
+      },
     });
   } catch (e) {
     console.error("[Cron] Briefing send failed:", e);
