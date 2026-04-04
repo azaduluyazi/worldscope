@@ -12,20 +12,25 @@ export async function persistEvents(items: IntelItem[]): Promise<number> {
   const db = createServerClient();
 
   // Map IntelItem → events table row
-  const rows = items.map((item) => ({
-    source: item.source,
-    category: item.category,
-    severity: item.severity,
-    title: item.title.slice(0, 500),
-    summary: item.summary?.slice(0, 1000) || null,
-    url: item.url || null,
-    image_url: item.imageUrl || null,
-    lat: item.lat ?? null,
-    lng: item.lng ?? null,
-    country_code: item.countryCode || null,
-    published_at: item.publishedAt,
-    expires_at: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // 48h TTL
-  }));
+  const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+  const rows = items
+    .filter((item) => item.url) // Skip items without URL (can't deduplicate)
+    .map((item) => ({
+      source: item.source,
+      category: item.category,
+      severity: item.severity,
+      title: item.title.slice(0, 500),
+      summary: item.summary?.slice(0, 1000) || null,
+      url: item.url,
+      image_url: item.imageUrl || null,
+      lat: item.lat ?? null,
+      lng: item.lng ?? null,
+      country_code: item.countryCode || null,
+      published_at: item.publishedAt,
+      expires_at: expiresAt,
+    }));
+
+  if (rows.length === 0) return 0;
 
   // Batch upsert in chunks of 100 (Supabase limit)
   const CHUNK = 100;
@@ -41,7 +46,10 @@ export async function persistEvents(items: IntelItem[]): Promise<number> {
       })
       .select("id");
 
-    if (!error && data) {
+    if (error) {
+      console.error("[DB] persistEvents upsert error:", error.message);
+    }
+    if (data) {
       inserted += data.length;
     }
   }
