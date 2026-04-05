@@ -49,8 +49,12 @@ export async function GET(request: Request) {
   let totalItems = 0;
   let totalErrors = 0;
   let feedsProcessed = 0;
+  let totalParsed = 0;
+  let emptyFeeds = 0;
+  const sampleErrors: string[] = [];
+  const sampleSuccess: string[] = [];
 
-  // Process feeds in batches of 10
+  // Process feeds in batches
   for (let i = 0; i < feeds.length; i += BATCH_SIZE) {
     const batch = feeds.slice(i, i + BATCH_SIZE);
 
@@ -60,15 +64,23 @@ export async function GET(request: Request) {
           const items = await fetchFeed(feed.url, feed.name);
 
           if (items.length > 0) {
+            totalParsed += items.length;
             const persisted = await persistEvents(items);
             await recordFeedSuccess(feed.url);
+            if (sampleSuccess.length < 3) {
+              sampleSuccess.push(`${feed.name}: ${items.length} parsed, ${persisted} persisted`);
+            }
             return { url: feed.url, items: persisted, error: false };
           }
 
-          // No items returned — could be empty feed or soft failure
+          emptyFeeds++;
           await recordFeedSuccess(feed.url);
           return { url: feed.url, items: 0, error: false };
-        } catch {
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Unknown error";
+          if (sampleErrors.length < 5) {
+            sampleErrors.push(`${feed.name}: ${msg.slice(0, 100)}`);
+          }
           await recordFeedError(feed.url);
           return { url: feed.url, items: 0, error: true };
         }
@@ -86,11 +98,19 @@ export async function GET(request: Request) {
     }
   }
 
+  console.log(`[Feeds] Processed: ${feedsProcessed}, Parsed: ${totalParsed}, Persisted: ${totalItems}, Empty: ${emptyFeeds}, Errors: ${totalErrors}`);
+
   return NextResponse.json({
     success: true,
     feedsProcessed,
+    itemsParsed: totalParsed,
     itemsPersisted: totalItems,
+    emptyFeeds,
     errors: totalErrors,
     durationMs: Date.now() - startTime,
+    diagnostics: {
+      sampleSuccess: sampleSuccess.length > 0 ? sampleSuccess : undefined,
+      sampleErrors: sampleErrors.length > 0 ? sampleErrors : undefined,
+    },
   });
 }
