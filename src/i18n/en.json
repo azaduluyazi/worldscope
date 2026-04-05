@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "WORLDSCOPE",
+    "name": "TROIA",
     "live": "LIVE",
     "loading": "LOADING INTEL STREAM...",
     "loadingMore": "LOADING MORE...",
@@ -9,17 +9,17 @@
     "version": "v1.0"
   },
   "variants": {
-    "world": "WORLD",
-    "tech": "TECH",
-    "finance": "FINANCE",
-    "commodity": "COMMODITY",
-    "happy": "GOOD NEWS",
-    "conflict": "CONFLICT",
-    "cyber": "CYBER",
-    "weather": "WEATHER",
-    "health": "HEALTH",
-    "energy": "ENERGY",
-    "sports": "SPORTS"
+    "world": "OLYMPUS",
+    "tech": "HEPHAESTUS",
+    "finance": "HERMES",
+    "commodity": "DEMETER",
+    "happy": "EIRENE",
+    "conflict": "ARES",
+    "cyber": "ATHENA",
+    "weather": "POSEIDON",
+    "health": "APOLLO",
+    "energy": "ZEUS",
+    "sports": "NIKE"
   },
   "intel": {
     "title": "INTEL FEED",

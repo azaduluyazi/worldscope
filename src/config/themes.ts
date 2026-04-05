@@ -8,7 +8,7 @@ export interface DashboardTheme {
   name: string;
   icon: string;
   description: string;
-  group: "tactical" | "ambient" | "terminal" | "broadcast" | "editorial" | "modern";
+  group: "tactical" | "ambient" | "terminal" | "broadcast" | "editorial" | "modern" | "mythology";
   colors: {
     base: string;
     surface: string;
@@ -560,11 +560,113 @@ export const THEMES: DashboardTheme[] = [
     cardShadow: "sm",
     lightMode: true,
   },
+
+  // ══════════════════════════════════════════════════════
+  // MYTHOLOGY — Troia-themed Greek mythology aesthetics
+  // ══════════════════════════════════════════════════════
+
+  {
+    id: "olympus-gold",
+    name: "Olympus Gold",
+    icon: "🏛️",
+    description: "Golden throne of the gods — divine bronze and marble",
+    group: "mythology",
+    colors: {
+      base: "#0a0804",
+      surface: "#12100a",
+      panel: "#1a1610",
+      border: "#2e2618",
+      muted: "#6b5a3a",
+      text: "#e8dcc4",
+      accent: "#d4af37",
+      accent2: "#f0d060",
+    },
+    glow: "rgba(212, 175, 55, 0.18)",
+    scanlines: false,
+    fontMode: "serif",
+    displayFont: "rajdhani",
+    cardRadius: "sm",
+    cardShadow: "glow",
+    severityColors: {
+      critical: "#c0392b",
+      high: "#d4af37",
+      medium: "#b8860b",
+      low: "#8fbc8f",
+      info: "#c8a951",
+    },
+    gradientBanner: true,
+  },
+
+  {
+    id: "aegean-dark",
+    name: "Aegean Dark",
+    icon: "🌊",
+    description: "Deep Aegean seas — Poseidon's domain of waves and storms",
+    group: "mythology",
+    colors: {
+      base: "#040810",
+      surface: "#06101e",
+      panel: "#081628",
+      border: "#0e2a4a",
+      muted: "#1e4a6e",
+      text: "#c4dce8",
+      accent: "#4db8d4",
+      accent2: "#1e90ff",
+    },
+    glow: "rgba(77, 184, 212, 0.15)",
+    scanlines: false,
+    fontMode: "mono",
+    displayFont: "rajdhani",
+    cardRadius: "sm",
+    cardShadow: "glow",
+    severityColors: {
+      critical: "#e74c3c",
+      high: "#e67e22",
+      medium: "#4db8d4",
+      low: "#2ecc71",
+      info: "#1e90ff",
+    },
+  },
+
+  {
+    id: "spartan-red",
+    name: "Spartan Red",
+    icon: "🛡️",
+    description: "Blood and bronze — the warrior's forge of Ares",
+    group: "mythology",
+    colors: {
+      base: "#0a0406",
+      surface: "#120810",
+      panel: "#1a0c14",
+      border: "#301520",
+      muted: "#5a2a3a",
+      text: "#e8d0d8",
+      accent: "#c0392b",
+      accent2: "#cd7f32",
+    },
+    glow: "rgba(192, 57, 43, 0.2)",
+    scanlines: true,
+    fontMode: "mono",
+    displayFont: "rajdhani",
+    cardRadius: "none",
+    cardShadow: "glow",
+    effect: "warzone",
+    severityColors: {
+      critical: "#e74c3c",
+      high: "#cd7f32",
+      medium: "#b8860b",
+      low: "#6b8e6b",
+      info: "#8b7d6b",
+    },
+    defconBar: true,
+    gridOverlay: "rgba(192,57,43,0.02)",
+  },
 ];
 
 export const DEFAULT_THEME = THEMES[0];
 
 export const THEME_GROUPS = {
+  mythology: "Troia Mythology",
   tactical: "Dark Tactical",
   ambient: "Dark Ambient",
   terminal: "Terminal",

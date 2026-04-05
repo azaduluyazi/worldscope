@@ -51,14 +51,14 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* WorldScope HUD Colors */
-  --color-hud-base: #050a12;
-  --color-hud-surface: #080e1a;
-  --color-hud-panel: #0a1222;
-  --color-hud-border: #0d2137;
-  --color-hud-muted: #4a6a8a; /* WCAG AA contrast fix: 1.8:1 → 4.6:1 on hud-base */
-  --color-hud-text: #c8d6e5;
-  --color-hud-accent: #00e5ff;
+  /* Troia HUD Colors — Olympus Gold default */
+  --color-hud-base: #0a0804;
+  --color-hud-surface: #12100a;
+  --color-hud-panel: #1a1610;
+  --color-hud-border: #2e2618;
+  --color-hud-muted: #6b5a3a;
+  --color-hud-text: #e8dcc4;
+  --color-hud-accent: #d4af37;
 
   /* Severity Colors */
   --color-severity-critical: #ff4757;
@@ -78,40 +78,45 @@
   --animate-slide-in: slideIn 0.3s ease-out;
 }
 
-/* WorldScope always dark */
+/* TroiaMedia — Olympus Gold dark theme */
 :root {
-  --background: #050a12;
-  --foreground: #c8d6e5;
-  --card: #0a1222;
-  --card-foreground: #c8d6e5;
-  --popover: #080e1a;
-  --popover-foreground: #c8d6e5;
-  --primary: #00e5ff;
-  --primary-foreground: #050a12;
-  --secondary: #0d2137;
-  --secondary-foreground: #c8d6e5;
-  --muted: #0d2137;
-  --muted-foreground: #5a7a9a;
-  --accent: #00e5ff;
-  --accent-foreground: #050a12;
-  --destructive: #ff4757;
-  --border: #0d2137;
-  --input: #0d2137;
-  --ring: #00e5ff;
-  --chart-1: #00e5ff;
+  --background: #0a0804;
+  --foreground: #e8dcc4;
+  --card: #1a1610;
+  --card-foreground: #e8dcc4;
+  --popover: #12100a;
+  --popover-foreground: #e8dcc4;
+  --primary: #d4af37;
+  --primary-foreground: #0a0804;
+  --secondary: #2e2618;
+  --secondary-foreground: #e8dcc4;
+  --muted: #2e2618;
+  --muted-foreground: #8a7a5a;
+  --accent: #d4af37;
+  --accent-foreground: #0a0804;
+  --destructive: #c0392b;
+  --border: #2e2618;
+  --input: #2e2618;
+  --ring: #d4af37;
+  --chart-1: #d4af37;
   --chart-2: #00ff88;
-  --chart-3: #ffd000;
-  --chart-4: #ff4757;
+  --chart-3: #f0d060;
+  --chart-4: #c0392b;
   --chart-5: #8a5cf6;
   --radius: 0.5rem;
-  --sidebar: #080e1a;
-  --sidebar-foreground: #c8d6e5;
-  --sidebar-primary: #00e5ff;
-  --sidebar-primary-foreground: #050a12;
-  --sidebar-accent: #0d2137;
-  --sidebar-accent-foreground: #c8d6e5;
-  --sidebar-border: #0d2137;
-  --sidebar-ring: #00e5ff;
+  --sidebar: #12100a;
+  --sidebar-foreground: #e8dcc4;
+  --sidebar-primary: #d4af37;
+  --sidebar-primary-foreground: #0a0804;
+  --sidebar-accent: #2e2618;
+  --sidebar-accent-foreground: #e8dcc4;
+  --sidebar-border: #2e2618;
+  --sidebar-ring: #d4af37;
+  /* Troia gold gradient tokens */
+  --troia-gold: #d4af37;
+  --troia-gold-light: #f0d060;
+  --troia-gold-dark: #8b6914;
+  --troia-bronze: #cd7f32;
 }
 
 /* Light mode overrides */
@@ -289,4 +294,146 @@
 :lang(ar), :lang(fa) {
   font-family: "Inter", "Noto Sans Arabic", "Noto Naskh Arabic", "Tahoma", sans-serif;
   line-height: 1.7;
+}
+
+/* ══════════════════════════════════════════════════════
+   TROIA MYTHOLOGY — Greek-inspired visual elements
+   ══════════════════════════════════════════════════════ */
+
+/* Gold shimmer animation for headers and accents */
+@keyframes goldShimmer {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Greek key meander border pattern via CSS repeating-linear-gradient */
+.troia-border-top {
+  position: relative;
+}
+.troia-border-top::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--troia-gold-dark) 10%,
+    var(--troia-gold) 30%,
+    var(--troia-gold-light) 50%,
+    var(--troia-gold) 70%,
+    var(--troia-gold-dark) 90%,
+    transparent 100%
+  );
+  opacity: 0.5;
+}
+
+/* Gold gradient separator line */
+.troia-separator {
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    var(--troia-gold-dark) 20%,
+    var(--troia-gold) 50%,
+    var(--troia-gold-dark) 80%,
+    transparent
+  );
+  opacity: 0.3;
+  margin: 0;
+  border: none;
+}
+
+/* Panel with gold accent glow on hover */
+.troia-panel {
+  border: 1px solid var(--border);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.troia-panel:hover {
+  border-color: color-mix(in srgb, var(--troia-gold) 30%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--troia-gold) 8%, transparent);
+}
+
+/* Gold shimmer text effect for brand name */
+.troia-shimmer {
+  background: linear-gradient(
+    120deg,
+    var(--troia-gold-dark) 0%,
+    var(--troia-gold) 25%,
+    var(--troia-gold-light) 50%,
+    var(--troia-gold) 75%,
+    var(--troia-gold-dark) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: goldShimmer 4s linear infinite;
+}
+
+/* Greek corner ornament — pure CSS */
+.troia-corner::before,
+.troia-corner::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-color: var(--troia-gold);
+  opacity: 0.25;
+}
+.troia-corner::before {
+  top: 4px;
+  left: 4px;
+  border-top: 1.5px solid;
+  border-left: 1.5px solid;
+}
+.troia-corner::after {
+  bottom: 4px;
+  right: 4px;
+  border-bottom: 1.5px solid;
+  border-right: 1.5px solid;
+}
+
+/* Header bar gold underline */
+header[role="banner"] {
+  border-bottom-color: color-mix(in srgb, var(--troia-gold) 25%, var(--border)) !important;
+  background: linear-gradient(180deg, var(--card) 0%, var(--background) 100%) !important;
+}
+
+/* Variant tab active state — gold background */
+nav[aria-label="Dashboard variants"] a {
+  border-color: color-mix(in srgb, var(--troia-gold) 15%, transparent);
+}
+
+/* Sidebar gold accent on active */
+nav[aria-label="Map filter sidebar"] button[data-active="true"] {
+  border-color: var(--troia-gold) !important;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--troia-gold) 20%, transparent);
+}
+
+/* Status footer gold line */
+footer, [role="status"] {
+  border-top-color: color-mix(in srgb, var(--troia-gold) 15%, transparent) !important;
+}
+
+/* Gold pulse for live indicator */
+@keyframes goldPulse {
+  0%, 100% { opacity: 1; text-shadow: 0 0 4px var(--troia-gold); }
+  50% { opacity: 0.5; text-shadow: 0 0 12px var(--troia-gold); }
+}
+
+/* Scrollbar styling — gold themed */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--troia-gold) 30%, var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--troia-gold) 50%, var(--border));
 }

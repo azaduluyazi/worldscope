@@ -13,6 +13,7 @@ import { FullscreenToggle } from "./FullscreenToggle";
 import { ThemeToggle } from "./ThemeToggle";
 import { ThemeSelector } from "./ThemeSelector";
 import { useThreatIndex } from "@/hooks/useThreatIndex";
+import { FaHorseHead } from "react-icons/fa";
 
 /** Map threat score to DEFCON level (1=max threat, 5=lowest) */
 function scoreToDefcon(score: number): { level: number; color: string; label: string } {
@@ -53,29 +54,24 @@ export function TopBar({ variant = "world" }: TopBarProps) {
 
   return (
     <header role="banner" className="h-10 md:h-11 bg-gradient-to-b from-hud-panel to-hud-surface border-b border-hud-border flex items-center px-2 md:px-4 z-50">
-      {/* Logo — compact on mobile */}
+      {/* Troia Logo — Horse Head (Font Awesome, CC BY 4.0) */}
       <div className="flex items-center gap-1.5 md:gap-2">
-        <div
-          className="w-6 h-6 md:w-7 md:h-7 border-2 rounded-full flex items-center justify-center"
-          style={{ borderColor: config.accent }}
-        >
-          <div
-            className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full animate-radar"
-            style={{
-              background: `conic-gradient(from 0deg, ${config.accent}, transparent, ${config.accent})`,
-            }}
-          />
-        </div>
-        <span
-          className="font-mono text-xs md:text-sm font-bold tracking-[2px] md:tracking-[3px]"
+        <FaHorseHead
+          className="w-7 h-7 md:w-8 md:h-8 shrink-0 drop-shadow-[0_0_8px_var(--color-hud-accent)]"
           style={{ color: config.accent }}
-        >
-          <span className="md:hidden">{config.icon}</span>
-          <span className="hidden md:inline">{config.name.toUpperCase()}</span>
-        </span>
-        <span className="font-mono text-[8px] md:text-[9px] text-hud-muted ml-0.5 md:ml-1 hidden sm:inline">
-          {t("app.version")}
-        </span>
+        />
+        <div className="flex flex-col">
+          <span className="font-display text-[10px] md:text-xs font-bold tracking-[4px] md:tracking-[5px] leading-none">
+            <span className="md:hidden" style={{ color: config.accent }}>{config.icon}</span>
+            <span className="hidden md:inline troia-shimmer">TROIA</span>
+          </span>
+          <span
+            className="hidden md:block font-mono text-[7px] tracking-[2px] opacity-60 leading-none mt-0.5"
+            style={{ color: config.accent }}
+          >
+            {config.name.toUpperCase()}
+          </span>
+        </div>
       </div>
 
       {/* Variant Tabs — all routes */}

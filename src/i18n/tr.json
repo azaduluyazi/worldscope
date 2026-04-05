@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "WORLDSCOPE",
+    "name": "TROIA",
     "live": "CANLI",
     "loading": "İSTİHBARAT AKIŞI YÜKLENİYOR...",
     "loadingMore": "DAHA FAZLA YÜKLENİYOR...",
@@ -9,17 +9,17 @@
     "version": "v1.0"
   },
   "variants": {
-    "world": "DÜNYA",
-    "tech": "TEKNOLOJİ",
-    "finance": "FİNANS",
-    "commodity": "EMTİA",
-    "happy": "İYİ HABER",
-    "conflict": "ÇATIŞMA",
-    "cyber": "SİBER",
-    "weather": "HAVA",
-    "health": "SAĞLIK",
-    "energy": "ENERJİ",
-    "sports": "SPOR"
+    "world": "OLYMPUS",
+    "tech": "HEPHAESTUS",
+    "finance": "HERMES",
+    "commodity": "DEMETER",
+    "happy": "EIRENE",
+    "conflict": "ARES",
+    "cyber": "ATHENA",
+    "weather": "POSEIDON",
+    "health": "APOLLO",
+    "energy": "ZEUS",
+    "sports": "NIKE"
   },
   "intel": {
     "title": "İSTİHBARAT AKIŞI",
