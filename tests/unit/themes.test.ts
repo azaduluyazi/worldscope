@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { THEMES, getThemeById, DEFAULT_THEME, THEME_GROUPS } from "@/config/themes";
 
 describe("Theme system", () => {
-  it("has 24 themes defined", () => {
-    expect(THEMES.length).toBe(24);
+  it("has 16 themes defined", () => {
+    expect(THEMES.length).toBe(16);
   });
 
   it("every theme has required color properties", () => {
@@ -52,11 +52,8 @@ describe("Theme system", () => {
     expect(bloomberg.cardShadow).toBe("none");
   });
 
-  it("light themes have lightMode flag", () => {
+  it("no light themes remain after editorial removal", () => {
     const lightThemes = THEMES.filter(t => t.lightMode);
-    expect(lightThemes.length).toBeGreaterThanOrEqual(4);
-    for (const t of lightThemes) {
-      expect(t.group).toBe("editorial");
-    }
+    expect(lightThemes.length).toBe(0);
   });
 });
