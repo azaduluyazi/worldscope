@@ -1,0 +1,56 @@
+{
+  "packageId": "com.troiamedia.worldscope",
+  "host": "troiamedia.com",
+  "name": "WorldScope",
+  "launcherName": "WorldScope",
+  "display": "standalone",
+  "themeColor": "#00e5ff",
+  "themeColorDark": "#050a12",
+  "navigationColor": "#050a12",
+  "navigationColorDark": "#050a12",
+  "navigationDividerColor": "#1a2332",
+  "navigationDividerColorDark": "#1a2332",
+  "backgroundColor": "#050a12",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://troiamedia.com/icons/icon-512.png",
+  "maskableIconUrl": "https://troiamedia.com/icons/icon-512.png",
+  "monochromeIconUrl": "https://troiamedia.com/icons/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "./worldscope-keystore.jks",
+    "alias": "worldscope"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [
+    {
+      "name": "HERMES — Finance",
+      "shortName": "Finance",
+      "url": "/finance",
+      "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
+    },
+    {
+      "name": "ARES — Conflict",
+      "shortName": "Conflict",
+      "url": "/conflict",
+      "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
+    },
+    {
+      "name": "ATHENA — Cyber",
+      "shortName": "Cyber",
+      "url": "/cyber",
+      "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
+    }
+  ],
+  "generatorApp": "nicolo-nicola-nicola-nicola-nicola",
+  "webManifestUrl": "https://troiamedia.com/manifest.json",
+  "fallbackType": "customtabs",
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://troiamedia.com/",
+  "minSdkVersion": 24,
+  "orientation": "default",
+  "fingerprints": []
+}
