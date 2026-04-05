@@ -18,8 +18,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/analytics`, lastModified: new Date(), changeFrequency: "hourly", priority: 0.8 },
     { url: `${BASE_URL}/feeds`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 },
     { url: `${BASE_URL}/api-docs`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.5 },
-    { url: `${BASE_URL}/feed.xml`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.5 },
     { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 },
+    { url: `${BASE_URL}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.3 },
+    { url: `${BASE_URL}/developers`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.6 },
+    { url: `${BASE_URL}/pricing`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/search`, lastModified: new Date(), changeFrequency: "daily", priority: 0.5 },
+    { url: `${BASE_URL}/showcase`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.5 },
     { url: `${BASE_URL}/conflict`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE_URL}/cyber`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE_URL}/energy`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
@@ -60,6 +65,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {
     // Supabase may not be available at build time — skip reports
+  }
+
+  // ── Blog posts from Supabase ──
+  try {
+    const db = createServerClient();
+    const { data } = await db
+      .from("blog_posts")
+      .select("slug, published_at")
+      .eq("published", true)
+      .eq("lang", "en")
+      .order("published_at", { ascending: false })
+      .limit(200);
+
+    if (data) {
+      for (const post of data) {
+        entries.push({
+          url: `${BASE_URL}/blog/${post.slug}`,
+          lastModified: new Date(post.published_at),
+          changeFrequency: "weekly",
+          priority: 0.6,
+        });
+      }
+    }
+  } catch {
+    // Supabase may not be available at build time — skip blog posts
   }
 
   return entries;

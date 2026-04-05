@@ -17,6 +17,15 @@ interface CircuitState {
   isOpen: boolean;
 }
 
+/**
+ * Stale cache: stores last successful response per source.
+ * When circuit opens, returns stale data instead of empty arrays.
+ * This prevents dashboards from showing "OFFLINE" when a source
+ * has temporary issues — users see slightly outdated data instead.
+ */
+const staleCache: Map<string, { data: unknown; fetchedAt: number }> = new Map();
+const STALE_MAX_AGE_MS = 30 * 60_000; // serve stale data up to 30 min old
+
 /* L1: In-memory fast cache */
 const circuits: Map<string, CircuitState> = new Map();
 
@@ -77,7 +86,11 @@ export async function gatewayFetch<T>(
       state.isOpen = false;
       state.failures = 0;
     } else {
-      // Circuit open — return fallback
+      // Circuit open — try stale cache first, then fallback
+      const stale = staleCache.get(sourceId);
+      if (stale && Date.now() - stale.fetchedAt < STALE_MAX_AGE_MS) {
+        return stale.data as T;
+      }
       if (options?.fallback !== undefined) return options.fallback;
       return [] as unknown as T;
     }
@@ -92,11 +105,14 @@ export async function gatewayFetch<T>(
       ),
     ]);
 
-    // Success — reset failures
+    // Success — reset failures + update stale cache
     const wasOpen = state.isOpen;
     state.failures = 0;
     state.isOpen = false;
     circuits.set(sourceId, state);
+
+    // Cache successful response for stale-while-error
+    staleCache.set(sourceId, { data: result, fetchedAt: Date.now() });
 
     // Persist recovery to Redis (only if state changed)
     if (wasOpen) persistToRedis(sourceId, state);
@@ -117,6 +133,11 @@ export async function gatewayFetch<T>(
       persistToRedis(sourceId, state);
     }
 
+    // Try stale cache before returning empty fallback
+    const stale = staleCache.get(sourceId);
+    if (stale && Date.now() - stale.fetchedAt < STALE_MAX_AGE_MS) {
+      return stale.data as T;
+    }
     if (options?.fallback !== undefined) return options.fallback;
     return [] as unknown as T;
   }

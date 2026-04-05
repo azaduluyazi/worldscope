@@ -2,12 +2,29 @@
 
 import { useState, useEffect, useRef } from "react";
 
+/**
+ * ConnectionStatus — monitors browser connectivity + SSE stream health.
+ *
+ * Improvements over previous version:
+ * - Exponential backoff on SSE reconnect (5s → 10s → 20s → max 60s)
+ * - Backoff resets on successful connection
+ * - Softer UX messaging ("Syncing..." instead of aggressive "OFFLINE")
+ * - Auto-hide SSE banner after 3 failed attempts (data still flows via SWR polling)
+ * - Only shows offline banner for actual network loss
+ */
+const MAX_RECONNECT_DELAY = 60_000;
+const INITIAL_RECONNECT_DELAY = 5_000;
+const HIDE_AFTER_RETRIES = 3; // hide SSE banner after N retries (SWR still fetches)
+
 export function ConnectionStatus() {
-  const [online, setOnline] = useState(() => typeof navigator !== "undefined" ? navigator.onLine : true);
+  const [online, setOnline] = useState(() =>
+    typeof navigator !== "undefined" ? navigator.onLine : true
+  );
   const [sseConnected, setSseConnected] = useState(false);
-  const [, setLastEvent] = useState<string | null>(null);
   const [eventCount, setEventCount] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
   const esRef = useRef<EventSource | null>(null);
+  const reconnectDelayRef = useRef(INITIAL_RECONNECT_DELAY);
 
   // Browser online/offline
   useEffect(() => {
@@ -21,34 +38,43 @@ export function ConnectionStatus() {
     };
   }, []);
 
-  // SSE connection monitoring
+  // SSE connection with exponential backoff
   useEffect(() => {
     if (!online) return;
 
-    let reconnectTimer: ReturnType<typeof setTimeout>;
+    let disposed = false;
 
     const connect = () => {
+      if (disposed) return;
       const es = new EventSource("/api/intel/stream");
       esRef.current = es;
 
-      es.onopen = () => setSseConnected(true);
+      es.onopen = () => {
+        setSseConnected(true);
+        setRetryCount(0);
+        reconnectDelayRef.current = INITIAL_RECONNECT_DELAY; // reset backoff
+      };
 
       es.addEventListener("intel", () => {
-        setLastEvent(new Date().toISOString());
-        setEventCount(c => c + 1);
+        setEventCount((c) => c + 1);
       });
 
       es.onerror = () => {
         setSseConnected(false);
         es.close();
-        // Reconnect after 5 seconds
-        reconnectTimer = setTimeout(connect, 5000);
+        setRetryCount((c) => c + 1);
+
+        // Exponential backoff: 5s → 10s → 20s → 40s → 60s (max)
+        const delay = reconnectDelayRef.current;
+        reconnectDelayRef.current = Math.min(delay * 2, MAX_RECONNECT_DELAY);
+
+        setTimeout(connect, delay);
       };
     };
 
     connect();
     return () => {
-      clearTimeout(reconnectTimer);
+      disposed = true;
       esRef.current?.close();
     };
   }, [online]);
@@ -56,21 +82,26 @@ export function ConnectionStatus() {
   // Show nothing when fully connected
   if (online && sseConnected) return null;
 
-  // Offline banner
+  // Offline banner — only on actual network loss
   if (!online) {
     return (
       <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[200] bg-severity-critical/90 text-white font-mono text-[10px] px-4 py-2 rounded-md shadow-lg flex items-center gap-2 animate-pulse">
         <span>⚠</span>
-        <span>OFFLINE — Data may be stale</span>
+        <span>CONNECTION LOST — Cached data shown</span>
       </div>
     );
   }
 
-  // Online but SSE disconnected
+  // After N retries, hide the banner — SWR polling still provides data
+  if (retryCount >= HIDE_AFTER_RETRIES) return null;
+
+  // Online but SSE reconnecting — soft messaging
   return (
     <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[200] bg-hud-panel/90 text-hud-accent font-mono text-[10px] px-4 py-2 rounded-md shadow-lg flex items-center gap-2 border border-hud-border backdrop-blur-sm">
       <span className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-      <span>RECONNECTING — {eventCount} events received</span>
+      <span>
+        Syncing live feed...{eventCount > 0 && ` (${eventCount} events)`}
+      </span>
     </div>
   );
 }

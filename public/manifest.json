@@ -1,7 +1,7 @@
 {
   "name": "WorldScope — Global Intelligence Dashboard",
   "short_name": "WorldScope",
-  "description": "Real-time global intelligence, finance & technology monitoring platform.",
+  "description": "Real-time global intelligence, finance & technology monitoring platform. Track conflicts, cybersecurity, markets, and geopolitical events across 195 countries.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -14,16 +14,77 @@
       "src": "/icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "/icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["news", "finance", "business"],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-wide.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "WorldScope Dashboard — Desktop View"
+    },
+    {
+      "src": "/screenshots/mobile-narrow.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "WorldScope Dashboard — Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "HERMES — Finance",
+      "short_name": "Finance",
+      "description": "Markets, crypto, commodities & prediction markets",
+      "url": "/finance",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ARES — Conflict",
+      "short_name": "Conflict",
+      "description": "Active conflicts, military tracking & protests",
+      "url": "/conflict",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ATHENA — Cyber",
+      "short_name": "Cyber",
+      "description": "CVEs, ransomware, phishing & GPS jamming",
+      "url": "/cyber",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "NIKE — Sports",
+      "short_name": "Sports",
+      "description": "Live scores and sports news worldwide",
+      "url": "/sports",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "categories": ["news", "finance", "business", "security"],
   "lang": "en",
-  "prefer_related_applications": false
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "handle_links": "preferred"
 }
