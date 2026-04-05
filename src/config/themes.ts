@@ -8,7 +8,7 @@ export interface DashboardTheme {
   name: string;
   icon: string;
   description: string;
-  group: "tactical" | "ambient" | "terminal" | "broadcast" | "editorial" | "modern" | "mythology";
+  group: "tactical" | "ambient" | "terminal" | "broadcast" | "modern" | "mythology";
   colors: {
     base: string;
     surface: string;
@@ -50,28 +50,7 @@ export const THEMES: DashboardTheme[] = [
   // DARK TACTICAL (1-6) — existing themes
   // ══════════════════════════════════════════════════════
 
-  {
-    id: "military",
-    name: "Military HUD",
-    icon: "🎖️",
-    description: "Dark tactical command center",
-    group: "tactical",
-    colors: {
-      base: "#050a12",
-      surface: "#080e1a",
-      panel: "#0a1222",
-      border: "#0d2137",
-      muted: "#1a3a5a",
-      text: "#c8d6e5",
-      accent: "#00e5ff",
-    },
-    glow: "rgba(0, 229, 255, 0.15)",
-    scanlines: true,
-    fontMode: "mono",
-    cardRadius: "none",
-  },
-
-  {
+{
     id: "intelligence",
     name: "Intelligence",
     icon: "🕵️",
@@ -249,28 +228,7 @@ export const THEMES: DashboardTheme[] = [
     cardRadius: "none",
   },
 
-  {
-    id: "midnight",
-    name: "Midnight",
-    icon: "🌙",
-    description: "Deep ocean night watch",
-    group: "ambient",
-    colors: {
-      base: "#020810",
-      surface: "#041020",
-      panel: "#061530",
-      border: "#0a2550",
-      muted: "#1a4570",
-      text: "#b8d4f0",
-      accent: "#3388ff",
-    },
-    glow: "rgba(51, 136, 255, 0.15)",
-    scanlines: false,
-    fontMode: "mono",
-    cardRadius: "none",
-  },
-
-  {
+{
     id: "tokyo",
     name: "Tokyo Night",
     icon: "🌃",
@@ -292,28 +250,7 @@ export const THEMES: DashboardTheme[] = [
     cardShadow: "sm",
   },
 
-  {
-    id: "sandstorm",
-    name: "Sandstorm",
-    icon: "🏜️",
-    description: "Desert surveillance outpost",
-    group: "ambient",
-    colors: {
-      base: "#1c1610",
-      surface: "#241e16",
-      panel: "#2c261e",
-      border: "#4a3c2a",
-      muted: "#7a6a50",
-      text: "#e8d8c0",
-      accent: "#d4915a",
-    },
-    glow: "rgba(212, 145, 90, 0.1)",
-    scanlines: false,
-    fontMode: "mono",
-    cardRadius: "sm",
-  },
-
-  // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
   // TERMINAL (11-13)
   // ══════════════════════════════════════════════════════
 
@@ -420,29 +357,7 @@ export const THEMES: DashboardTheme[] = [
     effect: "broadcast-bar",
   },
 
-  {
-    id: "aljazeera",
-    name: "Al Jazeera",
-    icon: "🌐",
-    description: "International broadcast network",
-    group: "broadcast",
-    colors: {
-      base: "#0a0f14",
-      surface: "#101820",
-      panel: "#141e28",
-      border: "#1e3040",
-      muted: "#4a6070",
-      text: "#e0e8f0",
-      accent: "#d4a843",
-    },
-    glow: "rgba(212, 168, 67, 0.1)",
-    scanlines: false,
-    fontMode: "sans",
-    cardRadius: "sm",
-    cardShadow: "sm",
-  },
-
-  // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
   // MODERN (16)
   // ══════════════════════════════════════════════════════
 
@@ -469,99 +384,7 @@ export const THEMES: DashboardTheme[] = [
     effect: "glassmorphism",
   },
 
-  // ══════════════════════════════════════════════════════
-  // LIGHT EDITORIAL (17-20)
-  // ══════════════════════════════════════════════════════
-
-  {
-    id: "reuters",
-    name: "Reuters",
-    icon: "📰",
-    description: "Wire service newsroom",
-    group: "editorial",
-    colors: {
-      base: "#fafafa",
-      surface: "#ffffff",
-      panel: "#f5f5f0",
-      border: "#e0ddd5",
-      muted: "#8a8780",
-      text: "#1a1a18",
-      accent: "#ff5722",
-    },
-    scanlines: false,
-    fontMode: "sans",
-    cardRadius: "md",
-    cardShadow: "sm",
-    lightMode: true,
-  },
-
-  {
-    id: "economist",
-    name: "The Economist",
-    icon: "📕",
-    description: "Authoritative editorial print",
-    group: "editorial",
-    colors: {
-      base: "#fffdf7",
-      surface: "#ffffff",
-      panel: "#faf7f0",
-      border: "#e8e0d0",
-      muted: "#9a9080",
-      text: "#1a1410",
-      accent: "#e3120b",
-    },
-    scanlines: false,
-    fontMode: "serif",
-    cardRadius: "sm",
-    cardShadow: "sm",
-    lightMode: true,
-  },
-
-  {
-    id: "paper",
-    name: "Paper White",
-    icon: "📄",
-    description: "Minimal ink-on-paper",
-    group: "editorial",
-    colors: {
-      base: "#ffffff",
-      surface: "#ffffff",
-      panel: "#fafafa",
-      border: "#e5e5e5",
-      muted: "#999999",
-      text: "#111111",
-      accent: "#111111",
-    },
-    scanlines: false,
-    fontMode: "sans",
-    cardRadius: "md",
-    cardShadow: "sm",
-    lightMode: true,
-  },
-
-  {
-    id: "ivory",
-    name: "Ivory Tower",
-    icon: "🏛️",
-    description: "Academic research briefing",
-    group: "editorial",
-    colors: {
-      base: "#f8f5f0",
-      surface: "#fffefa",
-      panel: "#f0ece4",
-      border: "#d8d0c0",
-      muted: "#a09880",
-      text: "#2a2420",
-      accent: "#1a5276",
-    },
-    scanlines: false,
-    fontMode: "serif",
-    cardRadius: "sm",
-    cardShadow: "sm",
-    lightMode: true,
-  },
-
-  // ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════
   // MYTHOLOGY — Troia-themed Greek mythology aesthetics
   // ══════════════════════════════════════════════════════
 
@@ -663,7 +486,7 @@ export const THEMES: DashboardTheme[] = [
   },
 ];
 
-export const DEFAULT_THEME = THEMES[0];
+export const DEFAULT_THEME = THEMES.find(t => t.id === "spartan-red") || THEMES[0];
 
 export const THEME_GROUPS = {
   mythology: "Troia Mythology",
@@ -672,7 +495,6 @@ export const THEME_GROUPS = {
   terminal: "Terminal",
   broadcast: "Broadcast",
   modern: "Modern",
-  editorial: "Light Editorial",
 } as const;
 
 export function getThemeById(id: string): DashboardTheme {

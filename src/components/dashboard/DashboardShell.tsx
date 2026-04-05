@@ -110,7 +110,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
     return { ...DEFAULT_FILTERS, heatmap: prefs.mapLayers.heatmap, clusters: prefs.mapLayers.clusters, categories: new Set(prefs.categoryFilters), severities: new Set() };
   });
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
-  const [mapMode, setMapMode] = useState<MapMode>("3d");
+  const [mapMode, setMapMode] = useState<MapMode>("2d");
   const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];

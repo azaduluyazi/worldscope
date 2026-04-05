@@ -51,14 +51,14 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Troia HUD Colors — Olympus Gold default */
-  --color-hud-base: #0a0804;
-  --color-hud-surface: #12100a;
-  --color-hud-panel: #1a1610;
-  --color-hud-border: #2e2618;
-  --color-hud-muted: #6b5a3a;
-  --color-hud-text: #e8dcc4;
-  --color-hud-accent: #d4af37;
+  /* Troia HUD Colors — Spartan Red default */
+  --color-hud-base: #0a0406;
+  --color-hud-surface: #120810;
+  --color-hud-panel: #1a0c14;
+  --color-hud-border: #301520;
+  --color-hud-muted: #5a2a3a;
+  --color-hud-text: #e8d0d8;
+  --color-hud-accent: #c0392b;
 
   /* Severity Colors */
   --color-severity-critical: #ff4757;
@@ -78,41 +78,41 @@
   --animate-slide-in: slideIn 0.3s ease-out;
 }
 
-/* TroiaMedia — Olympus Gold dark theme */
+/* TroiaMedia — Spartan Red dark theme (default) */
 :root {
-  --background: #0a0804;
-  --foreground: #e8dcc4;
-  --card: #1a1610;
-  --card-foreground: #e8dcc4;
-  --popover: #12100a;
-  --popover-foreground: #e8dcc4;
-  --primary: #d4af37;
-  --primary-foreground: #0a0804;
-  --secondary: #2e2618;
-  --secondary-foreground: #e8dcc4;
-  --muted: #2e2618;
-  --muted-foreground: #8a7a5a;
-  --accent: #d4af37;
-  --accent-foreground: #0a0804;
-  --destructive: #c0392b;
-  --border: #2e2618;
-  --input: #2e2618;
-  --ring: #d4af37;
-  --chart-1: #d4af37;
-  --chart-2: #00ff88;
-  --chart-3: #f0d060;
-  --chart-4: #c0392b;
-  --chart-5: #8a5cf6;
+  --background: #0a0406;
+  --foreground: #e8d0d8;
+  --card: #1a0c14;
+  --card-foreground: #e8d0d8;
+  --popover: #120810;
+  --popover-foreground: #e8d0d8;
+  --primary: #c0392b;
+  --primary-foreground: #ffffff;
+  --secondary: #301520;
+  --secondary-foreground: #e8d0d8;
+  --muted: #301520;
+  --muted-foreground: #7a4a5a;
+  --accent: #c0392b;
+  --accent-foreground: #ffffff;
+  --destructive: #e74c3c;
+  --border: #301520;
+  --input: #301520;
+  --ring: #c0392b;
+  --chart-1: #c0392b;
+  --chart-2: #cd7f32;
+  --chart-3: #b8860b;
+  --chart-4: #e74c3c;
+  --chart-5: #8b7d6b;
   --radius: 0.5rem;
-  --sidebar: #12100a;
-  --sidebar-foreground: #e8dcc4;
-  --sidebar-primary: #d4af37;
-  --sidebar-primary-foreground: #0a0804;
-  --sidebar-accent: #2e2618;
-  --sidebar-accent-foreground: #e8dcc4;
-  --sidebar-border: #2e2618;
-  --sidebar-ring: #d4af37;
-  /* Troia gold gradient tokens */
+  --sidebar: #120810;
+  --sidebar-foreground: #e8d0d8;
+  --sidebar-primary: #c0392b;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #301520;
+  --sidebar-accent-foreground: #e8d0d8;
+  --sidebar-border: #301520;
+  --sidebar-ring: #c0392b;
+  /* Troia color tokens */
   --troia-gold: #d4af37;
   --troia-gold-light: #f0d060;
   --troia-gold-dark: #8b6914;

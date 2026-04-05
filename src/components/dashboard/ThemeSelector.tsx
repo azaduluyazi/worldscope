@@ -49,7 +49,7 @@ export function ThemeSelector() {
     return acc;
   }, {});
 
-  const groupOrder = ["tactical", "ambient", "terminal", "broadcast", "modern", "editorial"] as const;
+  const groupOrder = ["mythology", "tactical", "ambient", "terminal", "broadcast", "modern"] as const;
 
   const dropdown = isOpen ? (
     <div
