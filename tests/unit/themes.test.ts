@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { THEMES, getThemeById, DEFAULT_THEME, THEME_GROUPS } from "@/config/themes";
 
 describe("Theme system", () => {
-  it("has 21 themes defined", () => {
-    expect(THEMES.length).toBe(21);
+  it("has 24 themes defined", () => {
+    expect(THEMES.length).toBe(24);
   });
 
   it("every theme has required color properties", () => {

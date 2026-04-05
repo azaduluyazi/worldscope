@@ -45,12 +45,12 @@ describe("Variant System", () => {
 
   // ── Variant Accents ──
   describe("variant accents", () => {
-    it("world accent is cyan (#00e5ff)", () => {
-      expect(VARIANTS.world.accent).toBe("#00e5ff");
+    it("world accent is gold (#d4af37)", () => {
+      expect(VARIANTS.world.accent).toBe("#d4af37");
     });
 
-    it("tech accent is purple (#8a5cf6)", () => {
-      expect(VARIANTS.tech.accent).toBe("#8a5cf6");
+    it("tech accent is orange (#ff6b35)", () => {
+      expect(VARIANTS.tech.accent).toBe("#ff6b35");
     });
 
     it("finance accent is gold (#ffd000)", () => {
