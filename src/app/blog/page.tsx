@@ -26,6 +26,7 @@ interface BlogPost {
   excerpt: string | null;
   category: string;
   tags: string[];
+  lang: string;
   author: string;
   published_at: string;
 }
@@ -35,9 +36,8 @@ async function getBlogPosts(): Promise<BlogPost[]> {
     const db = createServerClient();
     const { data } = await db
       .from("blog_posts")
-      .select("slug, title, excerpt, category, tags, author, published_at")
+      .select("slug, title, excerpt, category, tags, lang, author, published_at")
       .eq("published", true)
-      .eq("lang", "en")
       .order("published_at", { ascending: false })
       .limit(50);
     return data || [];
@@ -104,12 +104,16 @@ export default async function BlogPage() {
                   >
                     {post.category.toUpperCase()}
                   </span>
+                  {post.lang !== "en" && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded border bg-hud-panel border-hud-border text-hud-muted uppercase">
+                      {post.lang}
+                    </span>
+                  )}
                   <span className="text-[10px] text-hud-muted font-mono">
-                    {new Date(post.published_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
+                    {new Date(post.published_at).toLocaleDateString(
+                      post.lang === "tr" ? "tr-TR" : "en-US",
+                      { year: "numeric", month: "short", day: "numeric" }
+                    )}
                   </span>
                 </div>
                 <h2 className="font-mono text-sm font-semibold text-hud-text group-hover:text-hud-accent transition-colors leading-tight">

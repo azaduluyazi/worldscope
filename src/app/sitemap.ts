@@ -76,7 +76,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .from("blog_posts")
       .select("slug, published_at")
       .eq("published", true)
-      .eq("lang", "en")
       .order("published_at", { ascending: false })
       .limit(200);
 
