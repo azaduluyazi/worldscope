@@ -25,6 +25,7 @@
     { "path": "/api/cron/seed-conflict", "schedule": "*/15 * * * *" },
     { "path": "/api/cron/seed-economic", "schedule": "0 */1 * * *" },
     { "path": "/api/cron/seed-radiation", "schedule": "*/15 * * * *" },
-    { "path": "/api/cron/cache-warm", "schedule": "*/15 * * * *" }
+    { "path": "/api/cron/cache-warm", "schedule": "*/15 * * * *" },
+    { "path": "/api/cron/social-post", "schedule": "0 12 * * *" }
   ]
 }
