@@ -54,3 +54,13 @@ AGENTS.md
 .zip
 temp-*.json
 temp-*.html
+
+# android TWA build artifacts
+*.keystore
+*.jks
+*.apk
+*.aab
+android-twa/
+.gradle/
+build/
+local.properties
