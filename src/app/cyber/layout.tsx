@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "CyberScope — Cybersecurity Intelligence",
   description: "Cyber threats, CVE vulnerabilities, internet outages, ransomware tracking, and digital security monitoring.",
-  keywords: ["cybersecurity", "hacking", "CVE", "ransomware", "internet outages"],
+  keywords: [
+    "cybersecurity dashboard", "CVE tracker", "ransomware monitor",
+    "internet outages map", "hacking news", "cyber threat intelligence",
+    "GPS jamming map", "phishing tracker", "botnet C2 servers",
+    "real-time cyber threats", "vulnerability scanner", "APT tracking",
+    "siber güvenlik", "siber tehdit haritası", "güvenlik açığı takip",
+  ],
   alternates: {
     canonical: "/cyber",
   },

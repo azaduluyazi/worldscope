@@ -54,10 +54,13 @@ export async function generateMetadata({
     keywords: [
       ...post.tags,
       post.category,
-      "intelligence",
+      "intelligence analysis",
       "OSINT",
       "WorldScope",
       "geopolitics",
+      "threat assessment",
+      "global intelligence blog",
+      "istihbarat analizi",
     ],
     alternates: {
       canonical: `https://troiamedia.com/blog/${slug}`,
