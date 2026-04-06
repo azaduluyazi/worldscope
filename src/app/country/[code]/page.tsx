@@ -55,53 +55,40 @@ export async function generateMetadata({
   };
 }
 
-/** Server-rendered SEO content visible to search engine crawlers */
+/** Server-rendered SEO content visible to both crawlers and users */
 function CountrySEOContent({ name, region, code }: { name: string; region: string; code: string }) {
-  // Neighboring regions for context
   const regionCountries = COUNTRIES.filter(
     (c) => c.region === region && c.code !== code.toUpperCase()
   ).slice(0, 8);
 
   return (
-    <section className="sr-only" aria-label={`${name} Intelligence Overview`}>
-      <h1>{name} Intelligence Report — WorldScope</h1>
-      <p>
-        Real-time intelligence monitoring and threat analysis for {name}, located in {region}.
-        WorldScope tracks live events, security incidents, economic data, conflict zones, cyber
-        threats, weather emergencies, and geopolitical developments across {name} using 570+
-        verified intelligence sources and 48 API integrations.
+    <section className="max-w-5xl mx-auto px-4 py-6 font-mono text-hud-text" aria-label={`${name} Intelligence Overview`}>
+      <h1 className="text-lg font-bold text-cyan-400 mb-2">{name} Intelligence Report</h1>
+      <p className="text-[11px] text-hud-muted leading-relaxed mb-4">
+        Real-time intelligence monitoring for {name} ({region}). Tracking security incidents,
+        cyber threats, economic indicators, weather events, and geopolitical developments
+        via 570+ verified sources.
       </p>
-      <h2>{name} Monitoring Categories</h2>
-      <ul>
-        <li>Security &amp; Conflict Events — Armed conflicts, terrorism, military operations in {name}</li>
-        <li>Cyber Threats — CVEs, ransomware, APT activity, data breaches affecting {name}</li>
-        <li>Economic Indicators — Market data, trade flows, sanctions, commodity prices for {name}</li>
-        <li>Weather &amp; Natural Disasters — Earthquakes, floods, storms, wildfires in {name}</li>
-        <li>Political Developments — Elections, protests, policy changes, diplomatic relations</li>
-        <li>Health &amp; Pandemic Tracking — Disease outbreaks, public health alerts in {name}</li>
-      </ul>
-      <h2>About WorldScope Intelligence Dashboard</h2>
-      <p>
-        WorldScope provides real-time global intelligence monitoring with interactive 3D globe
-        visualization, AI-powered analysis, and comprehensive coverage across 195 countries.
-        Track events in {name} and worldwide with severity-coded alerts, live maps, flight
-        tracking, vessel monitoring, and fire detection powered by NASA FIRMS data.
-      </p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] text-hud-muted mb-4">
+        <span>■ Security &amp; Conflict</span>
+        <span>■ Cyber Threats</span>
+        <span>■ Economic Data</span>
+        <span>■ Weather &amp; Disasters</span>
+        <span>■ Political Events</span>
+        <span>■ Health &amp; Pandemic</span>
+      </div>
       {regionCountries.length > 0 && (
-        <>
-          <h2>Other Countries in {region}</h2>
-          <nav aria-label={`${region} countries`}>
-            <ul>
-              {regionCountries.map((c) => (
-                <li key={c.code}>
-                  <a href={`/country/${c.code.toLowerCase()}`}>
-                    {c.name} Intelligence Report
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </>
+        <nav className="text-[10px] text-hud-muted" aria-label={`${region} countries`}>
+          <span className="text-hud-text">Also in {region}: </span>
+          {regionCountries.map((c, i) => (
+            <span key={c.code}>
+              <a href={`/country/${c.code.toLowerCase()}`} className="text-cyan-500/70 hover:text-cyan-400">
+                {c.name}
+              </a>
+              {i < regionCountries.length - 1 && ", "}
+            </span>
+          ))}
+        </nav>
       )}
     </section>
   );
