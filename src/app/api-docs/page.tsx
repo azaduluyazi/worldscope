@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "API Documentation — WorldScope",
   description: "WorldScope public API endpoints for intelligence, market, flight, and vessel data.",
+  alternates: { canonical: "/api-docs" },
 };
 
 const ENDPOINTS = [

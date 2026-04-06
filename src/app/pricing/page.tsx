@@ -12,6 +12,7 @@ export const metadata: Metadata = {
       "Everything free. Real-time global news monitoring with AI analytics, 3D maps, live TV, and 20+ themes.",
     type: "website",
   },
+  alternates: { canonical: "/pricing" },
 };
 
 export default function PricingPage() {

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
       "Contact WorldScope for support, feedback, or advertising inquiries.",
     type: "website",
   },
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
