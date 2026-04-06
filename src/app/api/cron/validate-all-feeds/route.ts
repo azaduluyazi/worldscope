@@ -173,7 +173,7 @@ export async function GET(request: NextRequest) {
     .eq("is_active", true)
     .select("name, url");
 
-  // ── Build Telegram Report ──────────────────────────────────
+  // ── Build FULL Telegram Report (every feed listed) ──────────
   const totalOk = results.filter((r) => r.status === "ok").length;
   const totalEmpty = results.filter((r) => r.status === "empty").length;
   const totalError = results.filter((r) => r.status === "error").length;
@@ -184,50 +184,60 @@ export async function GET(request: NextRequest) {
 
   const categories = [...new Set(results.map((r) => r.category))].sort();
 
+  const icon = (status: string) => {
+    switch (status) {
+      case "ok": return "✅";
+      case "empty": return "⚡";
+      case "timeout": return "⏰";
+      case "error": return "❌";
+      default: return "❓";
+    }
+  };
+
+  // Build report — ALL feeds listed under each category
   let report = `<b>📡 FULL FEED VALIDATION REPORT</b>\n`;
   report += `🕐 ${new Date().toISOString().replace("T", " ").slice(0, 19)} UTC\n\n`;
 
-  // Summary
+  // Summary header
   report += `<b>📊 SUMMARY</b>\n`;
-  report += `Total feeds: <b>${results.length}</b>\n`;
-  report += `✅ Working: <b>${totalOk}</b> (${successRate}%)\n`;
-  report += `⚡ Empty: <b>${totalEmpty}</b>\n`;
-  report += `❌ Broken: <b>${totalError}</b>\n`;
-  report += `⏰ Timeout: <b>${totalTimeout}</b>\n`;
-  report += `📰 Total items: <b>${totalItems}</b>\n`;
-  report += `⏱ Duration: <b>${durationSec}s</b>\n`;
+  report += `Total: <b>${results.length}</b> | ✅ ${totalOk} | ⚡ ${totalEmpty} | ❌ ${totalError} | ⏰ ${totalTimeout}\n`;
+  report += `Success: <b>${successRate}%</b> | Items: <b>${totalItems}</b> | Duration: <b>${durationSec}s</b>\n`;
 
   if (deactivated && deactivated.length > 0) {
-    report += `\n<b>🚫 DEACTIVATED (10+ errors):</b>\n`;
+    report += `\n<b>🚫 AUTO-DEACTIVATED:</b>\n`;
     for (const d of deactivated) {
-      report += `  ❌ ${escapeHtml(d.name)}\n`;
+      report += `  ${escapeHtml(d.name)}\n`;
     }
   }
 
-  // Category breakdown
-  report += `\n<b>📂 BY CATEGORY</b>\n`;
+  // ALL feeds grouped by category
   for (const cat of categories) {
     const catResults = results.filter((r) => r.category === cat);
     const catOk = catResults.filter((r) => r.status === "ok").length;
-    const _catFail = catResults.filter((r) => r.status !== "ok").length;
     const pct = Math.round((catOk / catResults.length) * 100);
     const bar = pct >= 80 ? "🟢" : pct >= 50 ? "🟡" : "🔴";
-    report += `${bar} <b>${cat.toUpperCase()}</b>: ${catOk}/${catResults.length} (${pct}%)\n`;
+
+    report += `\n${bar} <b>${cat.toUpperCase()}</b> (${catOk}/${catResults.length} — ${pct}%)\n`;
+
+    // Sort: ok first, then empty, then errors
+    const sorted = [...catResults].sort((a, b) => {
+      const order = { ok: 0, empty: 1, timeout: 2, error: 3 };
+      return (order[a.status] || 4) - (order[b.status] || 4);
+    });
+
+    for (const f of sorted) {
+      const dur = f.durationMs < 1000 ? `${f.durationMs}ms` : `${(f.durationMs / 1000).toFixed(1)}s`;
+      if (f.status === "ok") {
+        report += `${icon(f.status)} ${escapeHtml(f.name)}: ${f.items} items (${dur})\n`;
+      } else if (f.status === "empty") {
+        report += `${icon(f.status)} ${escapeHtml(f.name)}: 0 items (${dur})\n`;
+      } else {
+        report += `${icon(f.status)} ${escapeHtml(f.name)}: ${escapeHtml(f.error || "unknown")} (${dur})\n`;
+      }
+    }
   }
 
-  // List broken feeds
-  const broken = results.filter((r) => r.status === "error" || r.status === "timeout");
-  if (broken.length > 0) {
-    report += `\n<b>❌ BROKEN FEEDS (${broken.length})</b>\n`;
-    for (const f of broken.slice(0, 50)) { // Max 50 to avoid Telegram message limit
-      report += `  ${f.status === "timeout" ? "⏰" : "❌"} ${escapeHtml(f.name)} — ${escapeHtml(f.error || "unknown")}\n`;
-    }
-    if (broken.length > 50) {
-      report += `  ... and ${broken.length - 50} more\n`;
-    }
-  }
-
-  // Send to Telegram
+  // Send to Telegram (sendTelegramLong handles chunking at 4000 chars)
   let telegramSent = false;
   const notify = request.nextUrl.searchParams.get("notify") !== "false";
   if (notify) {
@@ -246,6 +256,8 @@ export async function GET(request: NextRequest) {
     totalItems,
     durationMs: Date.now() - startTime,
     deactivated: deactivated?.length || 0,
-    brokenFeeds: broken.map((f) => ({ name: f.name, url: f.url, error: f.error })),
+    brokenFeeds: results
+      .filter((r) => r.status === "error" || r.status === "timeout")
+      .map((f) => ({ name: f.name, url: f.url, error: f.error })),
   });
 }
