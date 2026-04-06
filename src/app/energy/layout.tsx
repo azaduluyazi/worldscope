@@ -7,6 +7,7 @@ export const metadata: Metadata = {
     "nuclear power plants map", "renewable energy", "infrastructure map",
     "pipeline map", "power outage tracker", "energy geopolitics",
     "OPEC monitor", "LNG tracker", "electricity grid",
+    "oil price today", "oil price live", "nuclear threat",
     "enerji istihbaratı", "petrol fiyatları", "nükleer santral haritası",
   ],
   alternates: { canonical: "/energy" },

@@ -7,6 +7,7 @@ export const metadata: Metadata = {
     "OREF alerts", "ACLED data", "armed conflict", "protest tracker",
     "drone strikes", "military base map", "live conflict map",
     "real-time war monitoring", "global conflict dashboard",
+    "war news", "war news today", "nuclear threat",
     "çatışma haritası", "askeri istihbarat", "savaş takip",
   ],
   alternates: {

@@ -7,6 +7,7 @@ export const metadata: Metadata = {
     "WHO alerts", "radiation monitoring", "epidemiology dashboard",
     "global health monitor", "bird flu tracker", "mpox tracking",
     "real-time health alerts", "nuclear radiation map",
+    "pandemic news", "pandemic tracker live", "disease outbreak today",
     "salgın takip", "sağlık istihbaratı", "radyasyon izleme",
   ],
   alternates: { canonical: "/health" },

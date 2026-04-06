@@ -7,7 +7,8 @@ export const metadata: Metadata = {
     "tennis live", "Olympics news", "FIFA rankings",
     "transfer news", "sports analytics", "match results live",
     "Premier League", "Champions League", "NBA scores",
-    "spor haberleri", "canlı skor", "futbol takip",
+    "live scores today", "football scores today",
+    "spor haberleri", "canlı maç sonuçları", "canlı skor", "futbol takip",
   ],
   alternates: { canonical: "/sports" },
 };

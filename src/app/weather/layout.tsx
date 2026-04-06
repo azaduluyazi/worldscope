@@ -8,7 +8,8 @@ export const metadata: Metadata = {
     "USGS earthquake live", "NASA FIRMS fire detection",
     "natural disaster map", "flood forecast", "volcanic activity",
     "real-time weather alerts", "extreme weather monitor",
-    "deprem takip", "doğal afet haritası", "hava durumu",
+    "earthquake today", "earthquake live", "earthquake map today",
+    "deprem takip", "bugün deprem", "doğal afet haritası", "hava durumu",
   ],
   alternates: { canonical: "/weather" },
 };

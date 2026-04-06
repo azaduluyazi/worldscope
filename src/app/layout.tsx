@@ -95,6 +95,11 @@ export const metadata: Metadata = {
     "live military flight tracker",
     "GPS jamming detection",
     "submarine cable map",
+    // High-volume global keywords
+    "flight tracker live",
+    "live news",
+    "OSINT tools",
+    "nuclear threat map",
     // Turkish — zero competition
     "küresel istihbarat",
     "gerçek zamanlı izleme",

@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     "bitcoin price", "fear and greed index", "prediction markets",
     "Polymarket", "geopolitical market impact", "economic indicators",
     "real-time market data", "global finance monitor",
+    "stock market live", "crypto market", "bitcoin price live",
     "finans panosu", "kripto takip", "piyasa izleme", "borsa verileri",
   ],
   openGraph: {

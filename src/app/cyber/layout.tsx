@@ -7,7 +7,9 @@ export const metadata: Metadata = {
     "internet outages map", "hacking news", "cyber threat intelligence",
     "GPS jamming map", "phishing tracker", "botnet C2 servers",
     "real-time cyber threats", "vulnerability scanner", "APT tracking",
+    "cyber attack", "cyber attack map", "cyber attack today",
     "siber güvenlik", "siber tehdit haritası", "güvenlik açığı takip",
+    "siber saldırı",
   ],
   alternates: {
     canonical: "/cyber",
