@@ -6,7 +6,9 @@ import { timeAgo } from "@/lib/utils/date";
 import { truncate } from "@/lib/utils/sanitize";
 import { isBookmarked, addBookmark, removeBookmark } from "@/lib/bookmarks";
 import { calculateImpactScore } from "@/lib/utils/impact-scoring";
+import { getSourceTier } from "@/lib/utils/source-tier";
 import { ImpactBadge } from "./ImpactBadge";
+import { SourceBadge } from "./SourceBadge";
 import { useState, useCallback, useMemo } from "react";
 
 interface IntelCardProps {
@@ -25,6 +27,11 @@ export function IntelCard({ item, allItems, onPreview, onSpeak }: IntelCardProps
   const impact = useMemo(
     () => calculateImpactScore(item, allItems),
     [item, allItems]
+  );
+
+  const sourceTier = useMemo(
+    () => getSourceTier(item.source),
+    [item.source]
   );
 
   const handleClick = (e: React.MouseEvent) => {
@@ -106,7 +113,8 @@ export function IntelCard({ item, allItems, onPreview, onSpeak }: IntelCardProps
       </p>
 
       <div className="flex justify-between items-center mt-1.5">
-        <span className="font-mono text-[7px] text-hud-muted">
+        <span className="font-mono text-[7px] text-hud-muted flex items-center gap-1">
+          <SourceBadge tier={sourceTier.tier} score={sourceTier.score} />
           {item.source}
         </span>
         <span className="font-mono text-[7px] text-hud-accent opacity-0 group-hover:opacity-100 transition-opacity">
