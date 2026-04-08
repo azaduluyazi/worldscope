@@ -378,6 +378,9 @@
     "predicted": "TAHMİN EDİLDİ",
     "predictedTooltip": "{count} ileri tahmin doğrulandı",
     "within": "{hours}s içinde",
+    "topicBadge": "KONU",
+    "topicBadgeTooltip": "Konu kümesi — coğrafya yerine semantik benzerlikle gruplanmış olaylar",
+    "topicScope": "Küresel konu",
     "confidence": {
       "critical": "KRİTİK",
       "high": "YÜKSEK",

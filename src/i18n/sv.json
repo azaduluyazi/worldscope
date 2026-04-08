@@ -385,7 +385,10 @@
         "elevated": "förhöjd",
         "high": "hög"
       }
-    }
+    },
+    "topicBadge": "ÄMNE",
+    "topicBadgeTooltip": "Ämneskluster — händelser grupperade efter semantisk likhet istället för geografi",
+    "topicScope": "Världsämne"
   },
   "storyline": {
     "title": "AKTIVA BERÄTTELSER",

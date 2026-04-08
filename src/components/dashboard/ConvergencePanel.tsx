@@ -243,6 +243,18 @@ function ConvergenceCard({
           <span className="font-mono text-[12px] font-bold text-hud-text tracking-wider truncate">
             {typeLabel}
           </span>
+          {/* Track badge: GEO 📍 or TOPIC 💡 — shows which detector
+              produced this cluster. Topic clusters come from semantic
+              similarity over geo-sparse events (Reddit/HN/YouTube). */}
+          {convergence.isTopicCluster ? (
+            <span
+              className="font-mono text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
+              style={{ backgroundColor: "#8a5cf620", color: "#a855f7" }}
+              title={t("topicBadgeTooltip")}
+            >
+              {"\ud83d\udca1"} {t("topicBadge")}
+            </span>
+          ) : null}
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {validatedPredictions > 0 && (
@@ -277,13 +289,21 @@ function ConvergenceCard({
         />
       </div>
 
-      {/* Region + Location */}
+      {/* Region + Location — topic clusters skip coords (sentinel 0,0) */}
       <div className="flex items-center gap-2 mt-1.5 text-[11px] font-mono text-hud-muted">
-        <span>
-          {"\ud83d\udccd"} {convergence.location.lat.toFixed(1)}°, {convergence.location.lng.toFixed(1)}°
-        </span>
-        <span className="text-hud-border">|</span>
-        <span>{convergence.affectedRegions.join(", ")}</span>
+        {convergence.isTopicCluster ? (
+          <span>
+            {"\ud83c\udf10"} {t("topicScope")}
+          </span>
+        ) : (
+          <>
+            <span>
+              {"\ud83d\udccd"} {convergence.location.lat.toFixed(1)}°, {convergence.location.lng.toFixed(1)}°
+            </span>
+            <span className="text-hud-border">|</span>
+            <span>{convergence.affectedRegions.join(", ")}</span>
+          </>
+        )}
       </div>
 
       {/* Expanded content */}

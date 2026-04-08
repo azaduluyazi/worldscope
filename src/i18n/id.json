@@ -385,7 +385,10 @@
         "elevated": "ditingkatkan",
         "high": "tinggi"
       }
-    }
+    },
+    "topicBadge": "TOPIK",
+    "topicBadgeTooltip": "Klaster Topik — acara yang dikumpulkan berdasarkan kesamaan semantis daripada geografi",
+    "topicScope": "Topik Global"
   },
   "storyline": {
     "title": "CERITA AKTIF",

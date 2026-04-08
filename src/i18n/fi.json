@@ -385,7 +385,10 @@
         "elevated": "korotettu",
         "high": "korkea"
       }
-    }
+    },
+    "topicBadge": "AIHE",
+    "topicBadgeTooltip": "Aihealue – tapahtumat ryhmitelty semanttisen samankaltaisuuden sijaan maantieteellisestä näkökulmasta",
+    "topicScope": "Maailmanlaajuinen aihe"
   },
   "storyline": {
     "title": "AKTIIVISET TARINAT",

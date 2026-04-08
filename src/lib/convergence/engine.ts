@@ -11,6 +11,7 @@ import {
   checkEventCorrelation,
   type CorrelationGroup,
 } from "./correlation-detector";
+import { detectTopicCorrelations } from "./topic-detector";
 import { resolveImpactChain, classifyConvergence } from "./impact-chain";
 import { calculateConvergenceConfidence, assignSignalRoles } from "./scorer";
 import { batchGenerateNarratives } from "./narrative";
@@ -100,7 +101,12 @@ function buildConvergence(
     publishedAt: event.publishedAt,
   }));
 
-  const regions = inferRegions(group.centroid.lat, group.centroid.lng);
+  // Topic clusters don't have a real centroid, so inferRegions on
+  // (0, 0) would incorrectly return ["AF"] (Gulf of Guinea bounding
+  // box). Force ["GLOBAL"] for topic-only clusters.
+  const regions = group.isTopic
+    ? ["GLOBAL"]
+    : inferRegions(group.centroid.lat, group.centroid.lng);
 
   // Phase 4: confidence-adaptive expiry instead of hardcoded 6h
   const ttl = ttlByConfidence(confidence);
@@ -132,6 +138,7 @@ function buildConvergence(
     createdAt: new Date().toISOString(),
     expiresAt,
     predictions,
+    isTopicCluster: group.isTopic === true,
   };
 }
 
@@ -174,8 +181,22 @@ export async function runFullConvergenceScan(
   // Reset counter per scan
   convergenceCounter = 0;
 
-  // Step 1: Detect raw correlations (now category-aware)
-  const correlations = detectCorrelations(items, hoursBack);
+  // ── DUAL-TRACK CORRELATION ────────────────────────────────
+  // Step 1a: Geographic track — Haversine clustering for events
+  //          that have lat/lng (USGS, GDACS, local news, etc.)
+  const geoCorrelations = detectCorrelations(items, hoursBack);
+
+  // Step 1b: Topic track — semantic similarity clustering for
+  //          geo-sparse events (Reddit, HN, YouTube, Bluesky,
+  //          finance/tech news without location). This is where
+  //          T4 social signals FINALLY reach the scorer, making
+  //          the tier diversity bonus real.
+  const topicCorrelations = await detectTopicCorrelations(items, hoursBack);
+
+  const correlations: CorrelationGroup[] = [
+    ...geoCorrelations,
+    ...topicCorrelations,
+  ];
 
   if (correlations.length === 0) {
     return {
@@ -188,9 +209,10 @@ export async function runFullConvergenceScan(
     };
   }
 
-  // Step 2: Semantic enrichment — embed all events in correlated groups
-  // We embed at the group level rather than the global level so that the
-  // total token usage scales with relevance, not raw feed volume.
+  // Step 2: Semantic enrichment — embed all events in correlated groups.
+  // Topic clusters already have embeddings from detectTopicCorrelations,
+  // but running embedBatch again is idempotent thanks to the pgvector
+  // cache (cache hit for everything that was just embedded).
   const enrichedCorrelations: CorrelationGroup[] = [];
   for (const c of correlations) {
     const embedded = await computeEventEmbeddings(c.events);

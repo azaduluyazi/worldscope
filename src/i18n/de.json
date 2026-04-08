@@ -385,7 +385,10 @@
         "elevated": "erhöht",
         "high": "hoch"
       }
-    }
+    },
+    "topicBadge": "THEMEN",
+    "topicBadgeTooltip": "Themencluster — Ereignisse gruppiert nach semantischer Ähnlichkeit anstatt nach Geografie",
+    "topicScope": "Globale Themen"
   },
   "storyline": {
     "title": "AKTIVE NARRATIVE",

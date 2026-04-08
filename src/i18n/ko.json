@@ -385,7 +385,10 @@
         "elevated": "상승",
         "high": "높음"
       }
-    }
+    },
+    "topicBadge": "주제",
+    "topicBadgeTooltip": "주제 클러스터 — 지리적 위치보다는 의미적 유사성을 기준으로 이벤트를 그룹화",
+    "topicScope": "글로벌 주제"
   },
   "storyline": {
     "title": "활성화된 스토리라인",

@@ -385,7 +385,10 @@
         "elevated": "cách tăng",
         "high": "tổng quan"
       }
-    }
+    },
+    "topicBadge": "CHỦ ĐỀ",
+    "topicBadgeTooltip": "Vùng chủ đề — các sự kiện được nhóm theo sự tương đồng ngữ nghĩa thay vì địa lý",
+    "topicScope": "Chủ đề toàn cầu"
   },
   "storyline": {
     "title": "CÁC KỂ THIẾT KẾ",

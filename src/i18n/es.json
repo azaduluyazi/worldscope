@@ -385,7 +385,10 @@
         "elevated": "elevada",
         "high": "alta"
       }
-    }
+    },
+    "topicBadge": "TÓPICO",
+    "topicBadgeTooltip": "Cluster de tema — eventos agrupados por similitud semántica en lugar de geografía",
+    "topicScope": "Ámbito global del tema"
   },
   "storyline": {
     "title": "LÍNEAS DE HISTORIA ACTIVAS",

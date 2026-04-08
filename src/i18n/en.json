@@ -378,6 +378,9 @@
     "predicted": "PREDICTED",
     "predictedTooltip": "{count} forward prediction(s) validated",
     "within": "within {hours}h",
+    "topicBadge": "TOPIC",
+    "topicBadgeTooltip": "Topic cluster — events grouped by semantic similarity instead of geography",
+    "topicScope": "Global topic",
     "confidence": {
       "critical": "CRITICAL",
       "high": "HIGH",

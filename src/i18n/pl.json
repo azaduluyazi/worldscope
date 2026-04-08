@@ -385,7 +385,10 @@
         "elevated": "podniesione",
         "high": "wysokie"
       }
-    }
+    },
+    "topicBadge": "TOPIC",
+    "topicBadgeTooltip": "Klaster tematyczny — wydarzenia grupowane według podobieństwa semantycznego zamiast geografii",
+    "topicScope": "Szeroki zakres tematyczny"
   },
   "storyline": {
     "title": "AKTYWNE NARRACJE",

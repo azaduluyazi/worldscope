@@ -385,7 +385,10 @@
         "elevated": "ridicat",
         "high": "ridicat"
       }
-    }
+    },
+    "topicBadge": "TOPIC",
+    "topicBadgeTooltip": "Cluster de subiect — evenimente grupate pe similaritate semantică în loc de geografie",
+    "topicScope": "Scop global al subiectului"
   },
   "storyline": {
     "title": "NARATIVE ACTIVE",

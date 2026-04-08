@@ -385,7 +385,10 @@
         "elevated": "zvýšené",
         "high": "vysoké"
       }
-    }
+    },
+    "topicBadge": "TÉMA",
+    "topicBadgeTooltip": "Tematická skupina — události uspořádané podle semantické podobnosti namísto geografie",
+    "topicScope": "Globální téma"
   },
   "storyline": {
     "title": "AKTIVNÍ PŘÍBĚHY",

@@ -385,7 +385,10 @@
         "elevated": "エレベート",
         "high": "ハイ"
       }
-    }
+    },
+    "topicBadge": "トピック",
+    "topicBadgeTooltip": "トピッククラスター — 地理的位置ではなくセマンティック類似性でイベントをグループ化",
+    "topicScope": "グローバルトピック"
   },
   "storyline": {
     "title": "アクティブなストーリーライン",

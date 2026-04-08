@@ -153,9 +153,22 @@ function findTemporalGroups(cluster: GeoCluster): ClusterEvent[][] {
 
 export interface CorrelationGroup {
   events: ClusterEvent[];
+  /**
+   * Geographic centroid of the cluster. For topic-only clusters (where
+   * events lack lat/lng and are grouped by semantic similarity instead
+   * of Haversine), this is set to the sentinel { lat: 0, lng: 0 } —
+   * downstream consumers should check `isTopic` before treating it as
+   * a real location.
+   */
   centroid: { lat: number; lng: number };
   categories: Category[];
   timeSpan: { start: string; end: string };
+  /**
+   * True when this cluster was produced by the topic-detector track
+   * instead of the geographic track. Topic clusters contain events
+   * without lat/lng and are grouped by embedding similarity.
+   */
+  isTopic?: boolean;
 }
 
 /**

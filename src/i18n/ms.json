@@ -385,7 +385,10 @@
         "elevated": "ditingkatkan",
         "high": "tinggi"
       }
-    }
+    },
+    "topicBadge": "TOPIK",
+    "topicBadgeTooltip": "Kumpulan topik — acara yang digrupkan berdasarkan keserupaan semantik bukan geografi",
+    "topicScope": "Topik global"
   },
   "storyline": {
     "title": "CERITA AKTIF",

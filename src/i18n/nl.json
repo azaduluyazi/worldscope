@@ -385,7 +385,10 @@
         "elevated": "verhoogd",
         "high": "hoog"
       }
-    }
+    },
+    "topicBadge": "Onderwerpsbadge",
+    "topicBadgeTooltip": "Onderwerpscluster — evenementen gegroepeerd op semantische gelijkenis in plaats van geografie",
+    "topicScope": "Globale onderwerpsbreedte"
   },
   "storyline": {
     "title": "ACTIEVE VERHAALLIJNEN",

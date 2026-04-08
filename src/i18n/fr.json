@@ -385,7 +385,10 @@
         "elevated": "élevé",
         "high": "élevé"
       }
-    }
+    },
+    "topicBadge": "TOPIC",
+    "topicBadgeTooltip": "Cluster de sujet — événements regroupés par similarité sémantique plutôt que par géographie",
+    "topicScope": "Échelle mondiale du sujet"
   },
   "storyline": {
     "title": "NARRATIFS ACTIFS",

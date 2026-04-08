@@ -385,7 +385,10 @@
         "elevated": "emelt",
         "high": "magas"
       }
-    }
+    },
+    "topicBadge": "TÉMA",
+    "topicBadgeTooltip": "Témakör — események a szemantikus hasonlóság helyett földrajzi helyett csoportosítva",
+    "topicScope": "Globális téma"
   },
   "storyline": {
     "title": "AKTÍV SZTORIK",

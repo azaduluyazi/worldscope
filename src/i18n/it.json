@@ -385,7 +385,10 @@
         "elevated": "elevato",
         "high": "alto"
       }
-    }
+    },
+    "topicBadge": "ARGOMENTO",
+    "topicBadgeTooltip": "Cluster di argomento — eventi raggruppati per similarità semantica anziché per geografia",
+    "topicScope": "Scopo di argomento globale"
   },
   "storyline": {
     "title": "STORIE ATTIVE",

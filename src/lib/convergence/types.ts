@@ -74,6 +74,14 @@ export interface Convergence {
    * engine attaches the convergence to a storyline.
    */
   storylineId?: string;
+  /**
+   * True when this convergence was produced by the topic-detector
+   * track (geo-sparse events clustered by semantic similarity +
+   * category + time window) instead of the geographic Haversine
+   * track. UI should skip location display and show a TOPIC badge
+   * instead of coordinates. `location` will be {0, 0} sentinel.
+   */
+  isTopicCluster?: boolean;
 }
 
 export interface ConvergenceResponse {

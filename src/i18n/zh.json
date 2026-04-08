@@ -385,7 +385,10 @@
         "elevated": "升高",
         "high": "高"
       }
-    }
+    },
+    "topicBadge": "话题",
+    "topicBadgeTooltip": "话题集群 — 根据语义相似性而不是地理位置对事件进行分组",
+    "topicScope": "全球话题"
   },
   "storyline": {
     "title": "活跃故事线",

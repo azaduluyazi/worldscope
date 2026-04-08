@@ -385,7 +385,10 @@
         "elevated": "elevado",
         "high": "alto"
       }
-    }
+    },
+    "topicBadge": "TÓPICO",
+    "topicBadgeTooltip": "Cluster de tópico — eventos agrupados por semelhança semântica em vez de geografia",
+    "topicScope": "Tópico global"
   },
   "storyline": {
     "title": "LINHAS DE HISTÓRIA ATIVAS",

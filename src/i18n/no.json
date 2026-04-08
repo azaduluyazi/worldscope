@@ -385,7 +385,10 @@
         "elevated": "forhøyet",
         "high": "høy"
       }
-    }
+    },
+    "topicBadge": "EMNE",
+    "topicBadgeTooltip": "Emnekluster — hendelser grupperinger etter semantisk likhet i stedet for geografi",
+    "topicScope": "Globalt emne"
   },
   "storyline": {
     "title": "AKTIVE HISTORIER",
