@@ -337,6 +337,30 @@
     "geopolitical": "Jeopolitik",
     "indices": "Ülke Endeksleri"
   },
+  "mapLayers": {
+    "button": "KATMANLAR",
+    "title": "HARİTA KATMANLARI",
+    "close": "Kapat",
+    "searchPlaceholder": "Katman ara...",
+    "all": "HEPSİ",
+    "none": "HİÇ",
+    "on": "AÇIK",
+    "off": "KAPALI",
+    "groups": {
+      "conflict": "Çatışma ve Güvenlik",
+      "military": "Askeri ve Savunma",
+      "natural": "Doğal Afetler",
+      "environmental": "Çevre",
+      "maritime": "Denizcilik",
+      "tracking": "Hava ve Uzay",
+      "cyber": "Siber ve Teknoloji",
+      "infrastructure": "Altyapı",
+      "finance": "Finans ve Piyasalar",
+      "geopolitical": "Jeopolitik",
+      "indices": "Ülke Endeksleri",
+      "intel": "İstihbarat"
+    }
+  },
   "convergence": {
     "title": "SİNYAL BİRLEŞİMİ",
     "active": "{count} aktif",

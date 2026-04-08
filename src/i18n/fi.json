@@ -337,73 +337,97 @@
     "indices": "Maaindeksit"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "SIGNAALIN YHTEENVETO",
+    "active": "{count} aktiivista",
+    "scanning": "SKANNATAAN...",
+    "empty": "EI AKTIIVISTA YHTEENVETOJA",
+    "emptyHint": "Monisignaali-korrelaatiot näkyvät täällä, kun havaitaan",
+    "signals": "{count} signaalia",
+    "moreSignals": "+{count} lisää signaaleja",
+    "signalsAnalyzed": "{count} signaalia analysoitu",
+    "span": "{minutes} minuutin kesto",
+    "aiAnalysis": "TEKOÄLYANALYYSI",
+    "forwardPredictions": "Eteenpäin Osoittavat Ennusteet",
+    "validated": "VARMISTETTU",
+    "validatedTooltip": "{count} ennustetta vahvistettu myöhemmin tapahtuneilla",
+    "predicted": "ENNUSTETTU",
+    "predictedTooltip": "{count} eteenpäin osoittava ennuste vahvistettu",
+    "within": "sisällä {hours} tuntia",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "KRITIINEN",
+      "high": "KORKEA",
+      "elevated": "KOHOTETTU",
+      "low": "MATALA"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "GEOPOLIITTINEN",
+      "economic_cascade": "TALOUDELLINEN KASKAADI",
+      "cyber_infrastructure": "KYBERINFRATRUKTUURI",
+      "humanitarian": "IHMISETÄRINEN",
+      "environmental": "YMPÄRISTÖLLINEN",
+      "multi_signal": "MONISIGNAALI"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "laukaiseva",
+      "consequence": "seuraus",
+      "reaction": "reaktio"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Vastakkaistodelliset Anomaaliat — {count}",
+      "predictedDidNot": "Ennustettu {category} @ {probability}% — ei ilmennyt",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "PUUTTAVA REAKTIO",
+        "absent_signal": "PUUTTAVA SIGNAALI",
+        "premature_silence": "AIHEUTTAMATON HILJAINEN"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "tiedot",
+        "elevated": "korotettu",
+        "high": "korkea"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "AKTIIVISET TARINAT",
+    "active": "{count} aktiivista",
+    "loading": "LATAUTUU...",
+    "empty": "EI AKTIIVISTA TARINOITA",
+    "emptyHint": "Usean päivän kertomukset näkyvät täällä, kun yhteenvedot kokoontuvat",
+    "snapshots": "{count} otoksia",
+    "snapshotTimeline": "OTOKSEN AJANJAKSO",
+    "olderSnapshots": "+{count} vanhempia otoksia",
+    "created": "luotu {time}",
+    "lastActivity": "viimeisin {time}",
+    "daysLeft": "{days} päivää jäljellä",
+    "hoursLeft": "{hours} tuntia jäljellä",
+    "expired": "vanhentunut",
+    "justNow": "juuri nyt",
+    "minAgo": "{min} minuuttia sitten",
+    "hoursAgo": "{hours} tuntia sitten",
+    "daysAgo": "{days} päivää sitten"
+  },
+  "mapLayers": {
+    "button": "KERROKSET",
+    "title": "KARTTAKERROKSET",
+    "close": "Sulje",
+    "searchPlaceholder": "Etsi kerroksia...",
+    "all": "KAikki",
+    "none": "EI MITÄÄN",
+    "on": "PÄÄLLÄ",
+    "off": "POIS PÄÄLTÄ",
+    "groups": {
+      "conflict": "Konflikti & Turvallisuus",
+      "military": "Sotilaallinen & Puolustus",
+      "natural": "Luonnonmullistukset",
+      "environmental": "Ympäristö",
+      "maritime": "Meri & Laivasto",
+      "tracking": "Ilma & Avaruus",
+      "cyber": "Kyber & Tekniikka",
+      "infrastructure": "Infrastruktuuri",
+      "finance": "Talous & Markkinat",
+      "geopolitical": "Geopoliittinen",
+      "indices": "Maaindeksejä",
+      "intel": "Tiedustelu"
+    }
   }
 }

@@ -337,73 +337,97 @@
     "indices": "Landsindekser"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "SIGNALSAMMENFALL",
+    "active": "{count} aktive",
+    "scanning": "SKANNING...",
+    "empty": "INGEN AKTIVE SAMMENFALL",
+    "emptyHint": "Flersignalkorrelasjoner vises her når de er detektert",
+    "signals": "{count} signaler",
+    "moreSignals": "+{count} flere signaler",
+    "signalsAnalyzed": "{count} signaler analysert",
+    "span": "{minutes} minutters spenn",
+    "aiAnalysis": "AI-ANALYSE",
+    "forwardPredictions": "Fremoverprediksjoner",
+    "validated": "VALIDERT",
+    "validatedTooltip": "{count} prediksjon(er) bekreftet av påfølgende hendelser",
+    "predicted": "PREDIKTERT",
+    "predictedTooltip": "{count} fremoverprediksjon(er) validert",
+    "within": "innen {hours}t",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "KRITISK",
+      "high": "HØY",
+      "elevated": "FORHØYET",
+      "low": "LAV"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
+      "geopolitical": "GEOPOLITISK",
+      "economic_cascade": "ØKONOMISK KASKADE",
       "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "humanitarian": "HUMANITÆR",
+      "environmental": "MILJØ",
+      "multi_signal": "FLERSIGNAL"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "utløser",
+      "consequence": "konsekvens",
+      "reaction": "reaksjon"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Kontrafaktiske Anomalier — {count}",
+      "predictedDidNot": "Prediktert {category} @ {probability}% — dukket ikke opp",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "MANGLENDE REAKSJON",
+        "absent_signal": "FRAMMANGENDE SIGNAL",
+        "premature_silence": "TIDLIG ADVARSEL"
       },
       "severity": {
         "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "elevated": "forhøyet",
+        "high": "høy"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "AKTIVE HISTORIER",
+    "active": "{count} aktive",
+    "loading": "LASTER...",
+    "empty": "INGEN AKTIVE HISTORIER",
+    "emptyHint": "Flerdagsnarrativer vises her når sammenfaller grupperer seg",
+    "snapshots": "{count} øyeblikksbilder",
+    "snapshotTimeline": "ØYEBLIKKSBILDTIDSLINJE",
+    "olderSnapshots": "+{count} eldre øyeblikksbilder",
+    "created": "opprettet {time}",
+    "lastActivity": "sist {time}",
+    "daysLeft": "{days} dager igjen",
+    "hoursLeft": "{hours} timer igjen",
+    "expired": "utløpt",
+    "justNow": "akkurat nå",
+    "minAgo": "{min} minutter siden",
+    "hoursAgo": "{hours} timer siden",
+    "daysAgo": "{days} dager siden"
+  },
+  "mapLayers": {
+    "button": "LAG",
+    "title": "KARTLAG",
+    "close": "Lukk",
+    "searchPlaceholder": "Søk lag...",
+    "all": "ALLE",
+    "none": "INGEN",
+    "on": "PÅ",
+    "off": "AV",
+    "groups": {
+      "conflict": "Konflikt & Sikkerhet",
+      "military": "Militær & Forsvar",
+      "natural": "Naturkatastrofer",
+      "environmental": "Miljø",
+      "maritime": "Maritim & Shipping",
+      "tracking": "Luft & Rom",
+      "cyber": "Cyber & Teknologi",
+      "infrastructure": "Infrastruktur",
+      "finance": "Finans & Markeder",
+      "geopolitical": "Geopolitisk",
+      "indices": "Landindekser",
+      "intel": "Etterretning"
+    }
   }
 }

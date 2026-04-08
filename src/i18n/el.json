@@ -337,73 +337,97 @@
     "indices": "Δείκτες χωρών"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "ΣΥΝΟΔΕΥΣΗ ΣΗΜΑΤΩΝ",
+    "active": "{count} ενεργά",
+    "scanning": "ΣΚΑΝΑΡΙΣΜΑ...",
+    "empty": "ΧΩΡΙΣ ΕΝΕΡΓΕΣ ΣΥΝΟΔΕΥΣΕΙΣ",
+    "emptyHint": "Οι πολυσήμαντες συσχετίσεις εμφανίζονται εδώ όταν ανιχνευθούν",
+    "signals": "{count} σήματα",
+    "moreSignals": "+{count} περισσότερα σήματα",
+    "signalsAnalyzed": "{count} σήματα αναλύθηκαν",
+    "span": "{minutes}min διάρκεια",
+    "aiAnalysis": "ΑΝΑΛΥΣΗ AI",
+    "forwardPredictions": "Προβλέψεις Προώθησης",
+    "validated": "ΕΠΙΒΕΒΑΙΩΘΕΝ",
+    "validatedTooltip": "{count} προβλέψεις επιβεβαιώθηκαν από μεταγενέστερα γεγονότα",
+    "predicted": "ΠΡΟΒΛΕΠΟΜΕΝΟ",
+    "predictedTooltip": "{count} προβλέψεις προώθησης επιβεβαιώθηκαν",
+    "within": "μέσα σε {hours}h",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "ΚΡΙΤΙΚΟ",
+      "high": "ΥΨΗΛΟ",
+      "elevated": "ΑΝΥΨΩΜΕΝΟ",
+      "low": "ΧΑΜΗΛΟ"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "ΓΕΩΠΟΛΙΤΙΚΗ",
+      "economic_cascade": "ΟΙΚΟΝΟΜΙΚΗ ΚΑΤΑΡΡΑΚΤΗ",
+      "cyber_infrastructure": "ΚΥΒΕΡΝΗΤΙΚΕΣ ΥΠΟΔΟΜΕΣ",
+      "humanitarian": "ΑΝΘΡΩΠΙΣΤΙΚΗ",
+      "environmental": "ΠΕΡΙΒΑΛΛΟΝΤΙΚΗ",
+      "multi_signal": "ΠΟΛΥΣΗΜΑΝΤΙΚΗ"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "εμπρόθεσμη",
+      "consequence": "απώλεια",
+      "reaction": "αντίδραση"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Αντίθετα Ανώμαλα — {count}",
+      "predictedDidNot": "Προβλέφθηκε {category} @ {probability}% — δεν εμφανίστηκε",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "ΕΛΛΕΙΨΗ ΑΝΤΙΔΡΑΣΗΣ",
+        "absent_signal": "ΑΠΟΝΤΕΣ ΣΗΜΑΤΑ",
+        "premature_silence": "ΠΡΟΧΩΡΗΜΕΝΗ ΣΙΩΠΗ"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "πληροφορίες",
+        "elevated": "ανυψωμένο",
+        "high": "υψηλό"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "ΕΝΕΡΓΕΣ ΙΣΤΟΡΙΕΣ",
+    "active": "{count} ενεργές",
+    "loading": "ΦΟΡΤΩΣΗ...",
+    "empty": "ΧΩΡΙΣ ΕΝΕΡΓΕΣ ΙΣΤΟΡΙΕΣ",
+    "emptyHint": "Οι πολημερείς αφηγήσεις εμφανίζονται εδώ καθώς οι συσχετίσεις συσσωρεύονται",
+    "snapshots": "{count} στιγμιότυπα",
+    "snapshotTimeline": "ΧΡΟΝΟΛΟΓΙΑ ΣΤΙΓΜΙΟΤΥΠΩΝ",
+    "olderSnapshots": "+{count} παλαιότερα στιγμιότυπα",
+    "created": "δημιουργήθηκε {time}",
+    "lastActivity": "τελευταία {time}",
+    "daysLeft": "{days}μ left",
+    "hoursLeft": "{hours}ω left",
+    "expired": "έληξε",
+    "justNow": "τώρα",
+    "minAgo": "{min}λ πρίν",
+    "hoursAgo": "{hours}ω πρίν",
+    "daysAgo": "{days}μ πρίν"
+  },
+  "mapLayers": {
+    "button": "ΕΠΙΠΛΕΟΝ",
+    "title": "ΕΠΙΠΛΕΟΝ ΧΑΡΤΩΝ",
+    "close": "Κλείσιμο",
+    "searchPlaceholder": "Αναζήτηση επιπλέον...",
+    "all": "ΟΛΑ",
+    "none": "ΚΑΝΕΝΑ",
+    "on": "ΕΝΕΡΓΟ",
+    "off": "ΑΝΕΝΕΡΓΟ",
+    "groups": {
+      "conflict": "Σύγκρουση & Ασφάλεια",
+      "military": "Στρατιωτικά & Άμυνα",
+      "natural": "Φυσικές Καταστροφές",
+      "environmental": "Περιβάλλον",
+      "maritime": "Ναυτιλία & Μεταφορές",
+      "tracking": "Αεροπορία & Διάστημα",
+      "cyber": "Κυβερνοχώρος & Τεχνολογία",
+      "infrastructure": "Υποδομές",
+      "finance": "Οικονομία & Αγορές",
+      "geopolitical": "Γεωπολιτική",
+      "indices": "Δεικτές Χωρών",
+      "intel": "Πληροφορίες"
+    }
   }
 }

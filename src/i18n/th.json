@@ -337,22 +337,22 @@
     "indices": "ดัชนีประเทศ"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "การมาบรรจบกันของสัญญาณ",
+    "active": "{count} สัญญาณที่กำลังทำงาน",
+    "scanning": "กำลังค้นหา...",
+    "empty": "ไม่มีการมาบรรจบกันของสัญญาณที่กำลังทำงาน",
+    "emptyHint": "การค้นหาความสัมพันธ์ระหว่างสัญญาณหลายตัวจะปรากฏที่นี่เมื่อตรวจพบ",
+    "signals": "{count} สัญญาณ",
+    "moreSignals": "+{count} สัญญาณเพิ่มเติม",
+    "signalsAnalyzed": "{count} สัญญาณที่วิเคราะห์",
+    "span": "{minutes} นาที",
+    "aiAnalysis": "การวิเคราะห์ AI",
+    "forwardPredictions": "การคาดการณ์ล่วงหน้า",
+    "validated": "ได้รับการตรวจสอบ",
+    "validatedTooltip": "{count} การคาดการณ์ที่ได้รับการยืนยันจากเหตุการณ์ต่อเนื่อง",
+    "predicted": "คาดการณ์",
+    "predictedTooltip": "{count} การคาดการณ์ที่ได้รับการยืนยัน",
+    "within": "ภายใน {hours} ชั่วโมง",
     "confidence": {
       "critical": "CRITICAL",
       "high": "HIGH",
@@ -360,50 +360,74 @@
       "low": "LOW"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "ภูมิรัฐศาสตร์",
+      "economic_cascade": "การร่วงหล่นทางเศรษฐกิจ",
+      "cyber_infrastructure": "โครงสร้างพื้นฐานไซเบอร์",
+      "humanitarian": "มนุษยธรรม",
+      "environmental": "สิ่งแวดล้อม",
+      "multi_signal": "สัญญาณหลายตัว"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "กระตุ้น",
+      "consequence": "ผลที่ตามมา",
+      "reaction": "ปฏิกิริยา"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "ความผิดปกติของการคาดการณ์ — {count}",
+      "predictedDidNot": "คาดการณ์ {category} @ {probability}% — ไม่ปรากฏ",
       "kind": {
         "missing_reaction": "MISSING REACTION",
         "absent_signal": "ABSENT SIGNAL",
         "premature_silence": "EARLY WARNING"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "ข้อมูล",
+        "elevated": "เพิ่มขึ้น",
+        "high": "สูง"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "เรื่องราวที่กำลังทำงาน",
+    "active": "{count} เรื่องราวที่กำลังทำงาน",
+    "loading": "กำลังโหลด...",
+    "empty": "ไม่มีเรื่องราวที่กำลังทำงาน",
+    "emptyHint": "เรื่องราวที่มีหลายวันจะปรากฏที่นี่เมื่อการมาบรรจบกันของสัญญาณรวมกัน",
+    "snapshots": "{count} ภาพถ่าย",
+    "snapshotTimeline": "เส้นเวลาภาพถ่าย",
+    "olderSnapshots": "+{count} ภาพถ่ายเก่ากว่า",
+    "created": "สร้างเมื่อ {time}",
+    "lastActivity": "กิจกรรมล่าสุดเมื่อ {time}",
+    "daysLeft": "{days} วัน",
+    "hoursLeft": "{hours} ชั่วโมง",
+    "expired": "หมดอายุ",
+    "justNow": "เพิ่งจะ",
+    "minAgo": "{min} นาทีที่แล้ว",
+    "hoursAgo": "{hours} ชั่วโมงที่แล้ว",
+    "daysAgo": "{days} วันที่แล้ว"
+  },
+  "mapLayers": {
+    "button": "ชั้น",
+    "title": "ชั้นแผนที่",
+    "close": "ปิด",
+    "searchPlaceholder": "ค้นหาชั้น...",
+    "all": "ทั้งหมด",
+    "none": "ไม่มี",
+    "on": "เปิด",
+    "off": "ปิด",
+    "groups": {
+      "conflict": "ความขัดแย้งและความมั่นคง",
+      "military": "การทหารและการป้องกัน",
+      "natural": "ภัยธรรมชาติ",
+      "environmental": "สิ่งแวดล้อม",
+      "maritime": "การเดินเรือและการขนส่งทางทะเล",
+      "tracking": "การบินและอวกาศ",
+      "cyber": "ไซเบอร์และเทคโนโลยี",
+      "infrastructure": "โครงสร้างพื้นฐาน",
+      "finance": "การเงินและการตลาด",
+      "geopolitical": "ภูมิรัฐศาสตร์",
+      "indices": "ดัชนีประเทศ",
+      "intel": "ข่าวกรอง"
+    }
   }
 }

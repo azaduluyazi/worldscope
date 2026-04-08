@@ -337,73 +337,97 @@
     "indices": "Landenindices"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
+    "title": "SIGNAALCONVERGENTIE",
+    "active": "{count} actief",
+    "scanning": "SCANNEN...",
+    "empty": "GEEN ACTIEVE CONVERGENTIES",
+    "emptyHint": "Meersignaalcorrelaties verschijnen hier wanneer ze worden gedetecteerd",
+    "signals": "{count} signalen",
+    "moreSignals": "+{count} meer signalen",
+    "signalsAnalyzed": "{count} signalen geanalyseerd",
     "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "aiAnalysis": "AI-ANALYSE",
+    "forwardPredictions": "Voorspellingen",
+    "validated": "GEVALIDEERD",
+    "validatedTooltip": "{count} voorspelling(en) bevestigd door latere gebeurtenissen",
+    "predicted": "VOORSPELD",
+    "predictedTooltip": "{count} voorspelling(en) geverifieerd",
+    "within": "binnen {hours}u",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "KRITIEK",
+      "high": "HOOG",
+      "elevated": "VERHOOGD",
+      "low": "LAAG"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
+      "geopolitical": "GEOPOLITIEK",
+      "economic_cascade": "ECONOMISCHE CASCADE",
       "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "humanitarian": "HUMANITAIR",
+      "environmental": "MILIEU",
+      "multi_signal": "MEERSIGNAAL"
     },
     "role": {
       "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "consequence": "gevolg",
+      "reaction": "reactie"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Counter-Factuele Anomalieën — {count}",
+      "predictedDidNot": "Voorspelde {category} @ {probability}% — is niet verschenen",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "ONTBREKENDE REACTIE",
+        "absent_signal": "AFWEZIG SIGNAAL",
+        "premature_silence": "VROEGE WAARSCHUWING"
       },
       "severity": {
         "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "elevated": "verhoogd",
+        "high": "hoog"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "ACTIEVE VERHAALLIJNEN",
+    "active": "{count} actief",
+    "loading": "LAAD...",
+    "empty": "GEEN ACTIEVE VERHAALLIJNEN",
+    "emptyHint": "Meerdagse verhalen verschijnen hier wanneer convergenties clusteren",
+    "snapshots": "{count} momentopnamen",
+    "snapshotTimeline": "MOMENTOPNAME-TIJDlijN",
+    "olderSnapshots": "+{count} oudere momentopnamen",
+    "created": "gemaakt {time}",
+    "lastActivity": "laatste {time}",
+    "daysLeft": "{days}d over",
+    "hoursLeft": "{hours}u over",
+    "expired": "verlopen",
+    "justNow": "net nu",
+    "minAgo": "{min}m geleden",
+    "hoursAgo": "{hours}u geleden",
+    "daysAgo": "{days}d geleden"
+  },
+  "mapLayers": {
+    "button": "LAGEN",
+    "title": "KAARTLAGEN",
+    "close": "Sluiten",
+    "searchPlaceholder": "Zoek lagen...",
+    "all": "ALLES",
+    "none": "GEEN",
+    "on": "AAN",
+    "off": "UIT",
+    "groups": {
+      "conflict": "Conflict & Veiligheid",
+      "military": "Militair & Defensie",
+      "natural": "Natuurrampen",
+      "environmental": "Milieu",
+      "maritime": "Maritiem & Scheepvaart",
+      "tracking": "Lucht & Ruimte",
+      "cyber": "Cyber & Tech",
+      "infrastructure": "Infrastructuur",
+      "finance": "Financiën & Markten",
+      "geopolitical": "Geopolitiek",
+      "indices": "Landenindices",
+      "intel": "Inlichtingen"
+    }
   }
 }

@@ -337,73 +337,97 @@
     "indices": "Indeks Negara"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "PERTUMBUHAN ISYARAT",
+    "active": "{count} aktif",
+    "scanning": "MENYAPU...",
+    "empty": "TIADA PERTUMBUHAN AKTIF",
+    "emptyHint": "Korelasi isyarat berganda muncul di sini apabila dikesan",
+    "signals": "{count} isyarat",
+    "moreSignals": "+{count} isyarat lagi",
+    "signalsAnalyzed": "{count} isyarat dianalisis",
+    "span": "{minutes}min selang",
+    "aiAnalysis": "ANALISIS AI",
+    "forwardPredictions": "Ramalan Masa Depan",
+    "validated": "DISAHKAN",
+    "validatedTooltip": "{count} ramalan disahkan oleh peristiwa berikutnya",
+    "predicted": "DIRAMALKAN",
+    "predictedTooltip": "{count} ramalan masa depan disahkan",
+    "within": "dalam {hours}j",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "KRITIKAL",
+      "high": "TINGGI",
+      "elevated": "DITINGKATKAN",
+      "low": "RENDAH"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "GEOPOLITIK",
+      "economic_cascade": "KASKAD EKONOMI",
+      "cyber_infrastructure": "INFRASTRUKTUR Siber",
+      "humanitarian": "KEMANUSIAAN",
+      "environmental": "ALAM SEKITAR",
+      "multi_signal": "ISYARAT BERGANDA"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "picu",
+      "consequence": "akibat",
+      "reaction": "reaksi"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Keganjilan Kontrafaktual — {count}",
+      "predictedDidNot": "Diramalkan {category} @ {probability}% — tidak muncul",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "REAKSI HILANG",
+        "absent_signal": "ISYARAT TIDAK HADIR",
+        "premature_silence": "AMARAN AWAL"
       },
       "severity": {
         "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "elevated": "ditingkatkan",
+        "high": "tinggi"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "CERITA AKTIF",
+    "active": "{count} aktif",
+    "loading": "MEMUAT...",
+    "empty": "TIADA CERITA AKTIF",
+    "emptyHint": "Narasi berhari-hari muncul di sini apabila pertumbuhan berkumpul",
+    "snapshots": "{count} snapshot",
+    "snapshotTimeline": "GARIS MASA SNAPSHOT",
+    "olderSnapshots": "+{count} snapshot lama",
+    "created": "dicipta {time}",
+    "lastActivity": "aktiviti terakhir {time}",
+    "daysLeft": "{days}h lagi",
+    "hoursLeft": "{hours}j lagi",
+    "expired": "tamat tempoh",
+    "justNow": "baru saja",
+    "minAgo": "{min}m yang lalu",
+    "hoursAgo": "{hours}j yang lalu",
+    "daysAgo": "{days}h yang lalu"
+  },
+  "mapLayers": {
+    "button": "LAPISAN",
+    "title": "LAPISAN PETA",
+    "close": "Tutup",
+    "searchPlaceholder": "Cari lapisan...",
+    "all": "SEMUA",
+    "none": "TIADA",
+    "on": "AKTIF",
+    "off": "TIDAK AKTIF",
+    "groups": {
+      "conflict": "Konflik & Keselamatan",
+      "military": "Tentera & Pertahanan",
+      "natural": "Bencana Alam",
+      "environmental": "Alam Sekitar",
+      "maritime": "Maritim & Penghantaran",
+      "tracking": "Udara & Angkasa",
+      "cyber": "Siber & Teknologi",
+      "infrastructure": "Infrastruktur",
+      "finance": "Kewangan & Pasaran",
+      "geopolitical": "Geopolitik",
+      "indices": "Indeks Negara",
+      "intel": "Perisikan"
+    }
   }
 }

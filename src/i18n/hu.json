@@ -337,73 +337,97 @@
     "indices": "Országindexek"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "JELENTÉS-ÖSSZEFÜGGÉS",
+    "active": "{count} aktív",
+    "scanning": "KERESÉS...",
+    "empty": "NINCS AKTÍV ÖSSZEFÜGGÉS",
+    "emptyHint": "Többszörös jelkorrelációk itt jelennek meg, ha észlelik",
+    "signals": "{count} jel",
+    "moreSignals": "+{count} további jel",
+    "signalsAnalyzed": "{count} jel elemzése",
+    "span": "{minutes} perc időtartam",
+    "aiAnalysis": "MI ELEMZÉS",
+    "forwardPredictions": "Előretekintő Predikciók",
+    "validated": "IGAZOLT",
+    "validatedTooltip": "{count} predikció megerősítve későbbi események által",
+    "predicted": "PREDIKÁLT",
+    "predictedTooltip": "{count} előretekintő predikció ellenőrzése",
+    "within": "{hours} órán belül",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "KRITIKUS",
+      "high": "MAGAS",
+      "elevated": "EMELT",
+      "low": "ALACSONY"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "GEOPOLITIKAI",
+      "economic_cascade": "GAZDASÁGI KASKÁD",
+      "cyber_infrastructure": "KIBER INFRA",
+      "humanitarian": "HUMANITÁRIUS",
+      "environmental": "KÖRNYEZETI",
+      "multi_signal": "TÖBBSZÖRÖS JEL"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "indító",
+      "consequence": "következmény",
+      "reaction": "reakció"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Ellentétes Tények — {count}",
+      "predictedDidNot": "Predikált {category} @ {probability}% — nem jelent meg",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "HIÁNYZÓ REAKCIÓ",
+        "absent_signal": "HIÁNYZÓ JEL",
+        "premature_silence": "KORAI FIGYELMEZTETÉS"
       },
       "severity": {
         "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "elevated": "emelt",
+        "high": "magas"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "AKTÍV SZTORIK",
+    "active": "{count} aktív",
+    "loading": "BETÖLTÉS...",
+    "empty": "NINCS AKTÍV SZTORI",
+    "emptyHint": "Többnapos narratívák itt jelennek meg, ahogy az összefüggések csoportosulnak",
+    "snapshots": "{count} pillanatkép",
+    "snapshotTimeline": "PILLANATKÉP IDŐVONAL",
+    "olderSnapshots": "+{count} régebbi pillanatkép",
+    "created": "létrehozva {time}",
+    "lastActivity": "utolsó {time}",
+    "daysLeft": "{days} nap hátravan",
+    "hoursLeft": "{hours} óra hátravan",
+    "expired": "lejárt",
+    "justNow": "épp most",
+    "minAgo": "{min} perc ezelőtt",
+    "hoursAgo": "{hours} óra ezelőtt",
+    "daysAgo": "{days} nap ezelőtt"
+  },
+  "mapLayers": {
+    "button": "RÉTEGEK",
+    "title": "TÉRKÉP RÉTEGEK",
+    "close": "Bezárás",
+    "searchPlaceholder": "Rétegek keresése...",
+    "all": "MIND",
+    "none": "SEMMI",
+    "on": "BE",
+    "off": "KI",
+    "groups": {
+      "conflict": "Konfliktus és Biztonság",
+      "military": "Katonai és Védelmi",
+      "natural": "Természeti Katasztrófák",
+      "environmental": "Környezet",
+      "maritime": "Tengeri és Hajózási",
+      "tracking": "Légköri és Űrkutatás",
+      "cyber": "Kiber és Tech",
+      "infrastructure": "Infrastruktúra",
+      "finance": "Pénzügy és Piacok",
+      "geopolitical": "Geopolitika",
+      "indices": "Országmutatók",
+      "intel": "Hírszerzés"
+    }
   }
 }

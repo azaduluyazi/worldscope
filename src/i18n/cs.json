@@ -337,73 +337,97 @@
     "indices": "Státní indexy"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "SIGNALOVÁ KONVERGENCE",
+    "active": "{count} aktivní",
+    "scanning": "SKENOVÁNÍ...",
+    "empty": "ŽÁDNÉ AKTIVNÍ KONVERGENCE",
+    "emptyHint": "Mnohesignálové korelace se zde objevují, když jsou detekovány",
+    "signals": "{count} signálů",
+    "moreSignals": "+{count} dalších signálů",
+    "signalsAnalyzed": "{count} signálů analyzováno",
+    "span": "{minutes}min interval",
+    "aiAnalysis": "ANALÝZA UMĚLÉ INTELIGENCE",
+    "forwardPredictions": "Předpovědi do budoucna",
+    "validated": "OVĚŘENO",
+    "validatedTooltip": "{count} předpovědí potvrzeno následnými událostmi",
+    "predicted": "PŘEDPOVĚDENO",
+    "predictedTooltip": "{count} předpovědí ověřeno",
+    "within": "do {hours}h",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "KRITICKÝ",
+      "high": "VYSOKÝ",
+      "elevated": "ZVÝŠENÝ",
+      "low": "NÍZKÝ"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "GEOPOLITICKÝ",
+      "economic_cascade": "EKONOMICKÝ KASKÁD",
+      "cyber_infrastructure": "KYBERNETICKÁ INFRASTRUKTURA",
+      "humanitarian": "HUMANITÁRNÍ",
+      "environmental": "ŽIVOTNÍ PROSTŘEDÍ",
+      "multi_signal": "VÍCE SIGNÁLŮ"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "spouštěč",
+      "consequence": "důsledek",
+      "reaction": "reakce"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Kontrafaktické anomálie — {count}",
+      "predictedDidNot": "Předpovězeno {category} @ {probability}% — se neobjevilo",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "CHYBÍ REAKCE",
+        "absent_signal": "NEPŘÍTOMNÝ SIGNÁL",
+        "premature_silence": "ČASNÉ VAROVÁNÍ"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "informace",
+        "elevated": "zvýšené",
+        "high": "vysoké"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "AKTIVNÍ PŘÍBĚHY",
+    "active": "{count} aktivní",
+    "loading": "NAČÍTÁNÍ...",
+    "empty": "ŽÁDNÉ AKTIVNÍ PŘÍBĚHY",
+    "emptyHint": "Mnohodenní narativy se zde objevují, když se konvergENCE shlukují",
+    "snapshots": "{count} snímků",
+    "snapshotTimeline": "ČASOVÁ OSÁ SNÍMKŮ",
+    "olderSnapshots": "+{count} starších snímků",
+    "created": "vytvořeno {time}",
+    "lastActivity": "poslední {time}",
+    "daysLeft": "{days}d zbývá",
+    "hoursLeft": "{hours}h zbývá",
+    "expired": "vypršelo",
+    "justNow": "právě teď",
+    "minAgo": "{min}m zpět",
+    "hoursAgo": "{hours}h zpět",
+    "daysAgo": "{days}d zpět"
+  },
+  "mapLayers": {
+    "button": "VRSTEV",
+    "title": "MAPA VRSTEV",
+    "close": "Zavřít",
+    "searchPlaceholder": "Hledat vrstvy...",
+    "all": "VŠE",
+    "none": "ŽÁDNÉ",
+    "on": "ZAPNUTO",
+    "off": "VYPNUTO",
+    "groups": {
+      "conflict": "Konflikt a bezpečnost",
+      "military": "Vojenské a obranné",
+      "natural": "Přírodní katastrofy",
+      "environmental": "Životní prostředí",
+      "maritime": "Námořní a lodní doprava",
+      "tracking": "Letectví a kosmonautika",
+      "cyber": "Kybernetika a technologie",
+      "infrastructure": "Infrastruktura",
+      "finance": "Finance a trhy",
+      "geopolitical": "Geopolitika",
+      "indices": "Státní indexy",
+      "intel": "Inteligence"
+    }
   }
 }

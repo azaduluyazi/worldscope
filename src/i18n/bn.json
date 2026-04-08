@@ -337,73 +337,97 @@
     "indices": "দেশ সূচক"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "সংকেত একত্রিত হওয়া",
+    "active": "{count} সক্রিয়",
+    "scanning": "স্ক্যানিং...",
+    "empty": "কোন সক্রিয় একত্রিত হওয়া নেই",
+    "emptyHint": "একাধিক-সংকেত সম্পর্ক এখানে প্রদর্শিত হয় যখন সনাক্ত করা হয়",
+    "signals": "{count} সংকেত",
+    "moreSignals": "+{count} আরও সংকেত",
+    "signalsAnalyzed": "{count} সংকেত বিশ্লেষণ করা হয়েছে",
+    "span": "{minutes} মিনিট স্প্যান",
+    "aiAnalysis": "এআই বিশ্লেষণ",
+    "forwardPredictions": "অগ্রণী ভবিষ্যদ্বাণী",
+    "validated": "যাচাই করা হয়েছে",
+    "validatedTooltip": "{count} ভবিষ্যদ্বাণী(গুলি) পরবর্তী ঘটনা দ্বারা নিশ্চিত করা হয়েছে",
+    "predicted": "ভবিষ্যদ্বাণী করা হয়েছে",
+    "predictedTooltip": "{count} অগ্রণী ভবিষ্যদ্বাণী(গুলি) যাচাই করা হয়েছে",
+    "within": "{hours} ঘন্টার মধ্যে",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "সমালোচনামূলক",
+      "high": "উচ্চ",
+      "elevated": "উচ্চতর",
+      "low": "নিম্ন"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "ভূ-রাজনৈতিক",
+      "economic_cascade": "অর্থনৈতিক ক্যাসকেড",
+      "cyber_infrastructure": "সাইবার অবকাঠামো",
+      "humanitarian": "মানবিক",
+      "environmental": "পরিবেশগত",
+      "multi_signal": "একাধিক-সংকেত"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "ট্রিগার",
+      "consequence": "পরিণতি",
+      "reaction": "প্রতিক্রিয়া"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "বিপরীত-সত্য বিচ্যুতি — {count}",
+      "predictedDidNot": "ভবিষ্যদ্বাণী করা হয়েছে {category} @ {probability}% — প্রদর্শিত হয়নি",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "অনুপস্থিত প্রতিক্রিয়া",
+        "absent_signal": "অনুপস্থিত সংকেত",
+        "premature_silence": "পূর্বমর্যাদা সতর্কতা"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "তথ্য",
+        "elevated": "উচ্চতর",
+        "high": "উচ্চ"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "সক্রিয় গল্পের রেখা",
+    "active": "{count} সক্রিয়",
+    "loading": "লোড হচ্ছে...",
+    "empty": "কোন সক্রিয় গল্পের রেখা নেই",
+    "emptyHint": "একাধিক-দিনের বর্ণনা এখানে প্রদর্শিত হয় যখন একত্রিত হওয়া ক্লাস্টার হয়",
+    "snapshots": "{count} স্ন্যাপশট",
+    "snapshotTimeline": "স্ন্যাপশট সময়রেখা",
+    "olderSnapshots": "+{count} পুরানো স্ন্যাপশট",
+    "created": "তৈরি করা হয়েছে {time}",
+    "lastActivity": "শেষ কার্যকলাপ {time}",
+    "daysLeft": "{days} দিন বাকি",
+    "hoursLeft": "{hours} ঘন্টা বাকি",
+    "expired": "মেয়াদ শেষ",
+    "justNow": "এখনই",
+    "minAgo": "{min} মিনিট আগে",
+    "hoursAgo": "{hours} ঘন্টা আগে",
+    "daysAgo": "{days} দিন আগে"
+  },
+  "mapLayers": {
+    "button": "স্তর",
+    "title": "মানচিত্র স্তর",
+    "close": "বন্ধ করুন",
+    "searchPlaceholder": "স্তর খুঁজুন...",
+    "all": "সব",
+    "none": "কোনটিই নয়",
+    "on": "চালু",
+    "off": "বন্ধ",
+    "groups": {
+      "conflict": "দ্বন্দ্ব ও নিরাপত্তা",
+      "military": "সামরিক ও প্রতিরক্ষা",
+      "natural": "প্রাকৃতিক বিপর্যয়",
+      "environmental": "পরিবেশ",
+      "maritime": "সামুদ্রিক ও শিপিং",
+      "tracking": "বায়ু ও মহাকাশ",
+      "cyber": "সাইবার ও প্রযুক্তি",
+      "infrastructure": "অবকাঠামো",
+      "finance": "অর্থ ও বাজার",
+      "geopolitical": "ভূ-রাজনৈতিক",
+      "indices": "দেশের সূচক",
+      "intel": "গোয়েন্দা"
+    }
   }
 }

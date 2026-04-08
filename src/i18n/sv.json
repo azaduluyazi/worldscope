@@ -337,73 +337,97 @@
     "indices": "Landsindex"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "SIGNALSAMKONVERGENS",
+    "active": "{count} aktiva",
+    "scanning": "SKANNAR...",
+    "empty": "INGA AKTIVA SAMKONVERGENSER",
+    "emptyHint": "Mångsignalskorrelationer visas här när de upptäcks",
+    "signals": "{count} signaler",
+    "moreSignals": "+{count} fler signaler",
+    "signalsAnalyzed": "{count} signaler analyserade",
+    "span": "{minutes} minuter",
+    "aiAnalysis": "AI-ANALYS",
+    "forwardPredictions": "Framåtriktade förutsägelser",
+    "validated": "VALIDERAD",
+    "validatedTooltip": "{count} förutsägelse(r) bekräftad av efterföljande händelser",
+    "predicted": "FÖRUTSAGD",
+    "predictedTooltip": "{count} framåtriktad(e) förutsägelse(r) validerad",
+    "within": "inom {hours} timmar",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "KRITISK",
+      "high": "HÖG",
+      "elevated": "FÖRHÖJD",
+      "low": "LÅG"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
+      "geopolitical": "GEOPOLITISK",
+      "economic_cascade": "EKONOMISK KASKAD",
       "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "humanitarian": "HUMANITÄR",
+      "environmental": "MILJÖ",
+      "multi_signal": "FLERSIGNAL"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "utlösare",
+      "consequence": "följd",
+      "reaction": "reaktion"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Kontrafaktiska anomalier — {count}",
+      "predictedDidNot": "Förutsagd {category} @ {probability}% — uppkom inte",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "SAKNAD REAKTION",
+        "absent_signal": "FRÅNVARANDE SIGNAL",
+        "premature_silence": "FÖR tidig varning"
       },
       "severity": {
         "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "elevated": "förhöjd",
+        "high": "hög"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "AKTIVA BERÄTTELSER",
+    "active": "{count} aktiva",
+    "loading": "LADDAR...",
+    "empty": "INGA AKTIVA BERÄTTELSER",
+    "emptyHint": "Mångdagsberättelser visas här när samkonvergenser klustras",
+    "snapshots": "{count} ögonblicksbilder",
+    "snapshotTimeline": "ÖGONBLICKSBILDS-TIDSLINJE",
+    "olderSnapshots": "+{count} äldre ögonblicksbilder",
+    "created": "skapad {time}",
+    "lastActivity": "senaste {time}",
+    "daysLeft": "{days} dagar kvar",
+    "hoursLeft": "{hours} timmar kvar",
+    "expired": "utgången",
+    "justNow": "nyss",
+    "minAgo": "{min} minuter sedan",
+    "hoursAgo": "{hours} timmar sedan",
+    "daysAgo": "{days} dagar sedan"
+  },
+  "mapLayers": {
+    "button": "LAGER",
+    "title": "KARTLAGER",
+    "close": "Stäng",
+    "searchPlaceholder": "Sök lager...",
+    "all": "ALLA",
+    "none": "INGA",
+    "on": "PÅ",
+    "off": "AV",
+    "groups": {
+      "conflict": "Konflikt & Säkerhet",
+      "military": "Militär & Försvar",
+      "natural": "Naturliga Faror",
+      "environmental": "Miljö",
+      "maritime": "Sjöfart & Shipping",
+      "tracking": "Luft & Rymd",
+      "cyber": "Cyber & Teknik",
+      "infrastructure": "Infrastruktur",
+      "finance": "Finans & Marknader",
+      "geopolitical": "Geopolitik",
+      "indices": "Landsindex",
+      "intel": "Underrättelser"
+    }
   }
 }

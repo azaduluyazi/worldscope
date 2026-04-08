@@ -337,73 +337,97 @@
     "indices": "Країнні Індекси"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "ЗБІГ СИГНАЛІВ",
+    "active": "{count} активних",
+    "scanning": "СКАНУВАННЯ...",
+    "empty": "НЕМАЄ АКТИВНИХ ЗБІГІВ",
+    "emptyHint": "Багатосигнальні кореляції з'являються тут, коли виявляються",
+    "signals": "{count} сигналів",
+    "moreSignals": "+{count} більше сигналів",
+    "signalsAnalyzed": "{count} сигналів проаналізовано",
+    "span": "{minutes}хв тривалість",
+    "aiAnalysis": "АНАЛІЗ АІ",
+    "forwardPredictions": "Передбачення вперед",
+    "validated": "ВЕРИФІКОВАНО",
+    "validatedTooltip": "{count} передбачення(я) підтверджено подальшими подіями",
+    "predicted": "ПЕРЕДБАЧЕНО",
+    "predictedTooltip": "{count} передбачення(я) підтверджено",
+    "within": "в межах {hours}год",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "КРИТИЧНИЙ",
+      "high": "ВИСОКИЙ",
+      "elevated": "ПОДВИЩЕНИЙ",
+      "low": "НИЗЬКИЙ"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "ГЕОПОЛІТИЧНИЙ",
+      "economic_cascade": "ЕКОНОМІЧНИЙ КАСКАД",
+      "cyber_infrastructure": "КІБЕРІНФРАСТРУКТУРА",
+      "humanitarian": "ГУМАНІТАРНИЙ",
+      "environmental": "ДОВКІЛЛЬНИЙ",
+      "multi_signal": "БАГАТОСИГНАЛЬНИЙ"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "спусковий механізм",
+      "consequence": "наслідок",
+      "reaction": "реакція"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Контрфактичні аномалії — {count}",
+      "predictedDidNot": "Передбачено {category} @ {probability}% — не з'явилося",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "ВІДСУТНІСТЬ РЕАКЦІЇ",
+        "absent_signal": "ВІДСУТНІСТЬ СИГНАЛУ",
+        "premature_silence": "ПЕРЕДЧАСНА ЗАТИШШЯ"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "інформація",
+        "elevated": "підвищена",
+        "high": "висока"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "АКТИВНІ СЮЖЕТНІ ЛІНІЇ",
+    "active": "{count} активних",
+    "loading": "ЗАВАНТАЖЕННЯ...",
+    "empty": "НЕМАЄ АКТИВНИХ СЮЖЕТНІХ ЛІНІЙ",
+    "emptyHint": "Багатоденні розповіді з'являються тут, коли збігаються збіги",
+    "snapshots": "{count} знімків",
+    "snapshotTimeline": "ХРОНОЛОГІЯ ЗНІМКІВ",
+    "olderSnapshots": "+{count} старіші знімки",
+    "created": "створено {time}",
+    "lastActivity": "останнє {time}",
+    "daysLeft": "{days}днів залишилося",
+    "hoursLeft": "{hours}годин залишилося",
+    "expired": "строк закінчився",
+    "justNow": "щойно",
+    "minAgo": "{min}хв тому",
+    "hoursAgo": "{hours}год тому",
+    "daysAgo": "{days}днів тому"
+  },
+  "mapLayers": {
+    "button": "ШАРИ",
+    "title": "ШАРИ КАРТИ",
+    "close": "Закрити",
+    "searchPlaceholder": "Пошук шарів...",
+    "all": "ВСІ",
+    "none": "НІЧОГО",
+    "on": "УВІМКНЕНО",
+    "off": "ВІМКНЕНО",
+    "groups": {
+      "conflict": "Конфлікт та безпека",
+      "military": "Військова справа та оборона",
+      "natural": "Природні небезпеки",
+      "environmental": "Довкілля",
+      "maritime": "Морська справа та судноплавство",
+      "tracking": "Авіація та космос",
+      "cyber": "Кібербезпека та технології",
+      "infrastructure": "Інфраструктура",
+      "finance": "Фінанси та ринки",
+      "geopolitical": "Геополітика",
+      "indices": "Індекси країн",
+      "intel": "Розвідка"
+    }
   }
 }

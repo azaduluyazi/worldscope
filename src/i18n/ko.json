@@ -337,22 +337,22 @@
     "indices": "국가 지표"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "신호 수렴",
+    "active": "{count} 활성화",
+    "scanning": "스캔 중...",
+    "empty": "활성화된 수렴 없음",
+    "emptyHint": "다중 신호 상관관계가 감지되면 여기 나타납니다",
+    "signals": "{count} 신호",
+    "moreSignals": "+{count}개 이상의 신호",
+    "signalsAnalyzed": "{count} 신호 분석",
+    "span": "{minutes}분 범위",
+    "aiAnalysis": "AI 분석",
+    "forwardPredictions": "예측",
+    "validated": "검증됨",
+    "validatedTooltip": "{count}개의 예측이 이후의 사건으로 확인됨",
+    "predicted": "예측됨",
+    "predictedTooltip": "{count}개의 예측이 유효함",
+    "within": "{hours}시간 내",
     "confidence": {
       "critical": "CRITICAL",
       "high": "HIGH",
@@ -360,50 +360,74 @@
       "low": "LOW"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "지정학",
+      "economic_cascade": "경제적 연쇄",
+      "cyber_infrastructure": "사이버 인프라",
+      "humanitarian": "인도주의",
+      "environmental": "환경",
+      "multi_signal": "다중 신호"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "트리거",
+      "consequence": "결과",
+      "reaction": "반응"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "반事実 이상 — {count}",
+      "predictedDidNot": "{category} {probability}% 예측 — 나타나지 않음",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "반응 없음",
+        "absent_signal": "신호 없음",
+        "premature_silence": "조기 경보"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "정보",
+        "elevated": "상승",
+        "high": "높음"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "활성화된 스토리라인",
+    "active": "{count} 활성화",
+    "loading": "로딩 중...",
+    "empty": "활성화된 스토리라인 없음",
+    "emptyHint": "다중 일자 내러티브가 수렴으로 클러스터링되면 여기 나타납니다",
+    "snapshots": "{count} 스냅샷",
+    "snapshotTimeline": "스냅샷 타임라인",
+    "olderSnapshots": "+{count} 이전 스냅샷",
+    "created": "{time} 생성",
+    "lastActivity": "{time} 마지막 활동",
+    "daysLeft": "{days}일 남음",
+    "hoursLeft": "{hours}시간 남음",
+    "expired": "만료됨",
+    "justNow": "방금",
+    "minAgo": "{min}분 전",
+    "hoursAgo": "{hours}시간 전",
+    "daysAgo": "{days}일 전"
+  },
+  "mapLayers": {
+    "button": "레이어",
+    "title": "지도 레이어",
+    "close": "닫기",
+    "searchPlaceholder": "레이어 검색...",
+    "all": "모두",
+    "none": "없음",
+    "on": "켜짐",
+    "off": "꺼짐",
+    "groups": {
+      "conflict": "분쟁 및 안보",
+      "military": "군사 및 국방",
+      "natural": "자연재해",
+      "environmental": "환경",
+      "maritime": "해양 및 해운",
+      "tracking": "항공 및 우주",
+      "cyber": "사이버 및 기술",
+      "infrastructure": "인프라",
+      "finance": "금융 및 시장",
+      "geopolitical": "지정학",
+      "indices": "국가 지수",
+      "intel": "정보"
+    }
   }
 }

@@ -337,73 +337,97 @@
     "indices": "देश सूचकांक"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "सिग्नल अभिसरण",
+    "active": "{count} सक्रिय",
+    "scanning": "स्कैनिंग...",
+    "empty": "कोई सक्रिय अभिसरण नहीं",
+    "emptyHint": "बहु-सिग्नल संबंध यहां प्रकट होते हैं जब पता लगाया जाता है",
+    "signals": "{count} संकेत",
+    "moreSignals": "+{count} अधिक संकेत",
+    "signalsAnalyzed": "{count} संकेत विश्लेषित",
+    "span": "{minutes}मिनट की अवधि",
+    "aiAnalysis": "एआई विश्लेषण",
+    "forwardPredictions": "आगे की भविष्यवाणियां",
+    "validated": "मान्य",
+    "validatedTooltip": "{count} भविष्यवाणी(यां) को बाद की घटनाओं द्वारा पुष्टि की गई",
+    "predicted": "भविष्यवाणी की गई",
+    "predictedTooltip": "{count} आगे की भविष्यवाणी(यां) को मान्य किया गया",
+    "within": "{hours} घंटों के भीतर",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "गंभीर",
+      "high": "उच्च",
+      "elevated": "उच्च",
+      "low": "निम्न"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "भू-राजनीतिक",
+      "economic_cascade": "आर्थिक कैस्केड",
+      "cyber_infrastructure": "साइबर बुनियादी ढांचा",
+      "humanitarian": "मानवतावादी",
+      "environmental": "पर्यावरण",
+      "multi_signal": "बहु-संकेत"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "ट्रिगर",
+      "consequence": "परिणाम",
+      "reaction": "प्रतिक्रिया"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "विरोधाभासी विचार — {count}",
+      "predictedDidNot": "{category} @ {probability}% — प्रकट नहीं हुआ",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "गायब प्रतिक्रिया",
+        "absent_signal": "अनुपस्थित संकेत",
+        "premature_silence": "प्रारंभिक चेतावनी"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "जानकारी",
+        "elevated": "उच्च",
+        "high": "उच्च"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "सक्रिय कथाएं",
+    "active": "{count} सक्रिय",
+    "loading": "लोड हो रहा है...",
+    "empty": "कोई सक्रिय कथा नहीं",
+    "emptyHint": "बहु-दिवसीय कथाएं यहां प्रकट होती हैं जब अभिसरण एकत्र होते हैं",
+    "snapshots": "{count} स्नैपशॉट",
+    "snapshotTimeline": "स्नैपशॉट टाइमलाइन",
+    "olderSnapshots": "+{count} पुराने स्नैपशॉट",
+    "created": "{time} पर बनाया गया",
+    "lastActivity": "{time} पर अंतिम गतिविधि",
+    "daysLeft": "{days} दिन शेष",
+    "hoursLeft": "{hours} घंटे शेष",
+    "expired": "समाप्त हो गया",
+    "justNow": "अभी",
+    "minAgo": "{min} मिनट पहले",
+    "hoursAgo": "{hours} घंटे पहले",
+    "daysAgo": "{days} दिन पहले"
+  },
+  "mapLayers": {
+    "button": "परतें",
+    "title": "मानचित्र परतें",
+    "close": "बंद करें",
+    "searchPlaceholder": "परतें खोजें...",
+    "all": "सभी",
+    "none": "कोई नहीं",
+    "on": "चालू",
+    "off": "बंद",
+    "groups": {
+      "conflict": "संघर्ष और सुरक्षा",
+      "military": "सैन्य और रक्षा",
+      "natural": "प्राकृतिक आपदाएं",
+      "environmental": "पर्यावरण",
+      "maritime": "समुद्री और शिपिंग",
+      "tracking": "वायु और अंतरिक्ष",
+      "cyber": "साइबर और प्रौद्योगिकी",
+      "infrastructure": "बुनियादी ढांचा",
+      "finance": "वित्त और बाजार",
+      "geopolitical": "भू-राजनीतिक",
+      "indices": "देश सूचकांक",
+      "intel": "खुफिया"
+    }
   }
 }

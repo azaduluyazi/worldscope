@@ -337,73 +337,97 @@
     "indices": "Índices de países"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "CONVERGENCIA DE SEÑALES",
+    "active": "{count} activas",
+    "scanning": "EXAMINANDO...",
+    "empty": "NO HAY CONVERGENCIAS ACTIVAS",
+    "emptyHint": "Las correlaciones de señales múltiples aparecen aquí cuando se detectan",
+    "signals": "{count} señales",
+    "moreSignals": "+{count} señales más",
+    "signalsAnalyzed": "{count} señales analizadas",
+    "span": "{minutes}min de duración",
+    "aiAnalysis": "ANÁLISIS DE IA",
+    "forwardPredictions": "Predicciones hacia adelante",
+    "validated": "VALIDADAS",
+    "validatedTooltip": "{count} predicción(es) confirmada(s) por eventos posteriores",
+    "predicted": "PREDICHAS",
+    "predictedTooltip": "{count} predicción(es) hacia adelante validada(s)",
+    "within": "dentro de {hours}h",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "CRÍTICA",
+      "high": "ALTA",
+      "elevated": "ELEVADA",
+      "low": "BAJA"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "GEOPOLÍTICA",
+      "economic_cascade": "CASCADE ECONÓMICA",
+      "cyber_infrastructure": "INFRAESTRUCTURA CIBER",
+      "humanitarian": "HUMANITARIA",
+      "environmental": "MEDIO AMBIENTE",
+      "multi_signal": "SEÑAL MÚLTIPLE"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "desencadenante",
+      "consequence": "consecuencia",
+      "reaction": "reacción"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Anomalías Contrafácticas — {count}",
+      "predictedDidNot": "Se predijo {category} @ {probability}% — no apareció",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "REACCIÓN FALTANTE",
+        "absent_signal": "SEÑAL AUSENTE",
+        "premature_silence": "ADVERTENCIA TEMPRANA"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "información",
+        "elevated": "elevada",
+        "high": "alta"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "LÍNEAS DE HISTORIA ACTIVAS",
+    "active": "{count} activas",
+    "loading": "CARGANDO...",
+    "empty": "NO HAY LÍNEAS DE HISTORIA ACTIVAS",
+    "emptyHint": "Las narrativas de varios días aparecen aquí a medida que se agrupan las convergencias",
+    "snapshots": "{count} instantáneas",
+    "snapshotTimeline": "LÍNEA DE TIEMPO DE INSTANTÁNEAS",
+    "olderSnapshots": "+{count} instantáneas anteriores",
+    "created": "creada {time}",
+    "lastActivity": "última {time}",
+    "daysLeft": "{days}d restantes",
+    "hoursLeft": "{hours}h restantes",
+    "expired": "caducada",
+    "justNow": "ahora mismo",
+    "minAgo": "{min}m atrás",
+    "hoursAgo": "{hours}h atrás",
+    "daysAgo": "{days}d atrás"
+  },
+  "mapLayers": {
+    "button": "CAPAS",
+    "title": "CAPAS DEL MAPA",
+    "close": "Cerrar",
+    "searchPlaceholder": "Buscar capas...",
+    "all": "TODAS",
+    "none": "NINGUNA",
+    "on": "ENCENDIDO",
+    "off": "APAGADO",
+    "groups": {
+      "conflict": "Conflicto y Seguridad",
+      "military": "Militar y Defensa",
+      "natural": "Desastres Naturales",
+      "environmental": "Medio Ambiente",
+      "maritime": "Marítimo y Navegación",
+      "tracking": "Aire y Espacio",
+      "cyber": "Ciber y Tecnología",
+      "infrastructure": "Infraestructura",
+      "finance": "Finanzas y Mercados",
+      "geopolitical": "Geopolítica",
+      "indices": "Índices de Países",
+      "intel": "Inteligencia"
+    }
   }
 }

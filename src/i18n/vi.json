@@ -337,73 +337,97 @@
     "indices": "Chỉ số Quốc gia"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "ĐOẠN HÀNH CHỮA",
+    "active": "{count} hoạt động",
+    "scanning": "ĐOẠN HÀNH CHỮA...",
+    "empty": "KHÔNG CÓ ĐOẠN HÀNH CHỮA HOẠT ĐỘNG",
+    "emptyHint": "Các mối liên hệ đa tín hiệu xuất hiện ở đây khi được phát hiện",
+    "signals": "{count} tín hiệu",
+    "moreSignals": "+{count} tín hiệu khác",
+    "signalsAnalyzed": "{count} tín hiệu được phân tích",
+    "span": "{minutes} phút",
+    "aiAnalysis": "PHÂN TÍCH AI",
+    "forwardPredictions": "Đoán trước",
+    "validated": "XÁC NHẬN",
+    "validatedTooltip": "{count} dự đoán được xác nhận bởi các sự kiện tiếp theo",
+    "predicted": "ĐOÁN TRƯỚC",
+    "predictedTooltip": "{count} dự đoán trước được xác nhận",
+    "within": "trong {hours} giờ",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "TỔNG QUAN",
+      "high": "CÁCH",
+      "elevated": "CÁCH TĂNG",
+      "low": "THẤP"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "Địa chính trị",
+      "economic_cascade": "SUY THOẠI KINH TẾ",
+      "cyber_infrastructure": "CÔNG NGHỆ THÔNG TIN",
+      "humanitarian": "NHÂN QUYỀN",
+      "environmental": "MÔI TRƯỜNG",
+      "multi_signal": "ĐA TÍN HIỆU"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "gây ra",
+      "consequence": "kết quả",
+      "reaction": "phản ứng"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Các điểm bất thường không thể xảy ra — {count}",
+      "predictedDidNot": "Đoán trước {category} @ {probability}% — không xảy ra",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "THIẾU PHẢN ỨNG",
+        "absent_signal": "TÍN HIỆU VẮN",
+        "premature_silence": "CẢM NHẬN SÁNG SÁU"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "thông tin",
+        "elevated": "cách tăng",
+        "high": "tổng quan"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "CÁC KỂ THIẾT KẾ",
+    "active": "{count} hoạt động",
+    "loading": "ĐANG TẢI...",
+    "empty": "KHÔNG CÓ KỂ THIẾT KẾ HOẠT ĐỘNG",
+    "emptyHint": "Các câu chuyện nhiều ngày xuất hiện ở đây khi các điểm hội tụ được phát hiện",
+    "snapshots": "{count} ảnh chụp",
+    "snapshotTimeline": "THỜI GIAN ẢNH CHỤP",
+    "olderSnapshots": "+{count} ảnh chụp cũ",
+    "created": "tạo ra {time}",
+    "lastActivity": "hoạt động cuối cùng {time}",
+    "daysLeft": "{days} ngày còn lại",
+    "hoursLeft": "{hours} giờ còn lại",
+    "expired": "hết hạn",
+    "justNow": "vừa rồi",
+    "minAgo": "{min} phút trước",
+    "hoursAgo": "{hours} giờ trước",
+    "daysAgo": "{days} ngày trước"
+  },
+  "mapLayers": {
+    "button": "CÁC LỚP",
+    "title": "CÁC LỚP BẢN ĐỒ",
+    "close": "Đóng",
+    "searchPlaceholder": "Tìm kiếm các lớp...",
+    "all": "TẤT CẢ",
+    "none": "KHÔNG",
+    "on": "BẬT",
+    "off": "TẮT",
+    "groups": {
+      "conflict": "Khủng hoảng & An ninh",
+      "military": "Quân sự & Quốc phòng",
+      "natural": "Nguy cơ thiên nhiên",
+      "environmental": "Môi trường",
+      "maritime": "Hải quân & Vận tải",
+      "tracking": "Hành khách & Không gian",
+      "cyber": "Cyber & Công nghệ",
+      "infrastructure": "Cơ sở hạ tầng",
+      "finance": "Tài chính & Thị trường",
+      "geopolitical": "Địa chính trị",
+      "indices": "Điểm chỉ số quốc gia",
+      "intel": "Tình báo"
+    }
   }
 }

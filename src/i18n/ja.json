@@ -337,73 +337,97 @@
     "indices": "国別指標"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "シグナル・コンバージェンス",
+    "active": "{count} 件が有効",
+    "scanning": "スキャン中...",
+    "empty": "有効なコンバージェンスなし",
+    "emptyHint": "検出されたマルチシグナル相関はここに表示されます",
+    "signals": "{count} 件のシグナル",
+    "moreSignals": "+{count} 件のシグナル",
+    "signalsAnalyzed": "{count} 件のシグナル分析",
+    "span": "{minutes} 分間のスパン",
+    "aiAnalysis": "AI 分析",
+    "forwardPredictions": "前方予測",
+    "validated": "検証済み",
+    "validatedTooltip": "{count} 件の予測が後続のイベントによって確認された",
+    "predicted": "予測",
+    "predictedTooltip": "{count} 件の前方予測が検証された",
+    "within": "{hours} 時間以内",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "クリティカル",
+      "high": "ハイ",
+      "elevated": "エレベート",
+      "low": "ロウ"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "地政学",
+      "economic_cascade": "経済カスケード",
+      "cyber_infrastructure": "サイバーインフラ",
+      "humanitarian": "人道",
+      "environmental": "環境",
+      "multi_signal": "マルチシグナル"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "トリガー",
+      "consequence": "結果",
+      "reaction": "反応"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "カウンターファクタルの異常 — {count}",
+      "predictedDidNot": "予測 {category} @ {probability}% — 予想どおりに現れなかった",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "反応不足",
+        "absent_signal": "シグナル不足",
+        "premature_silence": "早期警戒"
       },
       "severity": {
         "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "elevated": "エレベート",
+        "high": "ハイ"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "アクティブなストーリーライン",
+    "active": "{count} 件が有効",
+    "loading": "ロード中...",
+    "empty": "有効なストーリーラインなし",
+    "emptyHint": "マルチデイのナラティブはここに表示されます",
+    "snapshots": "{count} 件のスナップショット",
+    "snapshotTimeline": "スナップショットタイムライン",
+    "olderSnapshots": "+{count} 件の古いスナップショット",
+    "created": "作成 {time}",
+    "lastActivity": "最後の {time}",
+    "daysLeft": "{days} 日間残り",
+    "hoursLeft": "{hours} 時間残り",
+    "expired": "期限切れ",
+    "justNow": "直近",
+    "minAgo": "{min} 分前",
+    "hoursAgo": "{hours} 時間前",
+    "daysAgo": "{days} 日前"
+  },
+  "mapLayers": {
+    "button": "レイヤー",
+    "title": "マップレイヤー",
+    "close": "Close",
+    "searchPlaceholder": "レイヤーを検索...",
+    "all": "すべて",
+    "none": "なし",
+    "on": "ON",
+    "off": "OFF",
+    "groups": {
+      "conflict": "紛争・安全性",
+      "military": "軍事・防衛",
+      "natural": "自然災害",
+      "environmental": "環境",
+      "maritime": "海事・船舶",
+      "tracking": "航空・宇宙",
+      "cyber": "サイバー・テクノロジー",
+      "infrastructure": "インフラ",
+      "finance": "金融・市場",
+      "geopolitical": "地政学",
+      "indices": "国別指数",
+      "intel": "情報"
+    }
   }
 }

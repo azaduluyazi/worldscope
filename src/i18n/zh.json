@@ -337,73 +337,97 @@
     "indices": "国家指数"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "信号汇聚",
+    "active": "{count} 个活跃",
+    "scanning": "扫描中...",
+    "empty": "无活跃汇聚",
+    "emptyHint": "当检测到多信号相关性时会在这里显示",
+    "signals": "{count} 个信号",
+    "moreSignals": "+{count} 个更多信号",
+    "signalsAnalyzed": "{count} 个信号分析",
+    "span": "{minutes} 分钟跨度",
+    "aiAnalysis": "人工智能分析",
+    "forwardPredictions": "前瞻预测",
+    "validated": "验证",
+    "validatedTooltip": "{count} 个预测被后续事件确认",
+    "predicted": "预测",
+    "predictedTooltip": "{count} 个前瞻预测被验证",
+    "within": "在 {hours} 小时内",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "严重",
+      "high": "高",
+      "elevated": "升高",
+      "low": "低"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "地缘政治",
+      "economic_cascade": "经济链式反应",
+      "cyber_infrastructure": "网络基础设施",
+      "humanitarian": "人道主义",
+      "environmental": "环境",
+      "multi_signal": "多信号"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "触发",
+      "consequence": "后果",
+      "reaction": "反应"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "逆向事实异常 — {count}",
+      "predictedDidNot": "预测 {category} @ {probability}% — 未出现",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "缺失反应",
+        "absent_signal": "缺失信号",
+        "premature_silence": "早期警告"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "信息",
+        "elevated": "升高",
+        "high": "高"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "活跃故事线",
+    "active": "{count} 个活跃",
+    "loading": "加载中...",
+    "empty": "无活跃故事线",
+    "emptyHint": "当汇聚集群时会在这里显示",
+    "snapshots": "{count} 个快照",
+    "snapshotTimeline": "快照时间线",
+    "olderSnapshots": "+{count} 个更早的快照",
+    "created": "创建于 {time}",
+    "lastActivity": "最后活动于 {time}",
+    "daysLeft": "{days} 天剩余",
+    "hoursLeft": "{hours} 小时剩余",
+    "expired": "已过期",
+    "justNow": "刚刚",
+    "minAgo": "{min} 分钟前",
+    "hoursAgo": "{hours} 小时前",
+    "daysAgo": "{days} 天前"
+  },
+  "mapLayers": {
+    "button": "图层",
+    "title": "地图图层",
+    "close": "关闭",
+    "searchPlaceholder": "搜索图层...",
+    "all": "全部",
+    "none": "无",
+    "on": "开启",
+    "off": "关闭",
+    "groups": {
+      "conflict": "冲突与安全",
+      "military": "军事与防御",
+      "natural": "自然灾害",
+      "environmental": "环境",
+      "maritime": "海事与航运",
+      "tracking": "空天",
+      "cyber": "网络与技术",
+      "infrastructure": "基础设施",
+      "finance": "金融与市场",
+      "geopolitical": "地缘政治",
+      "indices": "国家指数",
+      "intel": "情报"
+    }
   }
 }

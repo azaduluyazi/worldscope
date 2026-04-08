@@ -337,73 +337,97 @@
     "indices": "مؤشرات الدول"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "التلاقي الإشاري",
+    "active": "{count} نشط",
+    "scanning": "فحص...",
+    "empty": "لا تلاقي إشاري نشط",
+    "emptyHint": "تظهر هنا علاقات الإشارات المتعددة عند الكشف عنها",
+    "signals": "{count} إشارات",
+    "moreSignals": "+{count} إشارات أخرى",
+    "signalsAnalyzed": "{count} إشارات تم تحليلها",
+    "span": "{minutes} دقيقة",
+    "aiAnalysis": "تحليل الذكاء الاصطناعي",
+    "forwardPredictions": "تنبؤات إلى الأمام",
+    "validated": "تم التحقق",
+    "validatedTooltip": "{count} تنبؤ(ة) تم التحقق منها من قبل الأحداث اللاحقة",
+    "predicted": "تم التنبؤ",
+    "predictedTooltip": "{count} تنبؤ(ة) إلى الأمام تم التحقق منها",
+    "within": "في غضون {hours} ساعة",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "حرج",
+      "high": "مرتفع",
+      "elevated": "مرتفع",
+      "low": "منخفض"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "السياسي الجغرافي",
+      "economic_cascade": "تسلسل اقتصادي",
+      "cyber_infrastructure": "بنية تحتية إلكترونية",
+      "humanitarian": "إنساني",
+      "environmental": "بيئي",
+      "multi_signal": "إشارات متعددة"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "مؤثر",
+      "consequence": "نتيجة",
+      "reaction": "رد فعل"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "شذوذات مضادة للواقع — {count}",
+      "predictedDidNot": "تم التنبؤ بـ {category} @ {probability}% — لم يظهر",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "رد فعل مفقود",
+        "absent_signal": "إشارة غائبة",
+        "premature_silence": "تحذير مبكر"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "معلومات",
+        "elevated": "مرتفع",
+        "high": "مرتفع"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "قصص نشطة",
+    "active": "{count} نشط",
+    "loading": "تحميل...",
+    "empty": "لا قصص نشطة",
+    "emptyHint": "تظهر هنا الروايات متعددة الأيام عندما تتجمع التلاقيات",
+    "snapshots": "{count} لقطات",
+    "snapshotTimeline": "جدول زمني اللقطات",
+    "olderSnapshots": "+{count} لقطات أقدم",
+    "created": "تم إنشاؤه {time}",
+    "lastActivity": "آخر نشاط {time}",
+    "daysLeft": "{days} يوم",
+    "hoursLeft": "{hours} ساعة",
+    "expired": "منتهي الصلاحية",
+    "justNow": "الآن",
+    "minAgo": "{min} دقيقة مضت",
+    "hoursAgo": "{hours} ساعة مضت",
+    "daysAgo": "{days} يوم مضى"
+  },
+  "mapLayers": {
+    "button": "طبقات",
+    "title": "خريطة الطبقات",
+    "close": "إغلاق",
+    "searchPlaceholder": "ابحث عن الطبقات...",
+    "all": "الكل",
+    "none": "لا شيء",
+    "on": "مفعّل",
+    "off": "موقوف",
+    "groups": {
+      "conflict": "الصراع والأمن",
+      "military": "العسكري والدفاع",
+      "natural": "المخاطر الطبيعية",
+      "environmental": "البيئة",
+      "maritime": "البحرية والشحن",
+      "tracking": "الجو والفضاء",
+      "cyber": "الإلكتروني والتكنولوجيا",
+      "infrastructure": "البنية التحتية",
+      "finance": "المالية والأسواق",
+      "geopolitical": "السياسي الجغرافي",
+      "indices": "مؤشرات البلدان",
+      "intel": "المخابرات"
+    }
   }
 }

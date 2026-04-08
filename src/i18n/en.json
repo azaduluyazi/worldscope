@@ -337,6 +337,30 @@
     "geopolitical": "Geopolitical",
     "indices": "Country Indices"
   },
+  "mapLayers": {
+    "button": "LAYERS",
+    "title": "MAP LAYERS",
+    "close": "Close",
+    "searchPlaceholder": "Search layers...",
+    "all": "ALL",
+    "none": "NONE",
+    "on": "ON",
+    "off": "OFF",
+    "groups": {
+      "conflict": "Conflict & Security",
+      "military": "Military & Defense",
+      "natural": "Natural Hazards",
+      "environmental": "Environment",
+      "maritime": "Maritime & Shipping",
+      "tracking": "Air & Space",
+      "cyber": "Cyber & Tech",
+      "infrastructure": "Infrastructure",
+      "finance": "Finance & Markets",
+      "geopolitical": "Geopolitical",
+      "indices": "Country Indices",
+      "intel": "Intelligence"
+    }
+  },
   "convergence": {
     "title": "SIGNAL CONVERGENCE",
     "active": "{count} active",

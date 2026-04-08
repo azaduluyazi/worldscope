@@ -337,73 +337,97 @@
     "indices": "Страновые Индексы"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "СОВПАДЕНИЕ СИГНАЛОВ",
+    "active": "{count} активных",
+    "scanning": "СКАНИРОВАНИЕ...",
+    "empty": "НЕТ АКТИВНЫХ СОВПАДЕНИЙ",
+    "emptyHint": "Многосигнальные корреляции появляются здесь при обнаружении",
+    "signals": "{count} сигналов",
+    "moreSignals": "+{count} еще сигналов",
+    "signalsAnalyzed": "{count} сигналов проанализировано",
+    "span": "{minutes}минутный интервал",
+    "aiAnalysis": "АНАЛИЗ ИИ",
+    "forwardPredictions": "Прогнозы вперед",
+    "validated": "ПОДТВЕРЖДЕНО",
+    "validatedTooltip": "{count} прогноз(ов) подтверждено последующими событиями",
+    "predicted": "ПРЕДСКАЗАНО",
+    "predictedTooltip": "{count} прогноз(ов) впереди подтверждено",
+    "within": "в течение {hours}ч",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "КРИТИЧЕСКИЙ",
+      "high": "ВЫСОКИЙ",
+      "elevated": "ПОВЫШЕННЫЙ",
+      "low": "НИЗКИЙ"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "ГЕОПОЛИТИЧЕСКИЙ",
+      "economic_cascade": "ЭКОНОМИЧЕСКИЙ КАСКАД",
+      "cyber_infrastructure": "КИБЕРИНФРАСТРУКТУРА",
+      "humanitarian": "ГУМАНИТАРНЫЙ",
+      "environmental": "ОКОРЖАЮЩАЯ СРЕДА",
+      "multi_signal": "МНОГОСИГНАЛЬНЫЙ"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "спусковой крючок",
+      "consequence": "последствие",
+      "reaction": "реакция"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Контрфактические аномалии — {count}",
+      "predictedDidNot": "Предсказано {category} @ {probability}% — не появилось",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "ОТСУТСТВУЮЩАЯ РЕАКЦИЯ",
+        "absent_signal": "ОТСУТСТВУЮЩИЙ СИГНАЛ",
+        "premature_silence": "ПРЕДВРЕМЕННОЕ ПРЕДУПРЕЖДЕНИЕ"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "информация",
+        "elevated": "повышенная",
+        "high": "высокая"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "АКТИВНЫЕ СЦЕНАРИИ",
+    "active": "{count} активных",
+    "loading": "ЗАГРУЗКА...",
+    "empty": "НЕТ АКТИВНЫХ СЦЕНАРИЕВ",
+    "emptyHint": "Многосуточные повествования появляются здесь при сгущении совпадений",
+    "snapshots": "{count} снимков",
+    "snapshotTimeline": "ХРОНОЛОГИЯ СНИМКОВ",
+    "olderSnapshots": "+{count} старых снимков",
+    "created": "создано {time}",
+    "lastActivity": "последняя активность {time}",
+    "daysLeft": "{days}д осталось",
+    "hoursLeft": "{hours}ч осталось",
+    "expired": "истек",
+    "justNow": "только что",
+    "minAgo": "{min}м назад",
+    "hoursAgo": "{hours}ч назад",
+    "daysAgo": "{days}д назад"
+  },
+  "mapLayers": {
+    "button": "СЛОИ",
+    "title": "КАРТЫ СЛОЕВ",
+    "close": "Закрыть",
+    "searchPlaceholder": "Поиск слоев...",
+    "all": "ВСЕ",
+    "none": "НИЧЕГО",
+    "on": "ВКЛ",
+    "off": "ВЫКЛ",
+    "groups": {
+      "conflict": "Конфликт и безопасность",
+      "military": "Военные и оборонные",
+      "natural": "Природные опасности",
+      "environmental": "Окружающая среда",
+      "maritime": "Морской и судоходный",
+      "tracking": "Воздушный и космический",
+      "cyber": "Кибер и технологии",
+      "infrastructure": "Инфраструктура",
+      "finance": "Финансы и рынки",
+      "geopolitical": "Геополитика",
+      "indices": "Индексы стран",
+      "intel": "Разведка"
+    }
   }
 }

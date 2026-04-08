@@ -337,22 +337,22 @@
     "indices": "شاخص‌های کشوری"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "همگرایی سیگنال",
+    "active": "{count} فعال",
+    "scanning": "در حال اسکن...",
+    "empty": "همگرایی فعال وجود ندارد",
+    "emptyHint": "همگرایی‌های چند سیگنالی در این قسمت ظاهر می‌شوند",
+    "signals": "{count} سیگنال",
+    "moreSignals": "+{count} سیگنال بیشتر",
+    "signalsAnalyzed": "{count} سیگنال تحلیل شده",
+    "span": "{minutes} دقیقه",
+    "aiAnalysis": "تجزیه و تحلیل هوش مصنوعی",
+    "forwardPredictions": "پیش‌بینی‌های آینده",
+    "validated": "تایید شده",
+    "validatedTooltip": "{count} پیش‌بینی تایید شده توسط رویدادهای بعدی",
+    "predicted": "پیش‌بینی شده",
+    "predictedTooltip": "{count} پیش‌بینی آینده تایید شده",
+    "within": "در مدت {hours} ساعت",
     "confidence": {
       "critical": "CRITICAL",
       "high": "HIGH",
@@ -360,50 +360,74 @@
       "low": "LOW"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "ژئوپلیتیک",
+      "economic_cascade": "CASCADE اقتصادی",
+      "cyber_infrastructure": "زیرساخت سایبری",
+      "humanitarian": "انسانی",
+      "environmental": "محیط زیست",
+      "multi_signal": "چند سیگنال"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "فعال‌کننده",
+      "consequence": "عاقبت",
+      "reaction": "واکنش"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "ناهمسانی‌های ضد واقع — {count}",
+      "predictedDidNot": "پیش‌بینی {category} @ {probability}% — ظاهر نشد",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "واکنش گم شده",
+        "absent_signal": "سیگنال غایب",
+        "premature_silence": "هشدار زودرس"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "اطلاعات",
+        "elevated": "بلند",
+        "high": "بالا"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "داستان‌های فعال",
+    "active": "{count} فعال",
+    "loading": "در حال بارگیری...",
+    "empty": "داستان فعال وجود ندارد",
+    "emptyHint": "روایت‌های چند روزه در این قسمت ظاهر می‌شوند",
+    "snapshots": "{count} عکس",
+    "snapshotTimeline": "خط زمانی عکس",
+    "olderSnapshots": "+{count} عکس قدیمی‌تر",
+    "created": "ایجاد شده {time}",
+    "lastActivity": "آخرین فعالیت {time}",
+    "daysLeft": "{days} روز باقی مانده",
+    "hoursLeft": "{hours} ساعت باقی مانده",
+    "expired": "منقضی شده",
+    "justNow": "همین الان",
+    "minAgo": "{min} دقیقه پیش",
+    "hoursAgo": "{hours} ساعت پیش",
+    "daysAgo": "{days} روز پیش"
+  },
+  "mapLayers": {
+    "button": "لایه‌ها",
+    "title": "لایه‌های نقشه",
+    "close": "بستن",
+    "searchPlaceholder": "جستجوی لایه‌ها...",
+    "all": "همه",
+    "none": "هیچ",
+    "on": "روشن",
+    "off": "خاموش",
+    "groups": {
+      "conflict": "درگیری و امنیت",
+      "military": "نظامی و دفاع",
+      "natural": "خطرهای طبیعی",
+      "environmental": "محیط زیست",
+      "maritime": "دریایی و کشتیرانی",
+      "tracking": "هوا و فضا",
+      "cyber": "سایبری و فناوری",
+      "infrastructure": "زیرساخت",
+      "finance": "مالی و بازارهای مالی",
+      "geopolitical": "ژئوپلیتیک",
+      "indices": "شاخص‌های کشور",
+      "intel": "اطلاعات"
+    }
   }
 }

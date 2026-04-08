@@ -337,73 +337,97 @@
     "indices": "Indici de Țară"
   },
   "convergence": {
-    "title": "SIGNAL CONVERGENCE",
-    "active": "{count} active",
-    "scanning": "SCANNING...",
-    "empty": "NO ACTIVE CONVERGENCES",
-    "emptyHint": "Multi-signal correlations appear here when detected",
-    "signals": "{count} signals",
-    "moreSignals": "+{count} more signals",
-    "signalsAnalyzed": "{count} signals analyzed",
-    "span": "{minutes}min span",
-    "aiAnalysis": "AI ANALYSIS",
-    "forwardPredictions": "Forward Predictions",
-    "validated": "VALIDATED",
-    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
-    "predicted": "PREDICTED",
-    "predictedTooltip": "{count} forward prediction(s) validated",
-    "within": "within {hours}h",
+    "title": "CONVERGENȚĂ SEMNAL",
+    "active": "{count} activ",
+    "scanning": "SE SCANEAZĂ...",
+    "empty": "NU EXISTĂ CONVERGENȚE ACTIVE",
+    "emptyHint": "Corelațiile multisemnal apar aici atunci când sunt detectate",
+    "signals": "{count} semnale",
+    "moreSignals": "+{count} semnale suplimentare",
+    "signalsAnalyzed": "{count} semnale analizate",
+    "span": "{minutes}min interval",
+    "aiAnalysis": "ANALIZĂ AI",
+    "forwardPredictions": "Predicții Înainte",
+    "validated": "VALIDAT",
+    "validatedTooltip": "{count} predicție(s) confirmată(e) de evenimente ulterioare",
+    "predicted": "PREDICȚIE",
+    "predictedTooltip": "{count} predicție(s) înainte validată(e)",
+    "within": "în {hours}h",
     "confidence": {
-      "critical": "CRITICAL",
-      "high": "HIGH",
-      "elevated": "ELEVATED",
-      "low": "LOW"
+      "critical": "CRITIC",
+      "high": "RIDICAT",
+      "elevated": "RIDICAT",
+      "low": "SCĂZUT"
     },
     "type": {
-      "geopolitical": "GEOPOLITICAL",
-      "economic_cascade": "ECONOMIC CASCADE",
-      "cyber_infrastructure": "CYBER INFRA",
-      "humanitarian": "HUMANITARIAN",
-      "environmental": "ENVIRONMENTAL",
-      "multi_signal": "MULTI-SIGNAL"
+      "geopolitical": "GEOPOLITICĂ",
+      "economic_cascade": "CASCADE ECONOMICĂ",
+      "cyber_infrastructure": "INFRASTRUCTURĂ CIBERNETICĂ",
+      "humanitarian": "UMANITAR",
+      "environmental": "MEDIU",
+      "multi_signal": "MULTISEMNAL"
     },
     "role": {
-      "trigger": "trigger",
-      "consequence": "consequence",
-      "reaction": "reaction"
+      "trigger": "declanșator",
+      "consequence": "consecință",
+      "reaction": "reacție"
     },
     "counterFactual": {
-      "sectionTitle": "Counter-Factual Anomalies — {count}",
-      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "sectionTitle": "Anomalii Counter-Factuale — {count}",
+      "predictedDidNot": "Predicție {category} @ {probability}% — nu a apărut",
       "kind": {
-        "missing_reaction": "MISSING REACTION",
-        "absent_signal": "ABSENT SIGNAL",
-        "premature_silence": "EARLY WARNING"
+        "missing_reaction": "REACȚIE LIPSĂ",
+        "absent_signal": "SEMNAL LIPSĂ",
+        "premature_silence": "AVERTISMENT PREMATURE"
       },
       "severity": {
-        "info": "info",
-        "elevated": "elevated",
-        "high": "high"
+        "info": "informații",
+        "elevated": "ridicat",
+        "high": "ridicat"
       }
     }
   },
   "storyline": {
-    "title": "ACTIVE STORYLINES",
-    "active": "{count} active",
-    "loading": "LOADING...",
-    "empty": "NO ACTIVE STORYLINES",
-    "emptyHint": "Multi-day narratives appear here as convergences cluster",
-    "snapshots": "{count} snapshots",
-    "snapshotTimeline": "SNAPSHOT TIMELINE",
-    "olderSnapshots": "+{count} older snapshots",
-    "created": "created {time}",
-    "lastActivity": "last {time}",
-    "daysLeft": "{days}d left",
-    "hoursLeft": "{hours}h left",
-    "expired": "expired",
-    "justNow": "just now",
-    "minAgo": "{min}m ago",
-    "hoursAgo": "{hours}h ago",
-    "daysAgo": "{days}d ago"
+    "title": "NARATIVE ACTIVE",
+    "active": "{count} activ",
+    "loading": "ÎNCĂRCARE...",
+    "empty": "NU EXISTĂ NARATIVE ACTIVE",
+    "emptyHint": "Narativele pe mai multe zile apar aici pe măsură ce convergențele se grupează",
+    "snapshots": "{count} instantanee",
+    "snapshotTimeline": "Cronologie Instantanee",
+    "olderSnapshots": "+{count} instantanee mai vechi",
+    "created": "creat {time}",
+    "lastActivity": "ultima {time}",
+    "daysLeft": "{days}z rămase",
+    "hoursLeft": "{hours}h rămase",
+    "expired": "expirat",
+    "justNow": "acum",
+    "minAgo": "{min}m în urmă",
+    "hoursAgo": "{hours}h în urmă",
+    "daysAgo": "{days}z în urmă"
+  },
+  "mapLayers": {
+    "button": "STRATURI",
+    "title": "STRATURI HARTĂ",
+    "close": "Închide",
+    "searchPlaceholder": "Caută straturi...",
+    "all": "TOATE",
+    "none": "NICIUNUL",
+    "on": "ACTIVAT",
+    "off": "DEZACTIVAT",
+    "groups": {
+      "conflict": "Conflict & Securitate",
+      "military": "Militar & Apărare",
+      "natural": "Pericole Naturale",
+      "environmental": "Mediu",
+      "maritime": "Maritim & Transport Maritim",
+      "tracking": "Aer & Spațiu",
+      "cyber": "Cibernetică & Tehnologie",
+      "infrastructure": "Infrastructură",
+      "finance": "Finanțe & Piețe",
+      "geopolitical": "Geopolitică",
+      "indices": "Indici țări",
+      "intel": "Informații"
+    }
   }
 }
