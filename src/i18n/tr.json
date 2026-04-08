@@ -336,5 +336,75 @@
     "finance": "Finans ve Piyasalar",
     "geopolitical": "Jeopolitik",
     "indices": "Ülke Endeksleri"
+  },
+  "convergence": {
+    "title": "SİNYAL BİRLEŞİMİ",
+    "active": "{count} aktif",
+    "scanning": "TARANIYOR...",
+    "empty": "AKTİF BİRLEŞİM YOK",
+    "emptyHint": "Çok sinyalli korelasyonlar tespit edildikçe burada görünür",
+    "signals": "{count} sinyal",
+    "moreSignals": "+{count} sinyal daha",
+    "signalsAnalyzed": "{count} sinyal analiz edildi",
+    "span": "{minutes}dk aralık",
+    "aiAnalysis": "YAPAY ZEKA ANALİZİ",
+    "forwardPredictions": "İleri Tahminler",
+    "validated": "DOĞRULANDI",
+    "validatedTooltip": "{count} tahmin sonraki olaylarla doğrulandı",
+    "predicted": "TAHMİN EDİLDİ",
+    "predictedTooltip": "{count} ileri tahmin doğrulandı",
+    "within": "{hours}s içinde",
+    "confidence": {
+      "critical": "KRİTİK",
+      "high": "YÜKSEK",
+      "elevated": "ARTMIŞ",
+      "low": "DÜŞÜK"
+    },
+    "type": {
+      "geopolitical": "JEOPOLİTİK",
+      "economic_cascade": "EKONOMİK KASKAD",
+      "cyber_infrastructure": "SİBER ALTYAPI",
+      "humanitarian": "İNSANİ",
+      "environmental": "ÇEVRESEL",
+      "multi_signal": "ÇOK SİNYALLİ"
+    },
+    "role": {
+      "trigger": "tetikleyici",
+      "consequence": "sonuç",
+      "reaction": "reaksiyon"
+    },
+    "counterFactual": {
+      "sectionTitle": "Karşı-Olgusal Anomaliler — {count}",
+      "predictedDidNot": "Tahmin edilen {category} @ %{probability} — gerçekleşmedi",
+      "kind": {
+        "missing_reaction": "EKSİK REAKSİYON",
+        "absent_signal": "OLMAYAN SİNYAL",
+        "premature_silence": "ERKEN UYARI"
+      },
+      "severity": {
+        "info": "bilgi",
+        "elevated": "artmış",
+        "high": "yüksek"
+      }
+    }
+  },
+  "storyline": {
+    "title": "AKTİF HİKAYELER",
+    "active": "{count} aktif",
+    "loading": "YÜKLENİYOR...",
+    "empty": "AKTİF HİKAYE YOK",
+    "emptyHint": "Birleşimler kümelendikçe çok günlü anlatılar burada görünür",
+    "snapshots": "{count} anlık",
+    "snapshotTimeline": "ANLIK GÖRÜNÜM ZAMAN ÇİZELGESİ",
+    "olderSnapshots": "+{count} eski anlık",
+    "created": "oluşturuldu {time}",
+    "lastActivity": "son {time}",
+    "daysLeft": "{days}g kaldı",
+    "hoursLeft": "{hours}s kaldı",
+    "expired": "süresi doldu",
+    "justNow": "az önce",
+    "minAgo": "{min}dk önce",
+    "hoursAgo": "{hours}s önce",
+    "daysAgo": "{days}g önce"
   }
 }

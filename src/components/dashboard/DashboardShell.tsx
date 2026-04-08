@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
 import { TopBar } from "./TopBar";
-import { IconSidebar } from "./IconSidebar";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
 import { BreakingToast } from "./BreakingToast";
 
@@ -17,6 +16,7 @@ const IntelFeed = dynamic(
 const BreakingAlerts = dynamic(() => import("./BreakingAlerts").then((m) => ({ default: m.BreakingAlerts })), { ssr: false });
 const LiveBroadcasts = dynamic(() => import("./LiveBroadcasts").then((m) => ({ default: m.LiveBroadcasts })), { ssr: false });
 const ConvergencePanel = dynamic(() => import("./ConvergencePanel").then((m) => ({ default: m.ConvergencePanel })), { ssr: false });
+const StorylinePanel = dynamic(() => import("./StorylinePanel").then((m) => ({ default: m.StorylinePanel })), { ssr: false });
 const KeyboardHelp = dynamic(() => import("./KeyboardHelp").then((m) => ({ default: m.KeyboardHelp })), { ssr: false });
 const StatusFooter = dynamic(() => import("./StatusFooter").then((m) => ({ default: m.StatusFooter })), { ssr: false });
 const NewsTicker = dynamic(() => import("./NewsTicker").then((m) => ({ default: m.NewsTicker })), { ssr: false });
@@ -228,16 +228,10 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       <DefconBar activeLevel={0} />
 
       <div className="flex-1 flex overflow-hidden">
-        {/* Icon Sidebar — hidden on mobile, shown on md+ */}
-        <div className="hidden md:block">
-          <IconSidebar
-            variant={variant}
-            filters={filters}
-            onToggleCategory={toggleCategory}
-            onToggleHeatmap={toggleHeatmap}
-            onToggleClusters={toggleClusters}
-          />
-        </div>
+        {/* IconSidebar removed in v3.3 — its filters (category, heatmap,
+            clusters) are all accessible via keyboard shortcuts
+            (1-9, H, C, Esc) and via MapLayerPanel on the map itself.
+            Policy links (TOS/PRV/RFD) moved to StatusFooter. */}
 
         {/* ═══════════════════════════════════════════════════════
             MOBILE LAYOUT (<md): Full-screen panels via bottom nav
@@ -308,6 +302,11 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                   <ConvergencePanel />
                 </ErrorBoundary>
               </div>
+              <div className="flex-1 min-h-[200px]">
+                <ErrorBoundary section="storylines">
+                  <StorylinePanel />
+                </ErrorBoundary>
+              </div>
             </div>
           )}
 
@@ -358,11 +357,20 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </div>
           </div>
 
-          {/* ── Column 2: Live TV + Breaking (Drag & Drop sortable) ── */}
+          {/* ── Column 2: Live TV + Breaking + Storylines (Drag & Drop) ── */}
           <div className="flex-[3.5] min-w-0 col-stagger-2">
             <SortablePanels
               className="h-full"
               panels={[
+                {
+                  id: "storylines",
+                  label: "STORYLINES",
+                  node: (
+                    <ErrorBoundary section="storylines">
+                      <StorylinePanel />
+                    </ErrorBoundary>
+                  ),
+                },
                 {
                   id: "broadcasts",
                   label: "LIVE TV",

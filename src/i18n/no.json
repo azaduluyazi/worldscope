@@ -335,5 +335,75 @@
     "finance": "Finans og Markeder",
     "geopolitical": "Geopolitikk",
     "indices": "Landsindekser"
+  },
+  "convergence": {
+    "title": "SIGNAL CONVERGENCE",
+    "active": "{count} active",
+    "scanning": "SCANNING...",
+    "empty": "NO ACTIVE CONVERGENCES",
+    "emptyHint": "Multi-signal correlations appear here when detected",
+    "signals": "{count} signals",
+    "moreSignals": "+{count} more signals",
+    "signalsAnalyzed": "{count} signals analyzed",
+    "span": "{minutes}min span",
+    "aiAnalysis": "AI ANALYSIS",
+    "forwardPredictions": "Forward Predictions",
+    "validated": "VALIDATED",
+    "validatedTooltip": "{count} prediction(s) confirmed by subsequent events",
+    "predicted": "PREDICTED",
+    "predictedTooltip": "{count} forward prediction(s) validated",
+    "within": "within {hours}h",
+    "confidence": {
+      "critical": "CRITICAL",
+      "high": "HIGH",
+      "elevated": "ELEVATED",
+      "low": "LOW"
+    },
+    "type": {
+      "geopolitical": "GEOPOLITICAL",
+      "economic_cascade": "ECONOMIC CASCADE",
+      "cyber_infrastructure": "CYBER INFRA",
+      "humanitarian": "HUMANITARIAN",
+      "environmental": "ENVIRONMENTAL",
+      "multi_signal": "MULTI-SIGNAL"
+    },
+    "role": {
+      "trigger": "trigger",
+      "consequence": "consequence",
+      "reaction": "reaction"
+    },
+    "counterFactual": {
+      "sectionTitle": "Counter-Factual Anomalies — {count}",
+      "predictedDidNot": "Predicted {category} @ {probability}% — did not appear",
+      "kind": {
+        "missing_reaction": "MISSING REACTION",
+        "absent_signal": "ABSENT SIGNAL",
+        "premature_silence": "EARLY WARNING"
+      },
+      "severity": {
+        "info": "info",
+        "elevated": "elevated",
+        "high": "high"
+      }
+    }
+  },
+  "storyline": {
+    "title": "ACTIVE STORYLINES",
+    "active": "{count} active",
+    "loading": "LOADING...",
+    "empty": "NO ACTIVE STORYLINES",
+    "emptyHint": "Multi-day narratives appear here as convergences cluster",
+    "snapshots": "{count} snapshots",
+    "snapshotTimeline": "SNAPSHOT TIMELINE",
+    "olderSnapshots": "+{count} older snapshots",
+    "created": "created {time}",
+    "lastActivity": "last {time}",
+    "daysLeft": "{days}d left",
+    "hoursLeft": "{hours}h left",
+    "expired": "expired",
+    "justNow": "just now",
+    "minAgo": "{min}m ago",
+    "hoursAgo": "{hours}h ago",
+    "daysAgo": "{days}d ago"
   }
 }

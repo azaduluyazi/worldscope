@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { useTranslations } from "next-intl";
 import { useConvergence } from "@/hooks/useConvergence";
 import { useConvergenceTelemetry } from "@/hooks/useConvergenceTelemetry";
 import { useCounterFactuals } from "@/hooks/useCounterFactuals";
@@ -12,32 +13,34 @@ import type {
 } from "@/lib/convergence/types";
 import type { CounterFactualSignal } from "@/lib/convergence/counter-factual";
 
+// ═══════════════════════════════════════════════════════════════════
+//  ConvergencePanel — v3.3
+// ═══════════════════════════════════════════════════════════════════
+//
+//  Changes from v3.2:
+//    1. Font sizes bumped from 6-10px → 10-14px (readability)
+//    2. All strings routed through useTranslations('convergence')
+//    3. Confidence labels + type labels + role labels all translated
+//    4. Counter-factual section translated
+//    5. Accessibility: larger touch targets (32px min)
+//
+// ═══════════════════════════════════════════════════════════════════
+
 // ── Confidence colors ──────────────────────────────────
 
 function confidenceColor(c: number): string {
   if (c >= 0.85) return "#ff4757"; // red — critical
   if (c >= 0.70) return "#ffd000"; // yellow — high
   if (c >= 0.50) return "#00e5ff"; // cyan — elevated
-  return "#00ff88";                // green — low
+  return "#00ff88"; // green — low
 }
 
-function confidenceLabel(c: number): string {
-  if (c >= 0.85) return "CRITICAL";
-  if (c >= 0.70) return "HIGH";
-  if (c >= 0.50) return "ELEVATED";
-  return "LOW";
+function confidenceKey(c: number): "critical" | "high" | "elevated" | "low" {
+  if (c >= 0.85) return "critical";
+  if (c >= 0.70) return "high";
+  if (c >= 0.50) return "elevated";
+  return "low";
 }
-
-// ── Type labels ────────────────────────────────────────
-
-const TYPE_LABELS: Record<string, string> = {
-  geopolitical: "GEOPOLITICAL",
-  economic_cascade: "ECONOMIC CASCADE",
-  cyber_infrastructure: "CYBER INFRA",
-  humanitarian: "HUMANITARIAN",
-  environmental: "ENVIRONMENTAL",
-  multi_signal: "MULTI-SIGNAL",
-};
 
 const CATEGORY_ICONS: Record<string, string> = {
   conflict: "\u2694\ufe0f",
@@ -59,11 +62,11 @@ function ImpactChainDisplay({ links }: { links: ImpactLink[] }) {
   if (links.length === 0) return null;
 
   return (
-    <div className="flex flex-wrap items-center gap-1 mt-1.5">
+    <div className="flex flex-wrap items-center gap-1.5 mt-2">
       {links.slice(0, 3).map((link, i) => (
         <div
           key={i}
-          className="flex items-center gap-0.5 text-[7px] font-mono"
+          className="flex items-center gap-1 text-[11px] font-mono"
           title={link.description}
         >
           <span className="text-hud-text uppercase">{link.from}</span>
@@ -84,33 +87,34 @@ function ImpactChainDisplay({ links }: { links: ImpactLink[] }) {
 // ── Signal List ────────────────────────────────────────
 
 function SignalList({ signals }: { signals: ConvergenceSignal[] }) {
+  const t = useTranslations("convergence");
   return (
-    <div className="space-y-0.5 mt-1.5">
+    <div className="space-y-1 mt-2">
       {signals.slice(0, 5).map((signal, i) => (
         <div
           key={i}
-          className="flex items-start gap-1.5 text-[8px] font-mono"
+          className="flex items-start gap-2 text-[12px] font-mono"
         >
-          <span className="shrink-0 mt-px">
+          <span className="shrink-0 mt-0.5 text-[13px]">
             {CATEGORY_ICONS[signal.category] || "\u25c6"}
           </span>
-          <span className="text-hud-text leading-tight line-clamp-1 flex-1">
+          <span className="text-hud-text leading-snug line-clamp-2 flex-1">
             {signal.title}
           </span>
           <span
-            className="shrink-0 px-1 py-px rounded text-[6px] font-bold uppercase"
+            className="shrink-0 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase"
             style={{
               backgroundColor: `${confidenceColor(signal.reliability)}20`,
               color: confidenceColor(signal.reliability),
             }}
           >
-            {signal.role}
+            {t(`role.${signal.role}`)}
           </span>
         </div>
       ))}
       {signals.length > 5 && (
-        <span className="text-[7px] text-hud-muted font-mono">
-          +{signals.length - 5} more signals
+        <span className="text-[11px] text-hud-muted font-mono">
+          {t("moreSignals", { count: signals.length - 5 })}
         </span>
       )}
     </div>
@@ -120,38 +124,39 @@ function SignalList({ signals }: { signals: ConvergenceSignal[] }) {
 // ── Predictions Display ────────────────────────────────
 
 function PredictionsDisplay({ predictions }: { predictions: ConvergencePrediction[] }) {
+  const t = useTranslations("convergence");
   if (!predictions || predictions.length === 0) return null;
 
   const validatedCount = predictions.filter((p) => p.validated).length;
   const top = predictions.slice(0, 4);
 
   return (
-    <div className="mt-2 p-1.5 bg-hud-base/30 rounded border border-hud-accent/20">
-      <div className="flex items-center justify-between mb-1">
-        <span className="font-mono text-[7px] text-hud-accent uppercase tracking-wider">
-          {"\u25c8"} Forward Predictions
+    <div className="mt-3 p-2 bg-hud-base/30 rounded border border-hud-accent/20">
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="font-mono text-[11px] text-hud-accent uppercase tracking-wider">
+          {"\u25c8"} {t("forwardPredictions")}
         </span>
         {validatedCount > 0 && (
           <span
-            className="font-mono text-[6px] font-bold px-1 py-px rounded"
+            className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded"
             style={{ backgroundColor: "#00ff8830", color: "#00ff88" }}
-            title={`${validatedCount} prediction${validatedCount > 1 ? "s" : ""} confirmed by subsequent events`}
+            title={t("validatedTooltip", { count: validatedCount })}
           >
-            {"\u2713"} {validatedCount} VALIDATED
+            {"\u2713"} {validatedCount} {t("validated")}
           </span>
         )}
       </div>
-      <div className="space-y-0.5">
+      <div className="space-y-1">
         {top.map((p, i) => {
           const expectedHours = Math.round(p.expectedWindowMs / 3_600_000);
           const isValidated = p.validated === true;
           return (
             <div
               key={`${p.triggerEventId}-${i}`}
-              className="flex items-start gap-1 text-[7px] font-mono"
+              className="flex items-center gap-1.5 text-[11px] font-mono"
               title={p.reasoning}
             >
-              <span className="shrink-0 mt-px">
+              <span className="shrink-0 text-[12px]">
                 {CATEGORY_ICONS[p.predictedCategory] || "\u25c6"}
               </span>
               <span
@@ -161,9 +166,11 @@ function PredictionsDisplay({ predictions }: { predictions: ConvergencePredictio
                 {p.predictedCategory}
                 {isValidated && <span className="ml-1">{"\u2713"}</span>}
               </span>
-              <span className="shrink-0 text-hud-muted">{expectedHours}h</span>
+              <span className="shrink-0 text-hud-muted">
+                {t("within", { hours: expectedHours })}
+              </span>
               <span
-                className="shrink-0 px-1 rounded font-bold"
+                className="shrink-0 px-1.5 py-0.5 rounded font-bold"
                 style={{
                   backgroundColor: `${confidenceColor(p.probability)}20`,
                   color: confidenceColor(p.probability),
@@ -182,6 +189,7 @@ function PredictionsDisplay({ predictions }: { predictions: ConvergencePredictio
 // ── Timeline Display ───────────────────────────────────
 
 function TimelineDisplay({ timeline }: { timeline: { start: string; end: string } }) {
+  const t = useTranslations("convergence");
   const start = new Date(timeline.start);
   const end = new Date(timeline.end);
   const durationMin = Math.round((end.getTime() - start.getTime()) / 60000);
@@ -190,13 +198,13 @@ function TimelineDisplay({ timeline }: { timeline: { start: string; end: string 
     d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="flex items-center gap-1 mt-1 text-[7px] font-mono text-hud-muted">
+    <div className="flex items-center gap-1.5 mt-1.5 text-[11px] font-mono text-hud-muted">
       <span>{"\u23f0"}</span>
       <span>{formatTime(start)}</span>
       <span className="text-hud-accent">{"\u2192"}</span>
       <span>{formatTime(end)}</span>
       <span className="text-hud-border">|</span>
-      <span>{durationMin}min span</span>
+      <span>{t("span", { minutes: durationMin })}</span>
     </div>
   );
 }
@@ -212,52 +220,54 @@ function ConvergenceCard({
   isExpanded: boolean;
   onToggle: () => void;
 }) {
+  const t = useTranslations("convergence");
   const color = confidenceColor(convergence.confidence);
-  const label = confidenceLabel(convergence.confidence);
+  const label = t(`confidence.${confidenceKey(convergence.confidence)}`);
+  const typeLabel = t(`type.${convergence.type}`);
   const validatedPredictions =
     convergence.predictions?.filter((p) => p.validated).length ?? 0;
 
   return (
     <button
       onClick={onToggle}
-      className="w-full text-left bg-hud-surface/40 border rounded-md p-2 transition-all hover:bg-hud-surface/60"
+      className="w-full text-left bg-hud-surface/40 border rounded-md p-2.5 transition-all hover:bg-hud-surface/60 min-h-[44px]"
       style={{ borderColor: `${color}40` }}
     >
       {/* Header row */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <span
-            className="inline-block w-1.5 h-1.5 rounded-full animate-pulse"
+            className="inline-block w-2 h-2 rounded-full animate-pulse shrink-0"
             style={{ backgroundColor: color }}
           />
-          <span className="font-mono text-[8px] font-bold text-hud-text tracking-wider">
-            {TYPE_LABELS[convergence.type] || convergence.type.toUpperCase()}
+          <span className="font-mono text-[12px] font-bold text-hud-text tracking-wider truncate">
+            {typeLabel}
           </span>
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           {validatedPredictions > 0 && (
             <span
-              className="font-mono text-[6px] font-bold px-1 py-0.5 rounded"
+              className="font-mono text-[9px] font-bold px-1.5 py-0.5 rounded"
               style={{ backgroundColor: "#00ff8830", color: "#00ff88" }}
-              title={`${validatedPredictions} forward prediction${validatedPredictions > 1 ? "s" : ""} validated`}
+              title={t("predictedTooltip", { count: validatedPredictions })}
             >
-              {"\u2713"} PREDICTED
+              {"\u2713"} {t("predicted")}
             </span>
           )}
           <span
-            className="font-mono text-[7px] font-bold px-1.5 py-0.5 rounded"
+            className="font-mono text-[11px] font-bold px-2 py-0.5 rounded"
             style={{ backgroundColor: `${color}20`, color }}
           >
             {label} {Math.round(convergence.confidence * 100)}%
           </span>
-          <span className="font-mono text-[7px] text-hud-muted">
-            {convergence.signals.length} signals
+          <span className="font-mono text-[11px] text-hud-muted">
+            {t("signals", { count: convergence.signals.length })}
           </span>
         </div>
       </div>
 
       {/* Confidence bar */}
-      <div className="mt-1.5 h-1 bg-hud-border/30 rounded-full overflow-hidden">
+      <div className="mt-2 h-1.5 bg-hud-border/30 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-500"
           style={{
@@ -268,9 +278,9 @@ function ConvergenceCard({
       </div>
 
       {/* Region + Location */}
-      <div className="flex items-center gap-2 mt-1 text-[7px] font-mono text-hud-muted">
+      <div className="flex items-center gap-2 mt-1.5 text-[11px] font-mono text-hud-muted">
         <span>
-          {"\ud83d\udccd"} {convergence.location.lat.toFixed(1)}\u00b0, {convergence.location.lng.toFixed(1)}\u00b0
+          {"\ud83d\udccd"} {convergence.location.lat.toFixed(1)}°, {convergence.location.lng.toFixed(1)}°
         </span>
         <span className="text-hud-border">|</span>
         <span>{convergence.affectedRegions.join(", ")}</span>
@@ -278,7 +288,7 @@ function ConvergenceCard({
 
       {/* Expanded content */}
       {isExpanded && (
-        <div className="mt-2 pt-2 border-t border-hud-border/30 fade-slide-in">
+        <div className="mt-3 pt-3 border-t border-hud-border/30 fade-slide-in">
           {/* Impact chain */}
           <ImpactChainDisplay links={convergence.impactChain} />
 
@@ -295,11 +305,11 @@ function ConvergenceCard({
 
           {/* AI Narrative */}
           {convergence.narrative && (
-            <div className="mt-2 p-1.5 bg-hud-base/50 rounded border border-hud-border/20">
-              <span className="font-mono text-[7px] text-hud-accent block mb-0.5">
-                {"\u2588"} AI ANALYSIS
+            <div className="mt-3 p-2 bg-hud-base/50 rounded border border-hud-border/20">
+              <span className="font-mono text-[10px] text-hud-accent block mb-1 tracking-wider">
+                {"\u2588"} {t("aiAnalysis")}
               </span>
-              <p className="font-mono text-[8px] text-hud-text leading-relaxed">
+              <p className="font-mono text-[12px] text-hud-text leading-relaxed">
                 {convergence.narrative}
               </p>
             </div>
@@ -312,15 +322,8 @@ function ConvergenceCard({
 
 // ── Counter-Factual Card ───────────────────────────────
 
-const CF_KIND_LABEL: Record<CounterFactualSignal["kind"], string> = {
-  missing_reaction: "MISSING REACTION",
-  absent_signal: "ABSENT SIGNAL",
-  premature_silence: "EARLY WARNING",
-};
-
 function CounterFactualCard({ signal }: { signal: CounterFactualSignal }) {
-  // Counter-factuals get a distinctive violet color so they don't
-  // visually compete with positive convergences.
+  const t = useTranslations("convergence.counterFactual");
   const color =
     signal.severity === "high"
       ? "#a855f7"
@@ -329,28 +332,27 @@ function CounterFactualCard({ signal }: { signal: CounterFactualSignal }) {
         : "#6b46c1";
   return (
     <div
-      className="bg-hud-surface/40 border rounded-md p-2"
+      className="bg-hud-surface/40 border rounded-md p-2.5"
       style={{ borderColor: `${color}60` }}
     >
-      <div className="flex items-center justify-between mb-1">
-        <span className="font-mono text-[8px] font-bold tracking-wider" style={{ color }}>
-          {"\u26a0"} {CF_KIND_LABEL[signal.kind]}
+      <div className="flex items-center justify-between mb-1.5">
+        <span className="font-mono text-[11px] font-bold tracking-wider" style={{ color }}>
+          {"\u26a0"} {t(`kind.${signal.kind}`)}
         </span>
         <span
-          className="font-mono text-[7px] font-bold uppercase px-1.5 py-0.5 rounded"
+          className="font-mono text-[10px] font-bold uppercase px-2 py-0.5 rounded"
           style={{ backgroundColor: `${color}20`, color }}
         >
-          {signal.severity}
+          {t(`severity.${signal.severity}`)}
         </span>
       </div>
-      <div className="font-mono text-[8px] text-hud-text leading-tight mb-1">
-        Predicted{" "}
-        <span className="uppercase font-bold" style={{ color }}>
-          {signal.prediction.predictedCategory}
-        </span>{" "}
-        @ {Math.round(signal.prediction.probability * 100)}% — did not appear
+      <div className="font-mono text-[12px] text-hud-text leading-snug mb-1.5">
+        {t("predictedDidNot", {
+          category: signal.prediction.predictedCategory,
+          probability: Math.round(signal.prediction.probability * 100),
+        })}
       </div>
-      <div className="font-mono text-[7px] text-hud-muted leading-relaxed">
+      <div className="font-mono text-[10px] text-hud-muted leading-relaxed">
         {signal.reasoning}
       </div>
     </div>
@@ -360,14 +362,15 @@ function CounterFactualCard({ signal }: { signal: CounterFactualSignal }) {
 // ── Empty State ────────────────────────────────────────
 
 function EmptyState() {
+  const t = useTranslations("convergence");
   return (
-    <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
-      <div className="w-10 h-10 rounded-full border border-hud-border/40 flex items-center justify-center mb-2">
-        <span className="text-lg opacity-40">{"\u269b\ufe0f"}</span>
+    <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
+      <div className="w-12 h-12 rounded-full border border-hud-border/40 flex items-center justify-center mb-3">
+        <span className="text-2xl opacity-40">{"\u269b\ufe0f"}</span>
       </div>
-      <span className="font-mono text-[9px] text-hud-muted">NO ACTIVE CONVERGENCES</span>
-      <span className="font-mono text-[7px] text-hud-muted/60 mt-0.5">
-        Multi-signal correlations appear here when detected
+      <span className="font-mono text-[12px] text-hud-muted">{t("empty")}</span>
+      <span className="font-mono text-[10px] text-hud-muted/60 mt-1">
+        {t("emptyHint")}
       </span>
     </div>
   );
@@ -376,6 +379,7 @@ function EmptyState() {
 // ── Main Panel ─────────────────────────────────────────
 
 export function ConvergencePanel() {
+  const t = useTranslations("convergence");
   const { convergences, metadata, isLoading } = useConvergence({
     minConfidence: 0.4,
     refreshInterval: 60_000,
@@ -389,8 +393,6 @@ export function ConvergencePanel() {
     [convergences]
   );
 
-  // Fire "shown" telemetry for each convergence currently rendered.
-  // The hook dedups per session so SWR re-renders don't spam writes.
   useEffect(() => {
     for (const c of sorted) telemetry.trackShown(c);
   }, [sorted, telemetry]);
@@ -409,27 +411,27 @@ export function ConvergencePanel() {
   return (
     <div className="h-full flex flex-col bg-hud-surface/50 border border-hud-border rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="px-3 py-1.5 border-b border-hud-border flex items-center justify-between">
-        <span className="hud-label text-[9px] flex items-center gap-1.5">
+      <div className="px-3 py-2 border-b border-hud-border flex items-center justify-between">
+        <span className="hud-label text-[12px] flex items-center gap-2 font-bold tracking-wider">
           {highCount > 0 ? (
-            <span className="text-severity-critical live-glow inline-block w-1.5 h-1.5 rounded-full bg-severity-critical" />
+            <span className="text-severity-critical live-glow inline-block w-2 h-2 rounded-full bg-severity-critical" />
           ) : (
-            <span className="text-hud-accent inline-block w-1.5 h-1.5 rounded-full bg-hud-accent/60" />
+            <span className="text-hud-accent inline-block w-2 h-2 rounded-full bg-hud-accent/60" />
           )}
-          SIGNAL CONVERGENCE
+          {t("title")}
         </span>
         <div className="flex items-center gap-2">
           {isLoading && (
-            <span className="font-mono text-[7px] text-hud-muted animate-pulse">
-              SCANNING...
+            <span className="font-mono text-[10px] text-hud-muted animate-pulse">
+              {t("scanning")}
             </span>
           )}
-          <span className="font-mono text-[8px] text-hud-muted">
-            {sorted.length} active
+          <span className="font-mono text-[11px] text-hud-muted">
+            {t("active", { count: sorted.length })}
           </span>
           {highCount > 0 && (
-            <span className="font-mono text-[7px] text-severity-critical font-bold">
-              {highCount} HIGH
+            <span className="font-mono text-[10px] text-severity-critical font-bold">
+              {highCount} {t("confidence.high")}
             </span>
           )}
         </div>
@@ -437,8 +439,8 @@ export function ConvergencePanel() {
 
       {/* Metadata bar */}
       {metadata && (
-        <div className="px-3 py-0.5 border-b border-hud-border/50 flex items-center gap-2 text-[7px] font-mono text-hud-muted">
-          <span>{metadata.totalSignalsAnalyzed} signals analyzed</span>
+        <div className="px-3 py-1 border-b border-hud-border/50 flex items-center gap-2 text-[10px] font-mono text-hud-muted">
+          <span>{t("signalsAnalyzed", { count: metadata.totalSignalsAnalyzed })}</span>
           <span className="text-hud-border">|</span>
           <span>
             {new Date(metadata.timestamp).toLocaleTimeString([], {
@@ -450,7 +452,7 @@ export function ConvergencePanel() {
       )}
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden p-1.5 space-y-1.5 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden p-2 space-y-2 scrollbar-hide">
         {sorted.length === 0 && counterFactuals.length === 0 ? (
           <EmptyState />
         ) : (
@@ -465,13 +467,13 @@ export function ConvergencePanel() {
             ))}
 
             {counterFactuals.length > 0 && (
-              <div className="pt-2 mt-2 border-t border-hud-border/30">
-                <div className="px-1 mb-1">
-                  <span className="font-mono text-[7px] uppercase tracking-wider text-hud-muted">
-                    {"\u26a0"} Counter-Factual Anomalies — {counterFactuals.length}
+              <div className="pt-3 mt-3 border-t border-hud-border/30">
+                <div className="px-1 mb-2">
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-hud-muted">
+                    {"\u26a0"} {t("counterFactual.sectionTitle", { count: counterFactuals.length })}
                   </span>
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {counterFactuals.slice(0, 5).map((s, i) => (
                     <CounterFactualCard key={`cf-${i}`} signal={s} />
                   ))}
