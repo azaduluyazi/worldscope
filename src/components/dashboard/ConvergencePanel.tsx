@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useConvergence } from "@/hooks/useConvergence";
-import type { Convergence, ConvergenceSignal, ImpactLink } from "@/lib/convergence/types";
+import { useConvergenceTelemetry } from "@/hooks/useConvergenceTelemetry";
+import { useCounterFactuals } from "@/hooks/useCounterFactuals";
+import type {
+  Convergence,
+  ConvergencePrediction,
+  ConvergenceSignal,
+  ImpactLink,
+} from "@/lib/convergence/types";
+import type { CounterFactualSignal } from "@/lib/convergence/counter-factual";
 
 // ── Confidence colors ──────────────────────────────────
 
@@ -109,6 +117,68 @@ function SignalList({ signals }: { signals: ConvergenceSignal[] }) {
   );
 }
 
+// ── Predictions Display ────────────────────────────────
+
+function PredictionsDisplay({ predictions }: { predictions: ConvergencePrediction[] }) {
+  if (!predictions || predictions.length === 0) return null;
+
+  const validatedCount = predictions.filter((p) => p.validated).length;
+  const top = predictions.slice(0, 4);
+
+  return (
+    <div className="mt-2 p-1.5 bg-hud-base/30 rounded border border-hud-accent/20">
+      <div className="flex items-center justify-between mb-1">
+        <span className="font-mono text-[7px] text-hud-accent uppercase tracking-wider">
+          {"\u25c8"} Forward Predictions
+        </span>
+        {validatedCount > 0 && (
+          <span
+            className="font-mono text-[6px] font-bold px-1 py-px rounded"
+            style={{ backgroundColor: "#00ff8830", color: "#00ff88" }}
+            title={`${validatedCount} prediction${validatedCount > 1 ? "s" : ""} confirmed by subsequent events`}
+          >
+            {"\u2713"} {validatedCount} VALIDATED
+          </span>
+        )}
+      </div>
+      <div className="space-y-0.5">
+        {top.map((p, i) => {
+          const expectedHours = Math.round(p.expectedWindowMs / 3_600_000);
+          const isValidated = p.validated === true;
+          return (
+            <div
+              key={`${p.triggerEventId}-${i}`}
+              className="flex items-start gap-1 text-[7px] font-mono"
+              title={p.reasoning}
+            >
+              <span className="shrink-0 mt-px">
+                {CATEGORY_ICONS[p.predictedCategory] || "\u25c6"}
+              </span>
+              <span
+                className="flex-1 leading-tight uppercase"
+                style={{ color: isValidated ? "#00ff88" : "#a8b2c8" }}
+              >
+                {p.predictedCategory}
+                {isValidated && <span className="ml-1">{"\u2713"}</span>}
+              </span>
+              <span className="shrink-0 text-hud-muted">{expectedHours}h</span>
+              <span
+                className="shrink-0 px-1 rounded font-bold"
+                style={{
+                  backgroundColor: `${confidenceColor(p.probability)}20`,
+                  color: confidenceColor(p.probability),
+                }}
+              >
+                {Math.round(p.probability * 100)}%
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ── Timeline Display ───────────────────────────────────
 
 function TimelineDisplay({ timeline }: { timeline: { start: string; end: string } }) {
@@ -144,6 +214,8 @@ function ConvergenceCard({
 }) {
   const color = confidenceColor(convergence.confidence);
   const label = confidenceLabel(convergence.confidence);
+  const validatedPredictions =
+    convergence.predictions?.filter((p) => p.validated).length ?? 0;
 
   return (
     <button
@@ -163,6 +235,15 @@ function ConvergenceCard({
           </span>
         </div>
         <div className="flex items-center gap-1.5">
+          {validatedPredictions > 0 && (
+            <span
+              className="font-mono text-[6px] font-bold px-1 py-0.5 rounded"
+              style={{ backgroundColor: "#00ff8830", color: "#00ff88" }}
+              title={`${validatedPredictions} forward prediction${validatedPredictions > 1 ? "s" : ""} validated`}
+            >
+              {"\u2713"} PREDICTED
+            </span>
+          )}
           <span
             className="font-mono text-[7px] font-bold px-1.5 py-0.5 rounded"
             style={{ backgroundColor: `${color}20`, color }}
@@ -207,6 +288,11 @@ function ConvergenceCard({
           {/* Signal list */}
           <SignalList signals={convergence.signals} />
 
+          {/* Forward predictions */}
+          {convergence.predictions && convergence.predictions.length > 0 && (
+            <PredictionsDisplay predictions={convergence.predictions} />
+          )}
+
           {/* AI Narrative */}
           {convergence.narrative && (
             <div className="mt-2 p-1.5 bg-hud-base/50 rounded border border-hud-border/20">
@@ -221,6 +307,53 @@ function ConvergenceCard({
         </div>
       )}
     </button>
+  );
+}
+
+// ── Counter-Factual Card ───────────────────────────────
+
+const CF_KIND_LABEL: Record<CounterFactualSignal["kind"], string> = {
+  missing_reaction: "MISSING REACTION",
+  absent_signal: "ABSENT SIGNAL",
+  premature_silence: "EARLY WARNING",
+};
+
+function CounterFactualCard({ signal }: { signal: CounterFactualSignal }) {
+  // Counter-factuals get a distinctive violet color so they don't
+  // visually compete with positive convergences.
+  const color =
+    signal.severity === "high"
+      ? "#a855f7"
+      : signal.severity === "elevated"
+        ? "#8a5cf6"
+        : "#6b46c1";
+  return (
+    <div
+      className="bg-hud-surface/40 border rounded-md p-2"
+      style={{ borderColor: `${color}60` }}
+    >
+      <div className="flex items-center justify-between mb-1">
+        <span className="font-mono text-[8px] font-bold tracking-wider" style={{ color }}>
+          {"\u26a0"} {CF_KIND_LABEL[signal.kind]}
+        </span>
+        <span
+          className="font-mono text-[7px] font-bold uppercase px-1.5 py-0.5 rounded"
+          style={{ backgroundColor: `${color}20`, color }}
+        >
+          {signal.severity}
+        </span>
+      </div>
+      <div className="font-mono text-[8px] text-hud-text leading-tight mb-1">
+        Predicted{" "}
+        <span className="uppercase font-bold" style={{ color }}>
+          {signal.prediction.predictedCategory}
+        </span>{" "}
+        @ {Math.round(signal.prediction.probability * 100)}% — did not appear
+      </div>
+      <div className="font-mono text-[7px] text-hud-muted leading-relaxed">
+        {signal.reasoning}
+      </div>
+    </div>
   );
 }
 
@@ -247,12 +380,29 @@ export function ConvergencePanel() {
     minConfidence: 0.4,
     refreshInterval: 60_000,
   });
+  const { signals: counterFactuals } = useCounterFactuals({ refreshInterval: 60_000 });
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const telemetry = useConvergenceTelemetry({ surface: "panel" });
 
   const sorted = useMemo(
     () => [...convergences].sort((a, b) => b.confidence - a.confidence),
     [convergences]
   );
+
+  // Fire "shown" telemetry for each convergence currently rendered.
+  // The hook dedups per session so SWR re-renders don't spam writes.
+  useEffect(() => {
+    for (const c of sorted) telemetry.trackShown(c);
+  }, [sorted, telemetry]);
+
+  const handleToggle = (conv: Convergence) => {
+    const willExpand = expandedId !== conv.id;
+    setExpandedId((prev) => (prev === conv.id ? null : conv.id));
+    if (willExpand) {
+      telemetry.trackClick(conv);
+      telemetry.trackExpand(conv);
+    }
+  };
 
   const highCount = sorted.filter((c) => c.confidence >= 0.7).length;
 
@@ -301,19 +451,34 @@ export function ConvergencePanel() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-1.5 space-y-1.5 scrollbar-hide">
-        {sorted.length === 0 ? (
+        {sorted.length === 0 && counterFactuals.length === 0 ? (
           <EmptyState />
         ) : (
-          sorted.map((conv) => (
-            <ConvergenceCard
-              key={conv.id}
-              convergence={conv}
-              isExpanded={expandedId === conv.id}
-              onToggle={() =>
-                setExpandedId((prev) => (prev === conv.id ? null : conv.id))
-              }
-            />
-          ))
+          <>
+            {sorted.map((conv) => (
+              <ConvergenceCard
+                key={conv.id}
+                convergence={conv}
+                isExpanded={expandedId === conv.id}
+                onToggle={() => handleToggle(conv)}
+              />
+            ))}
+
+            {counterFactuals.length > 0 && (
+              <div className="pt-2 mt-2 border-t border-hud-border/30">
+                <div className="px-1 mb-1">
+                  <span className="font-mono text-[7px] uppercase tracking-wider text-hud-muted">
+                    {"\u26a0"} Counter-Factual Anomalies — {counterFactuals.length}
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  {counterFactuals.slice(0, 5).map((s, i) => (
+                    <CounterFactualCard key={`cf-${i}`} signal={s} />
+                  ))}
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

@@ -32,6 +32,25 @@ export interface ImpactLink {
   description: string;
 }
 
+/**
+ * Forward prediction surfaced to UI consumers. Mirrors the
+ * PredictedFollowup shape from forward-prediction.ts but lives here
+ * so consumers don't need to import the engine package.
+ */
+export interface ConvergencePrediction {
+  predictedCategory: Category;
+  probability: number;
+  expectedWindowMs: number;
+  reasoning: string;
+  triggerEventId: string;
+  generatedAt: string;
+  expiresAt: string;
+  /** Set after validatePredictions runs in the next cycle */
+  validated?: boolean;
+  /** Set when a real event matched this prediction */
+  matchedEventId?: string;
+}
+
 export interface Convergence {
   id: string;
   type: ConvergenceType;
@@ -44,6 +63,17 @@ export interface Convergence {
   affectedRegions: string[];
   createdAt: string;
   expiresAt: string;
+  /**
+   * Forward predictions generated from the trigger event of this
+   * convergence. Populated by the engine when the convergence is built.
+   * Empty array if no high-confidence rules apply.
+   */
+  predictions?: ConvergencePrediction[];
+  /**
+   * Storyline this convergence belongs to (if any). Set after the
+   * engine attaches the convergence to a storyline.
+   */
+  storylineId?: string;
 }
 
 export interface ConvergenceResponse {

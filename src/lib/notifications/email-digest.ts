@@ -1,6 +1,10 @@
 import { Resend } from "resend";
 import { createServerClient } from "@/lib/db/supabase";
 import type { IntelItem, Severity } from "@/types/intel";
+import type { Convergence } from "@/lib/convergence/types";
+import { redis } from "@/lib/cache/redis";
+import type { ConvergenceResponse } from "@/lib/convergence/types";
+import type { CounterFactualSignal } from "@/lib/convergence/counter-factual";
 
 const SEVERITY_COLORS: Record<Severity, string> = {
   critical: "#ff4757",
@@ -17,12 +21,180 @@ interface Subscriber {
   categories: string[];
 }
 
-function buildDigestHtml(items: IntelItem[], frequency: string): string {
+// ── Convergence section helpers ────────────────────────────────────
+
+function confidenceColor(c: number): string {
+  if (c >= 0.85) return "#ff4757";
+  if (c >= 0.70) return "#ffd000";
+  if (c >= 0.50) return "#00e5ff";
+  return "#00ff88";
+}
+
+function buildConvergenceSection(convergences: Convergence[]): string {
+  if (!convergences || convergences.length === 0) return "";
+
+  // Sort high-confidence first, max 5
+  const top = [...convergences]
+    .filter((c) => c.confidence >= 0.5)
+    .sort((a, b) => b.confidence - a.confidence)
+    .slice(0, 5);
+
+  if (top.length === 0) return "";
+
+  const cards = top.map((c) => {
+    const color = confidenceColor(c.confidence);
+    const validatedPredictions =
+      c.predictions?.filter((p) => p.validated).length ?? 0;
+    const headline = c.narrative?.split("\n")[0] ?? c.signals[0]?.title ?? "Multi-signal convergence";
+    const sigPreview = c.signals.slice(0, 3).map((s) => s.title).join(" • ");
+
+    return `
+    <div style="border-left:3px solid ${color};padding:8px 12px;margin-bottom:8px;background:#0a1530;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+        <span style="color:${color};font-size:9px;font-weight:bold;">CONVERGENCE ${Math.round(c.confidence * 100)}%</span>
+        <span style="color:#5a7a9a;font-size:9px;">${c.type.replace(/_/g, " ").toUpperCase()}</span>
+        ${validatedPredictions > 0 ? `<span style="color:#00ff88;font-size:9px;font-weight:bold;">✓ ${validatedPredictions} VALIDATED</span>` : ""}
+      </div>
+      <div style="color:#c0d0e0;font-size:12px;font-weight:bold;margin-bottom:4px;">${headline}</div>
+      <div style="color:#7a8aa0;font-size:10px;line-height:1.4;">${sigPreview}</div>
+      ${c.affectedRegions.length > 0 ? `<div style="color:#5a7a9a;font-size:9px;margin-top:4px;">📍 ${c.affectedRegions.join(", ")}</div>` : ""}
+    </div>`;
+  }).join("");
+
+  return `
+    <div style="border-top:1px solid #1a2a4a;padding-top:16px;margin-top:16px;margin-bottom:16px;">
+      <h2 style="color:#00e5ff;font-size:13px;margin:0 0 8px 0;">⚛ SIGNAL CONVERGENCES</h2>
+      <p style="color:#5a7a9a;font-size:10px;margin-bottom:12px;">Multi-source events that correlate across categories</p>
+      ${cards}
+    </div>`;
+}
+
+function buildPredictedDevelopmentsSection(convergences: Convergence[]): string {
+  if (!convergences || convergences.length === 0) return "";
+
+  // Aggregate all unvalidated predictions across high-confidence convergences
+  const allPredictions = convergences
+    .filter((c) => c.confidence >= 0.6)
+    .flatMap((c) =>
+      (c.predictions ?? [])
+        .filter((p) => !p.validated)
+        .map((p) => ({ pred: p, conv: c }))
+    )
+    .sort((a, b) => b.pred.probability - a.pred.probability)
+    .slice(0, 6);
+
+  if (allPredictions.length === 0) return "";
+
+  const rows = allPredictions.map(({ pred, conv }) => {
+    const hours = Math.round(pred.expectedWindowMs / 3_600_000);
+    const color = confidenceColor(pred.probability);
+    return `
+    <tr>
+      <td style="padding:4px 6px;color:${color};font-size:11px;font-weight:bold;">${pred.predictedCategory.toUpperCase()}</td>
+      <td style="padding:4px 6px;color:#c0d0e0;font-size:10px;">within ${hours}h</td>
+      <td style="padding:4px 6px;color:${color};font-size:10px;font-weight:bold;text-align:right;">${Math.round(pred.probability * 100)}%</td>
+      <td style="padding:4px 6px;color:#5a7a9a;font-size:9px;">from ${conv.type.replace(/_/g, " ")}</td>
+    </tr>`;
+  }).join("");
+
+  return `
+    <div style="border-top:1px solid #1a2a4a;padding-top:16px;margin-top:16px;margin-bottom:16px;">
+      <h2 style="color:#00e5ff;font-size:13px;margin:0 0 4px 0;">📡 EXPECTED DEVELOPMENTS</h2>
+      <p style="color:#5a7a9a;font-size:10px;margin-bottom:12px;">Forward predictions from current convergences — what to watch next</p>
+      <table style="width:100%;border-collapse:collapse;background:#0a1530;border:1px solid #1a2a4a;">
+        ${rows}
+      </table>
+      <p style="color:#5a7a9a;font-size:8px;margin-top:8px;font-style:italic;">Predictions based on causal impact rules. Probability = rule strength × trigger reliability × convergence confidence.</p>
+    </div>`;
+}
+
+async function fetchConvergencesFromCache(): Promise<Convergence[]> {
+  try {
+    const cached = await redis.get<ConvergenceResponse>("convergence:latest");
+    return cached?.convergences ?? [];
+  } catch (err) {
+    console.error("[email-digest] convergence cache fetch failed:", err);
+    return [];
+  }
+}
+
+async function fetchCounterFactualsFromCache(): Promise<CounterFactualSignal[]> {
+  try {
+    return (
+      (await redis.get<CounterFactualSignal[]>("convergence:counter-factuals")) ??
+      []
+    );
+  } catch (err) {
+    console.error("[email-digest] counter-factual cache fetch failed:", err);
+    return [];
+  }
+}
+
+function buildCounterFactualSection(signals: CounterFactualSignal[]): string {
+  if (!signals || signals.length === 0) return "";
+
+  // Only show missing_reaction / absent_signal — premature_silence is
+  // too speculative for email (it might resolve in the next hour).
+  const flagged = signals
+    .filter((s) => s.kind === "missing_reaction" || s.kind === "absent_signal")
+    .slice(0, 5);
+  if (flagged.length === 0) return "";
+
+  const color = (sev: CounterFactualSignal["severity"]): string =>
+    sev === "high" ? "#a855f7" : sev === "elevated" ? "#8a5cf6" : "#6b46c1";
+
+  const KIND_LABEL: Record<CounterFactualSignal["kind"], string> = {
+    missing_reaction: "MISSING REACTION",
+    absent_signal: "ABSENT SIGNAL",
+    premature_silence: "EARLY WARNING",
+  };
+
+  const rows = flagged
+    .map((s) => {
+      const c = color(s.severity);
+      const prob = Math.round(s.prediction.probability * 100);
+      return `
+    <div style="border-left:3px solid ${c};padding:8px 12px;margin-bottom:8px;background:#0a1530;">
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">
+        <span style="color:${c};font-size:9px;font-weight:bold;">⚠ ${KIND_LABEL[s.kind]}</span>
+        <span style="color:${c};font-size:9px;text-transform:uppercase;">${s.severity}</span>
+      </div>
+      <div style="color:#c0d0e0;font-size:11px;font-weight:bold;margin-bottom:4px;">
+        Predicted <span style="color:${c};text-transform:uppercase;">${s.prediction.predictedCategory}</span> @ ${prob}% — did not appear
+      </div>
+      <div style="color:#7a8aa0;font-size:9px;line-height:1.4;">${s.reasoning}</div>
+    </div>`;
+    })
+    .join("");
+
+  return `
+    <div style="border-top:1px solid #1a2a4a;padding-top:16px;margin-top:16px;margin-bottom:16px;">
+      <h2 style="color:#a855f7;font-size:13px;margin:0 0 4px 0;">⚠ COUNTER-FACTUAL SIGNALS</h2>
+      <p style="color:#5a7a9a;font-size:10px;margin-bottom:12px;">
+        Predictions that did NOT materialize — possible reasons: markets pre-priced,
+        triggers over-classified, or cascades averted.
+      </p>
+      ${rows}
+    </div>`;
+}
+
+function buildDigestHtml(
+  items: IntelItem[],
+  frequency: string,
+  convergences: Convergence[] = [],
+  counterFactuals: CounterFactualSignal[] = []
+): string {
   const sevCounts: Record<string, number> = {};
   items.forEach((i) => { sevCounts[i.severity] = (sevCounts[i.severity] || 0) + 1; });
 
   const topItems = items.slice(0, 15);
   const period = frequency === "weekly" ? "7 days" : "24 hours";
+
+  // Phase A.11: convergence + predicted developments sections
+  const convergenceSection = buildConvergenceSection(convergences);
+  const predictionsSection = buildPredictedDevelopmentsSection(convergences);
+  // HIGH #9: counter-factual section
+  const counterFactualSection = buildCounterFactualSection(counterFactuals);
 
   return `
 <!DOCTYPE html>
@@ -42,6 +214,12 @@ function buildDigestHtml(items: IntelItem[], frequency: string): string {
     </div>
 
     <p style="color:#5a7a9a;font-size:10px;margin-bottom:12px;">Total: ${items.length} events</p>
+
+    ${convergenceSection}
+    ${predictionsSection}
+    ${counterFactualSection}
+
+    <h2 style="color:#00e5ff;font-size:13px;margin:16px 0 8px 0;border-top:1px solid #1a2a4a;padding-top:16px;">📰 TOP EVENTS</h2>
 
     ${topItems.map((item) => `
     <div style="border-left:3px solid ${SEVERITY_COLORS[item.severity]};padding:8px 12px;margin-bottom:8px;background:#0a1530;">
@@ -82,6 +260,11 @@ export async function sendDigests(
 
   if (!subscribers || subscribers.length === 0) return { sent: 0, failed: 0 };
 
+  // Phase A.11: fetch convergences once for all subscribers
+  const convergences = await fetchConvergencesFromCache();
+  // HIGH #9: fetch counter-factuals once for all subscribers
+  const counterFactuals = await fetchCounterFactualsFromCache();
+
   let sent = 0;
   let failed = 0;
 
@@ -94,13 +277,27 @@ export async function sendDigests(
 
     if (filteredItems.length === 0) continue;
 
+    // Filter convergences by subscriber categories too — only show
+    // convergences that touch at least one of their interests.
+    const subConvergences =
+      sub.categories.length > 0
+        ? convergences.filter((c) =>
+            c.signals.some((s) => sub.categories.includes(s.category))
+          )
+        : convergences;
+
     try {
       const period = frequency === "weekly" ? "Weekly" : "Daily";
       await resend.emails.send({
         from: "WorldScope <digest@troiamedia.com>",
         to: sub.email,
-        subject: `WorldScope ${period} Digest — ${filteredItems.length} events`,
-        html: buildDigestHtml(filteredItems, frequency),
+        subject: `WorldScope ${period} Digest — ${filteredItems.length} events${subConvergences.length > 0 ? ` + ${subConvergences.length} convergences` : ""}`,
+        html: buildDigestHtml(
+          filteredItems,
+          frequency,
+          subConvergences,
+          counterFactuals
+        ),
       });
 
       sent++;

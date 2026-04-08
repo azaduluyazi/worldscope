@@ -1,23 +1,63 @@
 import type { IntelItem, Category } from "@/types/intel";
-import type { Convergence, ConvergenceSignal, ConvergenceResponse } from "./types";
-import { detectCorrelations, checkEventCorrelation, type CorrelationGroup } from "./correlation-detector";
+import type {
+  Convergence,
+  ConvergenceSignal,
+  ConvergenceResponse,
+  ClusterEvent,
+  ConvergencePrediction,
+} from "./types";
+import {
+  detectCorrelations,
+  checkEventCorrelation,
+  type CorrelationGroup,
+} from "./correlation-detector";
 import { resolveImpactChain, classifyConvergence } from "./impact-chain";
 import { calculateConvergenceConfidence, assignSignalRoles } from "./scorer";
 import { batchGenerateNarratives } from "./narrative";
+import { computeEventEmbeddings, deduplicateBySemantics } from "./semantic-similarity";
+import { predictFollowups } from "./forward-prediction";
+import {
+  ttlByConfidence,
+  attachToStoryline,
+  createStoryline,
+  type Storyline,
+} from "./storyline";
+import type { BayesianOptions } from "./bayesian-scorer";
+
+// ═══════════════════════════════════════════════════════════════════
+//  Convergence Engine v2 — Orchestrator
+// ═══════════════════════════════════════════════════════════════════
+//
+//  v1 → v2 wiring summary:
+//
+//  detectCorrelations  → category-aware time + geo (Phase 1.6)
+//        ↓
+//  computeEventEmbeddings (NEW) → semantic enrichment (Phase 2)
+//        ↓
+//  deduplicateBySemantics (NEW) → kill near-dupe headlines (Phase 2)
+//        ↓
+//  buildConvergence
+//        ↓ uses bayesianConfidence ← syndication ← temporal-decay
+//        ↓                          (Phases 1.1, 1.3, 1.4)
+//        ↓
+//  predictFollowups (NEW)         → forward predictions (Phase 3)
+//        ↓
+//  ttlByConfidence (NEW)          → adaptive expiry (Phase 4)
+//        ↓
+//  batchGenerateNarratives        → LLM narrative (unchanged)
+//
+// ═══════════════════════════════════════════════════════════════════
 
 // ── Country code inference from coordinates ────────────
 
 function inferRegions(lat: number, lng: number): string[] {
-  // Simplified region inference from coordinates
   const regions: string[] = [];
-
-  if (lat >= 25 && lat <= 42 && lng >= 25 && lng <= 60) regions.push("ME"); // Middle East
-  if (lat >= 35 && lat <= 72 && lng >= -10 && lng <= 40) regions.push("EU"); // Europe
-  if (lat >= 25 && lat <= 50 && lng >= -130 && lng <= -60) regions.push("NA"); // North America
-  if (lat >= -10 && lat <= 55 && lng >= 60 && lng <= 150) regions.push("AS"); // Asia
-  if (lat >= -35 && lat <= 37 && lng >= -20 && lng <= 55) regions.push("AF"); // Africa
-  if (lat >= -55 && lat <= 15 && lng >= -80 && lng <= -35) regions.push("SA"); // South America
-
+  if (lat >= 25 && lat <= 42 && lng >= 25 && lng <= 60) regions.push("ME");
+  if (lat >= 35 && lat <= 72 && lng >= -10 && lng <= 40) regions.push("EU");
+  if (lat >= 25 && lat <= 50 && lng >= -130 && lng <= -60) regions.push("NA");
+  if (lat >= -10 && lat <= 55 && lng >= 60 && lng <= 150) regions.push("AS");
+  if (lat >= -35 && lat <= 37 && lng >= -20 && lng <= 55) regions.push("AF");
+  if (lat >= -55 && lat <= 15 && lng >= -80 && lng <= -35) regions.push("SA");
   return regions.length > 0 ? regions : ["GLOBAL"];
 }
 
@@ -33,10 +73,17 @@ function generateId(): string {
 
 // ── Build Convergence from Correlation Group ───────────
 
-function buildConvergence(group: CorrelationGroup): Omit<Convergence, "narrative"> {
+function buildConvergence(
+  group: CorrelationGroup,
+  bayesianOptions: BayesianOptions = {}
+): Omit<Convergence, "narrative"> {
   const categories = group.categories as Category[];
   const impactChain = resolveImpactChain(categories);
-  const confidence = calculateConvergenceConfidence(group.events, impactChain);
+  const confidence = calculateConvergenceConfidence(
+    group.events,
+    impactChain,
+    bayesianOptions
+  );
   const roles = assignSignalRoles(group.events, impactChain);
   const type = classifyConvergence(categories);
 
@@ -54,7 +101,24 @@ function buildConvergence(group: CorrelationGroup): Omit<Convergence, "narrative
   }));
 
   const regions = inferRegions(group.centroid.lat, group.centroid.lng);
-  const expiresAt = new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString();
+
+  // Phase 4: confidence-adaptive expiry instead of hardcoded 6h
+  const ttl = ttlByConfidence(confidence);
+  const expiresAt = new Date(Date.now() + ttl).toISOString();
+
+  // Phase 3: forward predictions from the trigger event
+  const trigger = pickTrigger(group.events);
+  const rawPredictions = trigger ? predictFollowups(trigger, confidence) : [];
+  const predictions: ConvergencePrediction[] = rawPredictions.map((p) => ({
+    predictedCategory: p.predictedCategory,
+    probability: p.probability,
+    expectedWindowMs: p.expectedWindowMs,
+    reasoning: p.reasoning,
+    triggerEventId: p.triggerEventId,
+    generatedAt: p.generatedAt,
+    expiresAt: p.expiresAt,
+    validated: false,
+  }));
 
   return {
     id: generateId(),
@@ -67,7 +131,26 @@ function buildConvergence(group: CorrelationGroup): Omit<Convergence, "narrative
     affectedRegions: regions,
     createdAt: new Date().toISOString(),
     expiresAt,
+    predictions,
   };
+}
+
+/** Pick the most likely trigger event from a cluster (earliest, highest severity tie-break) */
+function pickTrigger(events: ClusterEvent[]): ClusterEvent | null {
+  if (events.length === 0) return null;
+  const sorted = [...events].sort((a, b) => {
+    const dt = new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime();
+    if (Math.abs(dt) > 15 * 60 * 1000) return dt;
+    const sevOrder: Record<string, number> = {
+      critical: 0,
+      high: 1,
+      medium: 2,
+      low: 3,
+      info: 4,
+    };
+    return sevOrder[a.severity] - sevOrder[b.severity];
+  });
+  return sorted[0];
 }
 
 // ── Main Engine Functions ──────────────────────────────
@@ -75,15 +158,23 @@ function buildConvergence(group: CorrelationGroup): Omit<Convergence, "narrative
 /**
  * Full convergence scan — called by cron every 5 minutes.
  * Processes all recent events and generates convergences with narratives.
+ *
+ * @param items        raw intel events
+ * @param hoursBack    lookback window (default: max category time window)
+ * @param scanOptions  runtime-calibrated prior + per-cluster surprise lookup
  */
 export async function runFullConvergenceScan(
   items: IntelItem[],
-  hoursBack = 6
+  hoursBack?: number,
+  scanOptions: {
+    priorOverride?: number;
+    surpriseLookup?: (categories: Category[], lat: number, lng: number) => number;
+  } = {}
 ): Promise<ConvergenceResponse> {
   // Reset counter per scan
   convergenceCounter = 0;
 
-  // Step 1: Detect correlations
+  // Step 1: Detect raw correlations (now category-aware)
   const correlations = detectCorrelations(items, hoursBack);
 
   if (correlations.length === 0) {
@@ -97,17 +188,44 @@ export async function runFullConvergenceScan(
     };
   }
 
-  // Step 2: Build convergence objects (without narrative)
-  const rawConvergences = correlations.map(buildConvergence);
+  // Step 2: Semantic enrichment — embed all events in correlated groups
+  // We embed at the group level rather than the global level so that the
+  // total token usage scales with relevance, not raw feed volume.
+  const enrichedCorrelations: CorrelationGroup[] = [];
+  for (const c of correlations) {
+    const embedded = await computeEventEmbeddings(c.events);
+    // Phase 2: collapse near-duplicate headlines so they don't double-count
+    const deduped = deduplicateBySemantics(embedded);
+    enrichedCorrelations.push({ ...c, events: deduped });
+  }
 
-  // Step 3: Filter to minimum confidence threshold
+  // Step 3: Build convergence objects (without narrative)
+  const rawConvergences = enrichedCorrelations.map((group) => {
+    const surpriseMultiplier =
+      scanOptions.surpriseLookup
+        ? scanOptions.surpriseLookup(
+            group.categories as Category[],
+            group.centroid.lat,
+            group.centroid.lng
+          )
+        : 1.0;
+    return buildConvergence(group, {
+      priorOverride: scanOptions.priorOverride,
+      surpriseMultiplier,
+    });
+  });
+
+  // Step 4: Filter to minimum confidence threshold
   const MIN_CONFIDENCE = 0.4;
   const filtered = rawConvergences.filter((c) => c.confidence >= MIN_CONFIDENCE);
 
-  // Step 4: Generate LLM narratives for high-confidence convergences
+  // Step 5: Generate LLM narratives for high-confidence convergences
   const narratives = await batchGenerateNarratives(filtered, 0.7);
 
-  // Step 5: Merge narratives
+  // Step 6: Merge narratives. Predictions stay unvalidated (false) here —
+  // validation happens in the cron route AFTER engine completes, against
+  // the predictions store which holds the previous cycle's forecasts.
+  // See predictions-store.ts:validateAndCleanup.
   const convergences: Convergence[] = filtered.map((c) => ({
     ...c,
     narrative: narratives.get(c.id),
@@ -124,8 +242,50 @@ export async function runFullConvergenceScan(
 }
 
 /**
+ * Storyline integration helper. Given a fresh batch of convergences
+ * and the currently-active storylines (from the DB), return:
+ *
+ *   - The updated/new storylines that should be persisted
+ *   - The convergences with their `storylineId` field populated
+ *
+ * The cron route is responsible for calling this AFTER
+ * runFullConvergenceScan and writing the result back to Supabase.
+ *
+ * Pure function — no DB access, easy to test.
+ */
+export function attachConvergencesToStorylines(
+  convergences: Convergence[],
+  activeStorylines: Storyline[]
+): {
+  convergences: Convergence[];
+  storylinesToUpsert: Storyline[];
+} {
+  const storylinesById = new Map<string, Storyline>();
+  for (const s of activeStorylines) storylinesById.set(s.id, s);
+
+  const updated: Convergence[] = [];
+  for (const conv of convergences) {
+    const candidates = Array.from(storylinesById.values());
+    const result = attachToStoryline(conv, candidates);
+    if (result) {
+      storylinesById.set(result.story.id, result.story);
+      updated.push({ ...conv, storylineId: result.story.id });
+    } else {
+      const fresh = createStoryline(conv);
+      storylinesById.set(fresh.id, fresh);
+      updated.push({ ...conv, storylineId: fresh.id });
+    }
+  }
+
+  return {
+    convergences: updated,
+    storylinesToUpsert: Array.from(storylinesById.values()),
+  };
+}
+
+/**
  * Quick convergence check — called instantly when a critical/high event arrives.
- * Does NOT generate LLM narrative (too slow for instant path).
+ * Does NOT generate LLM narrative or run embeddings (too slow for instant path).
  */
 export function runInstantCheck(
   newEvent: IntelItem,
@@ -139,5 +299,5 @@ export function runInstantCheck(
   // Only return if confidence is meaningful
   if (raw.confidence < 0.5) return null;
 
-  return { ...raw, narrative: undefined };
+  return { ...raw, narrative: undefined } as Convergence;
 }

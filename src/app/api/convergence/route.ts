@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cachedFetch, TTL } from "@/lib/cache/redis";
 import type { ConvergenceResponse } from "@/lib/convergence/types";
+import { fetchRecentValidations } from "@/lib/convergence/predictions-store";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -46,13 +47,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Phase A.10 fix: surface recently-validated predictions alongside
+    // the latest convergences. The UI shows them in a separate section
+    // so users can see "we said X would happen, and it did".
+    const recentValidations = await fetchRecentValidations();
+
     return NextResponse.json({
       status: "success",
       data: {
         convergences: filtered,
+        recentValidations,
         metadata: {
           ...data.metadata,
           convergencesFound: filtered.length,
+          recentValidationsCount: recentValidations.length,
           filters: { minConfidence, region },
         },
       },

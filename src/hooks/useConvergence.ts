@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import type { ConvergenceResponse } from "@/lib/convergence/types";
+import type { ValidatedPrediction } from "@/lib/convergence/predictions-store";
 
 const fetcher = (url: string) =>
   fetch(url).then((r) => {
@@ -22,7 +23,10 @@ export function useConvergence(options: UseConvergenceOptions = {}) {
 
   const { data, error, isLoading, mutate } = useSWR<{
     status: string;
-    data: ConvergenceResponse & { metadata: { filters: Record<string, unknown> } };
+    data: ConvergenceResponse & {
+      recentValidations: ValidatedPrediction[];
+      metadata: { filters: Record<string, unknown> };
+    };
   }>(
     `/api/convergence?${params.toString()}`,
     fetcher,
@@ -35,6 +39,7 @@ export function useConvergence(options: UseConvergenceOptions = {}) {
 
   return {
     convergences: data?.data?.convergences ?? [],
+    recentValidations: data?.data?.recentValidations ?? [],
     metadata: data?.data?.metadata ?? null,
     error,
     isLoading,

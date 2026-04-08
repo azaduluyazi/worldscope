@@ -1,13 +1,39 @@
 import type { IntelItem, Category } from "@/types/intel";
 import type { GeoCluster, ClusterEvent } from "./types";
 import { getBulkReliability } from "./source-reliability";
+import {
+  CATEGORY_GEO_RADIUS_KM,
+  CATEGORY_TIME_WINDOWS,
+  getGeoRadiusForSet,
+  getTimeWindowForSet,
+} from "./time-windows";
 
-// ── Configuration ──────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+//  Correlation Detector (v2 — Category-Aware Windows)
+// ═══════════════════════════════════════════════════════════════════
+//
+//  v1 → v2 changes:
+//  ----------------
+//    OLD: GEO_RADIUS_KM = 50, TIME_WINDOW_MS = 2h (constants for all)
+//    NEW: per-category radii from time-windows.ts. The dominant
+//         category in a cluster sets the effective window/radius.
+//
+//  Key implication: an earthquake (radius 500km) can correlate with a
+//  finance reaction 400km away within its 4h window. Previously this
+//  pair was IMPOSSIBLE to detect (50km / 2h was way too tight for the
+//  natural-disaster cascade case).
+//
+// ═══════════════════════════════════════════════════════════════════
 
-const GEO_RADIUS_KM = 50;           // Max distance for geo-clustering
-const TIME_WINDOW_MS = 2 * 60 * 60 * 1000; // ±2 hours
-const MIN_CATEGORIES = 2;           // Minimum different categories for convergence
-const MIN_SIGNALS = 2;              // Minimum signals in a cluster
+const MIN_CATEGORIES = 2;
+const MIN_SIGNALS = 2;
+
+// Maximum geo radius across all categories — used as the upper bound
+// for the initial geo-clustering pass. Tighter per-cluster filtering
+// happens later when categories are known.
+const MAX_GEO_RADIUS_KM = Math.max(...Object.values(CATEGORY_GEO_RADIUS_KM));
+// Maximum time window — same logic
+const MAX_TIME_WINDOW_MS = Math.max(...Object.values(CATEGORY_TIME_WINDOWS));
 
 // ── Haversine Distance ─────────────────────────────────
 
@@ -23,12 +49,15 @@ function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number): nu
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-// ── Geo Clustering ─────────────────────────────────────
+// ── Geo Clustering (broad pass — uses MAX radius) ───────────────────
 
 /**
- * Group geo-tagged events into clusters within GEO_RADIUS_KM.
- * Uses single-linkage clustering: if event is within radius of any
- * existing cluster member, it joins that cluster.
+ * First-pass geo clustering using the MAXIMUM possible radius (1000km
+ * for cyber/diplomacy/tech). This produces "candidate" clusters that
+ * are then narrowed down by the category-specific radius in step 2.
+ *
+ * Single-linkage clustering: an event joins a cluster if it's within
+ * the radius of ANY existing member of that cluster.
  */
 function clusterByProximity(events: ClusterEvent[]): GeoCluster[] {
   const clusters: GeoCluster[] = [];
@@ -37,20 +66,18 @@ function clusterByProximity(events: ClusterEvent[]): GeoCluster[] {
     let merged = false;
 
     for (const cluster of clusters) {
-      const dist = haversineKm(
-        cluster.centroid.lat,
-        cluster.centroid.lng,
-        event.lat,
-        event.lng
+      // Check distance to all members (not just centroid) for tighter clustering
+      const minDist = Math.min(
+        ...cluster.events.map((e) => haversineKm(e.lat, e.lng, event.lat, event.lng))
       );
 
-      if (dist <= GEO_RADIUS_KM) {
+      if (minDist <= MAX_GEO_RADIUS_KM) {
         cluster.events.push(event);
         // Update centroid as running average
         const n = cluster.events.length;
         cluster.centroid.lat = ((cluster.centroid.lat * (n - 1)) + event.lat) / n;
         cluster.centroid.lng = ((cluster.centroid.lng * (n - 1)) + event.lng) / n;
-        cluster.radius = Math.max(cluster.radius, dist);
+        cluster.radius = Math.max(cluster.radius, minDist);
         merged = true;
         break;
       }
@@ -68,11 +95,12 @@ function clusterByProximity(events: ClusterEvent[]): GeoCluster[] {
   return clusters;
 }
 
-// ── Time Window Filter ─────────────────────────────────
+// ── Temporal Sub-grouping (category-aware) ──────────────────────────
 
 /**
- * Within a geo-cluster, find sub-groups where events fall within ±2h of each other.
- * Returns groups that have events from MIN_CATEGORIES different categories.
+ * Within a geo-cluster, find sub-groups whose events fall within the
+ * effective time window for their categories AND whose pairwise
+ * distances respect each pair's category geo radius.
  */
 function findTemporalGroups(cluster: GeoCluster): ClusterEvent[][] {
   const sorted = [...cluster.events].sort(
@@ -82,20 +110,30 @@ function findTemporalGroups(cluster: GeoCluster): ClusterEvent[][] {
   const groups: ClusterEvent[][] = [];
 
   for (let i = 0; i < sorted.length; i++) {
-    const anchor = new Date(sorted[i].publishedAt).getTime();
-    const group: ClusterEvent[] = [sorted[i]];
+    const anchor = sorted[i];
+    const anchorTime = new Date(anchor.publishedAt).getTime();
+    const group: ClusterEvent[] = [anchor];
 
     for (let j = i + 1; j < sorted.length; j++) {
-      const t = new Date(sorted[j].publishedAt).getTime();
-      if (Math.abs(t - anchor) <= TIME_WINDOW_MS) {
-        group.push(sorted[j]);
-      }
+      const cand = sorted[j];
+      const candTime = new Date(cand.publishedAt).getTime();
+
+      // Determine effective window for this anchor+candidate pair (max of their categories)
+      const pairWindow = getTimeWindowForSet([anchor.category, cand.category]);
+      if (Math.abs(candTime - anchorTime) > pairWindow) continue;
+
+      // Determine effective radius for this pair
+      const pairRadius = getGeoRadiusForSet([anchor.category, cand.category]);
+      const dist = haversineKm(anchor.lat, anchor.lng, cand.lat, cand.lng);
+      if (dist > pairRadius) continue;
+
+      group.push(cand);
     }
 
     if (group.length >= MIN_SIGNALS) {
       const categories = new Set(group.map((e) => e.category));
       if (categories.size >= MIN_CATEGORIES) {
-        // Check we haven't already captured a superset of this group
+        // Dedup: skip if a superset of this group already exists
         const ids = new Set(group.map((e) => e.eventId));
         const isDuplicate = groups.some((existing) => {
           const existingIds = new Set(existing.map((e) => e.eventId));
@@ -123,18 +161,24 @@ export interface CorrelationGroup {
 /**
  * Detect correlated event groups from raw intel items.
  *
- * Algorithm:
- * 1. Filter to geo-tagged events within the last 6 hours
+ * Algorithm v2:
+ * 1. Filter to geo-tagged events within the maximum-needed lookback
  * 2. Enrich with source reliability scores
- * 3. Cluster by geographic proximity (50km)
- * 4. Within each cluster, find temporal groups (±2h window)
+ * 3. Coarse geo-clustering with MAX radius (catches all candidates)
+ * 4. Within each cluster, find temporal sub-groups using
+ *    category-specific time windows AND category-specific geo radii
  * 5. Filter to groups with 2+ different categories
  */
 export function detectCorrelations(
   items: IntelItem[],
-  hoursBack = 6
+  hoursBack?: number
 ): CorrelationGroup[] {
-  const cutoff = Date.now() - hoursBack * 60 * 60 * 1000;
+  // If hoursBack not specified, use the largest possible window so we
+  // don't accidentally chop off slow-cascading events (diplomacy 24h).
+  const lookbackMs = hoursBack
+    ? hoursBack * 60 * 60 * 1000
+    : MAX_TIME_WINDOW_MS;
+  const cutoff = Date.now() - lookbackMs;
 
   // Step 1: Filter geo-tagged + recent events
   const geoEvents = items.filter(
@@ -163,10 +207,10 @@ export function detectCorrelations(
     publishedAt: item.publishedAt,
   }));
 
-  // Step 3: Geo-cluster
+  // Step 3: Coarse geo-cluster
   const geoClusters = clusterByProximity(clusterEvents);
 
-  // Step 4 & 5: Find temporal multi-category groups
+  // Step 4 & 5: Find temporal multi-category groups with category-aware constraints
   const correlations: CorrelationGroup[] = [];
 
   for (const cluster of geoClusters) {
@@ -176,9 +220,15 @@ export function detectCorrelations(
       const categories = [...new Set(group.map((e) => e.category))];
       const times = group.map((e) => new Date(e.publishedAt).getTime());
 
+      // Recompute centroid from this specific group (not the broad cluster)
+      const groupCentroid = {
+        lat: group.reduce((s, e) => s + e.lat, 0) / group.length,
+        lng: group.reduce((s, e) => s + e.lng, 0) / group.length,
+      };
+
       correlations.push({
         events: group,
-        centroid: cluster.centroid,
+        centroid: groupCentroid,
         categories,
         timeSpan: {
           start: new Date(Math.min(...times)).toISOString(),
@@ -193,8 +243,10 @@ export function detectCorrelations(
 }
 
 /**
- * Quick check: does a single new event correlate with existing recent events?
- * Used for instant trigger on critical/high events.
+ * Quick check: does a single new event correlate with existing recent
+ * events? Used for instant trigger on critical/high events.
+ *
+ * v2: uses category-specific windows just like the batch detector.
  */
 export function checkEventCorrelation(
   newEvent: IntelItem,
@@ -202,23 +254,38 @@ export function checkEventCorrelation(
 ): CorrelationGroup | null {
   if (!newEvent.lat || !newEvent.lng) return null;
 
-  const cutoff = Date.now() - TIME_WINDOW_MS;
-  const nearby = recentEvents.filter((item) => {
+  // Find candidates within the WIDEST possible window (we'll narrow per-pair)
+  const newTime = new Date(newEvent.publishedAt).getTime();
+  const cutoff = newTime - MAX_TIME_WINDOW_MS;
+
+  const candidates = recentEvents.filter((item) => {
     if (!item.lat || !item.lng) return false;
     if (item.id === newEvent.id) return false;
-    if (new Date(item.publishedAt).getTime() < cutoff) return false;
-    if (item.category === newEvent.category) return false; // Need different category
 
+    const itemTime = new Date(item.publishedAt).getTime();
+    if (itemTime < cutoff) return false;
+
+    // Apply pair-specific time window
+    const pairWindow = getTimeWindowForSet([newEvent.category, item.category]);
+    if (Math.abs(itemTime - newTime) > pairWindow) return false;
+
+    // Apply pair-specific geo radius
+    const pairRadius = getGeoRadiusForSet([newEvent.category, item.category]);
     const dist = haversineKm(newEvent.lat!, newEvent.lng!, item.lat!, item.lng!);
-    return dist <= GEO_RADIUS_KM;
+    if (dist > pairRadius) return false;
+
+    // Need DIFFERENT category to count as cross-signal correlation
+    if (item.category === newEvent.category) return false;
+
+    return true;
   });
 
-  if (nearby.length === 0) return null;
+  if (candidates.length === 0) return null;
 
-  const sourceIds = [newEvent.source, ...nearby.map((e) => e.source)];
+  const sourceIds = [newEvent.source, ...candidates.map((e) => e.source)];
   const reliabilityMap = getBulkReliability([...new Set(sourceIds)]);
 
-  const allEvents: ClusterEvent[] = [newEvent, ...nearby].map((item) => ({
+  const allEvents: ClusterEvent[] = [newEvent, ...candidates].map((item) => ({
     eventId: item.id,
     sourceId: item.source,
     category: item.category,

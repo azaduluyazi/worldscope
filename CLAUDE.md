@@ -42,7 +42,9 @@ Real-time global intelligence dashboard.
 - `UPSTASH_REDIS_REST_URL` — Upstash Redis URL
 - `UPSTASH_REDIS_REST_TOKEN` — Upstash Redis token
 - `NEXT_PUBLIC_MAPBOX_TOKEN` — Mapbox GL access token
-- `GROQ_API_KEY` — Groq LLM API key
+- `GROQ_API_KEY` — Groq LLM API key (narratives)
+- `GEMINI_API_KEY` — Gemini embeddings (convergence semantic layer, free tier 1500 RPM at https://aistudio.google.com/app/apikey). Engine degrades gracefully if missing but loses semantic dedup + cross-region linking.
+- `CRON_SECRET` — Bearer token required by all `/api/cron/*` routes
 - `ADMIN_KEY` — Admin panel access key
 - `RESEND_API_KEY` — Email sending (optional)
 - `NEXT_PUBLIC_SENTRY_DSN` — Sentry error tracking (optional)
@@ -55,6 +57,7 @@ Real-time global intelligence dashboard.
 ### Supabase Setup
 1. Create project at supabase.com
 2. Run migrations in order: `supabase db push`
+   - **After v3 convergence work**: ensure `009_convergence_storylines.sql` and `010_convergence_telemetry.sql` are applied. These create the `convergence_storylines` table, `convergence_telemetry` table, the `convergence_ctr_buckets` view, and the `archive_expired_storylines()` RPC.
 3. Enable Realtime on `events` table
 
 ### Cron Jobs (Vercel)

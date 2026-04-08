@@ -59,6 +59,13 @@ for (const rule of CAUSAL_RULES) {
 }
 
 /**
+ * Public list of all causal rules — used by forward-prediction.ts to
+ * iterate "what comes after X?" Exposes the same data as the internal
+ * RULE_MAP without giving callers mutable access.
+ */
+export const CAUSAL_RULES_LIST: ReadonlyArray<CausalRule> = CAUSAL_RULES;
+
+/**
  * Find all impact chain links between the given categories.
  * Returns direct links and one-hop transitive links.
  *

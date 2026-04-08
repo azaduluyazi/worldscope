@@ -18,6 +18,7 @@
     { "path": "/api/cron/send-briefing", "schedule": "0 8 * * *" },
     { "path": "/api/admin/source-health", "schedule": "0 */6 * * *" },
     { "path": "/api/cron/convergence", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/calibrate-convergence", "schedule": "0 4 * * 1" },
     { "path": "/api/cron/seed-market", "schedule": "*/2 * * * *" },
     { "path": "/api/cron/seed-aviation", "schedule": "*/3 * * * *" },
     { "path": "/api/cron/seed-natural", "schedule": "*/5 * * * *" },

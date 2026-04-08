@@ -1,61 +1,45 @@
 import type { Severity } from "@/types/intel";
-import type { ClusterEvent } from "./types";
-import type { ImpactLink } from "./types";
-import { getChainBonus } from "./impact-chain";
+import type { ClusterEvent, ImpactLink } from "./types";
+import { bayesianConfidence, type BayesianOptions } from "./bayesian-scorer";
 
-// ── Severity weights for convergence scoring ───────────
-
-const SEVERITY_MULTIPLIER: Record<Severity, number> = {
-  critical: 1.0,
-  high: 0.8,
-  medium: 0.5,
-  low: 0.25,
-  info: 0.1,
-};
+// ═══════════════════════════════════════════════════════════════════
+//  Convergence Scorer (v2 — Bayesian)
+// ═══════════════════════════════════════════════════════════════════
+//
+//  This module is now a THIN WRAPPER around bayesian-scorer.ts.
+//  All real math lives there. We keep this file's exports stable so
+//  engine.ts and tests don't need to change shape.
+//
+//  v1 → v2 migration:
+//  ------------------
+//    OLD: weighted_avg(reliability × severity) × chainBonus + diversity
+//    NEW: bayesian_log_odds_accumulation with:
+//          • prior belief
+//          • per-event log-likelihood ratios
+//          • temporal decay (fresh signals weigh more)
+//          • syndication dampening (wire reprints don't double-count)
+//          • chain bonus as movement multiplier (not raw multiplier)
+//
+//  Role assignment (trigger/consequence/reaction) logic is unchanged.
+//
+// ═══════════════════════════════════════════════════════════════════
 
 /**
- * Calculate convergence confidence score.
+ * Calculate convergence confidence using Bayesian belief accumulation.
  *
- * Formula:
- *   base = weightedAvg(signal_reliability × severity_weight)
- *   diversity_bonus = log2(unique_categories) × 0.1
- *   chain_bonus = from impact chain (1.0 - 1.3)
- *   confidence = min(1.0, base × chain_bonus + diversity_bonus)
+ * Replaces the v1 linear-average approach. See bayesian-scorer.ts for
+ * the full math. Returns a number in [0, 1].
  *
- * Signals with higher reliability and severity contribute more.
- * More diverse categories = slightly higher confidence.
- * Impact chain presence = multiplicative bonus.
+ * v3.1: accepts optional baseline surprise and prior override for
+ * per-cluster calibration. Both default to neutral values that
+ * preserve v3 behavior when not provided.
  */
 export function calculateConvergenceConfidence(
   events: ClusterEvent[],
-  impactLinks: ImpactLink[]
+  impactLinks: ImpactLink[],
+  options: BayesianOptions = {}
 ): number {
-  if (events.length < 2) return 0;
-
-  // Weighted average: reliability × severity_weight
-  let totalWeight = 0;
-  let weightedSum = 0;
-
-  for (const event of events) {
-    const sevWeight = SEVERITY_MULTIPLIER[event.severity];
-    const signalStrength = event.reliability * sevWeight;
-    weightedSum += signalStrength;
-    totalWeight += 1;
-  }
-
-  const base = weightedSum / totalWeight;
-
-  // Category diversity bonus
-  const uniqueCategories = new Set(events.map((e) => e.category)).size;
-  const diversityBonus = Math.log2(Math.max(uniqueCategories, 1)) * 0.1;
-
-  // Impact chain bonus (1.0 to 1.3)
-  const chainBonus = getChainBonus(impactLinks);
-
-  // Final confidence
-  const confidence = Math.min(1.0, base * chainBonus + diversityBonus);
-
-  return Math.round(confidence * 100) / 100;
+  return bayesianConfidence(events, impactLinks, options);
 }
 
 /**
@@ -63,7 +47,9 @@ export function calculateConvergenceConfidence(
  *
  * trigger: earliest event OR highest severity
  * consequence: events in categories that follow from trigger's category
- * reaction: everything else (markets, diplomacy responses)
+ * reaction: everything else
+ *
+ * Unchanged from v1.
  */
 export function assignSignalRoles(
   events: ClusterEvent[],
