@@ -195,17 +195,21 @@ export function detectCorrelations(
   const reliabilityMap = getBulkReliability(sourceIds);
 
   // Convert to ClusterEvent
-  const clusterEvents: ClusterEvent[] = geoEvents.map((item) => ({
-    eventId: item.id,
-    sourceId: item.source,
-    category: item.category,
-    severity: item.severity,
-    reliability: reliabilityMap.get(item.source)?.dynamicScore ?? 0.45,
-    title: item.title,
-    lat: item.lat!,
-    lng: item.lng!,
-    publishedAt: item.publishedAt,
-  }));
+  const clusterEvents: ClusterEvent[] = geoEvents.map((item) => {
+    const rel = reliabilityMap.get(item.source);
+    return {
+      eventId: item.id,
+      sourceId: item.source,
+      category: item.category,
+      severity: item.severity,
+      reliability: rel?.dynamicScore ?? 0.45,
+      tier: rel?.tier ?? 3, // default to T3 for unknown sources
+      title: item.title,
+      lat: item.lat!,
+      lng: item.lng!,
+      publishedAt: item.publishedAt,
+    };
+  });
 
   // Step 3: Coarse geo-cluster
   const geoClusters = clusterByProximity(clusterEvents);
@@ -285,17 +289,21 @@ export function checkEventCorrelation(
   const sourceIds = [newEvent.source, ...candidates.map((e) => e.source)];
   const reliabilityMap = getBulkReliability([...new Set(sourceIds)]);
 
-  const allEvents: ClusterEvent[] = [newEvent, ...candidates].map((item) => ({
-    eventId: item.id,
-    sourceId: item.source,
-    category: item.category,
-    severity: item.severity,
-    reliability: reliabilityMap.get(item.source)?.dynamicScore ?? 0.45,
-    title: item.title,
-    lat: item.lat!,
-    lng: item.lng!,
-    publishedAt: item.publishedAt,
-  }));
+  const allEvents: ClusterEvent[] = [newEvent, ...candidates].map((item) => {
+    const rel = reliabilityMap.get(item.source);
+    return {
+      eventId: item.id,
+      sourceId: item.source,
+      category: item.category,
+      severity: item.severity,
+      reliability: rel?.dynamicScore ?? 0.45,
+      tier: rel?.tier ?? 3,
+      title: item.title,
+      lat: item.lat!,
+      lng: item.lng!,
+      publishedAt: item.publishedAt,
+    };
+  });
 
   const categories = [...new Set(allEvents.map((e) => e.category))];
   if (categories.length < MIN_CATEGORIES) return null;

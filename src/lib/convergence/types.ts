@@ -108,6 +108,15 @@ export interface ClusterEvent {
   category: Category;
   severity: Severity;
   reliability: number;
+  /**
+   * Source reliability tier (1 = institutional/wire, 2 = major editorial,
+   * 3 = specialized/HN, 4 = community/social/RSS). Used by the Bayesian
+   * scorer's tier diversity bonus to reward heterogeneous agreement
+   * (T1+T4 match is stronger evidence than T1+T1 match because the two
+   * tiers represent independent epistemic populations).
+   * Optional for backward compatibility — old call sites default to T3.
+   */
+  tier?: 1 | 2 | 3 | 4;
   title: string;
   lat: number;
   lng: number;

@@ -175,7 +175,28 @@ export function bayesianConfidence(
   const movement = logOddsValue - priorLogOdds;
   logOddsValue = priorLogOdds + movement * chainBonus;
 
-  // ── Step 4: baseline surprise multiplier ────────────────────
+  // ── Step 4: TIER DIVERSITY BONUS — heterogeneous agreement ──
+  // Two events from the same tier share editorial/network bias
+  // (Reuters + AP both feed from wires; r/worldnews + r/geopolitics
+  // both feed from social aggregation). Two events from DIFFERENT
+  // tiers come from independent epistemic populations — when they
+  // agree, that's much stronger evidence than two T1 sources echoing
+  // each other.
+  //
+  // Formula: log2(uniqueTiers + 1) capped at 1.4×
+  //   1 tier  → 1.0  (no bonus, no diversity)
+  //   2 tiers → 1.16 (modest)
+  //   3 tiers → 1.30 (strong)
+  //   4 tiers → 1.40 (max — every tier represented)
+  //
+  // Applied as a movement multiplier like chain bonus.
+  const tierBonus = computeTierDiversityBonus(events);
+  if (tierBonus !== 1.0) {
+    const updatedMovement = logOddsValue - priorLogOdds;
+    logOddsValue = priorLogOdds + updatedMovement * tierBonus;
+  }
+
+  // ── Step 5: baseline surprise multiplier ────────────────────
   // Boring co-occurrences (e.g. NY market open → tech+finance every
   // day) have surprise near 1.0 → no change. Rare patterns (e.g.
   // tech+finance in Africa at 3am) have surprise 2.0+ → belief boost.
@@ -186,10 +207,40 @@ export function bayesianConfidence(
     logOddsValue = priorLogOdds + updatedMovement * surprise;
   }
 
-  // ── Step 5: convert back to probability ─────────────────────
+  // ── Step 6: convert back to probability ─────────────────────
   const confidence = sigmoid(logOddsValue);
 
   return Math.round(confidence * 100) / 100;
+}
+
+/**
+ * Compute the tier diversity bonus for a set of cluster events.
+ *
+ * Returns a multiplier in [1.0, 1.4]:
+ *   - 1 unique tier → 1.0  (no bonus)
+ *   - 2 unique tiers → 1.16
+ *   - 3 unique tiers → 1.30
+ *   - 4 unique tiers → 1.40 (cap)
+ *
+ * Events without tier metadata default to T3, so they group together
+ * (no spurious diversity from missing data).
+ *
+ * Exposed for tests and debug breakdowns.
+ */
+export function computeTierDiversityBonus(events: ClusterEvent[]): number {
+  if (events.length < 2) return 1.0;
+  const tiers = new Set<number>();
+  for (const e of events) tiers.add(e.tier ?? 3);
+  if (tiers.size <= 1) return 1.0;
+  // log2(2+1) = 1.585, log2(3+1) = 2.0, log2(4+1) = 2.322
+  // Map [1.585, 2.322] → [1.16, 1.40] linearly
+  const raw = Math.log2(tiers.size + 1);
+  const minRaw = Math.log2(2 + 1); // 1.585
+  const maxRaw = Math.log2(4 + 1); // 2.322
+  const minBonus = 1.16;
+  const maxBonus = 1.40;
+  const normalized = (raw - minRaw) / (maxRaw - minRaw);
+  return minBonus + normalized * (maxBonus - minBonus);
 }
 
 /**
@@ -212,6 +263,10 @@ export interface BayesianBreakdown {
     contribution: number;
   }[];
   chainBonus: number;
+  /** Tier diversity bonus (1.0 = no diversity, up to 1.4 = all 4 tiers represented) */
+  tierDiversityBonus: number;
+  /** How many unique tiers are present in the cluster (1-4) */
+  uniqueTierCount: number;
   finalLogOdds: number;
   finalConfidence: number;
 }
@@ -259,6 +314,12 @@ export function explainBayesian(
   const movement = logOddsValue - priorLogOdds;
   logOddsValue = priorLogOdds + movement * chainBonus;
 
+  const tierBonus = computeTierDiversityBonus(events);
+  if (tierBonus !== 1.0) {
+    const updatedMovement = logOddsValue - priorLogOdds;
+    logOddsValue = priorLogOdds + updatedMovement * tierBonus;
+  }
+
   if (surprise !== 1.0) {
     const updatedMovement = logOddsValue - priorLogOdds;
     logOddsValue = priorLogOdds + updatedMovement * surprise;
@@ -272,6 +333,8 @@ export function explainBayesian(
     syndicationScale,
     perEventContributions: perEvent,
     chainBonus,
+    tierDiversityBonus: tierBonus,
+    uniqueTierCount: new Set(events.map((e) => e.tier ?? 3)).size,
     finalLogOdds: logOddsValue,
     finalConfidence: Math.round(sigmoid(logOddsValue) * 100) / 100,
   };
