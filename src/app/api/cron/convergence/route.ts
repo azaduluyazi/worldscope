@@ -55,13 +55,20 @@ export async function GET(request: Request) {
   const startTime = Date.now();
 
   try {
-    // 1) Fetch recent events from Supabase
-    // Use a 48h lookback to cover the longest forward-prediction window
-    // (diplomacy = 24h) plus a grace buffer. The correlation detector
-    // still uses category-aware windows internally.
+    // 1) Fetch recent geo-tagged events from Supabase.
+    //
+    // Why geoOnly: the convergence engine ONLY uses events with lat/lng
+    // (Haversine clustering requires coords). Without this filter, the
+    // 1000-row Supabase API cap fills up with non-geo RSS items, leaving
+    // ~10 actually-usable events for the engine. With it, we get all
+    // ~131 geo events from the rolling 48h window.
+    //
+    // 48h lookback covers the longest forward-prediction window
+    // (diplomacy = 24h) plus a grace buffer.
     const events = await fetchPersistedEvents({
       hoursBack: 48,
-      limit: 8000,
+      limit: 1000,
+      geoOnly: true,
     });
 
     if (events.length === 0) {

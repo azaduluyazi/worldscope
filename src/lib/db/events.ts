@@ -60,15 +60,25 @@ export async function persistEvents(items: IntelItem[]): Promise<number> {
 /**
  * Fetch recent events from Supabase (for when external APIs are slow/down).
  * Acts as a fallback data source.
+ *
+ * IMPORTANT: Supabase API hard-caps at 1000 rows per query unless the
+ * project's `db-max-rows` setting is raised. The default `limit: 1000`
+ * here exists to make that cap explicit.
+ *
+ * For the convergence engine, pass `geoOnly: true` so we don't waste
+ * the 1000-row budget pulling RSS items that lack lat/lng — those are
+ * useless for spatial correlation anyway.
  */
 export async function fetchPersistedEvents(
   options: {
     category?: string;
     limit?: number;
     hoursBack?: number;
+    /** When true, only return events with non-null lat/lng. */
+    geoOnly?: boolean;
   } = {}
 ): Promise<IntelItem[]> {
-  const { category, limit = 1000, hoursBack = 48 } = options;
+  const { category, limit = 1000, hoursBack = 48, geoOnly = false } = options;
   const db = createServerClient();
 
   const since = new Date(Date.now() - hoursBack * 60 * 60 * 1000).toISOString();
@@ -82,6 +92,10 @@ export async function fetchPersistedEvents(
 
   if (category) {
     query = query.eq("category", category);
+  }
+
+  if (geoOnly) {
+    query = query.not("lat", "is", null).not("lng", "is", null);
   }
 
   const { data, error } = await query;
