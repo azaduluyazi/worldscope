@@ -30,6 +30,7 @@
     { "path": "/api/cron/cache-warm", "schedule": "*/15 * * * *" },
     { "path": "/api/cron/social-post", "schedule": "0 12 * * *" },
     { "path": "/api/cron/generate-blog", "schedule": "0 7 * * 1" },
-    { "path": "/api/cron/validate-all-feeds", "schedule": "30 */6 * * *" }
+    { "path": "/api/cron/validate-all-feeds", "schedule": "30 */6 * * *" },
+    { "path": "/api/cron/signal-mix-alert", "schedule": "0 9 * * *" }
   ]
 }

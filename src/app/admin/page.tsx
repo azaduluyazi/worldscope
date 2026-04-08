@@ -7,6 +7,7 @@ import { FeedAdminPanel } from "@/components/feeds/FeedAdminPanel";
 import { FeedCategoryChart } from "@/components/feeds/FeedCategoryChart";
 import { SourcesPanel } from "@/components/admin/SourcesPanel";
 import { UsersPanel } from "@/components/admin/UsersPanel";
+import { SignalMixPanel } from "@/components/admin/SignalMixPanel";
 import type { ApiRegistryEntry } from "@/config/api-registry";
 import Link from "next/link";
 
@@ -17,7 +18,7 @@ export default function AdminPage() {
   const [adminKey, setAdminKey] = useState("");
   const [keyError, setKeyError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState<"overview" | "sources" | "feeds" | "registry" | "users">("overview");
+  const [activeSection, setActiveSection] = useState<"overview" | "signal-mix" | "sources" | "feeds" | "registry" | "users">("overview");
   const { data: health } = useFeedHealth();
   const { data: feedList, mutate } = useFeedList(undefined, false);
 
@@ -119,6 +120,7 @@ export default function AdminPage() {
         <div className="max-w-7xl mx-auto px-6 flex gap-0">
           {([
             { key: "overview", label: "📊 Overview", icon: "" },
+            { key: "signal-mix", label: "🧭 Signal Mix", icon: "" },
             { key: "sources", label: "📡 Sources", icon: "" },
             { key: "feeds", label: "📰 Feeds", icon: "" },
             { key: "registry", label: "🔗 API Registry", icon: "" },
@@ -192,6 +194,11 @@ export default function AdminPage() {
               </div>
             )}
           </>
+        )}
+
+        {/* Signal Mix Section */}
+        {activeSection === "signal-mix" && (
+          <SignalMixPanel adminKey={adminKey} />
         )}
 
         {/* Sources Section */}
