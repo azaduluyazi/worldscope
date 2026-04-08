@@ -80,10 +80,57 @@ const STATIC_SCORES: Record<string, { base: number; tier: 1 | 2 | 3 | 4 }> = {
   "dollar-toman":      { base: 0.50, tier: 4 },
   "good-news":         { base: 0.45, tier: 4 },
   "positive-news":     { base: 0.45, tier: 4 },
+
+  // ─── ACTUAL DISPLAY NAMES from production events table ────────
+  // The feed pipeline writes the source's human-readable display name
+  // (e.g. "Bloomberg", "USGS Earthquake") rather than a kebab key.
+  // Without these entries the engine defaults every event to 0.45,
+  // killing every Bayesian convergence score below threshold.
+  //
+  // Tier 1 (0.85-0.95): institutional / wire services
+  "USGS Earthquake":      { base: 0.95, tier: 1 },
+  "GDACS":                { base: 0.92, tier: 1 },
+  "Reuters":              { base: 0.90, tier: 1 },
+  "AP":                   { base: 0.90, tier: 1 },
+  "AFP":                  { base: 0.90, tier: 1 },
+  "Anadolu Agency":       { base: 0.85, tier: 1 },
+
+  // Tier 2 (0.75-0.85): major editorial outlets
+  "Bloomberg":            { base: 0.85, tier: 2 },
+  "The Guardian":         { base: 0.82, tier: 2 },
+  "BBC":                  { base: 0.85, tier: 2 },
+  "BBC News":             { base: 0.85, tier: 2 },
+  "NPR":                  { base: 0.82, tier: 2 },
+  "NPR World":            { base: 0.82, tier: 2 },
+  "Al Jazeera":           { base: 0.78, tier: 2 },
+  "Middle East Eye":      { base: 0.72, tier: 2 },
+  "Euronews":             { base: 0.78, tier: 2 },
+  "NHK World":            { base: 0.80, tier: 2 },
+  "CNA":                  { base: 0.75, tier: 2 },
+  "France24":             { base: 0.78, tier: 2 },
+  "DW":                   { base: 0.78, tier: 2 },
+
+  // Tier 3 (0.60-0.72): specialized / vertical sources
+  "ESPN":                 { base: 0.70, tier: 3 },
+  "NHL":                  { base: 0.68, tier: 3 },
+  "PubMed":               { base: 0.85, tier: 3 }, // research, high but niche
+  "ScienceDaily":         { base: 0.72, tier: 3 },
+  "SpacePolicyOnline.com":{ base: 0.70, tier: 3 },
+  "European Spaceflight": { base: 0.68, tier: 3 },
+  "RansomLook":           { base: 0.68, tier: 3 },
+  "StackOverflow":        { base: 0.65, tier: 3 },
+  "CoinTelegraph":        { base: 0.55, tier: 3 },
+  "Good News Network":    { base: 0.55, tier: 4 },
 };
 
-// Default for unknown/RSS sources
-const DEFAULT_SCORE = { base: 0.45, tier: 4 as const };
+// Default for unknown/RSS sources.
+// Raised from 0.45 to 0.60 in v3.2: 0.45 was calibrated for low-quality
+// random RSS feeds, but the ingest pipeline only emits curated outlets.
+// At 0.45, even multi-signal high-confidence pairs failed to clear the
+// Bayesian threshold (sigmoid stays below 0.4). 0.60 still leaves room
+// for differentiation against tier 1 sources (0.90+) but gives unknown
+// outlets a fair chance to contribute evidence.
+const DEFAULT_SCORE = { base: 0.60, tier: 3 as const };
 
 /**
  * Get reliability score for a source.

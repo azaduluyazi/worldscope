@@ -154,7 +154,17 @@ export function bayesianConfidence(
       now
     );
     const sevLikelihood = SEVERITY_LIKELIHOOD[event.severity];
-    const likelihood = event.reliability * sevLikelihood * decay;
+    // Raw strength in [0, 1]. Note: previously this was used directly
+    // as a likelihood, but that pushed evidence NEGATIVE for any signal
+    // with combined strength < 0.5 (e.g. medium-reliability + medium-
+    // severity → 0.45 → LLR negative → belief drops). That's the wrong
+    // direction: every signal should be at least neutral evidence and
+    // strong signals strongly positive.
+    //
+    // Fix: remap [0, 1] → [0.5, 0.995]. Floor at 0.5 (LLR = 0, neutral),
+    // ceiling near 1 (asymptotic strong evidence).
+    const strength = event.reliability * sevLikelihood * decay;
+    const likelihood = 0.5 + 0.495 * strength;
     const llr = logOdds(likelihood);
     logOddsValue += llr * syndicationScale;
   }
@@ -229,7 +239,9 @@ export function explainBayesian(
       now
     );
     const sevLikelihood = SEVERITY_LIKELIHOOD[event.severity];
-    const likelihood = event.reliability * sevLikelihood * decay;
+    // Same remap as bayesianConfidence: [0, 1] → [0.5, 0.995]
+    const strength = event.reliability * sevLikelihood * decay;
+    const likelihood = 0.5 + 0.495 * strength;
     const llr = logOdds(likelihood);
     const contribution = llr * syndicationScale;
     logOddsValue += contribution;
