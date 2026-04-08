@@ -1,13 +1,40 @@
 import { createServerClient } from "./supabase";
 import type { IntelItem } from "@/types/intel";
+import { applyGeocoding } from "@/lib/ai/geocoder";
 
 /**
  * Persist intel items to Supabase `events` table.
  * Uses upsert on url to avoid duplicates.
  * Runs fire-and-forget — failures don't block the API response.
+ *
+ * v3.5: auto-applies AI geocoding before persist. Items that already
+ * have lat/lng are untouched. Items that don't get Groq-based location
+ * extraction (with Redis cache to avoid re-geocoding the same title).
+ * Geocoding failures are silent — items just persist without coords.
+ *
+ * Pass skipGeocoding: true if the caller already handled location
+ * (e.g., USGS feed which has authoritative coordinates).
  */
-export async function persistEvents(items: IntelItem[]): Promise<number> {
+export async function persistEvents(
+  items: IntelItem[],
+  options: { skipGeocoding?: boolean } = {}
+): Promise<number> {
   if (items.length === 0) return 0;
+
+  // AI geocoding pass (best-effort, cached, silent on failure)
+  if (!options.skipGeocoding) {
+    try {
+      const stats = await applyGeocoding(items);
+      if (stats.newlyGeocoded > 0 || stats.cachedHits > 0) {
+        console.log(
+          `[persistEvents] geocoded: ${stats.newlyGeocoded} new, ${stats.cachedHits} cached, ${stats.llmMiss} miss, ${stats.llmErrors} errors (of ${stats.total} items, ${stats.alreadyGeoTagged} pre-tagged)`
+        );
+      }
+    } catch (err) {
+      console.error("[persistEvents] geocoding failed:", err);
+      // Continue — persist items without coords is fine
+    }
+  }
 
   const db = createServerClient();
 
