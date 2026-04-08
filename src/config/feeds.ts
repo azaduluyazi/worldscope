@@ -713,6 +713,41 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "Football Data Standings", url: "https://api.football-data.org/v4/competitions/PL/standings", category: "sports", defaultSeverity: "info", region: "global" },
   { name: "TV Screener Movers", url: "https://scanner.tradingview.com/america/scan", category: "finance", defaultSeverity: "info", region: "global" },
   { name: "Market Indices", url: "https://query1.finance.yahoo.com/v8/finance/spark", category: "finance", defaultSeverity: "info", region: "global" },
+
+  // ── Social Layer: Reddit (10 subreddits) ─────────────────────────
+  // Names match source-reliability.ts tier entries exactly so the
+  // Bayesian scorer's tier diversity bonus activates for cross-tier
+  // agreement (e.g. USGS T1 + r/earthquake T4).
+  //
+  // Reddit's public .rss endpoints require a custom User-Agent — the
+  // existing RSS parser sends "WorldScope/1.0" which Reddit accepts.
+  // Rate limit: ~60 req/min per IP; we do 10 req/10min cycle → safe.
+  { name: "Reddit r/worldnews",     url: "https://www.reddit.com/r/worldnews/.rss",     category: "conflict",  defaultSeverity: "medium", region: "global" },
+  { name: "Reddit r/geopolitics",   url: "https://www.reddit.com/r/geopolitics/.rss",   category: "conflict",  defaultSeverity: "medium", region: "global" },
+  { name: "Reddit r/CredibleDefense", url: "https://www.reddit.com/r/CredibleDefense/.rss", category: "conflict", defaultSeverity: "high",   region: "global" },
+  { name: "Reddit r/cybersecurity", url: "https://www.reddit.com/r/cybersecurity/.rss", category: "cyber",     defaultSeverity: "medium", region: "global" },
+  { name: "Reddit r/netsec",        url: "https://www.reddit.com/r/netsec/.rss",        category: "cyber",     defaultSeverity: "high",   region: "global" },
+  { name: "Reddit r/economy",       url: "https://www.reddit.com/r/economy/.rss",       category: "finance",   defaultSeverity: "info",   region: "global" },
+  { name: "Reddit r/energy",        url: "https://www.reddit.com/r/energy/.rss",        category: "energy",    defaultSeverity: "info",   region: "global" },
+  { name: "Reddit r/space",         url: "https://www.reddit.com/r/space/.rss",         category: "tech",      defaultSeverity: "info",   region: "global" },
+  { name: "Reddit r/earthquake",    url: "https://www.reddit.com/r/earthquake/.rss",    category: "natural",   defaultSeverity: "high",   region: "global" },
+  { name: "Reddit r/MapPorn",       url: "https://www.reddit.com/r/MapPorn/.rss",       category: "tech",      defaultSeverity: "info",   region: "global" },
+
+  // ── Social Layer: YouTube News (6 channels) ───────────────────────
+  // YouTube RSS uses channel_id-based URLs. These IDs are stable and
+  // public; verified from each channel's "About" page.
+  //
+  // The RSS feed returns video metadata (title, description, publish
+  // date, link) which our RSS parser maps into IntelItem. Categories
+  // here are broad because these are general news channels — the
+  // per-item category classifier in rss-parser.ts will refine on
+  // actual content.
+  { name: "YouTube Reuters",            url: "https://www.youtube.com/feeds/videos.xml?channel_id=UChqUTb7kYRX8-EiaN3XFrSQ", category: "conflict", defaultSeverity: "medium", region: "global" },
+  { name: "YouTube Al Jazeera English", url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCNye-wNBqNL5ZzHSJj3l8Bg", category: "conflict", defaultSeverity: "medium", region: "global" },
+  { name: "YouTube DW News",            url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCknLrEdhRCp1aegoMqRaCZg", category: "conflict", defaultSeverity: "medium", region: "europe" },
+  { name: "YouTube BBC News",           url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC16niRr50-MSBwiO3YDb3RA", category: "conflict", defaultSeverity: "medium", region: "global" },
+  { name: "YouTube Bloomberg",          url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCIALMKvObZNtJ6AmdCLP7Lg", category: "finance",  defaultSeverity: "medium", region: "global" },
+  { name: "YouTube FRANCE 24 English",  url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCQfwfsi5VrQ8yKZ-UWmAEFg", category: "conflict", defaultSeverity: "medium", region: "global" },
 ];
 
 export const FEED_COUNT = SEED_FEEDS.length;

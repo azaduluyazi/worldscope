@@ -141,6 +141,12 @@ const STATIC_SCORES: Record<string, { base: number; tier: 1 | 2 | 3 | 4 }> = {
   // Hacker News — T3 because quality filter (points=300) surfaces vetted content
   "Hacker News Front Page":   { base: 0.58, tier: 3 },
   "Hacker News Top 300+":     { base: 0.70, tier: 3 }, // high signal, community-vetted
+  // Alias for the legacy fetcher that writes source="Hacker News" (both the
+  // Firebase HN API client in src/lib/api/hackernews.ts and the RSS feed in
+  // feeds.ts use this bare name). Without this entry, all 124+ existing HN
+  // events fall through to DEFAULT_SCORE (0.60, T3) and miss the tier 3
+  // specialized bump + the tier diversity bonus.
+  "Hacker News":              { base: 0.62, tier: 3 },
 
   // YouTube news channels — T2 because they mirror wire-service editorial standards
   // (the videos just restate what the outlets already published).
