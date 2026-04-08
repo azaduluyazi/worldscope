@@ -121,6 +121,38 @@ const STATIC_SCORES: Record<string, { base: number; tier: 1 | 2 | 3 | 4 }> = {
   "StackOverflow":        { base: 0.65, tier: 3 },
   "CoinTelegraph":        { base: 0.55, tier: 3 },
   "Good News Network":    { base: 0.55, tier: 4 },
+
+  // ─── Social / Community layer (migration 013) ─────────────────────────
+  // Reddit is T4 community — noisy but useful for cross-tier agreement.
+  // The convergence scorer's heterogeneity bonus rewards a T1+T4 match
+  // more than two T1 matches, so this "low quality" data has real value
+  // precisely because it represents a different epistemic population.
+  "Reddit r/worldnews":       { base: 0.50, tier: 4 },
+  "Reddit r/geopolitics":     { base: 0.55, tier: 4 },
+  "Reddit r/CredibleDefense": { base: 0.62, tier: 4 }, // higher — moderated, signal-dense
+  "Reddit r/cybersecurity":   { base: 0.55, tier: 4 },
+  "Reddit r/netsec":          { base: 0.58, tier: 4 }, // practitioner community
+  "Reddit r/economy":         { base: 0.50, tier: 4 },
+  "Reddit r/energy":          { base: 0.52, tier: 4 },
+  "Reddit r/space":           { base: 0.55, tier: 4 },
+  "Reddit r/earthquake":      { base: 0.55, tier: 4 },
+  "Reddit r/MapPorn":         { base: 0.45, tier: 4 },
+
+  // Hacker News — T3 because quality filter (points=300) surfaces vetted content
+  "Hacker News Front Page":   { base: 0.58, tier: 3 },
+  "Hacker News Top 300+":     { base: 0.70, tier: 3 }, // high signal, community-vetted
+
+  // YouTube news channels — T2 because they mirror wire-service editorial standards
+  // (the videos just restate what the outlets already published).
+  "YouTube Reuters":            { base: 0.85, tier: 2 },
+  "YouTube Al Jazeera English": { base: 0.76, tier: 2 },
+  "YouTube DW News":            { base: 0.76, tier: 2 },
+  "YouTube BBC News":           { base: 0.82, tier: 2 },
+  "YouTube Bloomberg":          { base: 0.82, tier: 2 },
+  "YouTube FRANCE 24 English":  { base: 0.76, tier: 2 },
+
+  // Bluesky What's Hot — T4 social firehose, similar profile to Reddit
+  "Bluesky What's Hot":         { base: 0.48, tier: 4 },
 };
 
 // Default for unknown/RSS sources.
