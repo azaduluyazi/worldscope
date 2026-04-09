@@ -39,24 +39,36 @@ const SEMANTIC_LINK_THRESHOLD = 0.78;
 /**
  * Cap on the number of cache-miss embeddings we request per call.
  *
- * WHY: Google downgraded the free-tier quota when migrating from
- * text-embedding-004 to gemini-embedding-001. The new cap observed in
- * production (via convergence_metrics.debug_hint) is
- * `embed_content_free_tier_requests, limit: 100` with a ~30-second
- * retry window — i.e. ~100 text embeddings per minute per project.
+ * WHY: gemini-embedding-001 free tier has TWO ceilings (confirmed
+ * via ai.google.dev/gemini-api/docs/rate-limits and observed in
+ * production 429 responses):
+ *   - 100 RPM (requests per minute)
+ *   - 1,000 RPD (requests per day, resets midnight Pacific)
  *
- * A 5-minute cron cycle can therefore afford at most ~500 new
- * embeddings. We cap at 300 to leave headroom for other callers on
- * the same API key (semantic dedup inside enriched correlations,
- * storyline matching, etc.) and for Google's rate-limiter being
- * slightly less generous than the stated number.
+ * The DAILY cap is the binding constraint, not the per-minute one.
+ * At 288 cron cycles/day, a sustainable steady state is
+ *   1000 RPD ÷ 288 cycles = ~3.5 new embeddings/cycle
  *
- * The pgvector cache means already-embedded events cost zero quota
- * on subsequent cycles. Over ~4-5 cycles the rolling 48h non-geo
- * event window fills up and steady state only costs ~20-40 new
- * embeddings per cycle.
+ * But we don't WANT pure steady state — on a fresh deploy the cache
+ * is cold and the topic track is starved until enough events get
+ * embedded. So we accept a fast warmup followed by a late-day pause:
+ *   50 per cycle × 20 cycles = 1000 RPD cap hit after ~100 minutes.
+ * That gives us ~1000 warm events in the first ~1.5 hours of a
+ * UTC day, then the cache freezes until the next midnight PT reset.
+ *
+ * The partial-tolerant batch loop in gemini.ts handles the
+ * transition gracefully — when the 429 starts landing mid-cycle, we
+ * preserve whatever embeddings already succeeded and the topic
+ * detector clusters whatever it has. This gives us "best effort"
+ * topic clusters 24/7 instead of "all or nothing".
+ *
+ * Above this cap is only a concern for operators wanting full
+ * coverage of the 48h non-geo window — that requires the paid tier
+ * (Tier 1 raises RPD ~100×) or an alternative provider (Voyage,
+ * Cohere, Jina all have more generous free tiers for text
+ * embeddings).
  */
-const MAX_CACHE_MISSES_PER_CALL = 300;
+const MAX_CACHE_MISSES_PER_CALL = 50;
 
 /** Enriched event with optional embedding vector */
 export interface EmbeddedEvent extends ClusterEvent {

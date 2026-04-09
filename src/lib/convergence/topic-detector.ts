@@ -146,10 +146,13 @@ export async function detectTopicCorrelationsWithMetrics(
   metrics.eventsWithEmbedding = embedded.filter((e) => !!e.embedding).length;
   metrics.eventsSkippedNoEmbedding =
     embedded.length - metrics.eventsWithEmbedding;
-  if (firstEmbedError) {
-    // Truncate so we never exceed the DB column cap.
-    metrics.debugHint = String(firstEmbedError).slice(0, 500);
-  }
+  // Hold the error message for now — we only actually write it to
+  // metrics.debugHint at the END of the run, after we know whether
+  // the track survived (clustersProduced > 0) or not. This avoids
+  // misleading "429 quota exceeded" hints on rows where the
+  // partial-tolerant batch loop salvaged enough embeddings to
+  // produce healthy clusters.
+  const pendingDebugHint = firstEmbedError;
 
   // Step 4: single-pass greedy clustering, sorted by time
   const sorted = [...embedded].sort(
@@ -226,6 +229,13 @@ export async function detectTopicCorrelationsWithMetrics(
 
   if (result.length === 0) {
     metrics.failureReason = classifyTopicFailure(metrics);
+    // Only surface the embed error when the track ACTUALLY failed
+    // (no clusters produced). When clusters > 0, the partial-tolerant
+    // batch loop did its job and the cron is healthy — a lingering
+    // 429 hint would just confuse log readers.
+    if (pendingDebugHint) {
+      metrics.debugHint = String(pendingDebugHint).slice(0, 500);
+    }
   }
 
   return { clusters: result, metrics };
