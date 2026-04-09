@@ -135,10 +135,21 @@ export async function computeEventEmbeddings<T extends ClusterEvent>(
     );
   }
 
-  // Step 3: write new embeddings to the cache (fire-and-forget)
-  if (newEmbeddings.length === missing.length && newEmbeddings.length > 0) {
+  // Step 3: write WHATEVER embeddings we got to the cache
+  // (fire-and-forget). Pair newEmbeddings to the first N entries of
+  // missing by index — the provider returns results in the same order
+  // as the input titles. Critical bug fix: previous revision gated
+  // the write on `newEmbeddings.length === missing.length`, which
+  // silently discarded EVERY embedding in partial-batch scenarios
+  // (e.g. 100 embedded out of 300 requested when a 429 lands mid-way).
+  // Without this fix the pgvector cache never accumulated rows and
+  // the next cycle re-paid the full quota cost.
+  if (newEmbeddings.length > 0) {
     storeEmbeddings(
-      missing.map((e, i) => ({ eventId: e.eventId, embedding: newEmbeddings[i] }))
+      newEmbeddings.map((embedding, i) => ({
+        eventId: missing[i].eventId,
+        embedding,
+      }))
     ).catch((err) => console.error("[semantic-similarity] cache write failed:", err));
   }
 
