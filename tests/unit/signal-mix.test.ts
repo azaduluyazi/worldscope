@@ -72,18 +72,19 @@ describe("analyzeSignalMix", () => {
   });
 
   it("flags NEW_SOURCE_ZERO_EVENTS when migration 013 sources missing", () => {
-    // Only include a few of the 19 new sources — most are missing
+    // Only include a couple of the tracked new sources — most are missing
     const hits: SourceHit[] = [
       { source: "Reuters", count: 100 },
       { source: "Reddit r/worldnews", count: 10 },
-      { source: "Hacker News Front Page", count: 5 },
+      { source: "Hacker News", count: 5 },
     ];
     const report = analyzeSignalMix(hits);
 
     const zeroAnomaly = report.anomalies.find((a) => a.code === "NEW_SOURCE_ZERO_EVENTS");
     expect(zeroAnomaly).toBeDefined();
-    expect(zeroAnomaly!.severity).toBe("critical"); // 16 missing ≥ 5 threshold
-    expect(zeroAnomaly!.sources?.length).toBeGreaterThanOrEqual(15);
+    expect(zeroAnomaly!.severity).toBe("critical"); // missing count ≥ 5 threshold
+    // Only 2 of the tracked sources are present, so the rest should be flagged
+    expect(zeroAnomaly!.sources?.length).toBe(MIGRATION_013_SOURCES.length - 2);
   });
 
   it("marks all migration 013 sources as healthy when all present", () => {
@@ -91,12 +92,12 @@ describe("analyzeSignalMix", () => {
       source,
       count: 5,
     }));
-    // Add enough volume so the 19 new sources aren't 100% of events
+    // Add enough volume so the new sources aren't 100% of events
     hits.push({ source: "Reuters", count: 1000 });
 
     const report = analyzeSignalMix(hits);
     const healthy = report.newSourceStatus.filter((s) => s.status === "healthy");
-    expect(healthy.length).toBe(19);
+    expect(healthy.length).toBe(MIGRATION_013_SOURCES.length);
   });
 
   it("reports top sources sorted by count descending", () => {
@@ -117,7 +118,7 @@ describe("renderSignalMixForTelegram", () => {
     const hits: SourceHit[] = [
       { source: "Reuters", count: 100 },
       { source: "Reddit r/worldnews", count: 10 }, // ~9% T4 — healthy
-      { source: "Hacker News Front Page", count: 5 },
+      { source: "Hacker News", count: 5 },
     ];
     const report = analyzeSignalMix(hits, 24);
     const text = renderSignalMixForTelegram(report);
@@ -125,7 +126,7 @@ describe("renderSignalMixForTelegram", () => {
     expect(text).toContain("WorldScope Signal Mix");
     expect(text).toContain("115 events");
     expect(text).toContain("Tier distribution");
-    // 16 of 19 migration-013 sources are missing in this test data
+    // Most migration-013 sources are missing in this test data
     expect(text).toContain("anomal");
   });
 

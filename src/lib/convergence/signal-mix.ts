@@ -58,9 +58,15 @@ export interface SignalMixReport {
 }
 
 /**
- * The 18 new feeds added in migration 013 — we want to verify these
+ * The new feeds added in migration 013 — we want to verify these
  * specifically because they're the newest additions and the most likely
  * to be broken if anything went wrong with the migration or RSS parsing.
+ *
+ * REMOVED from tracking (still in feeds table, just not alerted on):
+ *   - "Reddit r/earthquake"   — community is dead (last fresh post 2024-07);
+ *                                permanent zero-events triggers false alarms
+ *   - "Hacker News Top 300+"  — by-design sticky 300pt threshold filters
+ *                                most stories, so empty windows are normal
  */
 export const MIGRATION_013_SOURCES = [
   "Reddit r/worldnews",
@@ -71,10 +77,13 @@ export const MIGRATION_013_SOURCES = [
   "Reddit r/economy",
   "Reddit r/energy",
   "Reddit r/space",
-  "Reddit r/earthquake",
   "Reddit r/MapPorn",
-  "Hacker News Front Page",
-  "Hacker News Top 300+",
+  // NOTE: This was originally "Hacker News Front Page" in migration 013.
+  // It was renamed to "Hacker News" in commit b5b64a3 (HN alias for social
+  // layer parity) without updating this tracking constant — causing the
+  // signal-mix panel to permanently flag it as missing. Keep this name in
+  // sync with whatever the feeds table actually contains.
+  "Hacker News",
   "YouTube Reuters",
   "YouTube Al Jazeera English",
   "YouTube DW News",
@@ -197,7 +206,7 @@ export function analyzeSignalMix(
       anomalies.push({
         severity: zeroEventNewSources.length >= 5 ? "critical" : "warning",
         code: "NEW_SOURCE_ZERO_EVENTS",
-        message: `${zeroEventNewSources.length} of 19 migration-013 sources have zero events in window. May be broken or rate-limited.`,
+        message: `${zeroEventNewSources.length} of ${MIGRATION_013_SOURCES.length} migration-013 sources have zero events in window. May be broken or rate-limited.`,
         sources: zeroEventNewSources,
         metric: zeroEventNewSources.length,
       });
