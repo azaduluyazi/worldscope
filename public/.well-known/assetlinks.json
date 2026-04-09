@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.troiamedia.worldscope",
+      "package_name": "com.troiamedia.twa",
       "sha256_cert_fingerprints": [
         "DF:0A:F3:FC:7C:A7:F8:01:80:E8:2E:56:FD:89:DC:8B:BB:00:7E:04:A7:E1:CD:D0:10:89:FF:99:D5:25:EB:69"
       ]

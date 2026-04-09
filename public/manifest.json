@@ -79,6 +79,27 @@
       "description": "Live scores and sports news worldwide",
       "url": "/sports",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ORACLE — Reports",
+      "short_name": "Reports",
+      "description": "AI-generated daily & weekly intelligence briefings",
+      "url": "/reports",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "MUSE — Blog",
+      "short_name": "Blog",
+      "description": "Published intelligence analysis articles",
+      "url": "/blog",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "ECHO — Podcast",
+      "short_name": "Podcast",
+      "description": "AI-generated daily intelligence briefings in audio",
+      "url": "/podcast",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }
   ],
   "categories": ["news", "finance", "business", "security"],
