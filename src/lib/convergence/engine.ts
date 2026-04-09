@@ -250,8 +250,21 @@ export async function runFullConvergenceScan(
   const MIN_CONFIDENCE = 0.4;
   const filtered = rawConvergences.filter((c) => c.confidence >= MIN_CONFIDENCE);
 
-  // Step 5: Generate LLM narratives for high-confidence convergences
-  const narratives = await batchGenerateNarratives(filtered, 0.7);
+  // Step 5: Generate LLM narratives for high-confidence convergences.
+  // Wrapped in try/catch so any catastrophic narrative-layer failure
+  // (provider outage, unexpected exception inside Promise.allSettled,
+  // etc.) falls through to an empty narrative map — the cron still
+  // gets its metrics row, its Redis write, and its history archive.
+  // Narratives are a decoration, not load-bearing data.
+  let narratives = new Map<string, string>();
+  try {
+    narratives = await batchGenerateNarratives(filtered, 0.7);
+  } catch (err) {
+    console.error(
+      "[engine] batchGenerateNarratives threw unexpectedly — continuing without narratives:",
+      err instanceof Error ? err.message : err
+    );
+  }
 
   // Step 6: Merge narratives. Predictions stay unvalidated (false) here —
   // validation happens in the cron route AFTER engine completes, against

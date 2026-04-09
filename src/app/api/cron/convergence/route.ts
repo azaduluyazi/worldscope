@@ -96,6 +96,29 @@ export async function GET(request: Request) {
       priorOverride: calibratedPrior,
     });
 
+    // ═══════════════════════════════════════════════════════════════
+    //  CRITICAL PATH — write observability and user-visible state
+    //  BEFORE any of the slow downstream steps (storyline attachment,
+    //  prediction validation, counter-factual scans, archiving).
+    //
+    //  Rationale: the topic track went from 0 to 27 clusters per
+    //  cycle, which pushed the cron's total wall time dangerously
+    //  close to the 60s Vercel maxDuration. When a downstream step
+    //  throws or hangs, the OLD ordering killed the entire cron
+    //  before metrics rows, Redis cache, and history archive were
+    //  written — producing 18-minute observability blackouts and
+    //  empty /api/convergence responses.
+    //
+    //  The new ordering is:
+    //    2a) metrics row        (observability)
+    //    2b) Redis cache        (UI hot path)
+    //    2c) history archive    (API DB fallback + backtesting)
+    //    3+)  storylines, predictions, counter-factuals, housekeeping
+    //
+    //  Everything below step 2c is best-effort and can silently
+    //  fail without user-visible impact.
+    // ═══════════════════════════════════════════════════════════════
+
     // 2a) Persist per-track observability counters to convergence_metrics.
     // Fail-open: repository swallows DB errors so this cannot break the
     // rest of the cron. The point is: NEXT query to that table answers
@@ -104,6 +127,17 @@ export async function GET(request: Request) {
     if (collectedMetrics.length > 0) {
       await recordBothTrackMetrics(collectedMetrics);
     }
+
+    // 2b) Cache convergence results in Redis BEFORE any slow step.
+    // /api/convergence reads this key first and falls back to
+    // convergence_history on miss (both sources stay consistent via
+    // the early-write in 2c).
+    await redis.set("convergence:latest", result, { ex: TTL.MEDIUM });
+
+    // 2c) Persist convergences to the permanent history archive.
+    // Done BEFORE storylines/predictions/counter-factuals so the API
+    // DB fallback always sees fresh data even if later steps crash.
+    const historyWritten = await persistConvergences(result.convergences);
 
     // 3) Attach convergences to active storylines
     let storylinesUpserted = 0;
@@ -176,8 +210,17 @@ export async function GET(request: Request) {
       }
     }
 
-    // 5c) Cache convergence results in Redis
-    await redis.set("convergence:latest", result, { ex: TTL.MEDIUM });
+    // NOTE: convergence:latest Redis write and history archive
+    // already happened in steps 2b/2c above the slow downstream
+    // work. Do NOT re-write here — duplicating the write would
+    // undo any storyline tagging that happened in step 3.
+
+    // Re-persist convergences now that storylineId is attached
+    // (upsert on id so the initial step-2c row is updated in place).
+    if (result.convergences.length > 0) {
+      await persistConvergences(result.convergences);
+      await redis.set("convergence:latest", result, { ex: TTL.MEDIUM });
+    }
 
     // Append high-confidence convergences to the rolling history key
     if (result.convergences.length > 0) {
@@ -190,11 +233,6 @@ export async function GET(request: Request) {
         await redis.set(historyKey, merged, { ex: 86400 });
       }
     }
-
-    // 6a) Persist convergences to the permanent history archive.
-    // This is the data backbone for backtesting, calibration, and
-    // storyline drilldown. Migration 011 created the table.
-    const historyWritten = await persistConvergences(result.convergences);
 
     // 6b) Housekeeping: archive expired storylines (cheap RPC call)
     const archived = await archiveExpired();
