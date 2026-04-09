@@ -108,13 +108,16 @@ export function MapLayerPanel({ layers, onToggleLayer, className = "" }: MapLaye
   );
 
   // ── Collapsed state: just the LAYERS button ──────────────────────
+  // Session 17: Mobile positioning — button sits above the bottom nav instead
+  // of top-24 (where it collided with the variant tab bar on phones).
   if (!isOpen) {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className={`absolute left-3 top-24 z-[90] flex items-center gap-1.5 px-3 py-2 rounded-md
-          bg-hud-panel/90 border border-hud-border backdrop-blur-sm
-          hover:border-hud-accent/50 transition-colors cursor-pointer min-h-[36px] ${className}`}
+        className={`fixed md:absolute z-[90] flex items-center gap-1.5 px-3 py-2 rounded-md
+          bg-hud-panel/95 border border-hud-border backdrop-blur-sm
+          hover:border-hud-accent/50 transition-colors cursor-pointer min-h-[36px]
+          left-3 bottom-20 md:bottom-auto md:top-24 shadow-lg ${className}`}
         title={t("mapLayers.button")}
         aria-label={t("mapLayers.button")}
       >
@@ -132,10 +135,14 @@ export function MapLayerPanel({ layers, onToggleLayer, className = "" }: MapLaye
   }
 
   // ── Expanded state: full layer panel ─────────────────────────────
+  // Session 17: On mobile, expand as a bottom-sheet style drawer that spans the
+  // full viewport width; desktop keeps the original side-panel layout.
   return (
     <div
-      className={`absolute left-3 top-24 z-[90] w-72 max-h-[calc(100vh-10rem)] overflow-y-auto
-      bg-hud-panel/95 border border-hud-border rounded-lg backdrop-blur-sm shadow-2xl ${className}`}
+      className={`fixed md:absolute z-[90] overflow-y-auto
+      bg-hud-panel/98 md:bg-hud-panel/95 border border-hud-border rounded-lg backdrop-blur-sm shadow-2xl
+      left-3 right-3 md:right-auto bottom-20 md:bottom-auto md:left-3 md:top-24
+      w-auto md:w-72 max-h-[65vh] md:max-h-[calc(100vh-10rem)] ${className}`}
     >
       {/* Header */}
       <div className="sticky top-0 bg-hud-panel/98 backdrop-blur-sm border-b border-hud-border z-10">
@@ -261,7 +268,12 @@ export function MapLayerPanel({ layers, onToggleLayer, className = "" }: MapLaye
 export function useMapLayers() {
   const [layers, setLayers] = useState<MapLayer[]>(() => {
     const prefs = loadPreferences();
-    const saved = new Set(prefs.enabledLayerIds || ["conflicts", "natural"]);
+    // Session 17 fix: default to EMPTY set so the globe loads clean and fast.
+    // User feedback: "normalde açılışta globe temiz görünsün... bu süre
+    // uzamasın. kullanıcı katmanların hepsine ulaşabilsin." Users can
+    // enable layers on-demand via the drawer. Existing users with saved
+    // preferences keep their choices (localStorage has priority).
+    const saved = new Set(prefs.enabledLayerIds ?? []);
     return DEFAULT_LAYERS.map((l) => ({ ...l, enabled: saved.has(l.id) }));
   });
 

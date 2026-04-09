@@ -67,6 +67,7 @@ import { persistEvents, fetchPersistedEvents } from "@/lib/db/events";
 import type { IntelItem, Category } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
 import { enrichGeoData } from "@/lib/utils/geo-enrichment";
+import { smartBlendByLocale } from "@/lib/utils/locale-blend";
 
 export const runtime = "nodejs";
 export const maxDuration = 120;
@@ -406,8 +407,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Apply limit AFTER cache so different limit params don't cause stale results
-    const sliced = filtered.slice(0, limit);
+    // Session 17 fix: Smart blend by locale — reorder so user's native-language
+    // sources dominate the top of the feed, but high-severity global sources
+    // still appear. Applied AFTER cache + all filters, BEFORE slice.
+    // Safe no-op when lang === "en" (English is the global default).
+    const blended = smartBlendByLocale(filtered, lang);
+
+    // Apply limit AFTER cache + blend so different limit params don't cause stale results
+    const sliced = blended.slice(0, limit);
 
     return NextResponse.json({
       items: sliced,

@@ -5,6 +5,8 @@ import dynamic from "next/dynamic";
 import { useLocale } from "next-intl";
 import {
   ALL_CHANNELS,
+  YOUTUBE_CHANNELS,
+  IPTV_CHANNELS,
   getChannelsByLocale,
   getAvailableCountries,
   getChannelsByCountry,
@@ -15,6 +17,34 @@ import {
   type LiveChannel,
   type ChannelCategory,
 } from "@/config/channels";
+
+// Source filter: IPTV only, YouTube only, or both
+type ChannelSource = "all" | "youtube" | "iptv";
+
+// Broken channel blacklist — persisted in localStorage
+// Channels that fail to load get added here so they disappear from UI
+const BROKEN_CHANNELS_KEY = "worldscope_broken_channels_v1";
+
+function loadBrokenChannels(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(BROKEN_CHANNELS_KEY);
+    if (!raw) return new Set();
+    const arr = JSON.parse(raw);
+    return new Set(Array.isArray(arr) ? arr : []);
+  } catch {
+    return new Set();
+  }
+}
+
+function saveBrokenChannels(set: Set<string>): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(BROKEN_CHANNELS_KEY, JSON.stringify([...set]));
+  } catch {
+    // localStorage full or blocked — silent fail
+  }
+}
 
 const HlsPlayer = dynamic(() => import("./HlsPlayer"), { ssr: false });
 
@@ -27,15 +57,30 @@ const PAGE_SIZE = 40;
 export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) {
   const locale = useLocale();
 
-  // All channels with locale + variant sort applied
+  // Source filter state: "all" | "youtube" | "iptv" — separate tabs
+  // Default: "iptv" (far bigger pool, better variety for news/live coverage)
+  const [sourceFilter, setSourceFilter] = useState<ChannelSource>("iptv");
+
+  // Broken channel blacklist — loaded once, mutated via runtime error handler
+  const [brokenChannels, setBrokenChannels] = useState<Set<string>>(() => loadBrokenChannels());
+
+  // Source pool — switches between IPTV-only, YouTube-only, or merged
+  const sourcePool = useMemo<LiveChannel[]>(() => {
+    if (sourceFilter === "youtube") return YOUTUBE_CHANNELS;
+    if (sourceFilter === "iptv") return IPTV_CHANNELS;
+    return ALL_CHANNELS;
+  }, [sourceFilter]);
+
+  // All channels with locale + variant sort applied — plus broken filter
   const allChannels = useMemo(() => {
-    const localeFiltered = getChannelsByLocale(locale, ALL_CHANNELS);
+    const notBroken = sourcePool.filter((ch) => !brokenChannels.has(ch.id));
+    const localeFiltered = getChannelsByLocale(locale, notBroken);
     return sortChannelsByVariant(localeFiltered, variantId);
-  }, [locale, variantId]);
+  }, [sourcePool, brokenChannels, locale, variantId]);
 
   const countries = useMemo(
-    () => getAvailableCountries(ALL_CHANNELS),
-    []
+    () => getAvailableCountries(sourcePool),
+    [sourcePool]
   );
 
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
@@ -44,12 +89,25 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
+  // Mark a channel as broken + persist — called when HLS/YouTube errors
+  const markChannelBroken = useCallback((channelId: string) => {
+    setBrokenChannels((prev) => {
+      if (prev.has(channelId)) return prev;
+      const next = new Set(prev);
+      next.add(channelId);
+      saveBrokenChannels(next);
+      return next;
+    });
+  }, []);
+
   // Filtered channels
   const channels = useMemo(() => {
     let filtered = allChannels;
 
     if (selectedCountry) {
-      const countryChannels = getChannelsByCountry(selectedCountry, ALL_CHANNELS);
+      const countryChannels = getChannelsByCountry(selectedCountry, sourcePool).filter(
+        (ch) => !brokenChannels.has(ch.id)
+      );
       if (countryChannels.length > 0) filtered = countryChannels;
     }
 
@@ -66,7 +124,7 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
     }
 
     return filtered;
-  }, [allChannels, selectedCountry, selectedCategory, searchQuery]);
+  }, [allChannels, sourcePool, brokenChannels, selectedCountry, selectedCategory, searchQuery]);
 
   // Reset visible count when filters change
   const visibleChannels = useMemo(
@@ -74,7 +132,11 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
     [channels, visibleCount]
   );
 
-  const [activeChannel, setActiveChannel] = useState<LiveChannel>(ALL_CHANNELS[0]);
+  // Default active channel = first non-broken channel from the current source pool
+  const [activeChannel, setActiveChannel] = useState<LiveChannel>(() => {
+    const firstViable = IPTV_CHANNELS.find((ch) => !loadBrokenChannels().has(ch.id));
+    return firstViable ?? IPTV_CHANNELS[0] ?? YOUTUBE_CHANNELS[0];
+  });
   const [isMuted, setIsMuted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [showFlash, setShowFlash] = useState(false);
@@ -90,6 +152,22 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
     },
     [activeChannel.id]
   );
+
+  // Handle player error — mark broken, advance to next channel
+  const handlePlayerError = useCallback(() => {
+    markChannelBroken(activeChannel.id);
+    // Find next viable channel in the same filtered list
+    const currentIdx = channels.findIndex((ch) => ch.id === activeChannel.id);
+    const next = channels.slice(currentIdx + 1).find((ch) => !brokenChannels.has(ch.id));
+    if (next) {
+      setActiveChannel(next);
+      setIsLoading(true);
+    } else {
+      // No next channel available — stop spinner so user sees empty state
+      // instead of infinite "connecting..."
+      setIsLoading(false);
+    }
+  }, [activeChannel.id, channels, brokenChannels, markChannelBroken]);
 
   const handleFullscreen = useCallback(() => {
     const el = containerRef.current;
@@ -198,6 +276,62 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
         </div>
       </div>
 
+      {/* Source tab bar — IPTV / YouTube / All (user feedback Session 17) */}
+      <div className="flex items-center gap-1 px-2 py-1 border-b border-hud-border bg-hud-base/30">
+        <button
+          onClick={() => {
+            setSourceFilter("iptv");
+            setVisibleCount(PAGE_SIZE);
+            // Auto-switch to first IPTV channel if current is YouTube
+            if (activeChannel.type !== "hls") {
+              const firstIptv = IPTV_CHANNELS.find((ch) => !brokenChannels.has(ch.id));
+              if (firstIptv) handleChannelSwitch(firstIptv);
+            }
+          }}
+          className={`flex-1 font-mono text-[9px] tracking-wider px-2 h-6 rounded border transition-colors ${
+            sourceFilter === "iptv"
+              ? "bg-hud-accent/15 border-hud-accent text-hud-accent"
+              : "border-hud-border text-hud-muted hover:border-hud-accent/30"
+          }`}
+          title={`IPTV: ${IPTV_CHANNELS.length - brokenChannels.size} channels (HLS streams)`}
+        >
+          📺 IPTV <span className="opacity-60">({IPTV_CHANNELS.length})</span>
+        </button>
+        <button
+          onClick={() => {
+            setSourceFilter("youtube");
+            setVisibleCount(PAGE_SIZE);
+            // Auto-switch to first YouTube channel if current is HLS
+            if (activeChannel.type === "hls") {
+              const firstYt = YOUTUBE_CHANNELS.find((ch) => !brokenChannels.has(ch.id));
+              if (firstYt) handleChannelSwitch(firstYt);
+            }
+          }}
+          className={`flex-1 font-mono text-[9px] tracking-wider px-2 h-6 rounded border transition-colors ${
+            sourceFilter === "youtube"
+              ? "bg-hud-accent/15 border-hud-accent text-hud-accent"
+              : "border-hud-border text-hud-muted hover:border-hud-accent/30"
+          }`}
+          title={`YouTube: ${YOUTUBE_CHANNELS.length} news channels (CC auto-translation available)`}
+        >
+          ▶ YOUTUBE <span className="opacity-60">({YOUTUBE_CHANNELS.length})</span>
+        </button>
+        <button
+          onClick={() => {
+            setSourceFilter("all");
+            setVisibleCount(PAGE_SIZE);
+          }}
+          className={`shrink-0 font-mono text-[9px] tracking-wider px-2 h-6 rounded border transition-colors ${
+            sourceFilter === "all"
+              ? "bg-hud-accent/15 border-hud-accent text-hud-accent"
+              : "border-hud-border text-hud-muted hover:border-hud-accent/30"
+          }`}
+          title="All channels"
+        >
+          ALL
+        </button>
+      </div>
+
       {/* Category filter — scrollable pills */}
       <div className="flex gap-0.5 px-2 py-1 border-b border-hud-border overflow-x-auto scrollbar-hide">
         {CHANNEL_CATEGORIES.map((cat) => (
@@ -281,6 +415,8 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
             className="absolute inset-0 w-full h-full object-cover"
             autoPlay
             muted={isMuted}
+            onLoadedData={() => setIsLoading(false)}
+            onError={handlePlayerError}
           />
         ) : (
           <iframe
@@ -292,6 +428,7 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
             title={`${activeChannel.label} Live`}
             loading="lazy"
             onLoad={() => setIsLoading(false)}
+            onError={handlePlayerError}
           />
         )}
 
