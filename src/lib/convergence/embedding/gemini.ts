@@ -65,12 +65,26 @@ export class GeminiEmbeddingProvider implements EmbeddingProvider {
   async embedBatch(texts: string[]): Promise<number[][]> {
     if (texts.length === 0) return [];
     if (texts.length > MAX_BATCH) {
-      // Recurse over chunks of MAX_BATCH
+      // Partial-tolerant chunk loop. On 429 (or any error) from a
+      // given chunk we STOP but preserve everything embedded up to
+      // that point — the caller can still use those and the deferred
+      // events get picked up next cycle via the pgvector cache.
+      // Without this, a single quota hit mid-way would throw out
+      // hundreds of successful embeddings.
       const out: number[][] = [];
       for (let i = 0; i < texts.length; i += MAX_BATCH) {
         const chunk = texts.slice(i, i + MAX_BATCH);
-        const part = await this.embedBatch(chunk);
-        out.push(...part);
+        try {
+          const part = await this.embedBatch(chunk);
+          out.push(...part);
+        } catch (err) {
+          if (out.length === 0) throw err; // nothing salvageable
+          console.error(
+            `[gemini] partial batch failure after ${out.length} successful embeddings:`,
+            err instanceof Error ? err.message : err
+          );
+          return out;
+        }
       }
       return out;
     }

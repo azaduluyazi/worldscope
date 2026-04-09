@@ -36,6 +36,28 @@ import {
 const NEAR_DUPLICATE_THRESHOLD = 0.92;
 const SEMANTIC_LINK_THRESHOLD = 0.78;
 
+/**
+ * Cap on the number of cache-miss embeddings we request per call.
+ *
+ * WHY: Google downgraded the free-tier quota when migrating from
+ * text-embedding-004 to gemini-embedding-001. The new cap observed in
+ * production (via convergence_metrics.debug_hint) is
+ * `embed_content_free_tier_requests, limit: 100` with a ~30-second
+ * retry window — i.e. ~100 text embeddings per minute per project.
+ *
+ * A 5-minute cron cycle can therefore afford at most ~500 new
+ * embeddings. We cap at 300 to leave headroom for other callers on
+ * the same API key (semantic dedup inside enriched correlations,
+ * storyline matching, etc.) and for Google's rate-limiter being
+ * slightly less generous than the stated number.
+ *
+ * The pgvector cache means already-embedded events cost zero quota
+ * on subsequent cycles. Over ~4-5 cycles the rolling 48h non-geo
+ * event window fills up and steady state only costs ~20-40 new
+ * embeddings per cycle.
+ */
+const MAX_CACHE_MISSES_PER_CALL = 300;
+
 /** Enriched event with optional embedding vector */
 export interface EmbeddedEvent extends ClusterEvent {
   embedding?: number[];
@@ -80,8 +102,13 @@ export async function computeEventEmbeddings<T extends ClusterEvent>(
     console.error("[semantic-similarity] cache lookup failed:", err);
   }
 
-  // Step 2: find missing events and embed only those
-  const missing = events.filter((e) => !cached.has(e.eventId));
+  // Step 2: find missing events, then cap by the per-call quota budget.
+  // Events beyond the cap are left without embeddings THIS cycle and
+  // will be picked up on subsequent cycles — the pgvector cache makes
+  // this a one-time cost per event.
+  const allMissing = events.filter((e) => !cached.has(e.eventId));
+  const missing = allMissing.slice(0, MAX_CACHE_MISSES_PER_CALL);
+  const throttledCount = allMissing.length - missing.length;
 
   let newEmbeddings: number[][] = [];
   if (missing.length > 0) {
@@ -95,6 +122,17 @@ export async function computeEventEmbeddings<T extends ClusterEvent>(
       options.onEmbeddingError?.(msg);
       // Graceful degrade — events without embeddings skip downstream checks
     }
+  }
+
+  // Surface the throttle decision through the same callback the
+  // detector uses for real errors, so operators see WHY N events
+  // don't have embeddings even though the provider is healthy.
+  if (throttledCount > 0 && newEmbeddings.length === missing.length) {
+    options.onEmbeddingError?.(
+      `throttled: embedded ${missing.length}/${allMissing.length} ` +
+        `cache misses this cycle; ${throttledCount} deferred to next ` +
+        `cycle (free-tier ~100 req/min quota)`
+    );
   }
 
   // Step 3: write new embeddings to the cache (fire-and-forget)
