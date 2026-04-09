@@ -53,14 +53,27 @@ const inflightRequests = new Map<string, Promise<unknown>>();
  *
  * Fallback: if the lock holder fails, waiters retry once before
  * bubbling the error.
+ *
+ * Session 17 resilience: Redis GET/SET errors (quota, network, timeout)
+ * NEVER propagate — they are logged and the request falls through to
+ * direct fetcher() execution. Redis becomes an optimization layer, not
+ * a dependency. When Upstash free-tier quota exhausts mid-month, the
+ * app continues serving (slower, no cache) instead of returning 500.
+ * See https://upstash.com/docs/redis/troubleshooting/max_requests_limit
  */
 export async function cachedFetch<T>(
   key: string,
   fetcher: () => Promise<T>,
   ttl: number
 ): Promise<T> {
-  // L1: Redis cache hit
-  const cached = await redis.get<T>(key);
+  // L1: Redis cache hit — resilient to Redis failures
+  let cached: T | null | undefined = null;
+  try {
+    cached = await redis.get<T>(key);
+  } catch (e) {
+    // Redis unavailable (quota, network, timeout) — log once, continue
+    console.warn(`[cachedFetch] Redis GET failed for "${key}": ${(e as Error).message}`);
+  }
   if (cached !== null && cached !== undefined) return cached;
 
   // L2: Coalesce concurrent misses (stampede protection)
@@ -73,10 +86,20 @@ export async function cachedFetch<T>(
     }
   }
 
-  // L3: We are the leader — fetch, cache, and share
+  // L3: We are the leader — fetch, try to cache (fire-and-forget), share
   const fetchPromise = (async (): Promise<T> => {
     const data = await fetcher();
-    await redis.set(key, data, { ex: ttl });
+    // Cache write is fire-and-forget. If Redis SET throws (quota, network),
+    // we log and move on — the response is already computed and must reach
+    // the client. Swallowing this error is critical: otherwise a full Redis
+    // outage cascades into 500s across every cached endpoint.
+    redis
+      .set(key, data, { ex: ttl })
+      .catch((e) =>
+        console.warn(
+          `[cachedFetch] Redis SET failed for "${key}": ${(e as Error).message}`
+        )
+      );
     return data;
   })();
 
