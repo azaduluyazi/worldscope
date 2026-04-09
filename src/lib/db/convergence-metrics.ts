@@ -99,6 +99,7 @@ function toRow(m: TrackMetrics): Record<string, unknown> {
     clusters_produced: m.clustersProduced,
     duration_ms: m.durationMs,
     failure_reason: m.failureReason,
+    debug_hint: m.debugHint ?? null,
   };
   if (m.track === "topic") {
     return {

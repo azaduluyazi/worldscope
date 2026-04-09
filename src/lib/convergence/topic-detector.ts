@@ -132,12 +132,24 @@ export async function detectTopicCorrelationsWithMetrics(
     };
   });
 
-  // Step 3: compute embeddings (uses pgvector cache)
-  const embedded = await computeEventEmbeddings(clusterEvents);
+  // Step 3: compute embeddings (uses pgvector cache).
+  // Pass an error callback so the actual provider error (e.g. Gemini
+  // HTTP response) lands in metrics.debugHint — this is what turns
+  // "embedding_down" from an opaque symptom into an actionable message.
+  let firstEmbedError: string | null = null;
+  const embedded = await computeEventEmbeddings(clusterEvents, {
+    onEmbeddingError: (msg) => {
+      if (!firstEmbedError) firstEmbedError = msg;
+    },
+  });
 
   metrics.eventsWithEmbedding = embedded.filter((e) => !!e.embedding).length;
   metrics.eventsSkippedNoEmbedding =
     embedded.length - metrics.eventsWithEmbedding;
+  if (firstEmbedError) {
+    // Truncate so we never exceed the DB column cap.
+    metrics.debugHint = String(firstEmbedError).slice(0, 500);
+  }
 
   // Step 4: single-pass greedy clustering, sorted by time
   const sorted = [...embedded].sort(

@@ -57,7 +57,17 @@ export interface EmbeddedEvent extends ClusterEvent {
  * Errors are swallowed so a partial outage doesn't kill the pipeline.
  */
 export async function computeEventEmbeddings<T extends ClusterEvent>(
-  events: T[]
+  events: T[],
+  options: {
+    /**
+     * Callback invoked with the error message string if embedding
+     * fails. Lets the caller surface the real provider error into
+     * higher-level observability (e.g., the topic metrics row's
+     * debug_hint column). Still graceful-degrade — callback is
+     * advisory, not a rethrow.
+     */
+    onEmbeddingError?: (message: string) => void;
+  } = {}
 ): Promise<(T & { embedding?: number[] })[]> {
   if (events.length === 0) return events as (T & { embedding?: number[] })[];
 
@@ -80,7 +90,9 @@ export async function computeEventEmbeddings<T extends ClusterEvent>(
       const titles = missing.map((e) => e.title);
       newEmbeddings = await provider.embedBatch(titles);
     } catch (err) {
-      console.error("[semantic-similarity] embedding batch failed:", err);
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[semantic-similarity] embedding batch failed:", msg);
+      options.onEmbeddingError?.(msg);
       // Graceful degrade — events without embeddings skip downstream checks
     }
   }

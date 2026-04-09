@@ -41,6 +41,13 @@ interface BaseTrackMetrics {
   durationMs: number;
   /** NULL when clustersProduced > 0 */
   failureReason: FailureReason | null;
+  /**
+   * Freeform diagnostic hint — set when a subsystem error is worth
+   * propagating up to the metrics row (e.g., the exact Gemini HTTP
+   * error when embedding_down triggers). Truncated to 500 chars on
+   * write. Null for healthy runs.
+   */
+  debugHint?: string | null;
 }
 
 /**
@@ -121,6 +128,7 @@ export function emptyTopicMetrics(): TopicTrackMetrics {
     clustersDroppedSingleCategory: 0,
     durationMs: 0,
     failureReason: null,
+    debugHint: null,
   };
 }
 
@@ -134,5 +142,6 @@ export function emptyGeoMetrics(): GeoTrackMetrics {
     clustersProduced: 0,
     durationMs: 0,
     failureReason: null,
+    debugHint: null,
   };
 }
