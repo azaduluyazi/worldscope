@@ -7,6 +7,11 @@ import {
   getGeoRadiusForSet,
   getTimeWindowForSet,
 } from "./time-windows";
+import {
+  type GeoTrackMetrics,
+  emptyGeoMetrics,
+  classifyGeoFailure,
+} from "./track-metrics";
 
 // ═══════════════════════════════════════════════════════════════════
 //  Correlation Detector (v2 — Category-Aware Windows)
@@ -172,7 +177,7 @@ export interface CorrelationGroup {
 }
 
 /**
- * Detect correlated event groups from raw intel items.
+ * Detect correlated event groups from raw intel items + report metrics.
  *
  * Algorithm v2:
  * 1. Filter to geo-tagged events within the maximum-needed lookback
@@ -181,17 +186,23 @@ export interface CorrelationGroup {
  * 4. Within each cluster, find temporal sub-groups using
  *    category-specific time windows AND category-specific geo radii
  * 5. Filter to groups with 2+ different categories
+ *
+ * Returns BOTH the clusters and a GeoTrackMetrics snapshot so the
+ * engine can persist per-cycle observability to convergence_metrics.
  */
-export function detectCorrelations(
+export function detectCorrelationsWithMetrics(
   items: IntelItem[],
   hoursBack?: number
-): CorrelationGroup[] {
+): { correlations: CorrelationGroup[]; metrics: GeoTrackMetrics } {
+  const startedAt = Date.now();
+  const metrics = emptyGeoMetrics();
+
   // If hoursBack not specified, use the largest possible window so we
   // don't accidentally chop off slow-cascading events (diplomacy 24h).
   const lookbackMs = hoursBack
     ? hoursBack * 60 * 60 * 1000
     : MAX_TIME_WINDOW_MS;
-  const cutoff = Date.now() - lookbackMs;
+  const cutoff = startedAt - lookbackMs;
 
   // Step 1: Filter geo-tagged + recent events
   const geoEvents = items.filter(
@@ -201,7 +212,13 @@ export function detectCorrelations(
       new Date(item.publishedAt).getTime() >= cutoff
   );
 
-  if (geoEvents.length < MIN_SIGNALS) return [];
+  metrics.eventsInput = geoEvents.length;
+
+  if (geoEvents.length < MIN_SIGNALS) {
+    metrics.failureReason = "no_input";
+    metrics.durationMs = Date.now() - startedAt;
+    return { correlations: [], metrics };
+  }
 
   // Step 2: Get bulk reliability scores
   const sourceIds = [...new Set(geoEvents.map((e) => e.source))];
@@ -226,12 +243,15 @@ export function detectCorrelations(
 
   // Step 3: Coarse geo-cluster
   const geoClusters = clusterByProximity(clusterEvents);
+  metrics.geoClustersFound = geoClusters.length;
 
   // Step 4 & 5: Find temporal multi-category groups with category-aware constraints
   const correlations: CorrelationGroup[] = [];
+  let totalTemporalGroups = 0;
 
   for (const cluster of geoClusters) {
     const temporalGroups = findTemporalGroups(cluster);
+    totalTemporalGroups += temporalGroups.length;
 
     for (const group of temporalGroups) {
       const categories = [...new Set(group.map((e) => e.category))];
@@ -255,8 +275,29 @@ export function detectCorrelations(
     }
   }
 
+  metrics.temporalGroupsFound = totalTemporalGroups;
+  metrics.clustersProduced = correlations.length;
+  metrics.durationMs = Date.now() - startedAt;
+
+  if (correlations.length === 0) {
+    metrics.failureReason = classifyGeoFailure(metrics);
+  }
+
   // Sort by number of signals (more signals = higher priority)
-  return correlations.sort((a, b) => b.events.length - a.events.length);
+  correlations.sort((a, b) => b.events.length - a.events.length);
+  return { correlations, metrics };
+}
+
+/**
+ * Backward-compatible wrapper: returns clusters only (without metrics).
+ * Existing tests + call sites use this. New callers (engine.ts) should
+ * prefer detectCorrelationsWithMetrics so they can persist the metrics.
+ */
+export function detectCorrelations(
+  items: IntelItem[],
+  hoursBack?: number
+): CorrelationGroup[] {
+  return detectCorrelationsWithMetrics(items, hoursBack).correlations;
 }
 
 /**

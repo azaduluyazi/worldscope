@@ -7,11 +7,12 @@ import type {
   ConvergencePrediction,
 } from "./types";
 import {
-  detectCorrelations,
+  detectCorrelationsWithMetrics,
   checkEventCorrelation,
   type CorrelationGroup,
 } from "./correlation-detector";
-import { detectTopicCorrelations } from "./topic-detector";
+import { detectTopicCorrelationsWithMetrics } from "./topic-detector";
+import type { TrackMetrics } from "./track-metrics";
 import { resolveImpactChain, classifyConvergence } from "./impact-chain";
 import { calculateConvergenceConfidence, assignSignalRoles } from "./scorer";
 import { batchGenerateNarratives } from "./narrative";
@@ -181,22 +182,29 @@ export async function runFullConvergenceScan(
   // Reset counter per scan
   convergenceCounter = 0;
 
-  // ── DUAL-TRACK CORRELATION ────────────────────────────────
+  // ── DUAL-TRACK CORRELATION (instrumented) ─────────────────
+  // Each track returns both clusters AND a metrics snapshot. The
+  // snapshots get collected into trackMetrics[] and returned in
+  // the response so the cron route can persist them to the
+  // convergence_metrics table for observability.
+  //
   // Step 1a: Geographic track — Haversine clustering for events
   //          that have lat/lng (USGS, GDACS, local news, etc.)
-  const geoCorrelations = detectCorrelations(items, hoursBack);
+  const geoResult = detectCorrelationsWithMetrics(items, hoursBack);
 
   // Step 1b: Topic track — semantic similarity clustering for
   //          geo-sparse events (Reddit, HN, YouTube, Bluesky,
   //          finance/tech news without location). This is where
   //          T4 social signals FINALLY reach the scorer, making
   //          the tier diversity bonus real.
-  const topicCorrelations = await detectTopicCorrelations(items, hoursBack);
+  const topicResult = await detectTopicCorrelationsWithMetrics(items, hoursBack);
 
   const correlations: CorrelationGroup[] = [
-    ...geoCorrelations,
-    ...topicCorrelations,
+    ...geoResult.correlations,
+    ...topicResult.clusters,
   ];
+
+  const trackMetrics: TrackMetrics[] = [geoResult.metrics, topicResult.metrics];
 
   if (correlations.length === 0) {
     return {
@@ -206,6 +214,7 @@ export async function runFullConvergenceScan(
         convergencesFound: 0,
         timestamp: new Date().toISOString(),
       },
+      trackMetrics,
     };
   }
 
@@ -260,6 +269,7 @@ export async function runFullConvergenceScan(
       convergencesFound: convergences.length,
       timestamp: new Date().toISOString(),
     },
+    trackMetrics,
   };
 }
 

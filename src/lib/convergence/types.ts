@@ -91,6 +91,31 @@ export interface ConvergenceResponse {
     convergencesFound: number;
     timestamp: string;
   };
+  /**
+   * Per-track observability counters collected during this scan.
+   * The cron route persists these into the convergence_metrics table
+   * so operators can answer "why did we produce 0 clusters?" with a
+   * single SQL query instead of reading code.
+   *
+   * Undefined for older callers that don't yet pipe this through
+   * (backward-compatible).
+   */
+  trackMetrics?: Array<{
+    track: "geo" | "topic";
+    cycleTimestamp: string;
+    eventsInput: number;
+    clustersProduced: number;
+    durationMs: number;
+    failureReason: string | null;
+    // Topic-specific (undefined for geo rows)
+    eventsWithEmbedding?: number;
+    eventsSkippedNoEmbedding?: number;
+    clustersDroppedMinSize?: number;
+    clustersDroppedSingleCategory?: number;
+    // Geo-specific (undefined for topic rows)
+    geoClustersFound?: number;
+    temporalGroupsFound?: number;
+  }>;
 }
 
 // ── Source Reliability ──────────────────────────────────

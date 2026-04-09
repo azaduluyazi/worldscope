@@ -14,6 +14,8 @@ import {
   persistConvergences,
   purgeOldHistory,
 } from "@/lib/db/convergence-history";
+import { recordBothTrackMetrics } from "@/lib/db/convergence-metrics";
+import type { TrackMetrics } from "@/lib/convergence/track-metrics";
 import {
   storePredictions,
   fetchActivePredictions,
@@ -86,6 +88,15 @@ export async function GET(request: Request) {
     const result: ConvergenceResponse = await runFullConvergenceScan(events, undefined, {
       priorOverride: calibratedPrior,
     });
+
+    // 2a) Persist per-track observability counters to convergence_metrics.
+    // Fail-open: repository swallows DB errors so this cannot break the
+    // rest of the cron. The point is: NEXT query to that table answers
+    // "why did we produce N clusters?" without reading code.
+    const collectedMetrics = (result.trackMetrics ?? []) as TrackMetrics[];
+    if (collectedMetrics.length > 0) {
+      await recordBothTrackMetrics(collectedMetrics);
+    }
 
     // 3) Attach convergences to active storylines
     let storylinesUpserted = 0;
@@ -192,6 +203,27 @@ export async function GET(request: Request) {
 
     const duration = Date.now() - startTime;
 
+    // Compact per-track summary for live monitoring. Full counter
+    // snapshots are persisted to convergence_metrics; this is a
+    // curl-friendly subset that tells you "WHY did each track produce
+    // what it did?" without a SQL query.
+    const tracks = collectedMetrics.map((m) => ({
+      track: m.track,
+      eventsInput: m.eventsInput,
+      clustersProduced: m.clustersProduced,
+      failureReason: m.failureReason,
+      durationMs: m.durationMs,
+      ...(m.track === "topic"
+        ? {
+            eventsWithEmbedding: m.eventsWithEmbedding,
+            eventsSkippedNoEmbedding: m.eventsSkippedNoEmbedding,
+          }
+        : {
+            geoClustersFound: m.geoClustersFound,
+            temporalGroupsFound: m.temporalGroupsFound,
+          }),
+    }));
+
     return NextResponse.json({
       status: "ok",
       eventsAnalyzed: events.length,
@@ -206,6 +238,7 @@ export async function GET(request: Request) {
       predictionsExpired: validation.expired.length,
       predictionsStillPending: validation.stillPending.length,
       counterFactualsFound: counterFactuals.length,
+      tracks,
       duration,
     });
   } catch (error) {

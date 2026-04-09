@@ -5,6 +5,11 @@ import { getBulkReliability } from "./source-reliability";
 import { getTimeWindowForSet, CATEGORY_TIME_WINDOWS } from "./time-windows";
 import { computeEventEmbeddings } from "./semantic-similarity";
 import { cosineSimilarity } from "./embedding";
+import {
+  type TopicTrackMetrics,
+  emptyTopicMetrics,
+  classifyTopicFailure,
+} from "./track-metrics";
 
 // ═══════════════════════════════════════════════════════════════════
 //  Topic Detector — geo-sparse event clustering via semantic similarity
@@ -68,22 +73,28 @@ const MIN_TOPIC_CATEGORIES = 2;
 const MAX_WINDOW_MS = Math.max(...Object.values(CATEGORY_TIME_WINDOWS));
 
 /**
- * Detect topic-based correlations across geo-sparse events.
+ * Detect topic-based correlations + report metrics.
  *
- * Async because the embedding call is remote. Returns a list of
- * CorrelationGroup with centroid = {0, 0} and isTopic = true.
+ * This is the instrumented version called by the engine. Returns
+ * both the clusters and a TopicTrackMetrics counter snapshot that
+ * explains what happened during this run. The snapshot gets written
+ * to the convergence_metrics table so operators can answer "why 0
+ * clusters?" with a single SQL query instead of reading code.
  *
  * Safe to call even if Gemini is down — computeEventEmbeddings
- * gracefully degrades to undefined embeddings and those events
- * simply won't cluster (we filter them out before the similarity
- * pass).
+ * gracefully degrades to undefined embeddings. In that case the
+ * metrics.failureReason will be "embedding_down", surfacing the
+ * root cause immediately.
  */
-export async function detectTopicCorrelations(
+export async function detectTopicCorrelationsWithMetrics(
   items: IntelItem[],
   hoursBack?: number
-): Promise<CorrelationGroup[]> {
+): Promise<{ clusters: CorrelationGroup[]; metrics: TopicTrackMetrics }> {
+  const startedAt = Date.now();
+  const metrics = emptyTopicMetrics();
+
   const lookbackMs = hoursBack ? hoursBack * 60 * 60 * 1000 : MAX_WINDOW_MS;
-  const cutoff = Date.now() - lookbackMs;
+  const cutoff = startedAt - lookbackMs;
 
   // Step 1: filter to NON-geo events within the lookback window.
   // (Geo-tagged events are handled by the geographic track.)
@@ -93,7 +104,13 @@ export async function detectTopicCorrelations(
       new Date(item.publishedAt).getTime() >= cutoff
   );
 
-  if (nonGeoItems.length < MIN_TOPIC_EVENTS) return [];
+  metrics.eventsInput = nonGeoItems.length;
+
+  if (nonGeoItems.length < MIN_TOPIC_EVENTS) {
+    metrics.failureReason = "no_input";
+    metrics.durationMs = Date.now() - startedAt;
+    return { clusters: [], metrics };
+  }
 
   // Step 2: enrich with reliability + tier
   const sourceIds = [...new Set(nonGeoItems.map((e) => e.source))];
@@ -117,6 +134,10 @@ export async function detectTopicCorrelations(
 
   // Step 3: compute embeddings (uses pgvector cache)
   const embedded = await computeEventEmbeddings(clusterEvents);
+
+  metrics.eventsWithEmbedding = embedded.filter((e) => !!e.embedding).length;
+  metrics.eventsSkippedNoEmbedding =
+    embedded.length - metrics.eventsWithEmbedding;
 
   // Step 4: single-pass greedy clustering, sorted by time
   const sorted = [...embedded].sort(
@@ -159,15 +180,21 @@ export async function detectTopicCorrelations(
     }
 
     // Step 5: filter small or single-category clusters
-    if (cluster.length < MIN_TOPIC_EVENTS) continue;
+    if (cluster.length < MIN_TOPIC_EVENTS) {
+      metrics.clustersDroppedMinSize += 1;
+      continue;
+    }
     const uniqueCats = new Set(cluster.map((e) => e.category));
-    if (uniqueCats.size < MIN_TOPIC_CATEGORIES) continue;
+    if (uniqueCats.size < MIN_TOPIC_CATEGORIES) {
+      metrics.clustersDroppedSingleCategory += 1;
+      continue;
+    }
 
     clusters.push(cluster);
   }
 
   // Step 6: convert to CorrelationGroup[]
-  return clusters.map((events) => {
+  const result: CorrelationGroup[] = clusters.map((events) => {
     const categories = [...new Set(events.map((e) => e.category))] as Category[];
     const times = events.map((e) => new Date(e.publishedAt).getTime());
     return {
@@ -181,4 +208,27 @@ export async function detectTopicCorrelations(
       isTopic: true,
     };
   });
+
+  metrics.clustersProduced = result.length;
+  metrics.durationMs = Date.now() - startedAt;
+
+  if (result.length === 0) {
+    metrics.failureReason = classifyTopicFailure(metrics);
+  }
+
+  return { clusters: result, metrics };
+}
+
+/**
+ * Backward-compatible wrapper: returns clusters only (without metrics).
+ * Existing call sites + tests use this. New callers (engine.ts) should
+ * prefer detectTopicCorrelationsWithMetrics so they can persist the
+ * metrics snapshot.
+ */
+export async function detectTopicCorrelations(
+  items: IntelItem[],
+  hoursBack?: number
+): Promise<CorrelationGroup[]> {
+  const { clusters } = await detectTopicCorrelationsWithMetrics(items, hoursBack);
+  return clusters;
 }
