@@ -6,13 +6,13 @@ export const runtime = "nodejs";
 export async function POST(request: Request) {
   try {
     const { key } = await request.json();
-    const adminSecret = process.env.ADMIN_SECRET || process.env.CRON_SECRET;
+    const adminKey = process.env.ADMIN_KEY;
 
-    if (!adminSecret) {
+    if (!adminKey) {
       return NextResponse.json({ error: "Admin not configured" }, { status: 503 });
     }
 
-    if (key === adminSecret) {
+    if (key === adminKey) {
       return NextResponse.json({ verified: true });
     }
 

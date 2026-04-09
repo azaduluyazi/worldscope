@@ -9,9 +9,9 @@ const DISABLED_SOURCES_KEY = "disabled-sources";
 export async function POST(request: Request) {
   try {
     // Verify admin key
-    const adminKey = request.headers.get("x-admin-key");
-    const secret = process.env.ADMIN_SECRET || process.env.CRON_SECRET;
-    if (!secret || adminKey !== secret) {
+    const provided = request.headers.get("x-admin-key");
+    const adminKey = process.env.ADMIN_KEY;
+    if (!adminKey || provided !== adminKey) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 

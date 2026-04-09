@@ -13,8 +13,8 @@ export const runtime = "nodejs";
  */
 function isAdmin(request: Request): boolean {
   const key = request.headers.get("x-admin-key");
-  const adminSecret = process.env.ADMIN_SECRET || process.env.CRON_SECRET;
-  return !!adminSecret && key === adminSecret;
+  const adminKey = process.env.ADMIN_KEY;
+  return !!adminKey && key === adminKey;
 }
 
 /**
