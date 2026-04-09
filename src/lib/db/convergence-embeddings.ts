@@ -32,7 +32,7 @@ export interface StoredEmbedding {
  */
 export async function fetchExistingEmbeddings(
   eventIds: string[],
-  provider: string = "gemini-text-embedding-004"
+  provider: string = "gemini-embedding-001"
 ): Promise<Map<string, number[]>> {
   if (eventIds.length === 0) return new Map();
   try {
@@ -82,7 +82,7 @@ export async function fetchExistingEmbeddings(
  */
 export async function storeEmbeddings(
   entries: Array<{ eventId: string; embedding: number[] }>,
-  provider: string = "gemini-text-embedding-004"
+  provider: string = "gemini-embedding-001"
 ): Promise<number> {
   if (entries.length === 0) return 0;
   try {
@@ -121,7 +121,7 @@ export async function findSimilarEmbeddings(
     provider?: string;
   } = {}
 ): Promise<Array<{ eventId: string; similarity: number }>> {
-  const { topK = 10, minSimilarity = 0.75, provider = "gemini-text-embedding-004" } = options;
+  const { topK = 10, minSimilarity = 0.75, provider = "gemini-embedding-001" } = options;
   try {
     const supabase = createServerClient();
     // Cosine distance in pgvector: `<=>` operator. Similarity = 1 - distance.
