@@ -103,9 +103,22 @@ export async function fetchPersistedEvents(
     hoursBack?: number;
     /** When true, only return events with non-null lat/lng. */
     geoOnly?: boolean;
+    /**
+     * When true, only return events WITHOUT lat/lng. This is the
+     * input population for the topic-similarity track of the
+     * convergence engine. Mutually exclusive with geoOnly — if both
+     * are set, nonGeoOnly wins (explicit topic-track request).
+     */
+    nonGeoOnly?: boolean;
   } = {}
 ): Promise<IntelItem[]> {
-  const { category, limit = 1000, hoursBack = 48, geoOnly = false } = options;
+  const {
+    category,
+    limit = 1000,
+    hoursBack = 48,
+    geoOnly = false,
+    nonGeoOnly = false,
+  } = options;
   const db = createServerClient();
 
   const since = new Date(Date.now() - hoursBack * 60 * 60 * 1000).toISOString();
@@ -121,7 +134,11 @@ export async function fetchPersistedEvents(
     query = query.eq("category", category);
   }
 
-  if (geoOnly) {
+  if (nonGeoOnly) {
+    // Either lat or lng is null → row is non-geo. Supabase `.or` takes
+    // a comma-separated logical expression.
+    query = query.or("lat.is.null,lng.is.null");
+  } else if (geoOnly) {
     query = query.not("lat", "is", null).not("lng", "is", null);
   }
 

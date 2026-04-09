@@ -57,21 +57,28 @@ export async function GET(request: Request) {
   const startTime = Date.now();
 
   try {
-    // 1) Fetch recent geo-tagged events from Supabase.
+    // 1) Fetch recent events from Supabase for BOTH convergence tracks.
     //
-    // Why geoOnly: the convergence engine ONLY uses events with lat/lng
-    // (Haversine clustering requires coords). Without this filter, the
-    // 1000-row Supabase API cap fills up with non-geo RSS items, leaving
-    // ~10 actually-usable events for the engine. With it, we get all
-    // ~131 geo events from the rolling 48h window.
+    // Dual fetch rationale: the geo track (Haversine clustering) needs
+    // events with lat/lng, while the topic track (semantic similarity)
+    // needs non-geo events — RSS/Reddit/HN/YouTube items whose signal
+    // comes from text embeddings, not coordinates. A single fetch with
+    // geoOnly:true starves the topic track (eventsInput=0, observed
+    // in convergence_metrics rows prior to this fix).
+    //
+    // We fire two parallel queries — one for each track's input
+    // population — and concatenate the results. This preserves the
+    // 1000-row Supabase API cap on BOTH axes independently: ~131 geo
+    // events + up to 1000 non-geo events, instead of one pool where
+    // non-geo RSS items crowd out the few geo rows.
     //
     // 48h lookback covers the longest forward-prediction window
     // (diplomacy = 24h) plus a grace buffer.
-    const events = await fetchPersistedEvents({
-      hoursBack: 48,
-      limit: 1000,
-      geoOnly: true,
-    });
+    const [geoEvents, nonGeoEvents] = await Promise.all([
+      fetchPersistedEvents({ hoursBack: 48, limit: 1000, geoOnly: true }),
+      fetchPersistedEvents({ hoursBack: 48, limit: 1000, nonGeoOnly: true }),
+    ]);
+    const events = [...geoEvents, ...nonGeoEvents];
 
     if (events.length === 0) {
       return NextResponse.json({
