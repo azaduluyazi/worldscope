@@ -748,6 +748,117 @@ export const SEED_FEEDS: FeedConfig[] = [
   { name: "YouTube BBC News",           url: "https://www.youtube.com/feeds/videos.xml?channel_id=UC16niRr50-MSBwiO3YDb3RA", category: "conflict", defaultSeverity: "medium", region: "global" },
   { name: "YouTube Bloomberg",          url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCIALMKvObZNtJ6AmdCLP7Lg", category: "finance",  defaultSeverity: "medium", region: "global" },
   { name: "YouTube FRANCE 24 English",  url: "https://www.youtube.com/feeds/videos.xml?channel_id=UCQfwfsi5VrQ8yKZ-UWmAEFg", category: "conflict", defaultSeverity: "medium", region: "global" },
+
+  // ═══════════════════════════════════════════════════════════════════
+  // WORLDMONITOR GAP CLOSURE — Added 2026-04-09
+  // 82 sources from WorldMonitor that were missing in WorldScope.
+  // All mapped to existing Category enum (no schema changes).
+  // ═══════════════════════════════════════════════════════════════════
+
+  // ── P1: Native European Media (26) ────────────────────────────────
+  { name: "ANSA", url: "https://www.ansa.it/sito/notizie/topnews/topnews_rss.xml", category: "conflict", defaultSeverity: "medium", language: "it", region: "europe" },
+  { name: "Corriere della Sera", url: "https://xml2.corriereobjects.it/rss/homepage.xml", category: "conflict", defaultSeverity: "medium", language: "it", region: "europe" },
+  { name: "Repubblica", url: "https://www.repubblica.it/rss/homepage/rss2.0.xml", category: "conflict", defaultSeverity: "medium", language: "it", region: "europe" },
+  { name: "Le Monde", url: "https://www.lemonde.fr/en/international/rss_full.xml", category: "conflict", defaultSeverity: "medium", language: "fr", region: "europe" },
+  { name: "Der Spiegel International", url: "https://www.spiegel.de/international/index.rss", category: "conflict", defaultSeverity: "medium", language: "de", region: "europe" },
+  { name: "Die Zeit", url: "https://newsfeed.zeit.de/index", category: "conflict", defaultSeverity: "medium", language: "de", region: "europe" },
+  { name: "Bild", url: "https://www.bild.de/rssfeeds/vw-alles/vw-alles-16725492,view=rss2.bild.xml", category: "conflict", defaultSeverity: "medium", language: "de", region: "europe" },
+  { name: "Tagesschau", url: "https://www.tagesschau.de/xml/rss2/", category: "conflict", defaultSeverity: "medium", language: "de", region: "europe" },
+  { name: "De Telegraaf", url: "https://www.telegraaf.nl/rss", category: "conflict", defaultSeverity: "medium", language: "nl", region: "europe" },
+  { name: "NOS Nieuws", url: "https://feeds.nos.nl/nosnieuwsalgemeen", category: "conflict", defaultSeverity: "medium", language: "nl", region: "europe" },
+  { name: "NRC", url: "https://www.nrc.nl/rss/", category: "conflict", defaultSeverity: "medium", language: "nl", region: "europe" },
+  { name: "Dagens Nyheter", url: "https://www.dn.se/nyheter/rss/", category: "conflict", defaultSeverity: "medium", language: "sv", region: "europe" },
+  { name: "Svenska Dagbladet", url: "https://www.svd.se/?service=rss", category: "conflict", defaultSeverity: "medium", language: "sv", region: "europe" },
+  { name: "SVT Nyheter", url: "https://www.svt.se/nyheter/rss.xml", category: "conflict", defaultSeverity: "medium", language: "sv", region: "europe" },
+  { name: "TVN24", url: "https://tvn24.pl/najnowsze.xml", category: "conflict", defaultSeverity: "medium", language: "pl", region: "europe" },
+  { name: "Polsat News", url: "https://www.polsatnews.pl/rss/wszystkie.xml", category: "conflict", defaultSeverity: "medium", language: "pl", region: "europe" },
+  { name: "Rzeczpospolita", url: "https://www.rp.pl/rss/1019", category: "conflict", defaultSeverity: "medium", language: "pl", region: "europe" },
+  { name: "Kathimerini EN", url: "https://www.ekathimerini.com/feed/", category: "conflict", defaultSeverity: "medium", language: "el", region: "europe" },
+  { name: "iefimerida", url: "https://www.iefimerida.gr/rss.xml", category: "conflict", defaultSeverity: "medium", language: "el", region: "europe" },
+  { name: "in.gr", url: "https://www.in.gr/feed/", category: "conflict", defaultSeverity: "medium", language: "el", region: "europe" },
+  { name: "Naftemporiki", url: "https://www.naftemporiki.gr/feed/", category: "finance", defaultSeverity: "medium", language: "el", region: "europe" },
+  { name: "Proto Thema", url: "https://www.protothema.gr/rss/", category: "conflict", defaultSeverity: "medium", language: "el", region: "europe" },
+  { name: "El Mundo", url: "https://e00-elmundo.uecdn.es/elmundo/rss/portada.xml", category: "conflict", defaultSeverity: "medium", language: "es", region: "europe" },
+  { name: "El Pais", url: "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/portada", category: "conflict", defaultSeverity: "medium", language: "es", region: "europe" },
+  { name: "Novaya Gazeta Europe", url: "https://novayagazeta.eu/feed", category: "conflict", defaultSeverity: "medium", language: "ru", region: "europe" },
+  { name: "RT News (Proxy)", url: "https://rsshub.app/rt/news", category: "conflict", defaultSeverity: "medium", language: "en", region: "russia" },
+
+  // ── P2: Reuters RSSHub Pack (6) ───────────────────────────────────
+  { name: "Reuters World", url: "https://rsshub.app/reuters/world", category: "conflict", defaultSeverity: "medium", region: "global" },
+  { name: "Reuters US", url: "https://rsshub.app/reuters/world/us", category: "conflict", defaultSeverity: "medium", region: "us" },
+  { name: "Reuters Asia", url: "https://rsshub.app/reuters/world/asia-pacific", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "Reuters LatAm", url: "https://rsshub.app/reuters/world/americas", category: "conflict", defaultSeverity: "medium", region: "latam" },
+  { name: "Reuters Business", url: "https://rsshub.app/reuters/business", category: "finance", defaultSeverity: "medium", region: "global" },
+  { name: "Reuters Energy", url: "https://rsshub.app/reuters/business/energy", category: "energy", defaultSeverity: "medium", region: "global" },
+
+  // ── P3: US Government + UK MOD First-Party (6) ────────────────────
+  { name: "White House", url: "https://www.whitehouse.gov/feed/", category: "diplomacy", defaultSeverity: "medium", region: "us" },
+  { name: "US Treasury Press", url: "https://home.treasury.gov/rss/press", category: "diplomacy", defaultSeverity: "medium", region: "us" },
+  { name: "Pentagon DoD", url: "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=945&max=10", category: "conflict", defaultSeverity: "high", region: "us" },
+  { name: "DHS Press", url: "https://www.dhs.gov/news-releases/press-releases.xml", category: "diplomacy", defaultSeverity: "medium", region: "us" },
+  { name: "DOJ Press", url: "https://www.justice.gov/feeds/opa/justice-news.xml", category: "diplomacy", defaultSeverity: "medium", region: "us" },
+  { name: "UK Ministry of Defence", url: "https://www.gov.uk/government/organisations/ministry-of-defence.atom", category: "conflict", defaultSeverity: "high", region: "europe" },
+
+  // ── P4: BBC Regional & Multilingual (7) ───────────────────────────
+  { name: "BBC Africa", url: "https://feeds.bbci.co.uk/news/world/africa/rss.xml", category: "conflict", defaultSeverity: "medium", region: "africa" },
+  { name: "BBC Asia", url: "https://feeds.bbci.co.uk/news/world/asia/rss.xml", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "BBC Middle East", url: "https://feeds.bbci.co.uk/news/world/middle_east/rss.xml", category: "conflict", defaultSeverity: "medium", region: "mideast" },
+  { name: "BBC Latin America", url: "https://feeds.bbci.co.uk/news/world/latin_america/rss.xml", category: "conflict", defaultSeverity: "medium", region: "latam" },
+  { name: "BBC Mundo", url: "https://feeds.bbci.co.uk/mundo/ultimas_noticias/rss.xml", category: "conflict", defaultSeverity: "medium", language: "es", region: "latam" },
+  { name: "BBC Persian", url: "https://feeds.bbci.co.uk/persian/rss.xml", category: "conflict", defaultSeverity: "medium", language: "fa", region: "mideast" },
+  { name: "BBC Russian", url: "https://feeds.bbci.co.uk/russian/rss.xml", category: "conflict", defaultSeverity: "medium", language: "ru", region: "russia" },
+
+  // ── P5: Latin America Native Language (11) ────────────────────────
+  { name: "O Globo Mundo", url: "https://oglobo.globo.com/rss/mundo.xml", category: "conflict", defaultSeverity: "medium", language: "pt", region: "latam" },
+  { name: "Folha de S.Paulo Mundo", url: "https://feeds.folha.uol.com.br/mundo/rss091.xml", category: "conflict", defaultSeverity: "medium", language: "pt", region: "latam" },
+  { name: "Brasil Paralelo", url: "https://www.brasilparalelo.com.br/feed", category: "conflict", defaultSeverity: "medium", language: "pt", region: "latam" },
+  { name: "Clarin Ultimo Momento", url: "https://www.clarin.com/rss/lo-ultimo/", category: "conflict", defaultSeverity: "medium", language: "es", region: "latam" },
+  { name: "El Tiempo Mundo", url: "https://www.eltiempo.com/rss/mundo.xml", category: "conflict", defaultSeverity: "medium", language: "es", region: "latam" },
+  { name: "El Universo", url: "https://www.eluniverso.com/rss.xml", category: "conflict", defaultSeverity: "medium", language: "es", region: "latam" },
+  { name: "La Silla Vacia", url: "https://www.lasillavacia.com/feed/", category: "conflict", defaultSeverity: "medium", language: "es", region: "latam" },
+  { name: "Primicias Ecuador", url: "https://www.primicias.ec/rss.xml", category: "conflict", defaultSeverity: "medium", language: "es", region: "latam" },
+  { name: "AP Mexico", url: "https://rsshub.app/apnews/topics/mexico", category: "conflict", defaultSeverity: "medium", region: "latam" },
+  { name: "France 24 LatAm", url: "https://www.france24.com/es/rss", category: "conflict", defaultSeverity: "medium", language: "es", region: "latam" },
+  { name: "Guardian Americas", url: "https://www.theguardian.com/world/americas/rss", category: "conflict", defaultSeverity: "medium", region: "latam" },
+
+  // ── P6: Asia Native Language (6) ──────────────────────────────────
+  { name: "Asahi Shimbun EN", url: "https://www.asahi.com/ajw/feed.rdf", category: "conflict", defaultSeverity: "medium", language: "ja", region: "asia" },
+  { name: "Japan Today", url: "https://japantoday.com/feed", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "Chosun Ilbo EN", url: "https://english.chosun.com/site/data/rss/rss.xml", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "Thai PBS World", url: "https://www.thaipbsworld.com/feed/", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "Tuoi Tre News", url: "https://tuoitrenews.vn/rss/all.rss", category: "conflict", defaultSeverity: "medium", region: "asia" },
+  { name: "Indian Express World", url: "https://indianexpress.com/section/world/feed/", category: "conflict", defaultSeverity: "medium", region: "asia" },
+
+  // ── P7: Africa (5) ────────────────────────────────────────────────
+  { name: "Channels TV Nigeria", url: "https://www.channelstv.com/feed/", category: "conflict", defaultSeverity: "medium", region: "africa" },
+  { name: "Daily Trust Nigeria", url: "https://dailytrust.com/feed/", category: "conflict", defaultSeverity: "medium", region: "africa" },
+  { name: "ThisDay Nigeria", url: "https://www.thisdaylive.com/index.php/feed/", category: "conflict", defaultSeverity: "medium", region: "africa" },
+  { name: "Jeune Afrique", url: "https://www.jeuneafrique.com/feed/", category: "conflict", defaultSeverity: "medium", language: "fr", region: "africa" },
+  { name: "BBC Afrique", url: "https://www.bbc.co.uk/afrique/index.xml", category: "conflict", defaultSeverity: "medium", language: "fr", region: "africa" },
+
+  // ── P8: Middle East Completion (6) ────────────────────────────────
+  { name: "Fars News EN", url: "https://www.farsnews.ir/en/rss/newsfeeds", category: "conflict", defaultSeverity: "medium", region: "mideast" },
+  { name: "Asharq News", url: "https://www.asharq.com/rss/feed", category: "conflict", defaultSeverity: "medium", language: "ar", region: "mideast" },
+  { name: "Asharq Business", url: "https://www.asharqbusiness.com/rss/feed", category: "finance", defaultSeverity: "medium", language: "ar", region: "mideast" },
+  { name: "Oman Observer", url: "https://www.omanobserver.om/feed/", category: "conflict", defaultSeverity: "medium", region: "mideast" },
+  { name: "Middle East Institute", url: "https://www.mei.edu/rss.xml", category: "diplomacy", defaultSeverity: "medium", region: "mideast" },
+  { name: "Responsible Statecraft", url: "https://responsiblestatecraft.org/feed/", category: "diplomacy", defaultSeverity: "medium", region: "global" },
+  { name: "Guardian Middle East", url: "https://www.theguardian.com/world/middleeast/rss", category: "conflict", defaultSeverity: "medium", region: "mideast" },
+
+  // ── P9: Think Tank Completion (5) ─────────────────────────────────
+  { name: "CNAS", url: "https://www.cnas.org/rss/press-releases", category: "diplomacy", defaultSeverity: "medium", region: "global" },
+  { name: "FPRI", url: "https://www.fpri.org/feed/", category: "diplomacy", defaultSeverity: "medium", region: "global" },
+  { name: "Federation of American Scientists", url: "https://fas.org/feed/", category: "diplomacy", defaultSeverity: "medium", region: "global" },
+  { name: "EU Institute for Security Studies", url: "https://www.iss.europa.eu/rss.xml", category: "diplomacy", defaultSeverity: "medium", region: "europe" },
+  { name: "Bulletin of the Atomic Scientists", url: "https://thebulletin.org/feed/", category: "diplomacy", defaultSeverity: "high", region: "global" },
+
+  // ── P10: International Organizations (3) ──────────────────────────
+  { name: "UNHCR News", url: "https://www.unhcr.org/rss/news.xml", category: "diplomacy", defaultSeverity: "medium", region: "global" },
+  { name: "FAO News", url: "https://www.fao.org/rss/news.xml", category: "health", defaultSeverity: "medium", region: "global" },
+  { name: "FAO GIEWS Food Security", url: "https://www.fao.org/giews/rss/giews-alerts-en.xml", category: "health", defaultSeverity: "high", region: "global" },
+
+  // ── P11: Pacific / Australia (1) ──────────────────────────────────
+  { name: "Guardian Australia", url: "https://www.theguardian.com/australia-news/rss", category: "conflict", defaultSeverity: "medium", region: "asia" },
 ];
 
 export const FEED_COUNT = SEED_FEEDS.length;
