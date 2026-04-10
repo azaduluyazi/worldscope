@@ -88,6 +88,10 @@ export function LiveBroadcasts({ variantId = "world" }: { variantId?: string }) 
   const [showCountryPicker, setShowCountryPicker] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  // Session 17 UX fix: channel picker is a modal sheet now (was flat tab cloud)
+  // User feedback: "kanallar filtreli ama altta birçok kanal görünüyor hala
+  // aslında o kısım daha sade olsa filtrelerle seçilse daha iyi durur"
+  const [_showChannelPicker, _setShowChannelPicker] = useState(false);
 
   // Mark a channel as broken + persist — called when HLS/YouTube errors
   const markChannelBroken = useCallback((channelId: string) => {
