@@ -437,3 +437,20 @@ footer, [role="status"] {
 ::-webkit-scrollbar-thumb:hover {
   background: color-mix(in srgb, var(--troia-gold) 50%, var(--border));
 }
+
+/* Performance: reduce motion and optimize compositing */
+@media (prefers-reduced-motion: reduce) {
+  .troia-shimmer,
+  .event-ripple,
+  .event-ripple-inner {
+    animation: none !important;
+  }
+  .troia-shimmer {
+    -webkit-text-fill-color: var(--troia-gold);
+  }
+}
+
+.troia-shimmer {
+  will-change: background-position;
+  contain: layout style;
+}

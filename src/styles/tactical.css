@@ -1279,3 +1279,44 @@ aside button:active {
 [data-display-font="share-tech-mono"] .font-display {
   font-family: var(--font-share-tech-mono, 'Share Tech Mono', monospace);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PERFORMANCE: Reduce animations for users who prefer reduced motion
+   and optimize GPU compositing for heavy animations
+   ══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .threat-dot,
+  .live-glow,
+  .radar-sweep,
+  .shimmer-bar,
+  .urgency-pulse,
+  .blink,
+  .troia-shimmer,
+  .warzone-rec-badge,
+  .warzone-breaking-banner,
+  .neon-banner-glow,
+  .scanlines {
+    animation: none !important;
+  }
+  .col-stagger-1,
+  .col-stagger-2,
+  .col-stagger-3,
+  .mobile-panel-enter,
+  .animate-fadeIn,
+  .animate-slideUp {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* GPU-accelerate heavy infinite animations to avoid main-thread repaints */
+.threat-dot,
+.live-glow,
+.radar-sweep,
+.shimmer-bar,
+.urgency-pulse,
+.troia-shimmer {
+  will-change: opacity, transform;
+  contain: layout style;
+}
