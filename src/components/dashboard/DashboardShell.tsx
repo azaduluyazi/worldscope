@@ -20,10 +20,24 @@ const StorylinePanel = dynamic(() => import("./StorylinePanel").then((m) => ({ d
 const KeyboardHelp = dynamic(() => import("./KeyboardHelp").then((m) => ({ default: m.KeyboardHelp })), { ssr: false });
 const StatusFooter = dynamic(() => import("./StatusFooter").then((m) => ({ default: m.StatusFooter })), { ssr: false });
 const NewsTicker = dynamic(() => import("./NewsTicker").then((m) => ({ default: m.NewsTicker })), { ssr: false });
-import { MapViewToggle, type MapMode } from "./MapViewToggle";
-import { NewsletterPopup } from "./NewsletterPopup";
-import { ConnectionStatus } from "./ConnectionStatus";
-import { MapLayerPanel, useMapLayers } from "./MapLayerPanel";
+const MapViewToggle = dynamic(
+  () => import("./MapViewToggle").then((m) => ({ default: m.MapViewToggle })),
+  { ssr: false }
+);
+import type { MapMode } from "./MapViewToggle";
+const NewsletterPopup = dynamic(
+  () => import("./NewsletterPopup").then((m) => ({ default: m.NewsletterPopup })),
+  { ssr: false }
+);
+const ConnectionStatus = dynamic(
+  () => import("./ConnectionStatus").then((m) => ({ default: m.ConnectionStatus })),
+  { ssr: false }
+);
+const MapLayerPanel = dynamic(
+  () => import("./MapLayerPanel").then((m) => ({ default: m.MapLayerPanel })),
+  { ssr: false }
+);
+import { useMapLayers } from "./MapLayerPanel";
 
 /** Lazy-loaded tab panels — only loaded when user clicks the tab */
 const PredictionPanel = dynamic(
@@ -66,8 +80,14 @@ const AIStrategicBrief = dynamic(
 const DefconBar = dynamic(() => import("./DefconBar").then((m) => ({ default: m.DefconBar })), { ssr: false });
 const NeonBreakingBanner = dynamic(() => import("./NeonBreakingBanner").then((m) => ({ default: m.NeonBreakingBanner })), { ssr: false });
 const WarzoneBreakingAlert = dynamic(() => import("./WarzoneBreakingAlert").then((m) => ({ default: m.WarzoneBreakingAlert })), { ssr: false });
-import { SourceSelector } from "./SourceSelector";
-import { SortablePanels } from "./SortablePanels";
+const SourceSelector = dynamic(
+  () => import("./SourceSelector").then((m) => ({ default: m.SourceSelector })),
+  { ssr: false }
+);
+const SortablePanels = dynamic(
+  () => import("./SortablePanels").then((m) => ({ default: m.SortablePanels })),
+  { ssr: false }
+);
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
 import { useIntelFeed } from "@/hooks/useIntelFeed";

@@ -10,12 +10,12 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 export function useIntelFeed() {
   const locale = useLocale();
   const { data, error, isLoading, mutate } = useSWR<IntelFeedResponse>(
-    `/api/intel?lang=${locale}&limit=2000`,
+    `/api/intel?lang=${locale}&limit=50`,
     fetcher,
     {
       refreshInterval: 60_000,
-      revalidateOnFocus: true,
-      dedupingInterval: 30_000,
+      revalidateOnFocus: false,
+      dedupingInterval: 60_000,
     }
   );
 
@@ -56,8 +56,8 @@ export function useIntelFeed() {
 
           return {
             ...current,
-            items: updated.slice(0, 2000),
-            total: Math.min(updated.length, 2000),
+            items: updated.slice(0, 200),
+            total: Math.min(updated.length, 200),
           };
         },
         { revalidate: false }

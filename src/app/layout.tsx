@@ -245,7 +245,7 @@ export default async function RootLayout({
             src={process.env.NEXT_PUBLIC_PLAUSIBLE_HOST
               ? `${process.env.NEXT_PUBLIC_PLAUSIBLE_HOST}/js/script.js`
               : "https://plausible.io/js/script.js"}
-            strategy="afterInteractive"
+            strategy="lazyOnload"
           />
         )}
       </head>

@@ -81,6 +81,13 @@ const nextConfig: NextConfig = {
         { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
       ],
     },
+    {
+      // Cache GeoJSON files — rarely change
+      source: "/geo/(.*)",
+      headers: [
+        { key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=86400" },
+      ],
+    },
   ],
 };
 
