@@ -10,9 +10,14 @@ import type { VariantId } from "@/config/variants";
  */
 export const DEFAULT_LAYERS: MapLayer[] = [
   // ═══════════════════════════════════════════
+  // INTEL FEED (all events)
+  // ═══════════════════════════════════════════
+  { id: "intel", label: "Intel Events", icon: "📡", color: "#00e5ff", enabled: false, group: "conflict", description: "All intelligence events on globe", sourceType: "builtin", labelKey: "layers.intel" },
+
+  // ═══════════════════════════════════════════
   // CONFLICT & SECURITY
   // ═══════════════════════════════════════════
-  { id: "conflicts", label: "Conflicts", icon: "⚔️", color: "#ff4757", enabled: true, group: "conflict", description: "Active armed conflicts (ACLED)", sourceType: "builtin", labelKey: "layers.conflicts" },
+  { id: "conflicts", label: "Conflicts", icon: "⚔️", color: "#ff4757", enabled: false, group: "conflict", description: "Active armed conflicts (ACLED)", sourceType: "builtin", labelKey: "layers.conflicts" },
   { id: "protests", label: "Protests", icon: "✊", color: "#ff6b81", enabled: false, group: "conflict", description: "Demonstrations & riots (ACLED)", sourceType: "builtin", labelKey: "layers.protests" },
   { id: "diplomatic", label: "Diplomacy", icon: "🏛️", color: "#dfe6e9", enabled: false, group: "conflict", description: "Strategic diplomatic events", sourceType: "builtin", labelKey: "layers.diplomatic" },
   { id: "terrorism", label: "Terrorism", icon: "💣", color: "#c0392b", enabled: false, group: "conflict", description: "Global terrorism incidents (GTD)", sourceType: "static", sourceUrl: "/geo/terrorism.json", labelKey: "layers.terrorism", maxPoints: 500, renderType: "points" },
@@ -29,7 +34,7 @@ export const DEFAULT_LAYERS: MapLayer[] = [
   // ═══════════════════════════════════════════
   // NATURAL HAZARDS
   // ═══════════════════════════════════════════
-  { id: "natural", label: "Natural Disasters", icon: "🌍", color: "#00ff88", enabled: true, group: "natural", description: "Earthquakes, floods, storms (GDACS)", sourceType: "builtin", labelKey: "layers.natural" },
+  { id: "natural", label: "Natural Disasters", icon: "🌍", color: "#00ff88", enabled: false, group: "natural", description: "Earthquakes, floods, storms (GDACS)", sourceType: "builtin", labelKey: "layers.natural" },
   { id: "earthquakes", label: "Earthquakes", icon: "🌋", color: "#e17055", enabled: false, group: "natural", description: "USGS seismic events (M2.5+)", sourceType: "builtin", labelKey: "layers.earthquakes" },
   { id: "fires", label: "Wildfires", icon: "🔥", color: "#ff7675", enabled: false, group: "natural", description: "NASA FIRMS thermal anomalies", sourceType: "builtin", labelKey: "layers.fires" },
   { id: "volcanoes", label: "Volcanoes", icon: "🌋", color: "#d35400", enabled: false, group: "natural", description: "1,400 Holocene volcanoes (Smithsonian GVP)", sourceType: "static", sourceUrl: "/geo/volcanoes.json", labelKey: "layers.volcanoes", maxPoints: 1400, renderType: "points" },

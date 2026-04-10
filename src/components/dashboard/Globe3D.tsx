@@ -6,14 +6,15 @@ import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useFlightTracker } from "@/hooks/useFlightTracker";
 import { useVesselTracker } from "@/hooks/useVesselTracker";
 import { useWeatherData, type WeatherCity } from "@/hooks/useWeatherData";
-import { SEVERITY_COLORS } from "@/types/intel";
+import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import type { IntelItem } from "@/types/intel";
+import { timeAgo } from "@/lib/utils/date";
 import type { VariantId } from "@/config/variants";
 import { FlightSearch, type FlightSearchResult } from "./FlightSearch";
 import { useGlobeOverlays } from "@/hooks/useGlobeOverlays";
 
 const SEVERITY_SIZE: Record<string, number> = {
-  critical: 0.8, high: 0.5, medium: 0.3, low: 0.15, info: 0.08,
+  critical: 1.0, high: 0.55, medium: 0.3, low: 0.12, info: 0.06,
 };
 
 interface GlobePoint {
@@ -31,10 +32,33 @@ interface Globe3DProps {
   enabledLayers?: Set<string>;
 }
 
+/* ── Inline event detail card ── */
+function GlobeEventCard({ item, onClose }: { item: IntelItem; onClose: () => void }) {
+  const icon = CATEGORY_ICONS[item.category] || "📌";
+  return (
+    <div className="absolute top-4 right-4 z-20 w-64 bg-[#0a1530]/90 backdrop-blur-md border border-[#00e5ff]/20 rounded-lg p-3 shadow-[0_0_20px_rgba(0,229,255,0.1)]">
+      <button onClick={onClose} className="absolute top-2 right-2 text-[#64748b] hover:text-[#e2e8f0] font-mono text-xs leading-none">×</button>
+      <div className="flex items-center gap-2 mb-2">
+        <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: SEVERITY_COLORS[item.severity] }} />
+        <span className="font-mono text-[8px] font-bold tracking-wider uppercase" style={{ color: SEVERITY_COLORS[item.severity] }}>{item.severity}</span>
+        <span className="ml-auto font-mono text-[7px] text-[#64748b]">{timeAgo(item.publishedAt)}</span>
+      </div>
+      <h4 className="font-mono text-[10px] font-bold text-[#e2e8f0] leading-tight mb-1.5">{item.title.slice(0, 80)}</h4>
+      {item.lat != null && item.lng != null && (
+        <p className="font-mono text-[8px] text-[#00e5ff]/70 mb-2">{item.lat.toFixed(2)}°N, {item.lng.toFixed(2)}°E</p>
+      )}
+      <div className="flex items-center justify-between border-t border-[#00e5ff]/10 pt-1.5 mt-1">
+        <span className="font-mono text-[7px] text-[#64748b]">{icon} {item.category.toUpperCase()}</span>
+        <span className="font-mono text-[7px] text-[#64748b]">{item.source || "OSINT"}</span>
+      </div>
+    </div>
+  );
+}
+
 /**
- * Unified 3D Globe — always shows intel events as the base layer.
- * All other data (flights, ships, weather, fires, satellites, etc.) are
- * toggled via the layer system using enabledLayers.
+ * Unified 3D Globe — starts clean with no data.
+ * All layers (intel, flights, ships, weather, fires, satellites, etc.)
+ * are toggled via the layer system using enabledLayers.
  */
 export function Globe3D({ variant: _variant = "world", onEventClick, enabledLayers }: Globe3DProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,6 +70,7 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
   const [dimensions, setDimensions] = useState({ w: 800, h: 600 });
   const containerRef = useRef<HTMLDivElement>(null);
   const [searchedFlight, setSearchedFlight] = useState<FlightSearchResult | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<IntelItem | null>(null);
 
   // Generic overlay hook for static/api layers (military-bases, volcanoes, ports, etc.)
   const genericOverlayPoints = useGlobeOverlays(enabledLayers);
@@ -107,8 +132,9 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
 
   const geoItems = useMemo(() => items.filter((item) => item.lat != null && item.lng != null), [items]);
 
-  // ── INTEL: always visible — base layer ──
+  // ── INTEL: layer-toggled via "intel" layer ──
   const intelPoints = useMemo(() => {
+    if (!enabledLayers?.has("intel")) return [];
     return geoItems.map((item) => ({
       lat: item.lat!, lng: item.lng!,
       size: SEVERITY_SIZE[item.severity] || 0.15,
@@ -116,14 +142,15 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
       label: item.severity.toUpperCase() + " — " + item.title.slice(0, 60),
       item,
     }));
-  }, [geoItems]);
+  }, [geoItems, enabledLayers]);
 
   const intelRings = useMemo(() => {
+    if (!enabledLayers?.has("intel")) return [];
     return geoItems
       .filter((i) => i.severity === "critical" || i.severity === "high")
       .slice(0, 30)
       .map((i) => ({ lat: i.lat!, lng: i.lng!, maxR: i.severity === "critical" ? 4 : 2, propagationSpeed: i.severity === "critical" ? 3 : 1.5, repeatPeriod: i.severity === "critical" ? 1000 : 1500 }));
-  }, [geoItems]);
+  }, [geoItems, enabledLayers]);
 
   // ── FLIGHTS: layer-toggled ──
   const flightPoints = useMemo<GlobePoint[]>(() => {
@@ -164,9 +191,10 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
       .map((c: WeatherCity) => ({ lat: c.lat, lng: c.lng, maxR: 5, propagationSpeed: 2, repeatPeriod: 2000 }));
   }, [weatherCities, enabledLayers]);
 
-  // ── MERGE: intel (always) + builtin overlays + generic layer overlays ──
+  // ── MERGE: all layer-toggled overlays ──
   const pointsData = useMemo(() => {
-    const overlays: GlobePoint[] = [
+    return [
+      ...intelPoints,
       ...flightPoints,
       ...shipPoints,
       ...weatherPoints,
@@ -175,24 +203,13 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
       ...darkVesselPoints,
       ...genericOverlayPoints,
     ];
-    return overlays.length > 0 ? [...intelPoints, ...overlays] : intelPoints;
   }, [intelPoints, flightPoints, shipPoints, weatherPoints, firePoints, satellitePoints, darkVesselPoints, genericOverlayPoints]);
 
   const ringsData = useMemo(() => {
     return [...intelRings, ...weatherRings];
   }, [intelRings, weatherRings]);
 
-  const overlayCount = pointsData.length - intelPoints.length;
-
-  const statusLabel = useMemo(() => {
-    const parts: string[] = [`${geoItems.length} EVENTS`];
-    if (flightPoints.length) parts.push(`${flightPoints.length} AIRCRAFT`);
-    if (shipPoints.length) parts.push(`${shipPoints.length} VESSELS`);
-    if (weatherPoints.length) parts.push(`${weatherPoints.length} WEATHER`);
-    if (overlayCount > (flightPoints.length + shipPoints.length + weatherPoints.length))
-      parts.push(`+${overlayCount - flightPoints.length - shipPoints.length - weatherPoints.length} OVERLAY`);
-    return parts.join(" | ");
-  }, [geoItems.length, flightPoints.length, shipPoints.length, weatherPoints.length, overlayCount]);
+  const hasAnyLayer = pointsData.length > 0;
 
   useEffect(() => {
     const el = containerRef.current;
@@ -206,18 +223,36 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
     const globe = globeRef.current;
     if (!globe) return;
     const controls = globe.controls();
-    if (controls) { controls.autoRotate = true; controls.autoRotateSpeed = 0.4; controls.enableDamping = true; }
+    if (controls) { controls.autoRotate = true; controls.autoRotateSpeed = 0.3; controls.enableDamping = true; }
   }, []);
+
+  const handlePointClick = useCallback((point: object) => {
+    const p = point as { item?: IntelItem };
+    if (p.item) {
+      setSelectedEvent(p.item);
+      if (onEventClick) onEventClick(p.item);
+    }
+  }, [onEventClick]);
 
   return (
     <div ref={containerRef} className="w-full h-full relative bg-black" role="img" aria-label="Interactive 3D globe showing global intelligence events">
+      {/* Outer atmosphere glow ring — CSS overlay */}
+      <div className="absolute inset-0 pointer-events-none z-[1] flex items-center justify-center">
+        <div className="w-[85%] h-[85%] max-w-[600px] max-h-[600px] rounded-full"
+          style={{
+            background: "radial-gradient(circle, transparent 45%, rgba(0,229,255,0.03) 55%, rgba(0,229,255,0.08) 62%, rgba(0,229,255,0.04) 70%, transparent 78%)",
+            filter: "blur(8px)",
+          }}
+        />
+      </div>
+
       <Globe ref={globeRef} width={dimensions.w} height={dimensions.h}
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
         bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
         backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
         atmosphereColor="#00e5ff" atmosphereAltitude={0.18}
-        pointsData={pointsData} pointLat="lat" pointLng="lng" pointAltitude={0.01} pointRadius="size" pointColor="color" pointLabel="label" pointsMerge={pointsData.length > 150}
-        onPointClick={(point: object) => { const p = point as { item?: IntelItem }; if (p.item && onEventClick) onEventClick(p.item); }}
+        pointsData={pointsData} pointLat="lat" pointLng="lng" pointAltitude={0.015} pointRadius="size" pointColor="color" pointLabel="label" pointsMerge={pointsData.length > 150}
+        onPointClick={handlePointClick}
         ringsData={ringsData} ringLat="lat" ringLng="lng" ringMaxRadius="maxR" ringPropagationSpeed="propagationSpeed" ringRepeatPeriod="repeatPeriod" ringColor={() => "#ff475760"}
         arcsData={flightArc} arcStartLat="startLat" arcStartLng="startLng" arcEndLat="endLat" arcEndLng="endLng" arcColor="color" arcDashLength={0.4} arcDashGap={0.2} arcDashAnimateTime={1200} arcStroke={1.8}
         animateIn={true} waitForGlobeReady={true}
@@ -225,22 +260,60 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
 
       {enabledLayers?.has("aviation") && <FlightSearch onResult={handleFlightResult} />}
 
-      <div className="absolute bottom-3 left-3 z-10">
-        <div className="bg-hud-panel/80 backdrop-blur-sm border border-hud-border rounded px-2.5 py-1.5">
-          <span className="font-mono text-[8px] font-bold tracking-wider text-hud-accent">{statusLabel}</span>
-        </div>
-      </div>
+      {/* Event detail card */}
+      {selectedEvent && <GlobeEventCard item={selectedEvent} onClose={() => setSelectedEvent(null)} />}
 
-      <div className="absolute bottom-3 right-3 z-10">
-        <div className="bg-hud-panel/80 backdrop-blur-sm border border-hud-border rounded px-2 py-1.5 flex flex-col gap-0.5">
-          {(["critical", "high", "medium", "low"] as const).map((sev) => (
-            <div key={sev} className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: SEVERITY_COLORS[sev] }} />
-              <span className="font-mono text-[7px] text-hud-muted">{sev.toUpperCase()}</span>
-            </div>
-          ))}
+      {/* Status bar — only visible when layers are active */}
+      {hasAnyLayer ? (
+        <div className="absolute bottom-3 left-3 z-10">
+          <div className="bg-[#0a1530]/85 backdrop-blur-sm border border-[#00e5ff]/15 rounded-md px-3 py-1.5 flex items-center gap-3">
+            {intelPoints.length > 0 && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00e5ff]" />
+                <span className="font-mono text-[8px] font-bold tracking-wider text-[#00e5ff]">{intelPoints.length} EVENTS</span>
+              </span>
+            )}
+            {flightPoints.length > 0 && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#ffd000]" />
+                <span className="font-mono text-[8px] font-bold tracking-wider text-[#ffd000]">{flightPoints.length} AIRCRAFT</span>
+              </span>
+            )}
+            {shipPoints.length > 0 && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#00ff88]" />
+                <span className="font-mono text-[8px] font-bold tracking-wider text-[#00ff88]">{shipPoints.length} VESSELS</span>
+              </span>
+            )}
+            {weatherPoints.length > 0 && (
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#8a5cf6]" />
+                <span className="font-mono text-[8px] font-bold tracking-wider text-[#8a5cf6]">{weatherPoints.length} WEATHER</span>
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10">
+          <div className="bg-[#0a1530]/70 backdrop-blur-sm border border-[#00e5ff]/10 rounded-md px-4 py-1.5">
+            <span className="font-mono text-[8px] tracking-wider text-[#64748b]">SELECT A LAYER TO VIEW DATA</span>
+          </div>
+        </div>
+      )}
+
+      {/* Severity legend — only when intel layer active */}
+      {intelPoints.length > 0 && (
+        <div className="absolute bottom-3 right-3 z-10">
+          <div className="bg-[#0a1530]/85 backdrop-blur-sm border border-[#00e5ff]/15 rounded-md px-3 py-1.5 flex items-center gap-3">
+            {([["critical", "CRIT"], ["high", "HIGH"], ["medium", "MED"], ["low", "LOW"]] as const).map(([sev, label]) => (
+              <span key={sev} className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: SEVERITY_COLORS[sev] }} />
+                <span className="font-mono text-[7px] text-[#8892a4] tracking-wider">{label}</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
