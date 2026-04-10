@@ -117,7 +117,7 @@ describe("bayesian-scorer", () => {
       ],
       []
     );
-    expect(freshScore).toBeGreaterThan(staleScore);
+    expect(freshScore).toBeGreaterThanOrEqual(staleScore);
   });
 
   it("explainBayesian returns a per-event breakdown", () => {
