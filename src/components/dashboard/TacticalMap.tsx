@@ -224,6 +224,7 @@ const AUTO_ROTATE_SPEED = 0.03;    // degrees per frame
 interface TacticalMapProps {
   filters: MapFilters;
   variant?: VariantId;
+  enabledLayers?: Set<string>;
 }
 
 interface RippleEvent {
@@ -236,7 +237,7 @@ interface RippleEvent {
 
 const RIPPLE_DURATION = 2500;
 
-export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
+export function TacticalMap({ filters, variant = "world", enabledLayers }: TacticalMapProps) {
   const { items: allItems } = useIntelFeed();
   const { aircraft } = useFlightTracker();
   const { vessels } = useVesselTracker();
@@ -325,8 +326,9 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
   // ── Timeline hook — bins items for 48h scrubbing ──
   const timeline = useTimelineData({ items });
 
-  // ── Detect new events → trigger ripple ──
+  // ── Detect new events → trigger ripple (only when intel layer active) ──
   useEffect(() => {
+    if (!enabledLayers?.has("intel")) { prevItemCountRef.current = items.length; return; }
     if (prevItemCountRef.current === 0) {
       prevItemCountRef.current = items.length;
       return;
@@ -350,7 +352,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
       }
     }
     prevItemCountRef.current = items.length;
-  }, [items, accentColor]);
+  }, [items, accentColor, enabledLayers]);
 
   // ── Clean up expired ripples ──
   useEffect(() => {
@@ -369,8 +371,9 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
     return bin ? bin.items : [];
   }, [timelineActive, items, timeline.bins, timeline.currentBinIndex]);
 
-  // ── Filter events by active filters ──
+  // ── Filter events by active filters — only when intel layer enabled ──
   const geoEvents = useMemo(() => {
+    if (!enabledLayers?.has("intel")) return [];
     return sourceItems.filter(
       (item): item is IntelItem & { lat: number; lng: number } => {
         if (item.lat == null || item.lng == null) return false;
@@ -379,7 +382,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         return true;
       }
     );
-  }, [sourceItems, filters.categories, filters.severities]);
+  }, [sourceItems, filters.categories, filters.severities, enabledLayers]);
 
   // ── GeoJSON for heatmap ──
   const heatmapGeoJSON = useMemo(() => ({
@@ -646,8 +649,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Aircraft Markers (ADS-B) ── */}
-        {/* Aircraft always visible — real-time ADS-B data from adsb.lol */}
-        {aircraft.slice(0, 300).map((ac) => {
+        {enabledLayers?.has("aviation") && aircraft.slice(0, 300).map((ac) => {
           if (!ac.latitude || !ac.longitude) return null;
           const isMilitary = ac.category === "military";
           const color = isMilitary ? "#ff4757" : "#8a5cf6";
@@ -664,8 +666,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Vessel Markers (AIS) ── */}
-        {/* Show when: vessels toggle ON, OR energy/conflict category active (shipping lanes) */}
-        {(filters.categories.has("maritime") || filters.categories.has("energy") || filters.categories.has("conflict")) && vessels.slice(0, 100).map((v) => {
+        {enabledLayers?.has("vessels") && vessels.slice(0, 100).map((v) => {
           if (!v.latitude || !v.longitude) return null;
           const isMilitary = v.shipType === "military";
           const color = isMilitary ? "#ff4757" : v.shipType === "tanker" ? "#ffd000" : "#00e5ff";
@@ -682,7 +683,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── GPS Jamming Zones ── */}
-        {(filters.categories.has("cyber") || filters.categories.has("conflict")) && jammingZones.map((zone) => {
+        {enabledLayers?.has("gps-jamming") && jammingZones.map((zone) => {
           const color = zone.severity === "high" ? "#ff4757" : zone.severity === "medium" ? "#ffd000" : "#00e5ff";
           return (
             <Marker key={zone.id} latitude={zone.lat} longitude={zone.lng} anchor="center">
@@ -701,7 +702,7 @@ export function TacticalMap({ filters, variant = "world" }: TacticalMapProps) {
         })}
 
         {/* ── Submarine Cable Landing Points ── */}
-        {(filters.categories.has("infrastructure") || filters.categories.has("tech") || filters.categories.has("cyber")) && cables.map((cable) =>
+        {enabledLayers?.has("submarine-cables") && cables.map((cable) =>
           cable.landing_points.map((lp, i) => (
             <Marker key={`${cable.id}-${i}`} latitude={lp.lat} longitude={lp.lng} anchor="center">
               <div

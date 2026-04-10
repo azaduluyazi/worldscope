@@ -240,7 +240,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
           {/* Map — always rendered but hidden when other panels active */}
           <div className={`absolute inset-0 ${mobilePanel === "map" ? "z-10" : "z-0"}`}>
             <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-              <TacticalMap filters={filters} variant={variant} />
+              <TacticalMap filters={filters} variant={variant} enabledLayers={enabledLayerIds} />
             </ErrorBoundary>
             <ErrorBoundary section="ticker">
               <MarketTicker />
@@ -335,7 +335,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
               <MapLayerPanel layers={layers} onToggleLayer={toggleMapLayer} />
               {mapMode === "2d" ? (
                 <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-                  <TacticalMap filters={filters} variant={variant} />
+                  <TacticalMap filters={filters} variant={variant} enabledLayers={enabledLayerIds} />
                 </ErrorBoundary>
               ) : (
                 <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
