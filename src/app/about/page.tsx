@@ -143,12 +143,76 @@ export default function AboutPage() {
             </p>
           </Section>
 
+          <Section title="Editorial Methodology">
+            <p className="mb-3">
+              WorldScope follows a rigorous methodology for information
+              aggregation and presentation:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-hud-text/80">
+              <li>
+                <strong>Source Verification:</strong> Every data source is
+                vetted before inclusion. We only aggregate from established news
+                agencies, official government feeds, and licensed API providers.
+              </li>
+              <li>
+                <strong>Multi-Source Corroboration:</strong> Our AI convergence
+                engine cross-references events across multiple independent
+                sources to identify corroborated information and flag potential
+                misinformation.
+              </li>
+              <li>
+                <strong>Severity Classification:</strong> Events are classified
+                using a five-level severity scale (critical, high, medium, low,
+                info) based on impact scope, affected population, and urgency.
+              </li>
+              <li>
+                <strong>Attribution:</strong> All aggregated content is
+                attributed to its original source. We do not alter, editorialize,
+                or misrepresent source material.
+              </li>
+              <li>
+                <strong>Transparency:</strong> Our data pipeline, source list,
+                and processing methodology are documented. Users can inspect the
+                original source for any event displayed on the platform.
+              </li>
+            </ul>
+          </Section>
+
+          <Section title="Technology and Infrastructure">
+            <p>
+              WorldScope is built using modern, open-source web technologies.
+              The platform runs on a cloud-native architecture designed for
+              reliability, performance, and global availability. Our
+              infrastructure includes distributed caching, edge deployment
+              across multiple regions, and automated failover systems. The
+              entire platform is designed to maintain sub-second response times
+              even during high-traffic events and breaking news situations.
+            </p>
+          </Section>
+
           <Section title="Independence">
             <p>
               WorldScope is an independent project operated by Azad Uluyazi. It
               is not affiliated with, sponsored by, or endorsed by any
               government, military, or political organization. All data comes
               from publicly available APIs, RSS feeds, and open data sources.
+              Our editorial decisions are made independently, and our advertising
+              partnerships do not influence content selection or presentation.
+            </p>
+          </Section>
+
+          <Section title="Advertising and Sustainability">
+            <p>
+              WorldScope is entirely funded through non-intrusive advertising
+              via Google AdSense. We believe in providing free access to global
+              news monitoring while maintaining a sustainable business model.
+              Advertisements are clearly distinguished from editorial content
+              and never influence our data aggregation, source selection, or
+              event classification. See our{" "}
+              <Link href="/disclaimer" className="text-hud-accent hover:underline">
+                Disclaimer
+              </Link>{" "}
+              for details.
             </p>
           </Section>
 
@@ -161,6 +225,11 @@ export default function AboutPage() {
               >
                 info@troiamedia.com
               </a>
+              . Visit our{" "}
+              <Link href="/contact" className="text-hud-accent hover:underline">
+                Contact page
+              </Link>{" "}
+              for specific inquiry types and FAQ.
             </p>
           </Section>
         </div>

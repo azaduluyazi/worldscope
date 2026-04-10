@@ -95,6 +95,59 @@ export default function ContactPage() {
               email. For questions, contact us at the email above.
             </p>
           </div>
+
+          <div className="border border-hud-border rounded-sm p-4">
+            <h2 className="text-sm font-bold text-hud-accent mb-3 tracking-wide uppercase">
+              Frequently Asked Questions
+            </h2>
+            <div className="space-y-4">
+              <FaqItem
+                q="Is WorldScope free to use?"
+                a="Yes, WorldScope is completely free. All features — live news feeds, interactive maps, TV channels, AI analytics, and daily email briefings — are available at no cost with no account required. The platform is supported by advertising."
+              />
+              <FaqItem
+                q="Where does WorldScope get its data?"
+                a="We aggregate content from over 2,000 publicly available sources including official news agencies (Reuters, AP, AFP), government data feeds, financial market APIs (CoinGecko, Yahoo Finance), weather services (USGS, NWS), and public health organizations (WHO, CDC). All data comes from licensed RSS feeds and open APIs."
+              />
+              <FaqItem
+                q="How often is the data updated?"
+                a="Most data sources are polled every 5 minutes. Financial market data updates in near real-time. Weather and seismic data is updated as new observations are published. Our AI-powered convergence engine continuously analyzes incoming data to detect emerging stories."
+              />
+              <FaqItem
+                q="Can I use WorldScope data for research or journalism?"
+                a="WorldScope is an aggregation and monitoring tool. You are free to use the platform for research, journalism, or education. However, the underlying content comes from third-party sources — please cite original sources when publishing. See our Terms of Service for details."
+              />
+              <FaqItem
+                q="How do I report incorrect information?"
+                a="If you notice inaccurate data or content, please email us at info@troiamedia.com with the specific page URL and a description of the issue. We review all reports and work to correct errors promptly."
+              />
+              <FaqItem
+                q="Is my data safe on WorldScope?"
+                a="WorldScope does not require registration or personal data to use. For newsletter subscribers, we collect only email addresses. We use industry-standard encryption and do not sell personal data. See our Privacy Policy for full details."
+              />
+              <FaqItem
+                q="What languages does WorldScope support?"
+                a="The interface is available in 30 languages. News content is displayed in its original language with source attribution. Our AI can generate summaries in English and Turkish."
+              />
+            </div>
+          </div>
+
+          <div className="border border-hud-border rounded-sm p-4">
+            <h2 className="text-sm font-bold text-hud-accent mb-2 tracking-wide uppercase">
+              Business Address
+            </h2>
+            <div className="text-hud-text/80 space-y-1">
+              <p><strong>Troia Media</strong></p>
+              <p>Operated by Azad Uluyazi</p>
+              <p>Istanbul, Turkey</p>
+              <p>
+                Email:{" "}
+                <a href="mailto:info@troiamedia.com" className="text-hud-accent hover:underline">
+                  info@troiamedia.com
+                </a>
+              </p>
+            </div>
+          </div>
         </div>
 
         <LegalFooter />
@@ -111,6 +164,15 @@ function ContactItem({ label, desc }: { label: string; desc: string }) {
         <span className="text-hud-text font-medium">{label}</span>
         <span className="text-hud-muted"> — {desc}</span>
       </div>
+    </div>
+  );
+}
+
+function FaqItem({ q, a }: { q: string; a: string }) {
+  return (
+    <div>
+      <h3 className="text-hud-text font-medium text-sm">{q}</h3>
+      <p className="text-hud-text/70 text-xs mt-1 leading-relaxed">{a}</p>
     </div>
   );
 }

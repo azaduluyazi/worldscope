@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TroiaMedia — Spartan Red Theme</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --base: #0a0406;
+    --surface: #120810;
+    --panel: #1a0c14;
+    --border: #301520;
+    --muted: #5a2a3a;
+    --text: #e8d0d8;
+    --accent: #c0392b;
+    --accent-light: #e74c3c;
+    --accent-dark: #7b241c;
+    --accent2: #cd7f32;
+    --critical: #e74c3c;
+    --high: #cd7f32;
+    --medium: #b8860b;
+    --low: #6b8e6b;
+  }
+  body { background: var(--base); color: var(--text); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+  @keyframes battlePulse { 0%,100%{opacity:1;text-shadow:0 0 4px var(--accent)} 50%{opacity:.6;text-shadow:0 0 16px var(--accent)} }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  @keyframes scanline { 0%{transform:translateY(-100%)} 100%{transform:translateY(100vh)} }
+
+  .shimmer {
+    background: linear-gradient(120deg, #7b241c 0%, #c0392b 25%, #e74c3c 50%, #c0392b 75%, #7b241c 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    animation: battlePulse 3s ease-in-out infinite;
+  }
+
+  /* Scanline overlay */
+  .scanlines {
+    position: fixed; inset: 0; z-index: 999; pointer-events: none;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px);
+  }
+
+  .topbar {
+    height: 44px;
+    background: linear-gradient(180deg, var(--panel) 0%, var(--surface) 100%);
+    border-bottom: 1px solid;
+    border-image: linear-gradient(90deg, transparent, var(--accent-dark), var(--accent), var(--accent-dark), transparent) 1;
+    display: flex; align-items: center; padding: 0 16px; z-index: 50;
+  }
+  .logo-area { display: flex; align-items: center; gap: 10px; }
+  .horse-icon { width: 30px; height: 30px; color: var(--accent); filter: drop-shadow(0 0 10px rgba(192,57,43,0.7)); }
+  .brand { display: flex; flex-direction: column; }
+  .brand-name { font-family: 'Rajdhani', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 5px; }
+  .brand-variant { font-family: 'Inter', monospace; font-size: 8px; letter-spacing: 2px; color: var(--accent); opacity: 0.6; }
+  .variant-tabs { flex: 1; display: flex; justify-content: center; gap: 4px; }
+  .vtab {
+    padding: 3px 14px; font-family: 'Inter', monospace; font-size: 10px; letter-spacing: 1.5px;
+    background: var(--surface); color: var(--text); opacity: 0.7; border: 1px solid var(--border);
+    text-decoration: none; transition: all 0.2s; cursor: pointer;
+  }
+  .vtab:hover { border-color: rgba(192,57,43,0.4); opacity: 1; }
+  .vtab.active { background: var(--accent); color: #fff; opacity: 1; font-weight: 700; border-color: var(--accent); }
+  .right-section { display: flex; align-items: center; gap: 12px; font-family: 'Inter', monospace; font-size: 9px; }
+  .defcon {
+    padding: 2px 8px; border: 1px solid rgba(192,57,43,0.5); border-radius: 2px;
+    color: var(--accent-light); font-weight: 700; letter-spacing: 1px;
+    animation: battlePulse 2s ease-in-out infinite;
+  }
+  .live-dot { color: var(--accent-light); animation: pulse 1.5s ease-in-out infinite; }
+  .utc-time { color: var(--muted); }
+
+  .main-layout { display: grid; grid-template-columns: 42px 1fr 380px; height: calc(100vh - 44px - 28px - 24px); }
+  .sidebar {
+    background: var(--surface); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 2px;
+  }
+  .sidebar-btn {
+    width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; border: 1px solid transparent; border-radius: 2px; cursor: pointer; background: none; transition: all 0.2s;
+  }
+  .sidebar-btn:hover { border-color: rgba(192,57,43,0.4); }
+  .sidebar-btn.active { border-color: var(--accent); box-shadow: 0 0 12px rgba(192,57,43,0.35); background: rgba(192,57,43,0.08); }
+
+  .map-area { position: relative; background: var(--base); overflow: hidden; }
+  .map-placeholder {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, #1a0c14 0%, #0a0406 100%);
+  }
+  .map-placeholder::before {
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 40% 40%, rgba(192,57,43,0.06) 0%, transparent 40%),
+      radial-gradient(circle at 60% 55%, rgba(205,127,50,0.04) 0%, transparent 35%);
+  }
+  /* Red grid overlay — warzone feel */
+  .map-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(192,57,43,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(192,57,43,0.025) 1px, transparent 1px);
+    background-size: 50px 50px;
+  }
+  .map-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite; }
+  .map-toggle { position: absolute; top: 8px; left: 8px; display: flex; gap: 2px; z-index: 10; }
+  .map-toggle button {
+    padding: 4px 10px; font-family: 'Inter', monospace; font-size: 9px; letter-spacing: 1px;
+    background: rgba(26,12,20,0.9); color: var(--text); border: 1px solid var(--border); cursor: pointer;
+  }
+  .map-toggle button.active { background: var(--accent); color: #fff; font-weight: 700; }
+
+  /* DEFCON BAR */
+  .defcon-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px; z-index: 20;
+    background: linear-gradient(90deg, transparent, var(--accent-dark), var(--accent), var(--accent-light), var(--accent), var(--accent-dark), transparent);
+    animation: battlePulse 2s ease-in-out infinite;
+  }
+
+  .convergence {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+    background: linear-gradient(180deg, transparent, rgba(10,4,6,0.95));
+    padding: 8px 16px; display: flex; flex-direction: column; justify-content: flex-end; gap: 4px;
+  }
+  .convergence-title { font-family: 'Inter', monospace; font-size: 9px; letter-spacing: 2px; color: var(--accent); font-weight: 600; }
+  .convergence-stats { font-family: 'Inter', monospace; font-size: 8px; color: var(--muted); }
+
+  .right-panel { background: var(--surface); border-left: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; }
+  .panel-tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); background: var(--panel); overflow-x: auto; }
+  .panel-tab {
+    padding: 6px 12px; font-family: 'Inter', monospace; font-size: 9px; letter-spacing: 1px;
+    color: var(--muted); border: none; background: none; cursor: pointer; white-space: nowrap; transition: color 0.2s;
+  }
+  .panel-tab:hover { color: var(--text); }
+  .panel-tab.active { color: var(--accent); border-bottom: 1px solid var(--accent); }
+  .feed { flex: 1; overflow-y: auto; }
+  .feed-header { padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .feed-title { font-family: 'Inter', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent); font-weight: 600; }
+  .feed-count { font-family: 'Inter', monospace; font-size: 8px; color: var(--muted); }
+  .feed-item {
+    padding: 10px 12px; border-bottom: 1px solid rgba(48,21,32,0.5);
+    transition: background 0.2s; cursor: pointer;
+  }
+  .feed-item:hover { background: rgba(192,57,43,0.05); border-left: 2px solid var(--accent); }
+  .feed-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .feed-severity { font-family: 'Inter', monospace; font-size: 7px; letter-spacing: 1px; font-weight: 700; padding: 1px 6px; border-radius: 1px; }
+  .severity-critical { background: rgba(231,76,60,0.25); color: #e74c3c; }
+  .severity-high { background: rgba(205,127,50,0.2); color: #cd7f32; }
+  .severity-medium { background: rgba(184,134,11,0.15); color: #b8860b; }
+  .feed-time { font-family: 'Inter', monospace; font-size: 7px; color: var(--muted); }
+  .feed-item-title { font-size: 11px; color: var(--text); line-height: 1.4; font-weight: 500; }
+  .feed-item-source { font-family: 'Inter', monospace; font-size: 8px; color: var(--muted); margin-top: 4px; }
+
+  .ticker {
+    height: 24px; background: var(--panel); border-top: 1px solid var(--border);
+    display: flex; align-items: center; overflow: hidden; padding: 0 8px; gap: 24px;
+  }
+  .ticker-item { font-family: 'Inter', monospace; font-size: 9px; white-space: nowrap; display: flex; gap: 6px; }
+  .ticker-symbol { color: var(--text); font-weight: 600; }
+  .ticker-up { color: #6b8e6b; }
+  .ticker-down { color: #e74c3c; }
+  .news-ticker {
+    height: 28px; background: var(--surface); border-top: 1px solid;
+    border-image: linear-gradient(90deg, transparent, var(--accent-dark), var(--accent), var(--accent-dark), transparent) 1;
+    display: flex; align-items: center; padding: 0 12px; gap: 8px; overflow: hidden;
+  }
+  .live-badge { font-family: 'Inter', monospace; font-size: 8px; color: var(--accent-light); font-weight: 700; letter-spacing: 1px; flex-shrink: 0; animation: battlePulse 1.5s ease-in-out infinite; }
+  .news-items { display: flex; gap: 24px; overflow: hidden; }
+  .news-item { font-family: 'Inter', sans-serif; font-size: 10px; color: var(--text); opacity: 0.7; white-space: nowrap; flex-shrink: 0; }
+  .news-source { color: var(--muted); font-size: 9px; margin-left: 6px; }
+  .theme-badge {
+    position: fixed; top: 52px; right: 16px; padding: 6px 16px;
+    background: linear-gradient(135deg, rgba(192,57,43,0.2), rgba(123,36,28,0.1));
+    border: 1px solid rgba(192,57,43,0.4); border-radius: 4px;
+    font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 3px;
+    color: var(--accent-light); z-index: 100; backdrop-filter: blur(8px);
+    animation: battlePulse 3s ease-in-out infinite;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--base); }
+  ::-webkit-scrollbar-thumb { background: rgba(192,57,43,0.3); border-radius: 3px; }
+</style>
+</head>
+<body>
+<!-- Scanline overlay -->
+<div class="scanlines"></div>
+<div class="theme-badge">🛡️ SPARTAN RED</div>
+<div class="topbar">
+  <div class="logo-area">
+    <svg class="horse-icon" viewBox="0 0 512 512" fill="currentColor">
+      <path d="M509.8 332.5l-69.9-164.3c-14.9-41.2-50.4-71-93-79.2 18-10.6 46.3-35.9 34.2-82.3-1.3-5-7.1-7.9-12-6.1L166.9 76.3C35.9 123.4 0 238.9 0 398.8V480c0 17.7 14.3 32 32 32h236.2c23.8 0 39.3-25 28.6-46.3L256 384v-.7c-45.6-3.5-84.6-30.7-104.3-69.6-1.6-3.1-.9-6.9 1.6-9.3l12.1-12.1c3.9-3.9 10.6-2.7 12.9 2.4 14.8 33.7 48.2 57.4 87.4 57.4 17.2 0 33-5.1 46.8-13.2l46 63.9c6 8.4 15.7 13.3 26 13.3h50.3c8.5 0 16.6-3.4 22.6-9.4l45.3-39.8c8.9-9.1 11.7-22.6 7.1-34.4zM328 224c-13.3 0-24-10.7-24-24s10.7-24 24-24 24 10.7 24 24-10.7 24-24 24z"/>
+    </svg>
+    <div class="brand">
+      <span class="brand-name shimmer">TROIA</span>
+      <span class="brand-variant">ARES</span>
+    </div>
+  </div>
+  <div class="variant-tabs">
+    <a class="vtab">OLYMPUS</a>
+    <a class="vtab active">ARES</a>
+    <a class="vtab">HEPHAESTUS</a>
+    <a class="vtab">HERMES</a>
+    <a class="vtab">ATHENA</a>
+    <a class="vtab">POSEIDON</a>
+    <a class="vtab">APOLLO</a>
+    <a class="vtab">ZEUS</a>
+    <a class="vtab">NIKE</a>
+  </div>
+  <div class="right-section">
+    <span class="defcon">◆ DEFCON 1</span>
+    <span class="live-dot">● CANLI</span>
+    <span class="utc-time">06:30:00 UTC</span>
+  </div>
+</div>
+<div class="main-layout">
+  <div class="sidebar">
+    <button class="sidebar-btn active">⚔️</button>
+    <button class="sidebar-btn">🌍</button>
+    <button class="sidebar-btn">🏥</button>
+    <button class="sidebar-btn">⚡</button>
+    <button class="sidebar-btn">⚽</button>
+    <div style="flex:1"></div>
+    <button class="sidebar-btn">🔥</button>
+    <button class="sidebar-btn">⚙️</button>
+  </div>
+  <div class="map-area">
+    <div class="defcon-bar"></div>
+    <div class="map-placeholder">
+      <div class="map-grid"></div>
+      <div class="map-dot" style="top:35%;left:55%;background:#e74c3c;box-shadow:0 0 16px #e74c3c"></div>
+      <div class="map-dot" style="top:40%;left:48%;background:#e74c3c;box-shadow:0 0 16px #e74c3c"></div>
+      <div class="map-dot" style="top:30%;left:60%;background:#cd7f32;box-shadow:0 0 12px #cd7f32"></div>
+      <div class="map-dot" style="top:45%;left:42%;background:#e74c3c;box-shadow:0 0 14px #e74c3c"></div>
+      <div class="map-dot" style="top:38%;left:52%;background:#c0392b;box-shadow:0 0 12px #c0392b"></div>
+      <div class="map-dot" style="top:50%;left:35%;background:#cd7f32;box-shadow:0 0 10px #cd7f32"></div>
+      <div class="map-dot" style="top:55%;left:58%;background:#e74c3c;box-shadow:0 0 16px #e74c3c"></div>
+      <div class="map-dot" style="top:32%;left:38%;background:#c0392b;box-shadow:0 0 14px #c0392b"></div>
+      <div class="map-dot" style="top:42%;left:65%;background:#e74c3c;box-shadow:0 0 18px #e74c3c"></div>
+      <div class="map-dot" style="top:28%;left:50%;background:#cd7f32;box-shadow:0 0 10px #cd7f32"></div>
+    </div>
+    <div class="map-toggle">
+      <button class="active">🗺️ 2D HARİTA</button>
+      <button>🌍 3D KÜRE</button>
+    </div>
+    <div class="convergence">
+      <div class="convergence-title">⚠ SIGNAL CONVERGENCE — ELEVATED</div>
+      <div class="convergence-stats">7 active | 1,204 signals analyzed | THREAT LEVEL: HIGH</div>
+    </div>
+  </div>
+  <div class="right-panel">
+    <div class="panel-tabs">
+      <button class="panel-tab active">📡 INTEL</button>
+      <button class="panel-tab">📊 PREDICT</button>
+      <button class="panel-tab">💹 ECON</button>
+      <button class="panel-tab">⚠️ RISK</button>
+      <button class="panel-tab">🔺 ESCAL</button>
+      <button class="panel-tab">📈 EQUITY</button>
+      <button class="panel-tab">🌐 GEO</button>
+    </div>
+    <div class="feed-header">
+      <span class="feed-title">ÇATIŞMA İSTİHBARATI</span>
+      <span class="feed-count">203/518 olay</span>
+    </div>
+    <div class="feed">
+      <div class="feed-item"><div class="feed-item-header"><span class="feed-severity severity-critical">KRİTİK</span><span class="feed-time">1dk önce</span></div><div class="feed-item-title">Active armed conflict escalation reported in multiple sectors</div><div class="feed-item-source">ACLED • 📍 Eastern Europe</div></div>
+      <div class="feed-item"><div class="feed-item-header"><span class="feed-severity severity-critical">KRİTİK</span><span class="feed-time">4dk önce</span></div><div class="feed-item-title">OREF sirens activated — rocket barrage detected from northern border</div><div class="feed-item-source">OREF • 📍 Northern District</div></div>
+      <div class="feed-item"><div class="feed-item-header"><span class="feed-severity severity-high">YÜKSEK</span><span class="feed-time">9dk önce</span></div><div class="feed-item-title">Military convoy movement detected via satellite imagery</div><div class="feed-item-source">Sentinel Hub • 📍 Classified</div></div>
+      <div class="feed-item"><div class="feed-item-header"><span class="feed-severity severity-high">YÜKSEK</span><span class="feed-time">14dk önce</span></div><div class="feed-item-title">Mass protest turns violent — security forces deploy tear gas</div><div class="feed-item-source">AFP • 📍 Central Asia</div></div>
+      <div class="feed-item"><div class="feed-item-header"><span class="feed-severity severity-critical">KRİTİK</span><span class="feed-time">18dk önce</span></div><div class="feed-item-title">Drone strike reported on critical infrastructure facility</div><div class="feed-item-source">Reuters • 📍 Middle East</div></div>
+      <div class="feed-item"><div class="feed-item-header"><span class="feed-severity severity-high">YÜKSEK</span><span class="feed-time">25dk önce</span></div><div class="feed-item-title">Naval blockade enforced — merchant vessels rerouted</div><div class="feed-item-source">Maritime Exec • 📍 Red Sea</div></div>
+    </div>
+  </div>
+</div>
+<div class="ticker">
+  <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-down">$82,100 -4.8%</span></div>
+  <div class="ticker-item"><span class="ticker-symbol">XAU</span><span class="ticker-up">$2,950 +3.1%</span></div>
+  <div class="ticker-item"><span class="ticker-symbol">WTI</span><span class="ticker-up">$86.40 +8.2%</span></div>
+  <div class="ticker-item"><span class="ticker-symbol">VIX</span><span class="ticker-up">32.4 +45%</span></div>
+  <div class="ticker-item"><span class="ticker-symbol">SPX</span><span class="ticker-down">4,980 -3.2%</span></div>
+</div>
+<div class="news-ticker">
+  <span class="live-badge">⚠ BREAKING ●</span>
+  <div class="news-items">
+    <span class="news-item">Armed conflict escalation — multiple fronts active <span class="news-source">ACLED</span> │</span>
+    <span class="news-item">DEFCON 1 — Maximum threat level declared <span class="news-source">Pentagon</span> │</span>
+    <span class="news-item">Oil supply disruption — Brent crude surges 8% <span class="news-source">Bloomberg</span> │</span>
+  </div>
+</div>
+</body>
+</html>

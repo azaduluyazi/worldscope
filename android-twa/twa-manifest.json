@@ -1,56 +1,94 @@
 {
-  "packageId": "com.troiamedia.worldscope",
+  "packageId": "com.troiamedia.twa",
   "host": "troiamedia.com",
   "name": "WorldScope",
   "launcherName": "WorldScope",
   "display": "standalone",
-  "themeColor": "#00e5ff",
-  "themeColorDark": "#050a12",
-  "navigationColor": "#050a12",
-  "navigationColorDark": "#050a12",
-  "navigationDividerColor": "#1a2332",
-  "navigationDividerColorDark": "#1a2332",
-  "backgroundColor": "#050a12",
+  "themeColor": "#00E5FF",
+  "themeColorDark": "#050A12",
+  "navigationColor": "#050A12",
+  "navigationColorDark": "#050A12",
+  "navigationDividerColor": "#050A12",
+  "navigationDividerColorDark": "#050A12",
+  "backgroundColor": "#050A12",
   "enableNotifications": true,
   "startUrl": "/",
   "iconUrl": "https://troiamedia.com/icons/icon-512.png",
   "maskableIconUrl": "https://troiamedia.com/icons/icon-512.png",
-  "monochromeIconUrl": "https://troiamedia.com/icons/icon-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
-    "path": "./worldscope-keystore.jks",
-    "alias": "worldscope"
+    "path": "./android.keystore",
+    "alias": "android"
   },
-  "appVersionCode": 1,
-  "appVersionName": "1.0.0",
+  "appVersionName": "2.1.1",
+  "appVersionCode": 4,
   "shortcuts": [
     {
       "name": "HERMES — Finance",
       "shortName": "Finance",
-      "url": "/finance",
+      "url": "https://troiamedia.com/finance",
       "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
     },
     {
       "name": "ARES — Conflict",
       "shortName": "Conflict",
-      "url": "/conflict",
+      "url": "https://troiamedia.com/conflict",
       "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
     },
     {
       "name": "ATHENA — Cyber",
       "shortName": "Cyber",
-      "url": "/cyber",
+      "url": "https://troiamedia.com/cyber",
+      "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
+    },
+    {
+      "name": "NIKE — Sports",
+      "shortName": "Sports",
+      "url": "https://troiamedia.com/sports",
+      "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
+    },
+    {
+      "name": "ORACLE — Reports",
+      "shortName": "Reports",
+      "url": "https://troiamedia.com/reports",
+      "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
+    },
+    {
+      "name": "MUSE — Blog",
+      "shortName": "Blog",
+      "url": "https://troiamedia.com/blog",
+      "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
+    },
+    {
+      "name": "ECHO — Podcast",
+      "shortName": "Podcast",
+      "url": "https://troiamedia.com/podcast",
       "chosenIconUrl": "https://troiamedia.com/icons/icon-192.png"
     }
   ],
-  "generatorApp": "nicolo-nicola-nicola-nicola-nicola",
+  "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://troiamedia.com/manifest.json",
   "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
   "fullScopeUrl": "https://troiamedia.com/",
-  "minSdkVersion": 24,
-  "orientation": "default",
-  "fingerprints": []
+  "minSdkVersion": 21,
+  "orientation": "any",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "protocolHandlers": [],
+  "fileHandlers": [],
+  "launchHandlerClientMode": "",
+  "displayOverride": [],
+  "appVersion": "2.1.1"
 }

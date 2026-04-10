@@ -12,6 +12,7 @@ export const metadata: Metadata = {
       "Terms of Service for the WorldScope global news monitoring platform.",
     type: "website",
   },
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

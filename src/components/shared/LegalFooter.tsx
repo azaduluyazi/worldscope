@@ -10,9 +10,13 @@ export function LegalFooter() {
       <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-xs text-hud-muted mb-4">
         <Link href="/" className="hover:text-hud-accent transition-colors">Dashboard</Link>
         <Link href="/about" className="hover:text-hud-accent transition-colors">About</Link>
+        <Link href="/blog" className="hover:text-hud-accent transition-colors">Blog</Link>
         <Link href="/pricing" className="hover:text-hud-accent transition-colors">Pricing</Link>
         <Link href="/terms" className="hover:text-hud-accent transition-colors">Terms of Service</Link>
         <Link href="/privacy" className="hover:text-hud-accent transition-colors">Privacy Policy</Link>
+        <Link href="/cookies" className="hover:text-hud-accent transition-colors">Cookie Policy</Link>
+        <Link href="/disclaimer" className="hover:text-hud-accent transition-colors">Disclaimer</Link>
+        <Link href="/accessibility" className="hover:text-hud-accent transition-colors">Accessibility</Link>
         <Link href="/refund" className="hover:text-hud-accent transition-colors">Refund Policy</Link>
         <Link href="/contact" className="hover:text-hud-accent transition-colors">Contact</Link>
       </div>

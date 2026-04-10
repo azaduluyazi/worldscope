@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TroiaMedia — Tema Secici (24 Tema)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Rajdhani:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#08060a;color:#e0d8c8;font-family:'Inter',sans-serif;padding:20px 40px}
+h1{font-family:'Rajdhani',sans-serif;font-size:28px;letter-spacing:6px;text-align:center;margin-bottom:6px;
+  background:linear-gradient(120deg,#8b6914,#d4af37,#f0d060,#d4af37,#8b6914);
+  background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:shimmer 4s linear infinite}
+@keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
+.subtitle{text-align:center;font-size:12px;color:#6b5a3a;margin-bottom:24px;letter-spacing:2px}
+.summary-bar{position:sticky;top:0;z-index:100;background:rgba(8,6,10,0.95);backdrop-filter:blur(8px);
+  padding:12px 20px;border-bottom:1px solid #2e2618;display:flex;justify-content:space-between;align-items:center;margin:-20px -40px 20px;padding:12px 40px}
+.summary-bar .kept{color:#00ff88;font-family:'JetBrains Mono',monospace;font-size:13px}
+.summary-bar .removed{color:#c0392b;font-family:'JetBrains Mono',monospace;font-size:13px}
+.summary-bar .total{color:#d4af37;font-family:'Rajdhani',sans-serif;font-size:16px;letter-spacing:3px}
+
+.group-title{font-family:'Rajdhani',sans-serif;font-size:18px;letter-spacing:4px;color:#d4af37;margin:28px 0 12px;
+  padding-bottom:6px;border-bottom:1px solid #2e2618}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));gap:16px;margin-bottom:12px}
+
+/* Theme Card */
+.theme-card{border:1px solid #2e2618;border-radius:6px;overflow:hidden;transition:all 0.3s;position:relative}
+.theme-card:hover{border-color:#d4af3780}
+.theme-card.removed{opacity:0.3;filter:grayscale(0.8)}
+.theme-card.removed .card-actions .btn-remove{display:none}
+.theme-card.removed .card-actions .btn-keep-back{display:inline-flex}
+
+/* Mini Dashboard Preview */
+.mini-dashboard{height:200px;display:grid;grid-template-columns:28px 1fr 140px;position:relative;overflow:hidden}
+
+/* Header bar */
+.mini-header{position:absolute;top:0;left:0;right:0;height:26px;display:flex;align-items:center;padding:0 8px;z-index:5;
+  border-bottom:1px solid;font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1px}
+.mini-header .logo{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:700;letter-spacing:3px;margin-right:8px}
+.mini-header .tabs{display:flex;gap:2px;flex:1;justify-content:center}
+.mini-header .tab{padding:1px 6px;font-size:6px;border-radius:1px;opacity:.5}
+.mini-header .tab.active{opacity:1;font-weight:700}
+.mini-header .live{font-size:6px;opacity:.7}
+
+/* Sidebar */
+.mini-sidebar{padding-top:30px;display:flex;flex-direction:column;align-items:center;gap:3px;padding-left:2px;padding-right:2px}
+.mini-sidebar-btn{width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:9px;border:1px solid transparent;border-radius:1px}
+.mini-sidebar-btn.active{border-width:1px;border-style:solid}
+
+/* Map area */
+.mini-map{padding-top:30px;position:relative;overflow:hidden}
+.mini-map-grid{position:absolute;inset:0;top:26px;
+  background-image:linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px);
+  background-size:30px 30px}
+.mini-dot{position:absolute;width:4px;height:4px;border-radius:50%}
+
+/* Feed panel */
+.mini-feed{padding-top:30px;border-left:1px solid;overflow:hidden}
+.mini-feed-title{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;padding:4px 6px;border-bottom:1px solid}
+.mini-feed-item{padding:4px 6px;border-bottom:1px solid;font-size:7px;line-height:1.3}
+.mini-feed-sev{font-size:5px;font-weight:700;letter-spacing:0.5px;padding:0 3px;border-radius:1px;display:inline-block;margin-bottom:1px}
+
+/* Ticker */
+.mini-ticker{position:absolute;bottom:0;left:0;right:0;height:14px;display:flex;align-items:center;padding:0 6px;
+  font-family:'JetBrains Mono',monospace;font-size:6px;gap:10px;border-top:1px solid}
+
+/* Scanlines overlay */
+.mini-scanlines{position:absolute;inset:0;z-index:3;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px)}
+
+/* Card Info + Actions */
+.card-info{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid #2e2618;background:#0c0a08}
+.card-info .name{font-family:'Rajdhani',sans-serif;font-size:15px;font-weight:700;letter-spacing:2px}
+.card-info .desc{font-size:9px;color:#6b5a3a;margin-top:1px}
+.card-info .group-badge{font-size:8px;letter-spacing:1.5px;padding:2px 8px;border:1px solid #2e2618;border-radius:2px;color:#6b5a3a}
+
+.card-actions{display:flex;gap:6px;align-items:center}
+.card-actions button{padding:5px 14px;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;
+  border:1px solid;border-radius:3px;cursor:pointer;transition:all 0.2s;font-weight:600}
+.btn-keep{background:rgba(0,255,136,0.1);color:#00ff88;border-color:rgba(0,255,136,0.3)}
+.btn-keep:hover{background:rgba(0,255,136,0.2)}
+.btn-remove{background:rgba(192,57,43,0.1);color:#c0392b;border-color:rgba(192,57,43,0.3)}
+.btn-remove:hover{background:rgba(192,57,43,0.2)}
+.btn-keep-back{display:none;background:rgba(212,175,55,0.1);color:#d4af37;border-color:rgba(212,175,55,0.3)}
+.btn-keep-back:hover{background:rgba(212,175,55,0.2)}
+
+/* Special effects */
+.effect-glow{position:absolute;top:26px;left:28px;right:140px;bottom:14px;pointer-events:none;z-index:2}
+.defcon-bar-mini{position:absolute;top:26px;left:0;right:0;height:2px;z-index:4}
+
+/* Results panel */
+#results{margin-top:30px;padding:20px;border:1px solid #2e2618;border-radius:6px;background:#0c0a08;display:none}
+#results h3{font-family:'Rajdhani',sans-serif;font-size:18px;letter-spacing:3px;color:#d4af37;margin-bottom:12px}
+#results .list{font-family:'JetBrains Mono',monospace;font-size:11px;line-height:2}
+#results .kept-item{color:#00ff88}
+#results .removed-item{color:#c0392b;text-decoration:line-through}
+#export-btn{margin-top:16px;padding:10px 30px;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:3px;
+  background:linear-gradient(135deg,#d4af37,#8b6914);color:#0a0804;border:none;border-radius:4px;cursor:pointer;font-weight:700}
+#export-btn:hover{filter:brightness(1.2)}
+</style>
+</head>
+<body>
+
+<h1>TROIA TEMA SECICI</h1>
+<p class="subtitle">24 temayi incele — begenmediklerini kaldir</p>
+
+<div class="summary-bar">
+  <span class="total">TROIA THEME AUDIT</span>
+  <span class="kept" id="kept-count">KORUNAN: 24</span>
+  <span class="removed" id="removed-count">KALDIRILAN: 0</span>
+</div>
+
+<div id="theme-container"></div>
+
+<div id="results">
+  <h3>SONUC</h3>
+  <div class="list" id="results-list"></div>
+  <button id="export-btn" onclick="exportResults()">SONUCLARI KOPYALA</button>
+</div>
+
+<script>
+const THEMES = [
+  // MYTHOLOGY
+  {id:"olympus-gold",name:"Olympus Gold",icon:"🏛️",desc:"Golden throne of the gods",group:"Troia Mythology",
+   c:{base:"#0a0804",surface:"#12100a",panel:"#1a1610",border:"#2e2618",muted:"#6b5a3a",text:"#e8dcc4",accent:"#d4af37",accent2:"#f0d060"},
+   scanlines:false,glow:"rgba(212,175,55,0.18)",defcon:false},
+  {id:"aegean-dark",name:"Aegean Dark",icon:"🌊",desc:"Poseidon's domain of waves",group:"Troia Mythology",
+   c:{base:"#040810",surface:"#06101e",panel:"#081628",border:"#0e2a4a",muted:"#1e4a6e",text:"#c4dce8",accent:"#4db8d4",accent2:"#1e90ff"},
+   scanlines:false,glow:"rgba(77,184,212,0.15)",defcon:false},
+  {id:"spartan-red",name:"Spartan Red",icon:"🛡️",desc:"Blood and bronze — Ares",group:"Troia Mythology",
+   c:{base:"#0a0406",surface:"#120810",panel:"#1a0c14",border:"#301520",muted:"#5a2a3a",text:"#e8d0d8",accent:"#c0392b",accent2:"#cd7f32"},
+   scanlines:true,glow:"rgba(192,57,43,0.2)",defcon:true},
+  // TACTICAL
+  {id:"military",name:"Military HUD",icon:"🎖️",desc:"Dark tactical command center",group:"Dark Tactical",
+   c:{base:"#050a12",surface:"#080e1a",panel:"#0a1222",border:"#0d2137",muted:"#1a3a5a",text:"#c8d6e5",accent:"#00e5ff"},
+   scanlines:true,glow:"rgba(0,229,255,0.15)",defcon:false},
+  {id:"intelligence",name:"Intelligence",icon:"🕵️",desc:"Classified intel operations",group:"Dark Tactical",
+   c:{base:"#0a0a0f",surface:"#0f0f18",panel:"#141420",border:"#1e1e35",muted:"#3a3a5c",text:"#d4d4e8",accent:"#7c6aff"},
+   scanlines:false,glow:"rgba(124,106,255,0.12)",defcon:false},
+  {id:"cyberpunk",name:"Neon Cyberpunk",icon:"🌆",desc:"Neon glow, gradient cards",group:"Dark Tactical",
+   c:{base:"#0a0015",surface:"#100020",panel:"#150028",border:"#2d0040",muted:"#5a2d6a",text:"#e8d5f0",accent:"#ff2d95",accent2:"#00e5ff"},
+   scanlines:false,glow:"rgba(255,45,149,0.25)",defcon:false},
+  {id:"arctic",name:"Arctic",icon:"❄️",desc:"Polar research station",group:"Dark Tactical",
+   c:{base:"#070d14",surface:"#0b1320",panel:"#0e182a",border:"#1a2d4a",muted:"#3a5a7a",text:"#dce8f4",accent:"#4ecdc4"},
+   scanlines:false,glow:"rgba(78,205,196,0.12)",defcon:false},
+  {id:"emerald",name:"Emerald Ops",icon:"🟢",desc:"Night-vision tactical",group:"Dark Tactical",
+   c:{base:"#040a08",surface:"#081210",panel:"#0c1a16",border:"#153025",muted:"#2a5a45",text:"#c8e8d8",accent:"#10b981"},
+   scanlines:false,glow:"rgba(16,185,129,0.12)",defcon:false},
+  {id:"crimson",name:"Crimson Alert",icon:"🔴",desc:"DEFCON 1 — max threat",group:"Dark Tactical",
+   c:{base:"#0f0808",surface:"#180c0c",panel:"#201010",border:"#3a1818",muted:"#6a3030",text:"#f0d0d0",accent:"#ef4444"},
+   scanlines:true,glow:"rgba(239,68,68,0.15)",defcon:false},
+  {id:"warzone",name:"Warzone",icon:"⚠️",desc:"Red dominant, DEFCON bar, CRT",group:"Dark Tactical",
+   c:{base:"#080404",surface:"#0c0606",panel:"#120808",border:"#2a1111",muted:"#553333",text:"#d4d4d4",accent:"#cc3333",accent2:"#ff8800"},
+   scanlines:true,glow:"rgba(200,0,0,0.2)",defcon:true},
+  // AMBIENT
+  {id:"amber",name:"Amber",icon:"🌅",desc:"Warm desert operations",group:"Dark Ambient",
+   c:{base:"#0f0a05",surface:"#1a1208",panel:"#201a0c",border:"#3d2e14",muted:"#6b5530",text:"#e8dcc8",accent:"#f0a030"},
+   scanlines:true,glow:"rgba(240,160,48,0.15)",defcon:false},
+  {id:"midnight",name:"Midnight",icon:"🌙",desc:"Deep ocean night watch",group:"Dark Ambient",
+   c:{base:"#020810",surface:"#041020",panel:"#061530",border:"#0a2550",muted:"#1a4570",text:"#b8d4f0",accent:"#3388ff"},
+   scanlines:false,glow:"rgba(51,136,255,0.15)",defcon:false},
+  {id:"tokyo",name:"Tokyo Night",icon:"🌃",desc:"Soft neon city after midnight",group:"Dark Ambient",
+   c:{base:"#1a1b2e",surface:"#1e1f35",panel:"#24253d",border:"#2f3050",muted:"#565f89",text:"#c0caf5",accent:"#7aa2f7"},
+   scanlines:false,glow:"rgba(122,162,247,0.1)",defcon:false},
+  {id:"sandstorm",name:"Sandstorm",icon:"🏜️",desc:"Desert surveillance outpost",group:"Dark Ambient",
+   c:{base:"#1c1610",surface:"#241e16",panel:"#2c261e",border:"#4a3c2a",muted:"#7a6a50",text:"#e8d8c0",accent:"#d4915a"},
+   scanlines:false,glow:"rgba(212,145,90,0.1)",defcon:false},
+  // TERMINAL
+  {id:"bloomberg",name:"Bloomberg Terminal",icon:"📊",desc:"Pure black, orange mono",group:"Terminal",
+   c:{base:"#000000",surface:"#0a0a0a",panel:"#111111",border:"#222222",muted:"#555555",text:"#ff8c00",accent:"#ff8c00",accent2:"#00ccff"},
+   scanlines:false,glow:null,defcon:false},
+  {id:"matrix",name:"Matrix",icon:"🖥️",desc:"Green phosphor terminal",group:"Terminal",
+   c:{base:"#000000",surface:"#020802",panel:"#041004",border:"#0a200a",muted:"#1a4a1a",text:"#00ff41",accent:"#00ff41"},
+   scanlines:true,glow:"rgba(0,255,65,0.15)",defcon:false},
+  {id:"solarized",name:"Solarized",icon:"☀️",desc:"Developer-friendly warm dark",group:"Terminal",
+   c:{base:"#002b36",surface:"#073642",panel:"#073642",border:"#586e75",muted:"#657b83",text:"#93a1a1",accent:"#268bd2"},
+   scanlines:false,glow:"rgba(38,139,210,0.1)",defcon:false},
+  // BROADCAST
+  {id:"broadcast",name:"Broadcast",icon:"📺",desc:"24-hour news control room",group:"Broadcast",
+   c:{base:"#0c0c14",surface:"#12121c",panel:"#181828",border:"#cc0000",muted:"#4a4a6a",text:"#f0f0f8",accent:"#cc0000"},
+   scanlines:false,glow:"rgba(204,0,0,0.12)",defcon:false},
+  {id:"aljazeera",name:"Al Jazeera",icon:"🌐",desc:"International broadcast",group:"Broadcast",
+   c:{base:"#0a0f14",surface:"#101820",panel:"#141e28",border:"#1e3040",muted:"#4a6070",text:"#e0e8f0",accent:"#d4a843"},
+   scanlines:false,glow:"rgba(212,168,67,0.1)",defcon:false},
+  // MODERN
+  {id:"frost",name:"Frost Glass",icon:"✨",desc:"Translucent glassmorphism",group:"Modern",
+   c:{base:"#0f1729",surface:"#141e37",panel:"#192646",border:"#2a3a5c",muted:"#5a7aa0",text:"#e8f0ff",accent:"#60a5fa"},
+   scanlines:false,glow:"rgba(96,165,250,0.1)",defcon:false},
+  // EDITORIAL (light)
+  {id:"reuters",name:"Reuters",icon:"📰",desc:"Wire service newsroom",group:"Light Editorial",light:true,
+   c:{base:"#fafafa",surface:"#ffffff",panel:"#f5f5f0",border:"#e0ddd5",muted:"#8a8780",text:"#1a1a18",accent:"#ff5722"}},
+  {id:"economist",name:"The Economist",icon:"📕",desc:"Authoritative editorial",group:"Light Editorial",light:true,
+   c:{base:"#fffdf7",surface:"#ffffff",panel:"#faf7f0",border:"#e8e0d0",muted:"#9a9080",text:"#1a1410",accent:"#e3120b"}},
+  {id:"paper",name:"Paper White",icon:"📄",desc:"Minimal ink-on-paper",group:"Light Editorial",light:true,
+   c:{base:"#ffffff",surface:"#ffffff",panel:"#fafafa",border:"#e5e5e5",muted:"#999999",text:"#111111",accent:"#111111"}},
+  {id:"ivory",name:"Ivory Tower",icon:"🏛️",desc:"Academic research briefing",group:"Light Editorial",light:true,
+   c:{base:"#f8f5f0",surface:"#fffefa",panel:"#f0ece4",border:"#d8d0c0",muted:"#a09880",text:"#2a2420",accent:"#1a5276"}},
+];
+
+const state = {};
+THEMES.forEach(t => state[t.id] = 'kept');
+
+function renderThemes() {
+  const container = document.getElementById('theme-container');
+  container.innerHTML = '';
+  const groups = {};
+  THEMES.forEach(t => {
+    if (!groups[t.group]) groups[t.group] = [];
+    groups[t.group].push(t);
+  });
+
+  for (const [groupName, themes] of Object.entries(groups)) {
+    const groupDiv = document.createElement('div');
+    groupDiv.innerHTML = `<div class="group-title">${groupName.toUpperCase()} (${themes.length})</div>`;
+    const grid = document.createElement('div');
+    grid.className = 'grid';
+
+    themes.forEach(t => {
+      const c = t.c;
+      const isRemoved = state[t.id] === 'removed';
+      const card = document.createElement('div');
+      card.className = `theme-card ${isRemoved ? 'removed' : ''}`;
+      card.id = `card-${t.id}`;
+
+      // Random dots for map
+      const dots = [];
+      for (let i = 0; i < 6; i++) {
+        const top = 35 + Math.random()*30;
+        const left = 15 + Math.random()*55;
+        const color = [c.accent, c.accent2||c.accent, c.muted][Math.floor(Math.random()*3)];
+        dots.push(`<div class="mini-dot" style="top:${top}%;left:${left}%;background:${color};box-shadow:0 0 6px ${color}"></div>`);
+      }
+
+      // Feed items
+      const sevColors = [c.accent, c.accent2||c.accent, c.muted];
+      const sevLabels = ['KRITIK','YUKSEK','ORTA'];
+
+      card.innerHTML = `
+        <div class="mini-dashboard" style="background:${c.base}">
+          ${t.scanlines ? '<div class="mini-scanlines"></div>' : ''}
+          ${t.defcon ? `<div class="defcon-bar-mini" style="background:linear-gradient(90deg,transparent,${c.accent}40,${c.accent},${c.accent}40,transparent)"></div>` : ''}
+
+          <div class="mini-header" style="background:linear-gradient(180deg,${c.panel},${c.surface});border-bottom-color:${c.border}">
+            <span class="logo" style="color:${c.accent}">TROIA</span>
+            <div class="tabs">
+              <span class="tab active" style="background:${c.accent};color:${c.base}">OLYMPUS</span>
+              <span class="tab" style="color:${c.text}80;border:1px solid ${c.border}">ARES</span>
+              <span class="tab" style="color:${c.text}80;border:1px solid ${c.border}">HERMES</span>
+              <span class="tab" style="color:${c.text}80;border:1px solid ${c.border}">ATHENA</span>
+              <span class="tab" style="color:${c.text}80;border:1px solid ${c.border}">ZEUS</span>
+              <span class="tab" style="color:${c.text}80;border:1px solid ${c.border}">NIKE</span>
+            </div>
+            <span class="live" style="color:${c.accent}">● LIVE</span>
+          </div>
+
+          <div class="mini-sidebar" style="background:${c.surface};border-right:1px solid ${c.border}">
+            <div class="mini-sidebar-btn active" style="border-color:${c.accent}">⚔️</div>
+            <div class="mini-sidebar-btn">🌍</div>
+            <div class="mini-sidebar-btn">🏥</div>
+            <div class="mini-sidebar-btn">⚡</div>
+          </div>
+
+          <div class="mini-map" style="background:radial-gradient(ellipse at 50% 50%,${c.surface},${c.base})">
+            <div class="mini-map-grid"></div>
+            ${t.glow ? `<div class="effect-glow" style="background:radial-gradient(ellipse at 40% 40%,${t.glow},transparent)"></div>` : ''}
+            ${dots.join('')}
+          </div>
+
+          <div class="mini-feed" style="background:${c.surface};border-left-color:${c.border}">
+            <div class="mini-feed-title" style="color:${c.accent};border-bottom-color:${c.border}">ISTIHBARAT</div>
+            <div class="mini-feed-item" style="color:${c.text};border-bottom-color:${c.border}30">
+              <span class="mini-feed-sev" style="background:${sevColors[0]}25;color:${sevColors[0]}">${sevLabels[0]}</span><br>
+              Major earthquake M6.8
+            </div>
+            <div class="mini-feed-item" style="color:${c.text};border-bottom-color:${c.border}30">
+              <span class="mini-feed-sev" style="background:${sevColors[1]}20;color:${sevColors[1]}">${sevLabels[1]}</span><br>
+              NATO deploys forces
+            </div>
+            <div class="mini-feed-item" style="color:${c.text};border-bottom-color:${c.border}30">
+              <span class="mini-feed-sev" style="background:${sevColors[2]}20;color:${sevColors[2]}">${sevLabels[2]}</span><br>
+              Cyber attack detected
+            </div>
+            <div class="mini-feed-item" style="color:${c.text};border-bottom-color:${c.border}30">
+              <span class="mini-feed-sev" style="background:${sevColors[0]}25;color:${sevColors[0]}">${sevLabels[0]}</span><br>
+              Oil prices surge 4%
+            </div>
+          </div>
+
+          <div class="mini-ticker" style="background:${c.panel};border-top-color:${c.border}">
+            <span style="color:${c.text}">BTC</span><span style="color:#00ff88">+2.4%</span>
+            <span style="color:${c.text}">XAU</span><span style="color:#00ff88">+1.2%</span>
+            <span style="color:${c.text}">WTI</span><span style="color:${c.accent}">+3.8%</span>
+            <span style="color:${c.text}">SPX</span><span style="color:#c0392b">-0.5%</span>
+          </div>
+        </div>
+
+        <div class="card-info" style="background:${c.surface};border-top-color:${c.border}">
+          <div>
+            <div class="name" style="color:${c.accent}">${t.icon} ${t.name}</div>
+            <div class="desc">${t.desc}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="group-badge">${t.group}</span>
+            <div class="card-actions">
+              <button class="btn-keep" onclick="toggleTheme('${t.id}','kept')">✓ KORU</button>
+              <button class="btn-remove" onclick="toggleTheme('${t.id}','removed')">✗ KALDIR</button>
+              <button class="btn-keep-back" onclick="toggleTheme('${t.id}','kept')">↩ GERİ AL</button>
+            </div>
+          </div>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+    groupDiv.appendChild(grid);
+    container.appendChild(groupDiv);
+  }
+}
+
+function toggleTheme(id, action) {
+  state[id] = action;
+  const card = document.getElementById(`card-${id}`);
+  if (action === 'removed') {
+    card.classList.add('removed');
+  } else {
+    card.classList.remove('removed');
+  }
+  updateCounts();
+}
+
+function updateCounts() {
+  const kept = Object.values(state).filter(s => s === 'kept').length;
+  const removed = Object.values(state).filter(s => s === 'removed').length;
+  document.getElementById('kept-count').textContent = `KORUNAN: ${kept}`;
+  document.getElementById('removed-count').textContent = `KALDIRILAN: ${removed}`;
+
+  const results = document.getElementById('results');
+  if (removed > 0) {
+    results.style.display = 'block';
+    const list = document.getElementById('results-list');
+    list.innerHTML = '';
+    THEMES.forEach(t => {
+      const s = state[t.id];
+      list.innerHTML += `<div class="${s === 'kept' ? 'kept-item' : 'removed-item'}">${s === 'kept' ? '✓' : '✗'} ${t.icon} ${t.name} (${t.group})</div>`;
+    });
+  } else {
+    results.style.display = 'none';
+  }
+}
+
+renderThemes();
+</script>
+</body>
+</html>

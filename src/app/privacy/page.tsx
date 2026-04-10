@@ -12,6 +12,7 @@ export const metadata: Metadata = {
       "WorldScope privacy policy. Learn how we collect, use, and protect your data.",
     type: "website",
   },
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
