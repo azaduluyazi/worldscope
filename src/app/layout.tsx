@@ -94,6 +94,20 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/",
+    languages: {
+      "en": "/",
+      "tr": "/?lang=tr",
+      "ar": "/?lang=ar",
+      "zh": "/?lang=zh",
+      "ja": "/?lang=ja",
+      "ko": "/?lang=ko",
+      "de": "/?lang=de",
+      "fr": "/?lang=fr",
+      "es": "/?lang=es",
+      "pt": "/?lang=pt",
+      "ru": "/?lang=ru",
+      "x-default": "/",
+    },
   },
   manifest: "/manifest.json",
   appleWebApp: {
