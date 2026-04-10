@@ -20,8 +20,13 @@ export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUn
   useEffect(() => {
     if (!ADSENSE_PUB_ID || pushed.current) return;
 
-    // Check consent — only show ads if user explicitly granted consent
-    if (typeof window !== "undefined" && window.localStorage.getItem("ws-ad-consent") !== "granted") {
+    // Allow bots/crawlers to see ad slots (they don't have localStorage).
+    // For real users, respect consent preference.
+    const isBot = typeof navigator !== "undefined" &&
+      /bot|crawler|spider|googlebot|mediapartners/i.test(navigator.userAgent);
+
+    if (!isBot && typeof window !== "undefined" &&
+        window.localStorage.getItem("ws-ad-consent") !== "granted") {
       return;
     }
 

@@ -194,7 +194,7 @@ export default async function RootLayout({
         {ADSENSE_PUB_ID && (
           <Script
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}`}
-            strategy="lazyOnload"
+            strategy="afterInteractive"
             crossOrigin="anonymous"
           />
         )}
