@@ -1,7 +1,6 @@
 "use client";
 
 import { Component, type ReactNode } from "react";
-import * as Sentry from "@sentry/nextjs";
 
 interface Props {
   children: ReactNode;
@@ -32,12 +31,15 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error(`[ErrorBoundary:${this.props.section || "unknown"}]`, error, errorInfo.componentStack);
 
-    Sentry.captureException(error, {
-      extra: {
-        componentStack: errorInfo.componentStack,
-        section: this.props.section,
-      },
-    });
+    // Lazy-load Sentry only when an error actually occurs — avoids ~150KB in initial bundle
+    import("@sentry/nextjs").then((Sentry) => {
+      Sentry.captureException(error, {
+        extra: {
+          componentStack: errorInfo.componentStack,
+          section: this.props.section,
+        },
+      });
+    }).catch(() => { /* Sentry unavailable */ });
   }
 
   handleRetry = () => {

@@ -6,31 +6,32 @@ import { useAlertRules } from "./useAlertRules";
 import type { IntelItem } from "@/types/intel";
 
 /**
- * Play a tactical alert sound using Web Audio API.
- * 3-tone descending beep pattern (military alert style).
+ * Play a tactical alert sound.
+ * Deferred via requestAnimationFrame to avoid blocking main thread.
  */
 function playAlertSound() {
-  try {
-    const ctx = new AudioContext();
-    const frequencies = [880, 660, 440]; // A5 → E5 → A4
-    const duration = 0.15;
-    const gap = 0.08;
+  requestAnimationFrame(() => {
+    try {
+      const ctx = new AudioContext();
+      const frequencies = [880, 660, 440]; // A5 → E5 → A4
+      const duration = 0.15;
+      const gap = 0.08;
 
-    frequencies.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "square";
-      osc.frequency.value = freq;
-      gain.gain.value = 0.15;
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (i * (duration + gap)) + duration);
-      osc.connect(gain).connect(ctx.destination);
-      osc.start(ctx.currentTime + i * (duration + gap));
-      osc.stop(ctx.currentTime + (i * (duration + gap)) + duration);
-    });
+      frequencies.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "square";
+        osc.frequency.value = freq;
+        gain.gain.value = 0.15;
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + (i * (duration + gap)) + duration);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(ctx.currentTime + i * (duration + gap));
+        osc.stop(ctx.currentTime + (i * (duration + gap)) + duration);
+      });
 
-    // Cleanup after sounds finish
-    setTimeout(() => ctx.close(), 1000);
-  } catch {}
+      setTimeout(() => ctx.close(), 1000);
+    } catch {}
+  });
 }
 
 interface BreakingAlertState {

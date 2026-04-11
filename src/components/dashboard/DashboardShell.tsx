@@ -3,9 +3,15 @@
 import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
-import { TopBar } from "./TopBar";
+const TopBar = dynamic(
+  () => import("./TopBar").then((m) => ({ default: m.TopBar })),
+  { ssr: false }
+);
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
-import { BreakingToast } from "./BreakingToast";
+const BreakingToast = dynamic(
+  () => import("./BreakingToast").then((m) => ({ default: m.BreakingToast })),
+  { ssr: false }
+);
 
 /** Heavy components — lazy loaded to reduce initial JS bundle */
 const MarketTicker = dynamic(() => import("./MarketTicker").then((m) => ({ default: m.MarketTicker })), { ssr: false });
@@ -111,6 +117,21 @@ const TacticalMap = dynamic(
   { ssr: false, loading: () => <MapSkeleton /> }
 );
 
+/** Defer heavy component mount until browser is idle — reduces TBT */
+function useIdleLoad(delay = 1): boolean {
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const id = requestIdleCallback(() => setReady(true), { timeout: 2000 });
+      return () => cancelIdleCallback(id);
+    }
+    // Safari fallback
+    const t = setTimeout(() => setReady(true), delay);
+    return () => clearTimeout(t);
+  }, [delay]);
+  return ready;
+}
+
 /* Note: memo() removed — dynamic() components already manage their own loading lifecycle */
 
 const DEFAULT_FILTERS: MapFilters = {
@@ -125,6 +146,7 @@ interface DashboardShellProps {
 }
 
 export function DashboardShell({ variant = "world" }: DashboardShellProps) {
+  const mapReady = useIdleLoad(1);
   const [filters, setFilters] = useState<MapFilters>(() => {
     const prefs = loadPreferences();
     return { ...DEFAULT_FILTERS, heatmap: prefs.mapLayers.heatmap, clusters: prefs.mapLayers.clusters, categories: new Set(prefs.categoryFilters), severities: new Set() };
@@ -257,10 +279,10 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             MOBILE LAYOUT (<md): Full-screen panels via bottom nav
             ═══════════════════════════════════════════════════════ */}
         <div ref={swipeRef} className="flex-1 md:hidden relative overflow-hidden">
-          {/* Map — always rendered but hidden when other panels active */}
+          {/* Map — deferred until browser idle to reduce TBT */}
           <div className={`absolute inset-0 ${mobilePanel === "map" ? "z-10" : "z-0"}`}>
             <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-              <TacticalMap filters={filters} variant={variant} enabledLayers={enabledLayerIds} />
+              {mapReady ? <TacticalMap filters={filters} variant={variant} enabledLayers={enabledLayerIds} /> : <MapSkeleton />}
             </ErrorBoundary>
             <ErrorBoundary section="ticker">
               <MarketTicker />
@@ -353,7 +375,9 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
               {theme.effect === "warzone" && <div className="warzone-crosshair" aria-hidden="true" />}
               <MapViewToggle mode={mapMode} onModeChange={setMapMode} />
               <MapLayerPanel layers={layers} onToggleLayer={toggleMapLayer} />
-              {mapMode === "2d" ? (
+              {!mapReady ? (
+                <MapSkeleton />
+              ) : mapMode === "2d" ? (
                 <ErrorBoundary section="map" fallback={<MapSkeleton />}>
                   <TacticalMap filters={filters} variant={variant} enabledLayers={enabledLayerIds} />
                 </ErrorBoundary>

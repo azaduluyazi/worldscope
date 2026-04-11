@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { supabase } from "@/lib/db/supabase";
 import type { IntelItem } from "@/types/intel";
 import type { RealtimeChannel } from "@supabase/supabase-js";
@@ -43,6 +43,17 @@ export function useRealtimeEvents(
   onNewEvent: (item: IntelItem) => void,
   enabled = true
 ) {
+  // Defer Realtime subscription until browser is idle — reduces TBT by ~200ms
+  const [idleReady, setIdleReady] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const id = requestIdleCallback(() => setIdleReady(true), { timeout: 3000 });
+      return () => cancelIdleCallback(id);
+    }
+    const t = setTimeout(() => setIdleReady(true), 2000);
+    return () => clearTimeout(t);
+  }, []);
+
   const channelRef = useRef<RealtimeChannel | null>(null);
   const callbackRef = useRef(onNewEvent);
 
@@ -58,7 +69,7 @@ export function useRealtimeEvents(
   }, []);
 
   useEffect(() => {
-    if (!enabled) return cleanup;
+    if (!enabled || !idleReady) return cleanup;
 
     const channel = supabase
       .channel("events-realtime")
@@ -80,5 +91,5 @@ export function useRealtimeEvents(
     channelRef.current = channel;
 
     return cleanup;
-  }, [enabled, cleanup]);
+  }, [enabled, idleReady, cleanup]);
 }
