@@ -48,10 +48,10 @@ export function IntelFeedSkeleton() {
   );
 }
 
-/** Skeleton for the map area */
+/** Skeleton for the map area — uses absolute positioning to match TacticalMap layout and prevent CLS */
 export function MapSkeleton() {
   return (
-    <div className="relative w-full h-full bg-hud-base flex items-center justify-center">
+    <div className="absolute inset-0 bg-hud-base flex items-center justify-center">
       <div className="text-center space-y-3">
         <div className="relative w-16 h-16 mx-auto">
           <div
