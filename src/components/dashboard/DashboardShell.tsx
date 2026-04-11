@@ -3,10 +3,7 @@
 import { useState, useCallback, useMemo, useEffect, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { MapSkeleton, IntelFeedSkeleton } from "@/components/shared/Skeleton";
-const TopBar = dynamic(
-  () => import("./TopBar").then((m) => ({ default: m.TopBar })),
-  { ssr: false }
-);
+import { TopBar } from "./TopBar";
 import { MobileBottomNav, type MobilePanel } from "./MobileBottomNav";
 const BreakingToast = dynamic(
   () => import("./BreakingToast").then((m) => ({ default: m.BreakingToast })),

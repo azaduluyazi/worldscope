@@ -21,10 +21,17 @@ interface DefconBarProps {
  */
 export function DefconBar({ activeLevel = 0 }: DefconBarProps) {
   const { theme } = useTheme();
-  if (!theme.defconBar) return null;
+  const visible = !!theme.defconBar;
 
   return (
-    <div className="defcon-bar relative z-10" role="status" aria-label="Threat level indicator">
+    <div
+      className={`defcon-bar relative z-10 transition-[height,opacity] duration-200 ${
+        visible ? "" : "!h-0 overflow-hidden opacity-0"
+      }`}
+      role="status"
+      aria-label="Threat level indicator"
+      aria-hidden={!visible}
+    >
       {LEVELS.map((level, i) => (
         <div
           key={level.id}

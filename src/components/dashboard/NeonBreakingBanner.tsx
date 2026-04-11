@@ -12,13 +12,16 @@ interface NeonBreakingBannerProps {
  */
 export function NeonBreakingBanner({ text }: NeonBreakingBannerProps) {
   const { theme } = useTheme();
-  if (!theme.gradientBanner || !text) return null;
+  const visible = theme.gradientBanner && !!text;
 
   return (
     <div
-      className="neon-breaking-banner px-4 py-2 text-center font-bold tracking-widest text-sm uppercase text-white relative z-10 font-display"
+      className={`neon-breaking-banner px-4 py-2 text-center font-bold tracking-widest text-sm uppercase text-white relative z-10 font-display transition-[height,opacity] duration-200 ${
+        visible ? "h-auto opacity-100" : "h-0 overflow-hidden opacity-0 py-0"
+      }`}
       role="alert"
       aria-live="assertive"
+      aria-hidden={!visible}
       style={{ fontFamily: "var(--font-orbitron, var(--font-sans))" }}
     >
       <span className="mr-2" aria-hidden="true">&#9888;</span>

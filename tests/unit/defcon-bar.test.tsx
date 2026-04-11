@@ -25,7 +25,7 @@ describe("DefconBar", () => {
     expect(screen.getByText("LOW")).toBeTruthy();
   });
 
-  it("returns null when defconBar is disabled", () => {
+  it("hides content when defconBar is disabled", () => {
     vi.mocked(useTheme).mockReturnValue({
       theme: { defconBar: false } as DashboardTheme,
       themeId: "military",
@@ -33,7 +33,9 @@ describe("DefconBar", () => {
       themes: [],
     });
     const { container } = render(<DefconBar />);
-    expect(container.innerHTML).toBe("");
+    const bar = container.firstElementChild as HTMLElement;
+    expect(bar.getAttribute("aria-hidden")).toBe("true");
+    expect(bar.classList.contains("overflow-hidden")).toBe(true);
   });
 
   it("marks active level with aria-current", () => {

@@ -13,17 +13,20 @@ interface WarzoneBreakingAlertProps {
  */
 export function WarzoneBreakingAlert({ text, time }: WarzoneBreakingAlertProps) {
   const { theme } = useTheme();
-  if (theme.effect !== "warzone" || !text) return null;
+  const visible = theme.effect === "warzone" && !!text;
 
   return (
     <div
-      className="warzone-pulse-alert border-2 border-red-900 px-4 py-2 flex items-center gap-3 relative z-10"
+      className={`warzone-pulse-alert border-2 border-red-900 px-4 py-2 flex items-center gap-3 relative z-10 transition-[height,opacity] duration-200 ${
+        visible ? "" : "!h-0 overflow-hidden opacity-0 !py-0 !border-0"
+      }`}
       role="alert"
       aria-live="assertive"
-      style={{
+      aria-hidden={!visible}
+      style={visible ? {
         animation: "warzoneFlashBorder 1.5s ease-in-out infinite",
         borderColor: "#661111",
-      }}
+      } : undefined}
     >
       <span
         className="font-mono text-[11px] font-bold text-red-500"
