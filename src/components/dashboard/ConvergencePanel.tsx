@@ -429,7 +429,7 @@ export function ConvergencePanel() {
   const highCount = sorted.filter((c) => c.confidence >= 0.7).length;
 
   return (
-    <div className="h-full flex flex-col bg-hud-surface/50 border border-hud-border rounded-lg overflow-hidden">
+    <div className="h-full flex flex-col bg-hud-surface/50 border border-hud-border rounded-lg overflow-hidden" style={{ contain: "layout style" }}>
       {/* Header */}
       <div className="px-3 py-2 border-b border-hud-border flex items-center justify-between">
         <span className="hud-label text-[12px] flex items-center gap-2 font-bold tracking-wider">

@@ -266,7 +266,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       {/* Theme-specific: DEFCON threat-level bar (Warzone only) */}
       <DefconBar activeLevel={0} />
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden [contain:layout]">
         {/* IconSidebar removed in v3.3 — its filters (category, heatmap,
             clusters) are all accessible via keyboard shortcuts
             (1-9, H, C, Esc) and via MapLayerPanel on the map itself.
