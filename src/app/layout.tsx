@@ -8,6 +8,7 @@ import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { ADSENSE_PUB_ID } from "@/config/ads";
 import { AdConsentBanner } from "@/components/ads";
+import { Analytics } from '@vercel/analytics/next';
 import "./globals.css";
 
 /** Self-hosted fonts via next/font — eliminates render-blocking external requests */
@@ -268,6 +269,7 @@ export default async function RootLayout({
             <div className="scanlines" aria-hidden="true" />
           </ThemeProvider>
         </NextIntlClientProvider>
+        <Analytics />
         {/* Service Worker registration — temporarily disabled for dev */}
         {/* <Script id="sw-register" strategy="lazyOnload">
           {`if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}`}
