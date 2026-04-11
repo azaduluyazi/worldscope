@@ -369,8 +369,8 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
           {/* ── Column 1: Map + Webcams ── */}
           <div className="flex-[3.5] flex flex-col gap-1 min-w-0 col-stagger-1">
-            {/* Map — 2D tactical or 3D globe modes (contain: strict prevents CLS during idle load) */}
-            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0" style={{ contain: "strict" }}>
+            {/* Map — 2D tactical or 3D globe modes */}
+            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0 [contain:strict]">
               {/* Warzone crosshair overlay on map/globe */}
               {theme.effect === "warzone" && <div className="warzone-crosshair" aria-hidden="true" />}
               <MapViewToggle mode={mapMode} onModeChange={setMapMode} />
@@ -394,7 +394,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </div>
 
             {/* Convergence panel */}
-            <div className="flex-[4.5] min-h-0" style={{ contain: "strict" }}>
+            <div className="flex-[4.5] min-h-0 [contain:strict]">
               <ErrorBoundary section="convergence">
                 <ConvergencePanel />
               </ErrorBoundary>
