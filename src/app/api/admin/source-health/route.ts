@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { sendTelegramLong } from "@/lib/api/telegram";
+// sendTelegramLong disabled — unified-report handles notifications
+// import { sendTelegramLong } from "@/lib/api/telegram";
 import { getGatewayHealth } from "@/lib/api/gateway";
 
 export const runtime = "nodejs";
@@ -293,7 +294,6 @@ export async function GET(request: NextRequest) {
   }
 
   const startTime = Date.now();
-  const notify = request.nextUrl.searchParams.get("notify") !== "false";
   const detailed = request.nextUrl.searchParams.get("detail") === "true";
 
   // Load sources dynamically
@@ -333,9 +333,6 @@ export async function GET(request: NextRequest) {
   }
 
   const totalDuration = Date.now() - startTime;
-
-  // Build report
-  const report = buildReport(allResults, totalDuration, detailed);
 
   // Telegram sending disabled — unified-report handles all notifications.
   // This endpoint still runs for API/RSS health checks.

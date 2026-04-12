@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/db/supabase";
-import { sendTelegramLong } from "@/lib/api/telegram";
+// sendTelegramLong disabled — unified-report handles notifications
+// import { sendTelegramLong } from "@/lib/api/telegram";
 
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 min — need time to test all feeds
@@ -81,10 +82,6 @@ async function testFeedUrl(url: string, timeoutMs = 12000): Promise<{ ok: boolea
     }
     return { ok: false, items: 0, error: msg.slice(0, 80) };
   }
-}
-
-function escapeHtml(text: string): string {
-  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 
 export async function GET(request: NextRequest) {
@@ -180,63 +177,6 @@ export async function GET(request: NextRequest) {
   const totalTimeout = results.filter((r) => r.status === "timeout").length;
   const successRate = Math.round((totalOk / results.length) * 100);
   const totalItems = results.reduce((s, r) => s + r.items, 0);
-  const durationSec = ((Date.now() - startTime) / 1000).toFixed(1);
-
-  const categories = [...new Set(results.map((r) => r.category))].sort();
-
-  const icon = (status: string) => {
-    switch (status) {
-      case "ok": return "✅";
-      case "empty": return "⚡";
-      case "timeout": return "⏰";
-      case "error": return "❌";
-      default: return "❓";
-    }
-  };
-
-  // Build report — ALL feeds listed under each category
-  let report = `<b>📡 FULL FEED VALIDATION REPORT</b>\n`;
-  report += `🕐 ${new Date().toISOString().replace("T", " ").slice(0, 19)} UTC\n\n`;
-
-  // Summary header
-  report += `<b>📊 SUMMARY</b>\n`;
-  report += `Total: <b>${results.length}</b> | ✅ ${totalOk} | ⚡ ${totalEmpty} | ❌ ${totalError} | ⏰ ${totalTimeout}\n`;
-  report += `Success: <b>${successRate}%</b> | Items: <b>${totalItems}</b> | Duration: <b>${durationSec}s</b>\n`;
-
-  if (deactivated && deactivated.length > 0) {
-    report += `\n<b>🚫 AUTO-DEACTIVATED:</b>\n`;
-    for (const d of deactivated) {
-      report += `  ${escapeHtml(d.name)}\n`;
-    }
-  }
-
-  // ALL feeds grouped by category
-  for (const cat of categories) {
-    const catResults = results.filter((r) => r.category === cat);
-    const catOk = catResults.filter((r) => r.status === "ok").length;
-    const pct = Math.round((catOk / catResults.length) * 100);
-    const bar = pct >= 80 ? "🟢" : pct >= 50 ? "🟡" : "🔴";
-
-    report += `\n${bar} <b>${cat.toUpperCase()}</b> (${catOk}/${catResults.length} — ${pct}%)\n`;
-
-    // Sort: ok first, then empty, then errors
-    const sorted = [...catResults].sort((a, b) => {
-      const order = { ok: 0, empty: 1, timeout: 2, error: 3 };
-      return (order[a.status] || 4) - (order[b.status] || 4);
-    });
-
-    for (const f of sorted) {
-      const dur = f.durationMs < 1000 ? `${f.durationMs}ms` : `${(f.durationMs / 1000).toFixed(1)}s`;
-      if (f.status === "ok") {
-        report += `${icon(f.status)} ${escapeHtml(f.name)}: ${f.items} items (${dur})\n`;
-      } else if (f.status === "empty") {
-        report += `${icon(f.status)} ${escapeHtml(f.name)}: 0 items (${dur})\n`;
-      } else {
-        report += `${icon(f.status)} ${escapeHtml(f.name)}: ${escapeHtml(f.error || "unknown")} (${dur})\n`;
-      }
-    }
-  }
-
   // Telegram sending disabled — unified-report handles all notifications.
   // This endpoint still runs for DB maintenance (error_count, deactivation).
   const telegramSent = false;
