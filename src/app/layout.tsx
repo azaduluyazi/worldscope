@@ -3,6 +3,7 @@ import { JetBrains_Mono, Inter, Orbitron, Rajdhani, Share_Tech_Mono } from "next
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
@@ -222,6 +223,7 @@ export default async function RootLayout({
             <div className="scanlines" aria-hidden="true" />
           </ThemeProvider>
         </NextIntlClientProvider>
+        <Analytics />
         {/* Service Worker registration — temporarily disabled for dev */}
         {/* <Script id="sw-register" strategy="lazyOnload">
           {`if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}`}
