@@ -1,7 +1,11 @@
-"use client";
-
+import { DashboardSEO } from "@/components/seo/DashboardSEO";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 
 export default function HappyDashboard() {
-  return <DashboardShell variant="happy" />;
+  return (
+    <>
+      <DashboardSEO variant="happy" />
+      <DashboardShell variant="happy" />
+    </>
+  );
 }
