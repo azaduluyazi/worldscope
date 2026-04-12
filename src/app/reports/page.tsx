@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Intelligence Reports — WorldScope",
   description:
     "AI-generated daily and weekly global intelligence reports. Analysis of conflicts, cybersecurity, finance, and geopolitical events.",
+  alternates: { canonical: "/reports" },
   openGraph: {
     title: "Intelligence Reports — WorldScope",
     description: "AI-generated daily and weekly global intelligence reports.",

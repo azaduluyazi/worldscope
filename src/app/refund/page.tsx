@@ -5,6 +5,7 @@ import { LegalFooter } from "@/components/shared/LegalFooter";
 export const metadata: Metadata = {
   title: "Refund Policy — WorldScope",
   description: "WorldScope is a completely free platform. No charges, no refunds needed.",
+  alternates: { canonical: "/refund" },
   openGraph: {
     title: "Refund Policy — WorldScope",
     description: "WorldScope is free. No payments are collected.",
