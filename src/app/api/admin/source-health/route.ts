@@ -337,11 +337,9 @@ export async function GET(request: NextRequest) {
   // Build report
   const report = buildReport(allResults, totalDuration, detailed);
 
-  // Send to Telegram
-  let telegramSent = false;
-  if (notify) {
-    telegramSent = await sendTelegramLong(report);
-  }
+  // Telegram sending disabled — unified-report handles all notifications.
+  // This endpoint still runs for API/RSS health checks.
+  const telegramSent = false;
 
   return NextResponse.json({
     success: true,

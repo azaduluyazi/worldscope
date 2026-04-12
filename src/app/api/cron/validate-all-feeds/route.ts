@@ -237,12 +237,9 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Send to Telegram (sendTelegramLong handles chunking at 4000 chars)
-  let telegramSent = false;
-  const notify = request.nextUrl.searchParams.get("notify") !== "false";
-  if (notify) {
-    telegramSent = await sendTelegramLong(report);
-  }
+  // Telegram sending disabled — unified-report handles all notifications.
+  // This endpoint still runs for DB maintenance (error_count, deactivation).
+  const telegramSent = false;
 
   return NextResponse.json({
     success: true,
