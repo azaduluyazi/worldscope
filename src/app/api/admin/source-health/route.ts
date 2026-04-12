@@ -193,7 +193,7 @@ function escapeHtml(text: string): string {
 }
 
 // ─── Build Telegram report ──────────────────────────────────
-function buildReport(results: SourceResult[], totalDurationMs: number, detailed = false): string {
+function _buildReport(results: SourceResult[], totalDurationMs: number, detailed = false): string {
   const apiResults = results.filter((r) => r.type === "api");
   const rssResults = results.filter((r) => r.type === "rss");
 
@@ -294,7 +294,6 @@ export async function GET(request: NextRequest) {
   }
 
   const startTime = Date.now();
-  const detailed = request.nextUrl.searchParams.get("detail") === "true";
 
   // Load sources dynamically
   const apiSources = await loadApiSources();
