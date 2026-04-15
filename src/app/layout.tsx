@@ -8,6 +8,7 @@ import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { ADSENSE_PUB_ID } from "@/config/ads";
 import { AdConsentBanner } from "@/components/ads";
+import { NewsletterStickyBar } from "@/components/newsletter/NewsletterStickyBar";
 import "./globals.css";
 
 /** Self-hosted fonts via next/font — eliminates render-blocking external requests */
@@ -185,11 +186,17 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {ADSENSE_PUB_ID && (
-          <Script
-            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}`}
-            strategy="afterInteractive"
-            crossOrigin="anonymous"
-          />
+          <>
+            {/* Google AdSense ownership verification — recommended method for
+                site approval. Must match the publisher ID used in the script
+                below and in /ads.txt. */}
+            <meta name="google-adsense-account" content={ADSENSE_PUB_ID} />
+            <Script
+              src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_PUB_ID}`}
+              strategy="afterInteractive"
+              crossOrigin="anonymous"
+            />
+          </>
         )}
         {/* Plausible Analytics — privacy-friendly, cookie-free */}
         {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
@@ -218,6 +225,7 @@ export default async function RootLayout({
               {children}
             </main>
             <ScrollToTop />
+            <NewsletterStickyBar />
             <AdConsentBanner />
             <div className="scanlines" aria-hidden="true" />
           </ThemeProvider>

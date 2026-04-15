@@ -1,0 +1,194 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { BriefingSignupForm } from "@/components/newsletter/BriefingSignupForm";
+import {
+  NewsArticleSchema,
+  BreadcrumbSchema,
+  SpeakableSchema,
+} from "@/components/seo/StructuredData";
+
+export const revalidate = 3600;
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
+
+export const metadata: Metadata = {
+  title:
+    "The Sunday Convergence Report — Real-Time Global Intelligence Briefing",
+  description:
+    "Join analysts, traders and journalists receiving a weekly AI-curated intelligence digest. 689 sources, 195 countries, one PDF every Sunday morning. Free forever.",
+  alternates: { canonical: `${SITE_URL}/briefing` },
+  openGraph: {
+    title: "The Sunday Convergence Report — WorldScope Briefing",
+    description:
+      "Weekly AI-curated intelligence digest delivered as a PDF every Sunday. 689 sources, 195 countries.",
+    type: "website",
+    url: `${SITE_URL}/briefing`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "The Sunday Convergence Report",
+    description:
+      "Weekly AI-curated global intelligence digest. 689 sources, 195 countries. Free PDF.",
+  },
+};
+
+export default function BriefingLandingPage() {
+  const now = new Date().toISOString();
+
+  return (
+    <>
+      <NewsArticleSchema
+        headline="The Sunday Convergence Report — Weekly Intelligence Briefing"
+        description="Subscribe to TroiaMedia's weekly AI-curated intelligence digest. 689 sources, 195 countries, delivered as a PDF every Sunday."
+        url={`${SITE_URL}/briefing`}
+        datePublished={now}
+        dateModified={now}
+        section="Intelligence"
+        keywords={[
+          "OSINT",
+          "intelligence briefing",
+          "global monitoring",
+          "real-time intelligence",
+          "geopolitical risk",
+          "cyber threat intelligence",
+          "newsletter",
+        ]}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: "Home", url: SITE_URL },
+          { name: "Briefing", url: `${SITE_URL}/briefing` },
+        ]}
+      />
+      <SpeakableSchema
+        cssSelectors={["h1", ".briefing-lede", ".briefing-summary"]}
+      />
+
+      <div className="min-h-screen bg-hud-base text-hud-text overflow-y-auto">
+        <div className="max-w-4xl mx-auto px-4 py-12 md:py-20">
+          {/* Hero */}
+          <div className="text-center mb-12">
+            <div className="inline-block font-mono text-[10px] text-hud-accent tracking-[0.2em] uppercase mb-4 border border-hud-accent/30 px-3 py-1 rounded-full">
+              INTELLIGENCE BRIEFING · EST. 2026
+            </div>
+            <h1 className="font-display text-3xl md:text-5xl font-bold mb-4 tracking-tight">
+              The Sunday<br />
+              <span className="text-hud-accent">Convergence Report</span>
+            </h1>
+            <p className="briefing-lede max-w-2xl mx-auto font-mono text-sm md:text-base text-hud-muted leading-relaxed">
+              One PDF, every Sunday, 7:00 UTC. AI-curated signals from{" "}
+              <strong className="text-hud-text">689 sources</strong> across{" "}
+              <strong className="text-hud-text">195 countries</strong>. The
+              stories that matter before they hit the wire.
+            </p>
+          </div>
+
+          {/* Signup form — focal point */}
+          <div className="max-w-xl mx-auto mb-16">
+            <BriefingSignupForm source="briefing-landing" />
+            <div className="text-center font-mono text-[10px] text-hud-muted mt-3">
+              Free forever · No spam · Unsubscribe in one click
+            </div>
+          </div>
+
+          {/* What's inside */}
+          <div className="grid md:grid-cols-3 gap-4 mb-16">
+            <div className="border border-hud-border/50 rounded-lg p-4 bg-hud-panel/40">
+              <div className="font-mono text-[10px] text-hud-accent uppercase tracking-wider mb-2">
+                01 · CONVERGENCE
+              </div>
+              <h3 className="font-mono text-sm text-hud-text mb-1">
+                What the signals agree on
+              </h3>
+              <p className="font-mono text-[11px] text-hud-muted leading-relaxed">
+                Cross-source patterns surfaced by our semantic-dedup engine —
+                not another headline dump.
+              </p>
+            </div>
+            <div className="border border-hud-border/50 rounded-lg p-4 bg-hud-panel/40">
+              <div className="font-mono text-[10px] text-hud-accent uppercase tracking-wider mb-2">
+                02 · RISK SHIFTS
+              </div>
+              <h3 className="font-mono text-sm text-hud-text mb-1">
+                Where tension moved this week
+              </h3>
+              <p className="font-mono text-[11px] text-hud-muted leading-relaxed">
+                Region-by-region threat delta plus the cyber + finance cross-
+                section most desks miss.
+              </p>
+            </div>
+            <div className="border border-hud-border/50 rounded-lg p-4 bg-hud-panel/40">
+              <div className="font-mono text-[10px] text-hud-accent uppercase tracking-wider mb-2">
+                03 · WHAT TO WATCH
+              </div>
+              <h3 className="font-mono text-sm text-hud-text mb-1">
+                Next 7 days, triaged
+              </h3>
+              <p className="font-mono text-[11px] text-hud-muted leading-relaxed">
+                Scheduled inflection points — elections, summits, index
+                rebalances — with likelihood and impact notes.
+              </p>
+            </div>
+          </div>
+
+          {/* Who subscribes */}
+          <div className="briefing-summary border-t border-b border-hud-border/40 py-8 mb-12">
+            <div className="text-center font-mono text-[10px] text-hud-accent uppercase tracking-wider mb-4">
+              READ BY
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center font-mono text-[11px] text-hud-muted">
+              <div>
+                <div className="text-hud-text text-lg font-bold">Analysts</div>
+                <div>Defense &amp; intel</div>
+              </div>
+              <div>
+                <div className="text-hud-text text-lg font-bold">Traders</div>
+                <div>Macro &amp; FX desks</div>
+              </div>
+              <div>
+                <div className="text-hud-text text-lg font-bold">
+                  Journalists
+                </div>
+                <div>Foreign bureaus</div>
+              </div>
+              <div>
+                <div className="text-hud-text text-lg font-bold">
+                  Researchers
+                </div>
+                <div>Think tanks &amp; academia</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Preview link */}
+          <div className="text-center mb-12">
+            <Link
+              href="/newsletter/sample"
+              className="inline-block font-mono text-[11px] text-hud-accent border border-hud-accent/40 px-4 py-2 rounded hover:bg-hud-accent/10 transition-colors"
+            >
+              READ A SAMPLE BRIEFING →
+            </Link>
+          </div>
+
+          {/* Trust footer */}
+          <div className="text-center font-mono text-[10px] text-hud-muted/60 space-y-1">
+            <div>
+              Powered by{" "}
+              <Link href="/" className="underline hover:text-hud-accent">
+                WorldScope
+              </Link>{" "}
+              · 689 sources · 195 countries · 30 languages
+            </div>
+            <div>
+              Editorial policy ·{" "}
+              <Link href="/editorial-policy" className="underline">
+                read here
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

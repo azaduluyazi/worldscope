@@ -31,7 +31,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/pricing`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     // /search is noindex (dynamic client-side page, no static content for crawlers)
     { url: `${BASE_URL}/showcase`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.5 },
+    { url: `${BASE_URL}/briefing`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${BASE_URL}/newsletter/sample`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 },
+    { url: `${BASE_URL}/editorial-policy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/corrections`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.4 },
+    { url: `${BASE_URL}/ownership`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE_URL}/embed`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/podcast`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 },
     { url: `${BASE_URL}/conflict`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
