@@ -1,5 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { rateLimiters, getTierForPath, getClientId } from "./lib/ratelimit";
+import {
+  BRIEFING_COOKIE,
+  BRIEFING_COOKIE_MAX_AGE,
+  pickVariant,
+} from "./lib/ab/briefing-headline";
 
 /**
  * Middleware: Rate limiting for API routes + security headers for all routes.
@@ -89,8 +94,31 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // ── Security headers for all responses ──
+  // ── A/B test: briefing headline variant assignment ──
+  // On a fresh /briefing visit, sample a variant by weight and
+  // pin it via a 90-day cookie so repeat visitors see the same
+  // headline. Bots without cookies fall back to the control
+  // variant server-side in the page component.
   const response = NextResponse.next();
+
+  if (pathname === "/briefing" || pathname === "/briefing/") {
+    const existing = request.cookies.get(BRIEFING_COOKIE)?.value;
+    if (!existing) {
+      const variant = pickVariant();
+      response.cookies.set(BRIEFING_COOKIE, variant, {
+        maxAge: BRIEFING_COOKIE_MAX_AGE,
+        path: "/",
+        sameSite: "lax",
+        secure: true,
+        httpOnly: false, // readable by client analytics
+      });
+      response.headers.set("x-briefing-variant", variant);
+    } else {
+      response.headers.set("x-briefing-variant", existing);
+    }
+  }
+
+  // ── Security headers for all responses ──
 
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");

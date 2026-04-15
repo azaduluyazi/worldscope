@@ -1,13 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { BriefingSignupForm } from "@/components/newsletter/BriefingSignupForm";
 import {
   NewsArticleSchema,
   BreadcrumbSchema,
   SpeakableSchema,
 } from "@/components/seo/StructuredData";
+import {
+  BRIEFING_COOKIE,
+  getVariant,
+} from "@/lib/ab/briefing-headline";
 
-export const revalidate = 3600;
+// A/B test reads a per-visitor cookie set by middleware; rendering
+// must be dynamic so each visitor sees their own variant.
+export const dynamic = "force-dynamic";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
@@ -33,8 +40,11 @@ export const metadata: Metadata = {
   },
 };
 
-export default function BriefingLandingPage() {
+export default async function BriefingLandingPage() {
   const now = new Date().toISOString();
+  const cookieStore = await cookies();
+  const variantId = cookieStore.get(BRIEFING_COOKIE)?.value;
+  const v = getVariant(variantId);
 
   return (
     <>
@@ -65,22 +75,23 @@ export default function BriefingLandingPage() {
         cssSelectors={["h1", ".briefing-lede", ".briefing-summary"]}
       />
 
-      <div className="min-h-screen bg-hud-base text-hud-text overflow-y-auto">
+      <div
+        className="min-h-screen bg-hud-base text-hud-text overflow-y-auto"
+        data-briefing-variant={v.id}
+      >
         <div className="max-w-4xl mx-auto px-4 py-12 md:py-20">
-          {/* Hero */}
+          {/* Hero — A/B tested headline */}
           <div className="text-center mb-12">
             <div className="inline-block font-mono text-[10px] text-hud-accent tracking-[0.2em] uppercase mb-4 border border-hud-accent/30 px-3 py-1 rounded-full">
-              INTELLIGENCE BRIEFING · EST. 2026
+              {v.eyebrow}
             </div>
             <h1 className="font-display text-3xl md:text-5xl font-bold mb-4 tracking-tight">
-              The Sunday<br />
-              <span className="text-hud-accent">Convergence Report</span>
+              {v.headlineLine1}
+              <br />
+              <span className="text-hud-accent">{v.headlineLine2}</span>
             </h1>
             <p className="briefing-lede max-w-2xl mx-auto font-mono text-sm md:text-base text-hud-muted leading-relaxed">
-              One PDF, every Sunday, 7:00 UTC. AI-curated signals from{" "}
-              <strong className="text-hud-text">689 sources</strong> across{" "}
-              <strong className="text-hud-text">195 countries</strong>. The
-              stories that matter before they hit the wire.
+              {v.lede}
             </p>
           </div>
 

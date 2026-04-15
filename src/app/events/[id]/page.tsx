@@ -8,6 +8,8 @@ import {
   EventSchema,
   SpeakableSchema,
 } from "@/components/seo/StructuredData";
+import { AdSenseUnit } from "@/components/ads/AdSenseUnit";
+import { AD_PLACEMENTS } from "@/config/ads";
 
 export const revalidate = 1800; // 30 min
 
@@ -30,6 +32,14 @@ interface EventRow {
   fetched_at: string | null;
 }
 
+interface ConvergenceLink {
+  storyline_id: string;
+  storyline_headline: string;
+  peak_confidence: number;
+  categories: string[] | null;
+  affected_regions: string[] | null;
+}
+
 async function getEvent(id: string): Promise<EventRow | null> {
   if (!/^[0-9a-f-]{36}$/i.test(id)) return null;
   try {
@@ -42,6 +52,24 @@ async function getEvent(id: string): Promise<EventRow | null> {
       .eq("id", id)
       .maybeSingle();
     return data as EventRow | null;
+  } catch {
+    return null;
+  }
+}
+
+async function getConvergence(
+  eventId: string,
+): Promise<ConvergenceLink | null> {
+  try {
+    const db = createServerClient();
+    const { data } = await db
+      .from("event_convergence_scores")
+      .select(
+        "storyline_id, storyline_headline, peak_confidence, categories, affected_regions",
+      )
+      .eq("event_id", eventId)
+      .maybeSingle();
+    return data as ConvergenceLink | null;
   } catch {
     return null;
   }
@@ -140,7 +168,10 @@ export default async function EventPage({
 
   if (!event || !event.title) notFound();
 
-  const related = await getRelated(event);
+  const [related, convergence] = await Promise.all([
+    getRelated(event),
+    getConvergence(event.id),
+  ]);
   const url = `${SITE_URL}/events/${id}`;
   const severityColor =
     SEVERITY_COLOR[event.severity || "info"] || SEVERITY_COLOR.info;
@@ -249,6 +280,54 @@ export default async function EventPage({
             </p>
           )}
 
+          {/* Convergence badge — shown only when this event is linked to a storyline */}
+          {convergence && (
+            <aside className="mb-6 border border-hud-accent/40 rounded-lg p-4 bg-gradient-to-br from-hud-panel/60 to-hud-panel/20">
+              <div className="flex flex-wrap items-start gap-3 justify-between">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 font-mono text-[10px] text-hud-accent uppercase tracking-[0.15em] mb-1.5">
+                    <span>◆ CONVERGENT STORYLINE</span>
+                    <span className="text-hud-muted">
+                      {Math.round(Number(convergence.peak_confidence) * 100)}%
+                      CONFIDENCE
+                    </span>
+                  </div>
+                  <div className="font-mono text-xs md:text-sm text-hud-text leading-relaxed mb-2">
+                    {convergence.storyline_headline.slice(0, 240)}
+                    {convergence.storyline_headline.length > 240 && "…"}
+                  </div>
+                  {convergence.categories && convergence.categories.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 font-mono text-[9px]">
+                      {convergence.categories.slice(0, 5).map((c) => (
+                        <span
+                          key={c}
+                          className="text-hud-accent border border-hud-accent/30 px-1.5 py-0.5 rounded uppercase tracking-wider"
+                          lang="en"
+                        >
+                          {c.toLocaleUpperCase("en-US")}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Confidence meter */}
+                <div className="flex flex-col items-end gap-1">
+                  <div className="w-24 h-2 bg-hud-panel rounded overflow-hidden border border-hud-border/50">
+                    <div
+                      className="h-full bg-hud-accent"
+                      style={{
+                        width: `${Math.round(Number(convergence.peak_confidence) * 100)}%`,
+                      }}
+                    />
+                  </div>
+                  <span className="font-mono text-[9px] text-hud-muted">
+                    cross-source verified
+                  </span>
+                </div>
+              </div>
+            </aside>
+          )}
+
           {/* Source + map action bar */}
           <div className="flex flex-wrap gap-3 mb-8 border-y border-hud-border/40 py-4">
             {event.url && (
@@ -275,6 +354,18 @@ export default async function EventPage({
               </span>
             )}
           </div>
+
+          {/* AdSense report-inline slot */}
+          {AD_PLACEMENTS.report
+            .filter((p) => p.enabled && p.type === "adsense" && p.position === "inline" && p.slot)
+            .map((p) => (
+              <div key={p.id} className="my-6">
+                <AdSenseUnit
+                  slot={p.slot!}
+                  format={p.format as "horizontal" | "rectangle" | "vertical" | "auto"}
+                />
+              </div>
+            ))}
 
           {/* Inline CTA */}
           <div className="mb-8 border border-hud-accent/30 bg-hud-panel/40 rounded-lg p-4">

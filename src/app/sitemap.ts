@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { COUNTRIES } from "@/config/countries";
+import { SEO_VARIANT_IDS } from "@/config/variants";
 import { createServerClient } from "@/lib/db/supabase";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
@@ -47,7 +48,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/weather`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
   );
 
-  // ── Country pages ──
+  // ── Country pages (198) ──
   for (const country of COUNTRIES) {
     entries.push({
       url: `${BASE_URL}/country/${country.code.toLowerCase()}`,
@@ -55,6 +56,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "daily",
       priority: 0.7,
     });
+  }
+
+  // ── Country × variant pages (198 × 9 = 1,782) ──
+  // Programmatic SEO — each combination has its own SSR page with
+  // unique title, description, event feed, schema.org markup.
+  for (const country of COUNTRIES) {
+    for (const variant of SEO_VARIANT_IDS) {
+      entries.push({
+        url: `${BASE_URL}/country/${country.code.toLowerCase()}/${variant}`,
+        lastModified: new Date(),
+        changeFrequency: "daily",
+        priority: 0.6,
+      });
+    }
   }
 
   // ── Report pages from Supabase ──

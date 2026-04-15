@@ -187,6 +187,113 @@ export const VARIANTS: Record<VariantId, Variant> = {
 export const DEFAULT_VARIANT: VariantId = "world";
 
 /**
+ * SEO-friendly metadata for programmatic /country/[code]/[variant]
+ * pages. The Greek deity names are kept for brand flavor in VARIANTS
+ * above, but the public-facing labels here are descriptive so search
+ * engines and users understand them.
+ */
+export interface VariantSeoMeta {
+  id: VariantId;
+  label: string;
+  labelTr: string;
+  eventCategory: string; // matches events.category
+  emoji: string;
+  tagline: string;
+}
+
+export const VARIANT_SEO_META: Record<
+  Exclude<VariantId, "world" | "tech">,
+  VariantSeoMeta
+> = {
+  conflict: {
+    id: "conflict",
+    label: "Conflict Monitor",
+    labelTr: "Çatışma İzleme",
+    eventCategory: "conflict",
+    emoji: "⚔️",
+    tagline: "Live conflict, security incidents, military movements",
+  },
+  cyber: {
+    id: "cyber",
+    label: "Cyber Threat Intelligence",
+    labelTr: "Siber Tehdit İstihbaratı",
+    eventCategory: "cyber",
+    emoji: "🛡️",
+    tagline: "CVE disclosures, ransomware, infrastructure outages",
+  },
+  finance: {
+    id: "finance",
+    label: "Finance Intelligence",
+    labelTr: "Finans İstihbaratı",
+    eventCategory: "finance",
+    emoji: "📊",
+    tagline: "Markets, central banks, commodities",
+  },
+  weather: {
+    id: "weather",
+    label: "Weather & Disaster",
+    labelTr: "Hava Durumu & Afet",
+    eventCategory: "natural",
+    emoji: "🌪️",
+    tagline: "USGS, GDACS, Copernicus early warning",
+  },
+  health: {
+    id: "health",
+    label: "Health & Outbreak",
+    labelTr: "Sağlık & Salgın",
+    eventCategory: "health",
+    emoji: "🏥",
+    tagline: "WHO, ReliefWeb, disease surveillance",
+  },
+  energy: {
+    id: "energy",
+    label: "Energy Intelligence",
+    labelTr: "Enerji İstihbaratı",
+    eventCategory: "energy",
+    emoji: "⚡",
+    tagline: "Grid events, pipelines, refinery incidents",
+  },
+  commodity: {
+    id: "commodity",
+    label: "Commodity Intelligence",
+    labelTr: "Emtia İstihbaratı",
+    eventCategory: "finance",
+    emoji: "📦",
+    tagline: "Shipping, ports, supply-chain signals",
+  },
+  sports: {
+    id: "sports",
+    label: "Sports Intelligence",
+    labelTr: "Spor İstihbaratı",
+    eventCategory: "sports",
+    emoji: "⚽",
+    tagline: "Live scores, fixtures, transfer signals",
+  },
+  happy: {
+    id: "happy",
+    label: "Happy Feed",
+    labelTr: "Mutlu Akış",
+    eventCategory: "tech",
+    emoji: "✨",
+    tagline: "Good news, breakthroughs, uplift",
+  },
+};
+
+/** IDs used for programmatic SEO — excludes the world/tech meta-variants */
+export const SEO_VARIANT_IDS = Object.keys(
+  VARIANT_SEO_META,
+) as Array<keyof typeof VARIANT_SEO_META>;
+
+export function getVariantSeoMeta(
+  id: string,
+): VariantSeoMeta | null {
+  if (id in VARIANT_SEO_META) {
+    return VARIANT_SEO_META[id as keyof typeof VARIANT_SEO_META];
+  }
+  return null;
+}
+
+/**
  * Get categories to show for a variant.
  * Primary categories get full weight, secondary get lower priority.
  */
