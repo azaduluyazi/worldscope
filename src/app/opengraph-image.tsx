@@ -80,17 +80,17 @@ export default function OgImage() {
         <div
           style={{
             display: "flex",
-            gap: 40,
+            gap: 36,
             marginTop: 40,
             color: "rgba(255,255,255,0.6)",
             fontSize: 16,
           }}
         >
-          <span>37 LIVE SOURCES</span>
+          <span>689 LIVE SOURCES</span>
           <span style={{ color: "rgba(0,229,255,0.4)" }}>|</span>
           <span>195 COUNTRIES</span>
           <span style={{ color: "rgba(0,229,255,0.4)" }}>|</span>
-          <span>25 MAP LAYERS</span>
+          <span>REAL-TIME CONVERGENCE</span>
           <span style={{ color: "rgba(0,229,255,0.4)" }}>|</span>
           <span>30 LANGUAGES</span>
         </div>

@@ -32,6 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // /search is noindex (dynamic client-side page, no static content for crawlers)
     { url: `${BASE_URL}/showcase`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.5 },
     { url: `${BASE_URL}/briefing`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE_URL}/briefing/referrals`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.5 },
     { url: `${BASE_URL}/newsletter/sample`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 },
     { url: `${BASE_URL}/editorial-policy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/corrections`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.4 },
@@ -102,6 +103,40 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {
     // Supabase may not be available at build time — skip blog posts
+  }
+
+  // ── Event pages (long-tail SEO, Liveuamap model) ──
+  // Most recent 1,500 events with severity ≥ medium get their own URLs.
+  // Older events still exist at /events/[id] but aren't sitemapped to
+  // keep the file under Google's 50k-URL cap.
+  try {
+    const db = createServerClient();
+    const thirtyDaysAgo = new Date(
+      Date.now() - 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
+
+    const { data } = await db
+      .from("events")
+      .select("id, published_at, fetched_at")
+      .gte("published_at", thirtyDaysAgo)
+      .in("severity", ["critical", "high", "medium"])
+      .order("published_at", { ascending: false })
+      .limit(1500);
+
+    if (data) {
+      for (const e of data) {
+        const lm = e.published_at || e.fetched_at;
+        if (!lm) continue;
+        entries.push({
+          url: `${BASE_URL}/events/${e.id}`,
+          lastModified: new Date(lm),
+          changeFrequency: "monthly",
+          priority: 0.5,
+        });
+      }
+    }
+  } catch {
+    // Supabase may not be available at build time — skip events
   }
 
   return entries;

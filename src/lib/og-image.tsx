@@ -85,6 +85,23 @@ export function generateModuleOgImage({ title, subtitle, emoji, accentColor }: M
           <span style={{ color: `${accentColor}66` }}>|</span>
           <span>TROIAMEDIA</span>
         </div>
+        {/* Stats bar — identical across all variants for Discover recognition */}
+        <div
+          style={{
+            display: "flex",
+            gap: 28,
+            marginTop: 18,
+            color: "rgba(255,255,255,0.42)",
+            fontSize: 14,
+            letterSpacing: "1px",
+          }}
+        >
+          <span>689 SOURCES</span>
+          <span style={{ color: `${accentColor}44` }}>·</span>
+          <span>195 COUNTRIES</span>
+          <span style={{ color: `${accentColor}44` }}>·</span>
+          <span>30 LANGUAGES</span>
+        </div>
         <div
           style={{
             position: "absolute",
