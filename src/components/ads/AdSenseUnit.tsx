@@ -42,6 +42,10 @@ export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUn
   }, []);
 
   if (!ADSENSE_PUB_ID) return null;
+  // Safety: never render slots that are placeholders, zero, or empty.
+  // Prevents accidental AdSense policy violations if a placement is
+  // enabled without a real slot ID assigned in the dashboard.
+  if (!slot || slot === "0" || !/^\d{10}$/.test(slot)) return null;
 
   const style: React.CSSProperties = {
     display: "block",
