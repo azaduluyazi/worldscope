@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalFooter } from "@/components/shared/LegalFooter";
 import { AdSenseUnit, AdConsentBanner } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 import { NewsletterPopup } from "@/components/shared/NewsletterPopup";
 
 export const metadata: Metadata = {
@@ -69,7 +70,7 @@ export default function AboutPage() {
             <div className="grid grid-cols-2 gap-3 mt-2">
               <StatBlock label="Data Sources" value="2,000+" />
               <StatBlock label="Live Feeds" value="37" />
-              <StatBlock label="TV Channels" value="232" />
+              <StatBlock label="News Channels" value="232" />
               <StatBlock label="RSS Feeds" value="549" />
               <StatBlock label="Languages" value="30" />
               <StatBlock label="API Clients" value="137" />
@@ -110,7 +111,7 @@ export default function AboutPage() {
               <li>Interactive 2D and 3D map with multiple visualization modes</li>
               <li>AI-powered news summaries and trend detection</li>
               <li>Real-time event streaming with category filtering</li>
-              <li>232 live TV channels from global broadcasters</li>
+              <li>232 live international news channels from public sources</li>
               <li>10 specialized dashboard views (Finance, Weather, Sports, etc.)</li>
               <li>20 customizable visual themes</li>
               <li>Text-to-speech for hands-free news reading</li>
@@ -120,11 +121,13 @@ export default function AboutPage() {
 
           <Section title="Pricing">
             <p>
-              WorldScope is <strong>completely free</strong> and supported by
-              advertising. Every feature — live news feeds, interactive maps,
-              TV channels, AI analytics, data export, daily email briefings,
-              and more — is available at no cost with no account required. See
-              our{" "}
+              The WorldScope dashboard is <strong>free</strong> and supported
+              by advertising. Every dashboard feature — live news feeds,
+              interactive maps, news channels, AI analytics, data export,
+              daily email briefings, and more — is available at no cost with
+              no account required. An optional <strong>$1 premium briefing
+              tier</strong> for personalized country-level email intelligence
+              reports is launching soon. See our{" "}
               <Link href="/pricing" className="text-hud-accent hover:underline">
                 Pricing page
               </Link>{" "}
@@ -236,7 +239,11 @@ export default function AboutPage() {
 
         <LegalFooter />
 
-        <AdSenseUnit slot="3344556677" format="horizontal" className="mt-4" />
+        <AdSenseUnit
+          slot={AD_PLACEMENTS.analytics[0].slot!}
+          format={AD_PLACEMENTS.analytics[0].format as "horizontal"}
+          className="mt-4"
+        />
       </div>
 
       <AdConsentBanner />

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit, AdConsentBanner } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 
 export const dynamic = "force-dynamic";
 
@@ -71,7 +72,10 @@ export default async function ReportsPage() {
 
       <main className="max-w-5xl mx-auto px-4 py-8 space-y-10">
         {/* Top ad */}
-        <AdSenseUnit slot="5566778899" format="horizontal" />
+        <AdSenseUnit
+          slot={AD_PLACEMENTS.reportsList[0].slot!}
+          format={AD_PLACEMENTS.reportsList[0].format as "horizontal"}
+        />
         {/* Weekly Reports */}
         <section>
           <h2 className="font-mono text-[11px] font-bold text-hud-accent tracking-wider mb-4 flex items-center gap-2">

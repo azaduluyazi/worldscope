@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 
 export const revalidate = 3600; // ISR: revalidate hourly
 
@@ -183,7 +184,11 @@ export default async function BlogPostPage({
           )}
 
           {/* Ad unit */}
-          <AdSenseUnit slot="9900112233" format="horizontal" className="mt-8" />
+          <AdSenseUnit
+            slot={AD_PLACEMENTS.blog[1].slot!}
+            format={AD_PLACEMENTS.blog[1].format as "horizontal"}
+            className="mt-8"
+          />
 
           {/* Back link */}
           <div className="mt-8">

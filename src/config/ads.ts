@@ -19,28 +19,55 @@ export const CARBON_PLACEMENT = process.env.NEXT_PUBLIC_CARBON_PLACEMENT || "";
 /**
  * Ad placements for different page types.
  *
- * ─── REAL SLOTS (2026-04-16) ─────────────────────────────────────
- * Only 3 AdSense ad units exist in the dashboard right now:
+ * ─── REAL SLOTS (2026-04-16, full rollout) ───────────────────────
+ * All 11 AdSense ad units now exist in the dashboard. Each slot is a
+ * separate unit so AdSense reports per-placement eCPM and we can
+ * optimize individually:
  *
- *   country-top    → 8802953822  (display · horizontal · responsive)
- *   report-inline  → 3550627148  (display · square · responsive)
- *   feed-native    → 8611382135  (display · square · responsive)
+ *   ws-country-top      → 8802953822  (display · horizontal · responsive)
+ *   ws-report-top       → 7148746364  (display · horizontal · responsive)
+ *   ws-report-inline    → 3550627148  (display · square · responsive)
+ *   ws-reports-top      → 3048064269  (display · horizontal · responsive)
+ *   ws-landing-bottom   → 8693987667  (display · horizontal · responsive)
+ *   ws-analytics-bottom → 4036557358  (display · horizontal · responsive)
+ *   ws-feeds-top        → 8121261691  (display · horizontal · responsive)
+ *   ws-search-inline    → 5046386692  (display · square · responsive)
+ *   ws-blog-list        → 3733305022  (display · horizontal · responsive)
+ *   ws-blog-post        → 9421900926  (display · horizontal · responsive)
+ *   ws-feed-native      → 8611382135  (display · square · responsive)
  *
- * Reused across pages (publisher policy allows ≤3 display per page):
- *   - country-top is rendered on country pages + country-variant pages
- *     (`variant` placement borrows the same slot)
- *   - report-inline is rendered on event pages + report detail + reports list
- *   - feed-native is rendered inside IntelFeed every FEED_AD_INTERVAL items
+ * Pages that consume each slot:
+ *   country-top     → /country/[code], /country/[code]/[variant]
+ *   report-top      → /reports/[type]/[date]
+ *   report-inline   → /events/[id]
+ *   reports-top     → /reports (list)
+ *   landing-bottom  → currently reserved; NOT /briefing (ad-free landing)
+ *   analytics-bottom→ /analytics, /about (shared)
+ *   feeds-top       → /feeds
+ *   search-inline   → /search
+ *   blog-list       → /blog
+ *   blog-post       → /blog/[slug]
+ *   feed-native     → IntelFeed component (inserted every FEED_AD_INTERVAL items)
  *
- * All other placements are kept as config stubs but DISABLED until we
- * create real slots for them (or promote them to auto-ads mode).
+ * Intentionally AD-FREE (do NOT wire AdSense here):
+ *   /briefing, /editorial-policy, /corrections, /ownership,
+ *   /embed/*, /privacy, /terms, /cookies, /disclaimer, /refund
  * ──────────────────────────────────────────────────────────────────
  */
 
-// Real slot IDs live here so placements that reuse the same unit share one source
+// Real slot IDs — single source of truth so placements reusing the same
+// unit share one constant (country ↔ variant both use country-top).
 const REAL_SLOTS = {
   countryTop: "8802953822",
+  reportTop: "7148746364",
   reportInline: "3550627148",
+  reportsTop: "3048064269",
+  landingBottom: "8693987667",
+  analyticsBottom: "4036557358",
+  feedsTop: "8121261691",
+  searchInline: "5046386692",
+  blogList: "3733305022",
+  blogPost: "9421900926",
   feedNative: "8611382135",
 } as const;
 
@@ -51,35 +78,33 @@ export const AD_PLACEMENTS = {
     { id: "country-bottom", type: "affiliate" as const, position: "bottom" as const, enabled: true },
   ],
   report: [
-    // report-top needs its own ad unit — disabled until created
-    { id: "report-top", type: "adsense" as const, slot: "0", format: "horizontal", position: "top" as const, enabled: false },
+    { id: "report-top", type: "adsense" as const, slot: REAL_SLOTS.reportTop, format: "horizontal", position: "top" as const, enabled: true },
     { id: "report-inline", type: "adsense" as const, slot: REAL_SLOTS.reportInline, format: "rectangle", position: "inline" as const, enabled: true },
     { id: "report-bottom", type: "carbon" as const, position: "bottom" as const, enabled: true },
   ],
   reportsList: [
-    // disabled: needs dedicated ad unit
-    { id: "reports-top", type: "adsense" as const, slot: "0", format: "horizontal", position: "top" as const, enabled: false },
+    { id: "reports-top", type: "adsense" as const, slot: REAL_SLOTS.reportsTop, format: "horizontal", position: "top" as const, enabled: true },
   ],
   // ── New ad placements (Session 7 — Revenue Maximization) ──
   landing: [
-    // disabled: needs dedicated ad unit; /briefing is intentionally ad-free
-    { id: "landing-bottom", type: "adsense" as const, slot: "0", format: "horizontal", position: "bottom" as const, enabled: false },
+    { id: "landing-bottom", type: "adsense" as const, slot: REAL_SLOTS.landingBottom, format: "horizontal", position: "bottom" as const, enabled: true },
   ],
   analytics: [
-    // disabled: needs dedicated ad unit
-    { id: "analytics-bottom", type: "adsense" as const, slot: "0", format: "horizontal", position: "bottom" as const, enabled: false },
+    { id: "analytics-bottom", type: "adsense" as const, slot: REAL_SLOTS.analyticsBottom, format: "horizontal", position: "bottom" as const, enabled: true },
   ],
   feeds: [
-    // disabled: needs dedicated ad unit
-    { id: "feeds-top", type: "adsense" as const, slot: "0", format: "horizontal", position: "top" as const, enabled: false },
+    { id: "feeds-top", type: "adsense" as const, slot: REAL_SLOTS.feedsTop, format: "horizontal", position: "top" as const, enabled: true },
   ],
   search: [
-    // disabled: needs dedicated ad unit — and /search is noindex anyway
-    { id: "search-inline", type: "adsense" as const, slot: "0", format: "rectangle", position: "inline" as const, enabled: false },
+    { id: "search-inline", type: "adsense" as const, slot: REAL_SLOTS.searchInline, format: "rectangle", position: "inline" as const, enabled: true },
   ],
   variant: [
     // Reuses the country-top slot — same publisher, same placement shape
     { id: "variant-bottom", type: "adsense" as const, slot: REAL_SLOTS.countryTop, format: "horizontal", position: "bottom" as const, enabled: true },
+  ],
+  blog: [
+    { id: "blog-list", type: "adsense" as const, slot: REAL_SLOTS.blogList, format: "horizontal", position: "top" as const, enabled: true },
+    { id: "blog-post", type: "adsense" as const, slot: REAL_SLOTS.blogPost, format: "horizontal", position: "top" as const, enabled: true },
   ],
   /** Native ad inserted every N items in IntelFeed */
   feed: [

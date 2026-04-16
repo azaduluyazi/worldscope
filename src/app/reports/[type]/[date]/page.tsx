@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit, CarbonAd, AdConsentBanner } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 import { ShareButtons as SocialShareButtons } from "@/components/shared/ShareButtons";
 
 export const dynamic = "force-dynamic";
@@ -154,7 +155,10 @@ export default async function ReportPage({
       <main className="max-w-4xl mx-auto px-4 py-8">
         {/* Top ad */}
         <div className="mb-6">
-          <AdSenseUnit slot="0987654321" format="horizontal" />
+          <AdSenseUnit
+            slot={AD_PLACEMENTS.report[0].slot!}
+            format={AD_PLACEMENTS.report[0].format as "horizontal"}
+          />
         </div>
 
         <article className="bg-hud-surface border border-hud-border rounded-md p-6 md:p-8">

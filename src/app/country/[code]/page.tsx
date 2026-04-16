@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { COUNTRIES, COUNTRY_MAP } from "@/config/countries";
 import { CountryDashboard } from "@/components/country/CountryDashboard";
+import { AdSenseUnit } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 
 export async function generateStaticParams() {
   return COUNTRIES.map((c) => ({ code: c.code.toLowerCase() }));
@@ -145,7 +147,7 @@ function CountryJsonLd({ name, region, code }: { name: string; region: string; c
         name: `How does WorldScope track events in ${name}?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `WorldScope aggregates data from 549 RSS feeds, 137 APIs, and 232 live TV channels across 30 languages, with AI-powered severity classification and anomaly detection for ${name} and ${region}.`,
+          text: `WorldScope aggregates data from 549 RSS feeds, 137 APIs, and 232 live international news channels across 30 languages, with AI-powered severity classification and anomaly detection for ${name} and ${region}.`,
         },
       },
       {
@@ -186,6 +188,16 @@ export default async function CountryPage({
     <>
       <CountryJsonLd name={country.name} region={country.region} code={code} />
       <CountrySEOContent name={country.name} region={country.region} code={code} />
+      {AD_PLACEMENTS.country
+        .filter((p) => p.enabled && p.type === "adsense" && p.slot)
+        .map((p) => (
+          <div key={p.id} className="max-w-5xl mx-auto px-4 py-2">
+            <AdSenseUnit
+              slot={p.slot!}
+              format={p.format as "horizontal" | "rectangle" | "vertical" | "auto"}
+            />
+          </div>
+        ))}
       <CountryDashboard country={country} />
     </>
   );

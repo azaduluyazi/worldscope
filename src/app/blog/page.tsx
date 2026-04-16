@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 
 export const revalidate = 600; // ISR: revalidate every 10 min
 
@@ -145,7 +146,11 @@ export default async function BlogPage() {
 
       {/* Ad unit */}
       <div className="max-w-5xl mx-auto px-4 pb-10">
-        <AdSenseUnit slot="8899001122" format="horizontal" className="mt-4" />
+        <AdSenseUnit
+          slot={AD_PLACEMENTS.blog[0].slot!}
+          format={AD_PLACEMENTS.blog[0].format as "horizontal"}
+          className="mt-4"
+        />
       </div>
 
       {/* SEO content */}

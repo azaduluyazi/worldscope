@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AnalyticsDashboard } from "@/components/analytics/AnalyticsDashboard";
 import { AdSenseUnit, AdConsentBanner } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 import { NewsletterPopup } from "@/components/shared/NewsletterPopup";
 
 export const metadata: Metadata = {
@@ -20,7 +21,11 @@ export default function AnalyticsPage() {
   return (
     <>
       <AnalyticsDashboard />
-      <AdSenseUnit slot="3344556677" format="horizontal" className="mt-4" />
+      <AdSenseUnit
+        slot={AD_PLACEMENTS.analytics[0].slot!}
+        format={AD_PLACEMENTS.analytics[0].format as "horizontal"}
+        className="mt-4"
+      />
       <AdConsentBanner />
       <NewsletterPopup />
     </>
