@@ -118,20 +118,23 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // useLocale may throw if no IntlProvider is mounted yet — fall back to "en"
   }
 
-  const [themeId, setThemeId] = useState(() => {
-    // SSR-safe: try to read from localStorage synchronously on client
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("worldscope-theme") || DEFAULT_THEME.id;
-    }
-    return DEFAULT_THEME.id;
-  });
-  const [theme, setThemeObj] = useState(() => getThemeById(themeId));
+  // IMPORTANT: useState initializers must be identical on server and client
+  // to avoid React hydration error #418. Previously we read localStorage
+  // during the initializer, which returned the user's saved theme on the
+  // client but DEFAULT_THEME on the server — causing every downstream
+  // `theme.*` expression (e.g. NeonBreakingBanner conditional render,
+  // DefconBar visibility, className flips) to produce different HTML on
+  // the two sides. We now start with defaults on both, then hydrate the
+  // saved theme inside the post-mount effect below.
+  const [themeId, setThemeId] = useState(DEFAULT_THEME.id);
+  const [theme, setThemeObj] = useState<DashboardTheme>(DEFAULT_THEME);
   const isInitial = useRef(true);
 
   // Apply theme on mount (handles hydration) and on changes
   useEffect(() => {
     if (isInitial.current) {
-      // On first mount, read localStorage and apply immediately
+      // On first mount, read localStorage and apply immediately.
+      // This is the single cascading render that hydrates the real theme.
       const saved = localStorage.getItem("worldscope-theme");
       if (saved && saved !== themeId) {
         const t = getThemeById(saved);

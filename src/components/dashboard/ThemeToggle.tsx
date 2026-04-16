@@ -1,19 +1,24 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 type Theme = "dark" | "light";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "dark";
+  // Always start with "dark" to match SSR output. React hydration #418
+  // previously fired here when a user with a saved "light" preference
+  // rendered a different emoji on client than server. The saved theme is
+  // applied post-hydration in the effect below.
+  const [theme, setTheme] = useState<Theme>("dark");
+
+  useEffect(() => {
     const saved = localStorage.getItem("worldscope_theme") as Theme | null;
-    if (saved) {
-      document.documentElement.classList.toggle("light-mode", saved === "light");
-      return saved;
+    if (saved === "light") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setTheme("light");
+      document.documentElement.classList.toggle("light-mode", true);
     }
-    return "dark";
-  });
+  }, []);
 
   const toggle = useCallback(() => {
     const next = theme === "dark" ? "light" : "dark";
