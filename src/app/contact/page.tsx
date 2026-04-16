@@ -103,7 +103,7 @@ export default function ContactPage() {
             <div className="space-y-4">
               <FaqItem
                 q="Is WorldScope free to use?"
-                a="Yes, WorldScope is completely free. All features — live news feeds, interactive maps, TV channels, AI analytics, and daily email briefings — are available at no cost with no account required. The platform is supported by advertising."
+                a="Yes, the WorldScope dashboard is free. All dashboard features — live news feeds, interactive maps, news channels, AI analytics, and daily email briefings — are available at no cost with no account required. The platform is supported by advertising. An optional $1 premium briefing tier for personalized country-level email reports is launching soon."
               />
               <FaqItem
                 q="Where does WorldScope get its data?"

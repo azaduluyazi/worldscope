@@ -5,11 +5,11 @@ import { LegalFooter } from "@/components/shared/LegalFooter";
 export const metadata: Metadata = {
   title: "Pricing — WorldScope",
   description:
-    "WorldScope is 100% free. Real-time global news dashboard with AI analytics, interactive maps, live TV, and more — no subscription required.",
+    "WorldScope core platform is 100% free. Real-time global news dashboard with AI analytics, interactive maps, live international news channels, and more. Optional premium briefing tier coming soon.",
   openGraph: {
     title: "Pricing — WorldScope",
     description:
-      "Everything free. Real-time global news monitoring with AI analytics, 3D maps, live TV, and 20+ themes.",
+      "Free core platform. Real-time global news monitoring with AI analytics, 3D maps, live international news channels, and 20+ themes. Premium briefing tier coming soon.",
     type: "website",
   },
   alternates: { canonical: "/pricing" },
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   return (
-    <div className="min-h-screen bg-[#050a12] text-gray-200 p-6 font-mono">
+    <div className="min-h-screen bg-[#050a12] text-gray-200 p-6 font-mono" lang="en">
       <div className="max-w-3xl mx-auto">
         <Link
           href="/"
@@ -27,10 +27,10 @@ export default function PricingPage() {
         </Link>
 
         <h1 className="text-xl font-bold text-cyan-400 mb-1 tracking-wider uppercase">
-          Everything Free
+          Free Core, Optional Premium
         </h1>
         <p className="text-gray-500 text-xs mb-8">
-          No subscriptions. No paywalls. Full access to every feature.
+          Full dashboard free forever. Optional paid briefing tier launching soon.
         </p>
 
         {/* Hero card */}
@@ -47,7 +47,7 @@ export default function PricingPage() {
           <ul className="space-y-3 text-sm text-gray-200">
             <Feature text="Real-time global news dashboard" />
             <Feature text="Interactive 2D & 3D world maps" />
-            <Feature text="232 live TV channels worldwide" />
+            <Feature text="232 live international news channels" />
             <Feature text="549 RSS feed sources" />
             <Feature text="10 dashboard variants (Finance, Weather, Sports...)" />
             <Feature text="News translation in 30 languages" />
@@ -66,9 +66,45 @@ export default function PricingPage() {
             How We Stay Free
           </h2>
           <p className="text-sm text-gray-400">
-            WorldScope is supported by non-intrusive advertising. We use ads to
-            cover our infrastructure costs so that every feature remains free for
-            everyone. No premium tiers, no feature gates, no upsells.
+            The WorldScope core dashboard is supported by non-intrusive
+            advertising. We use ads to cover our infrastructure costs so that
+            every dashboard feature remains free for everyone — no feature
+            gates, no account walls.
+          </p>
+        </div>
+
+        {/* Premium Briefing — Coming Soon */}
+        <div className="border-2 border-amber-400/40 rounded-sm p-6 mb-8 bg-amber-400/5">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
+              Coming Soon
+            </span>
+            <h2 className="text-sm font-bold text-amber-300 tracking-wide uppercase">
+              Premium Intelligence Briefing
+            </h2>
+          </div>
+          <div className="flex items-baseline gap-3 mb-4">
+            <span className="text-3xl font-bold text-amber-300">$1</span>
+            <span className="text-xs text-gray-500">
+              per country / month — optional add-on
+            </span>
+          </div>
+          <p className="text-sm text-gray-300 mb-4">
+            An optional paid email briefing tier sitting on top of the free
+            dashboard. Subscribe for just <strong>$1</strong> and select the
+            country or countries you want to follow — receive a personalized
+            daily situation report generated from our full aggregation network.
+          </p>
+          <ul className="space-y-2 text-sm text-gray-200 mb-4">
+            <Feature text="Personalized daily email — one or more countries" />
+            <Feature text="AI-generated situation reports from 2,000+ sources" />
+            <Feature text="Priority delivery ahead of the free newsletter" />
+            <Feature text="Cancel anytime — no long-term commitment" />
+          </ul>
+          <p className="text-[11px] text-gray-500">
+            A higher <strong>$5</strong> tier with expanded regional coverage
+            and deeper analytics is planned for a later release. The core
+            WorldScope dashboard will always remain free.
           </p>
         </div>
 
@@ -107,11 +143,11 @@ export default function PricingPage() {
           <div className="space-y-4 text-sm text-gray-400">
             <FaqItem
               q="What is WorldScope?"
-              a="WorldScope is a real-time global news monitoring platform. It aggregates data from 2,000+ sources, provides interactive maps, live TV, AI-powered analytics, and customizable dashboards — all in your browser."
+              a="WorldScope is a real-time global news monitoring platform. It aggregates data from 2,000+ sources, provides interactive maps, live international news channels, AI-powered analytics, and customizable dashboards — all in your browser."
             />
             <FaqItem
               q="Is WorldScope really free?"
-              a="Yes, 100%. Every feature is available at no cost. There are no premium tiers, no paywalls, and no hidden charges. We sustain the platform through advertising."
+              a="Yes. The entire WorldScope dashboard — maps, news feeds, channels, AI analytics, daily newsletter — is free and ad-supported. We are preparing to launch an optional paid premium briefing add-on ($1/country) for users who want personalized email intelligence reports, but every current dashboard feature will always remain free."
             />
             <FaqItem
               q="Do I need an account?"
