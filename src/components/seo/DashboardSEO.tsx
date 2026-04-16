@@ -154,30 +154,12 @@ export function DashboardSEO({ variant }: { variant: string }) {
     },
   };
 
+  // Visible intro block removed — caused layout shift on vertical pages and
+  // redundant with DashboardShell SSR + meta tags. JSON-LD retained for Google.
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <section
-        className="max-w-5xl mx-auto px-4 py-6 font-mono text-hud-text"
-        aria-label={seo.heading}
-      >
-        <h1 className="text-lg font-bold text-cyan-400 mb-2">{seo.heading}</h1>
-        <p className="text-[11px] text-hud-muted leading-relaxed mb-4">
-          {seo.description}
-        </p>
-        <ul className="grid grid-cols-2 sm:grid-cols-3 gap-1 text-[10px] text-hud-muted mb-4">
-          {seo.features.map((f) => (
-            <li key={f}>■ {f}</li>
-          ))}
-        </ul>
-        <p className="text-[10px] text-hud-muted">
-          Powered by WorldScope — 570+ verified intelligence sources across 195 countries.
-          Free, real-time, no account required.
-        </p>
-      </section>
-    </>
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+    />
   );
 }
