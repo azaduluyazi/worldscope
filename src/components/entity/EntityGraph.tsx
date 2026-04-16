@@ -9,7 +9,6 @@ import { useRef, useEffect, useState } from "react";
 // The library's strict generic types clash with custom node/link shapes, so
 // we relax to a loosely-typed component wrapper. Runtime shape is enforced
 // by the GraphData type below.
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
   loading: () => (
