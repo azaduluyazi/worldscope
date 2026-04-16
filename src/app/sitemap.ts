@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { COUNTRIES } from "@/config/countries";
 import { SEO_VARIANT_IDS } from "@/config/variants";
 import { createServerClient } from "@/lib/db/supabase";
+import { getTopEntities } from "@/lib/db/entities";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
 
@@ -40,6 +41,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/ownership`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE_URL}/embed`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE_URL}/podcast`, lastModified: new Date(), changeFrequency: "daily", priority: 0.6 },
+    { url: `${BASE_URL}/entity`, lastModified: new Date(), changeFrequency: "daily", priority: 0.7 },
     { url: `${BASE_URL}/conflict`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE_URL}/cyber`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${BASE_URL}/energy`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
@@ -152,6 +154,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
   } catch {
     // Supabase may not be available at build time — skip events
+  }
+
+  // ── Entity pages (top 1000 by mention count) ──
+  // Palantir-style ontology pages — long-tail SEO goldmine.
+  // 1000 cap keeps sitemap well under the 50k URL limit and
+  // prioritizes high-signal entities for crawl budget.
+  try {
+    const topEntities = await getTopEntities(null, 1000);
+    for (const e of topEntities) {
+      entries.push({
+        url: `${BASE_URL}/entity/${e.slug}`,
+        lastModified: new Date(e.last_seen),
+        changeFrequency: "daily",
+        priority: 0.7,
+      });
+    }
+  } catch {
+    // Supabase may not be available at build time — skip entity pages
   }
 
   return entries;
