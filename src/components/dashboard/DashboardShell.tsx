@@ -144,10 +144,15 @@ interface DashboardShellProps {
 
 export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   const mapReady = useIdleLoad(1);
-  const [filters, setFilters] = useState<MapFilters>(() => {
-    const prefs = loadPreferences();
-    return { ...DEFAULT_FILTERS, heatmap: prefs.mapLayers.heatmap, clusters: prefs.mapLayers.clusters, categories: new Set(prefs.categoryFilters), severities: new Set() };
-  });
+  // IMPORTANT: useState initializers must return the SAME value on server and
+  // client on the first render, otherwise React hydration fails with #418.
+  // We start with the server-safe defaults (no localStorage access) and then
+  // sync user preferences from localStorage in a post-hydration effect below.
+  const [filters, setFilters] = useState<MapFilters>(() => ({
+    ...DEFAULT_FILTERS,
+    categories: new Set<string>(),
+    severities: new Set<string>(),
+  }));
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [mapMode, setMapMode] = useState<MapMode>("2d");
   const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
@@ -155,13 +160,36 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   const variantConfig = VARIANTS[variant];
 
   // Source filtering state (persisted in localStorage)
-  const [excludedSources, setExcludedSources] = useState<Set<string>>(() => {
-    if (typeof window === "undefined") return new Set();
+  // Same rule as above: start with empty on both sides, hydrate from
+  // localStorage in the effect below.
+  const [excludedSources, setExcludedSources] = useState<Set<string>>(
+    () => new Set()
+  );
+
+  // Hydrate localStorage-backed state AFTER mount. This intentionally runs
+  // once (empty deps) so the initial SSR HTML matches the first client render,
+  // preventing React #418. The cascading render is intentional and unavoidable
+  // for localStorage-driven UI — eslint's set-state-in-effect rule is about
+  // perf hygiene, not correctness. Any persisted user prefs are applied after
+  // hydration, causing exactly one extra render per session.
+  useEffect(() => {
+    const prefs = loadPreferences();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFilters((prev) => ({
+      ...prev,
+      heatmap: prefs.mapLayers.heatmap,
+      clusters: prefs.mapLayers.clusters,
+      categories: new Set(prefs.categoryFilters),
+    }));
     try {
       const stored = localStorage.getItem("ws-excluded-sources");
-      return stored ? new Set(JSON.parse(stored)) : new Set();
-    } catch { return new Set(); }
-  });
+      if (stored) {
+        setExcludedSources(new Set(JSON.parse(stored)));
+      }
+    } catch {
+      /* localStorage parse failure — keep empty set */
+    }
+  }, []);
 
   const toggleSource = useCallback((source: string) => {
     setExcludedSources((prev) => {
