@@ -6,6 +6,10 @@ import useSWR from "swr";
 import { useRef, useEffect, useState } from "react";
 
 // react-force-graph uses canvas + measurements that break on SSR — disable.
+// The library's strict generic types clash with custom node/link shapes, so
+// we relax to a loosely-typed component wrapper. Runtime shape is enforced
+// by the GraphData type below.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
   ssr: false,
   loading: () => (
@@ -13,7 +17,8 @@ const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), {
       Loading graph…
     </div>
   ),
-});
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+}) as unknown as React.FC<any>;
 
 const TYPE_COLORS: Record<string, string> = {
   person: "#00e5ff",
@@ -93,14 +98,10 @@ export default function EntityGraph({ slug }: { slug: string }) {
         height={dims.height}
         backgroundColor="#000"
         nodeColor={(n: { type?: string }) => TYPE_COLORS[n.type || "topic"] || "#888"}
-        nodeLabel={(n: { name?: string; type?: string }) =>
-          `${n.name} (${n.type})`
-        }
+        nodeLabel={(n: { name?: string; type?: string }) => `${n.name} (${n.type})`}
         nodeRelSize={6}
         linkColor={() => "rgba(255,255,255,0.18)"}
-        linkWidth={(l: { value?: number }) =>
-          Math.log((l.value ?? 1) + 1) + 0.3
-        }
+        linkWidth={(l: { value?: number }) => Math.log((l.value ?? 1) + 1) + 0.3}
         enableNodeDrag={false}
         cooldownTicks={80}
         onNodeClick={(node: { slug?: string }) => {
