@@ -41,7 +41,7 @@ export const CARBON_PLACEMENT = process.env.NEXT_PUBLIC_CARBON_PLACEMENT || "";
  *   report-top      → /reports/[type]/[date]
  *   report-inline   → /events/[id]
  *   reports-top     → /reports (list)
- *   landing-bottom  → currently reserved; NOT /briefing (ad-free landing)
+ *   landing-bottom  → DashboardShell footer (shared across / and all verticals)
  *   analytics-bottom→ /analytics, /about (shared)
  *   feeds-top       → /feeds
  *   search-inline   → /search

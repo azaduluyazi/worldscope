@@ -99,6 +99,8 @@ import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 import { VARIANTS, type VariantId } from "@/config/variants";
 import type { MapFilters } from "@/types/geo";
 import { loadPreferences, savePreferences } from "@/lib/user-preferences";
+import { AdSenseUnit } from "@/components/ads";
+import { AD_PLACEMENTS } from "@/config/ads";
 
 const PANEL_ORDER: MobilePanel[] = ["map", "feed", "live", "alerts"];
 
@@ -544,6 +546,18 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
               )}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Dashboard bottom ad banner — shared across homepage + all verticals.
+          Uses the ws-landing-bottom slot (horizontal, responsive). Desktop
+          only — mobile real estate is too tight for a 90px banner. */}
+      <div className="hidden md:block border-t border-hud-border bg-hud-base py-2 px-4">
+        <div className="max-w-5xl mx-auto">
+          <AdSenseUnit
+            slot={AD_PLACEMENTS.landing[0].slot!}
+            format={AD_PLACEMENTS.landing[0].format as "horizontal"}
+          />
         </div>
       </div>
 
