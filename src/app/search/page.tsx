@@ -18,15 +18,23 @@ function SearchResults() {
   const query = searchParams.get("q") || "";
 
   const [advancedFilters, setAdvancedFilters] = useState<AdvancedFilterValues | null>(null);
+  const [semantic, setSemantic] = useState(false);
 
   // Build API URL with advanced filter params
   const apiUrl = useMemo(() => {
     if (query.length < 2) return null;
     const params = new URLSearchParams();
     params.set("q", query);
+
+    if (semantic) {
+      // Semantic endpoint ignores keyword-style filters (dates/category/country
+      // etc.) — it ranks purely by vector similarity. Keep the URL minimal.
+      params.set("limit", "50");
+      return `/api/search/semantic?${params.toString()}`;
+    }
+
     params.set("lang", locale);
     params.set("limit", "500");
-
     if (advancedFilters) {
       if (advancedFilters.dateFrom) params.set("dateFrom", advancedFilters.dateFrom);
       if (advancedFilters.dateTo) params.set("dateTo", advancedFilters.dateTo);
@@ -36,23 +44,23 @@ function SearchResults() {
       if (advancedFilters.category) params.set("category", advancedFilters.category);
       if (advancedFilters.country) params.set("country", advancedFilters.country);
     }
-
     return `/api/intel?${params.toString()}`;
-  }, [query, locale, advancedFilters]);
+  }, [query, locale, advancedFilters, semantic]);
 
-  const { data, isLoading } = useSWR<IntelFeedResponse>(apiUrl, fetcher);
+  // Response shape differs: /api/intel → {items}; /api/search/semantic → {results}
+  const { data, isLoading } = useSWR<IntelFeedResponse & { results?: IntelItem[] }>(apiUrl, fetcher);
 
-  // Apply exact phrase filtering client-side if toggled
+  // Apply exact phrase filtering client-side if toggled (keyword mode only)
   const items = useMemo(() => {
-    const raw = data?.items || [];
-    if (!advancedFilters?.exactPhrase || query.length < 2) return raw;
+    const raw = semantic ? data?.results || [] : data?.items || [];
+    if (semantic || !advancedFilters?.exactPhrase || query.length < 2) return raw;
     const phrase = query.toLowerCase();
     return raw.filter(
       (item) =>
         item.title.toLowerCase().includes(phrase) ||
         (item.summary && item.summary.toLowerCase().includes(phrase))
     );
-  }, [data, advancedFilters?.exactPhrase, query]);
+  }, [data, advancedFilters?.exactPhrase, query, semantic]);
 
   const handleFilterChange = useCallback((filters: AdvancedFilterValues) => {
     setAdvancedFilters(filters);
@@ -100,9 +108,20 @@ function SearchResults() {
           <h1 className="font-mono text-xl font-bold text-hud-text tracking-wide">
             {"\uD83D\uDD0D"} SEARCH: &quot;{query}&quot;
           </h1>
-          <p className="font-mono text-[10px] text-hud-muted mt-1">
-            {isLoading ? "Searching..." : `${items.length} results found`}
-          </p>
+          <div className="flex items-center gap-3 mt-1 flex-wrap">
+            <p className="font-mono text-[10px] text-hud-muted">
+              {isLoading ? "Searching..." : `${items.length} results found`}
+            </p>
+            <label className="flex items-center gap-1.5 cursor-pointer font-mono text-[10px] text-hud-muted hover:text-hud-text">
+              <input
+                type="checkbox"
+                checked={semantic}
+                onChange={(e) => setSemantic(e.target.checked)}
+                className="size-3 accent-cyan-500"
+              />
+              <span>{semantic ? "\u25C6 " : ""}SEMANTIC MODE (AI)</span>
+            </label>
+          </div>
         </div>
       </header>
 
