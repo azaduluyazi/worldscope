@@ -28,10 +28,17 @@ export function BreakingAlerts() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const prevCountRef = useRef(0);
   const [hasNewAlert, setHasNewAlert] = useState(false);
-  const [soundEnabled, setSoundEnabled] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return localStorage.getItem("ws-sound-alerts") !== "false";
-  });
+  // Start with `true` on both server and client. The saved user preference
+  // is hydrated inside the effect below. Rendering "🔊" vs "🔇" based on
+  // this flag in JSX means a divergent initial value would trigger React
+  // hydration error #418 with a text-node mismatch.
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  useEffect(() => {
+    if (localStorage.getItem("ws-sound-alerts") === "false") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setSoundEnabled(false);
+    }
+  }, []);
 
   // Filter critical and high severity items
   const alerts = useMemo(() => {
