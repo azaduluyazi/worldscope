@@ -8,6 +8,7 @@ import {
 import { fetchEventsByIds } from "@/lib/db/events";
 import EntityHeader from "@/components/entity/EntityHeader";
 import EntityEventsList from "@/components/entity/EntityEventsList";
+import EntityGraph from "@/components/entity/EntityGraph";
 
 // 1 hour ISR — entities evolve slowly; reduces Vercel bandwidth ~6x vs 10-min.
 export const revalidate = 3600;
@@ -51,6 +52,12 @@ export default async function EntityPage({
   return (
     <main className="min-h-screen bg-black text-white">
       <EntityHeader entity={entity} />
+      <section className="max-w-6xl mx-auto px-6 py-6">
+        <h2 className="text-sm uppercase tracking-widest text-white/60 mb-4 font-mono">
+          Connection graph
+        </h2>
+        <EntityGraph slug={entity.slug} />
+      </section>
       <EntityEventsList events={events} />
       <JsonLd entity={entity} eventCount={events.length} />
     </main>
