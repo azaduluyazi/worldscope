@@ -146,18 +146,59 @@ export async function fetchPersistedEvents(
 
   if (error || !data) return [];
 
-  return data.map((row) => ({
+  return data.map(mapEventRowToIntel);
+}
+
+/**
+ * Shared mapper — used by fetchPersistedEvents and fetchEventsByIds.
+ * Kept as a plain function (not a class method) so it remains tree-shake
+ * friendly for client bundles that import only the types.
+ */
+function mapEventRowToIntel(row: {
+  id: string | number;
+  title: string;
+  summary: string | null;
+  url: string | null;
+  source: string;
+  category: string;
+  severity: string;
+  published_at: string;
+  lat: number | null;
+  lng: number | null;
+  country_code: string | null;
+  image_url: string | null;
+}): IntelItem {
+  return {
     id: `db-${row.id}`,
     title: row.title,
     summary: row.summary || "",
     url: row.url || "",
     source: row.source,
-    category: row.category,
-    severity: row.severity,
+    category: row.category as IntelItem["category"],
+    severity: row.severity as IntelItem["severity"],
     publishedAt: row.published_at,
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
     countryCode: row.country_code ?? undefined,
     imageUrl: row.image_url ?? undefined,
-  }));
+  };
+}
+
+/**
+ * Fetch events by a list of IDs. Accepts both raw event IDs (as stored
+ * in the DB) and the `db-${id}` prefixed form produced by
+ * fetchPersistedEvents — the prefix is stripped before querying.
+ * Preserves order by published_at DESC.
+ */
+export async function fetchEventsByIds(ids: string[]): Promise<IntelItem[]> {
+  if (ids.length === 0) return [];
+  const rawIds = ids.map((id) => (id.startsWith("db-") ? id.slice(3) : id));
+  const db = createServerClient();
+  const { data, error } = await db
+    .from("events")
+    .select("*")
+    .in("id", rawIds)
+    .order("published_at", { ascending: false });
+  if (error || !data) return [];
+  return data.map(mapEventRowToIntel);
 }
