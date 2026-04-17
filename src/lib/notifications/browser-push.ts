@@ -87,7 +87,19 @@ export function setNotificationEnabled(enabled: boolean): void {
     const prefs = JSON.parse(localStorage.getItem("worldscope_prefs") || "{}");
     prefs.notificationsEnabled = enabled;
     localStorage.setItem("worldscope_prefs", JSON.stringify(prefs));
+    window.dispatchEvent(new Event("ws:notifications-change"));
   } catch {
     // ignore
   }
+}
+
+/** Subscribe to notification preference changes (same-tab + cross-tab). */
+export function subscribeNotificationState(cb: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("ws:notifications-change", cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    window.removeEventListener("ws:notifications-change", cb);
+    window.removeEventListener("storage", cb);
+  };
 }

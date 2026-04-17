@@ -4,12 +4,12 @@ import type { IntelItem } from "@/types/intel";
 import { SEVERITY_COLORS, CATEGORY_ICONS } from "@/types/intel";
 import { timeAgo } from "@/lib/utils/date";
 import { truncate } from "@/lib/utils/sanitize";
-import { isBookmarked, addBookmark, removeBookmark } from "@/lib/bookmarks";
+import { isBookmarked, addBookmark, removeBookmark, subscribeBookmarks } from "@/lib/bookmarks";
 import { calculateImpactScore } from "@/lib/utils/impact-scoring";
 import { getSourceTier } from "@/lib/utils/source-tier";
 import { ImpactBadge } from "./ImpactBadge";
 import { SourceBadge } from "./SourceBadge";
-import { useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo, useSyncExternalStore } from "react";
 
 interface IntelCardProps {
   item: IntelItem;
@@ -22,7 +22,16 @@ export function IntelCard({ item, allItems, onPreview, onSpeak }: IntelCardProps
   const severityColor = SEVERITY_COLORS[item.severity];
   const icon = CATEGORY_ICONS[item.category] || "📄";
   const hasGeo = item.lat != null && item.lng != null;
-  const [bookmarked, setBookmarked] = useState(() => isBookmarked(item.id));
+
+  // Bookmark state via useSyncExternalStore — SSR-safe (false on server) and
+  // subscribes to the bookmarks event bus so clicking the bookmark button
+  // anywhere updates every card. Fixes React #418 from prior localStorage
+  // reads in useState lazy initializer.
+  const bookmarked = useSyncExternalStore(
+    subscribeBookmarks,
+    () => isBookmarked(item.id),
+    () => false
+  );
 
   const impact = useMemo(
     () => calculateImpactScore(item, allItems),
@@ -45,7 +54,6 @@ export function IntelCard({ item, allItems, onPreview, onSpeak }: IntelCardProps
     e.stopPropagation();
     if (bookmarked) {
       removeBookmark(item.id);
-      setBookmarked(false);
     } else {
       addBookmark({
         id: item.id,
@@ -55,8 +63,8 @@ export function IntelCard({ item, allItems, onPreview, onSpeak }: IntelCardProps
         severity: item.severity,
         source: item.source,
       });
-      setBookmarked(true);
     }
+    // Re-render is driven by subscribeBookmarks via useSyncExternalStore.
   }, [bookmarked, item]);
 
   const handleSpeak = useCallback((e: React.MouseEvent) => {

@@ -38,6 +38,17 @@ const nextConfig: NextConfig = {
       "cmdk",
     ],
   },
+  redirects: async () => [
+    // Canonical RSS feed is /feed.xml. Legacy aliases (old feed readers,
+    // external links, sitemap scrapers) 301 to the canonical path so we
+    // don't leak crawl budget to 404s.
+    { source: "/rss", destination: "/feed.xml", permanent: true },
+    { source: "/rss.xml", destination: "/feed.xml", permanent: true },
+    { source: "/feed", destination: "/feed.xml", permanent: true },
+    { source: "/atom.xml", destination: "/feed.xml", permanent: true },
+    // Some tooling expects the W3C .webmanifest extension; canonical is /manifest.json.
+    { source: "/manifest.webmanifest", destination: "/manifest.json", permanent: true },
+  ],
   headers: async () => [
     {
       source: "/(.*)",

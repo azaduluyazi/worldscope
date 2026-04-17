@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import useSWR from "swr";
 
 // ── Types (mirrors API response) ──────────────────────────
@@ -233,14 +233,17 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 // ── Main Component ────────────────────────────────────────
 
-export default function EscalationTracker() {
-  const [now, setNow] = useState(() => Date.now());
+// Tick every 60s. Using useSyncExternalStore keeps SSR snapshot (0) stable
+// while the client reads real Date.now() — no React #418 hydration mismatch.
+const subscribeMinuteTick = (cb: () => void) => {
+  const id = setInterval(cb, 60_000);
+  return () => clearInterval(id);
+};
+const getTickSnapshot = () => Date.now();
+const getTickServerSnapshot = () => 0;
 
-  // Update `now` every 60 seconds to refresh relative timestamps
-  useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 60_000);
-    return () => clearInterval(interval);
-  }, []);
+export default function EscalationTracker() {
+  const now = useSyncExternalStore(subscribeMinuteTick, getTickSnapshot, getTickServerSnapshot);
 
   const { data, isLoading } = useSWR<EscalationResponse>(
     "/api/conflicts/escalation",

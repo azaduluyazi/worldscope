@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useSyncExternalStore } from "react";
 import {
   isNotificationSupported,
   getNotificationPermission,
@@ -8,14 +8,38 @@ import {
   isNotificationEnabled,
   setNotificationEnabled,
   sendNotification,
+  subscribeNotificationState,
 } from "@/lib/notifications/browser-push";
 import { useRealtimeEvents } from "@/hooks/useRealtimeEvents";
 import type { IntelItem } from "@/types/intel";
 
+// SSR-safe subscriptions via useSyncExternalStore — keeps hydration clean.
+const noopSubscribe = () => () => {};
+
 export function NotificationBell() {
-  const [enabled, setEnabled] = useState(() => isNotificationEnabled());
-  const [permission, setPermission] = useState(() => getNotificationPermission());
-  const [supported] = useState(() => isNotificationSupported());
+  const supported = useSyncExternalStore(
+    noopSubscribe,
+    isNotificationSupported,
+    () => false
+  );
+  const enabled = useSyncExternalStore(
+    subscribeNotificationState,
+    isNotificationEnabled,
+    () => false
+  );
+  const permission = useSyncExternalStore(
+    noopSubscribe,
+    getNotificationPermission,
+    () => "default" as const
+  );
+
+  // Local setter kept for the toggle handler flow; writes propagate via
+  // subscribeNotificationState so this component (and any siblings) re-render.
+  const setEnabled = (v: boolean) => setNotificationEnabled(v);
+  const setPermission = (_v: NotificationPermission) => {
+    // Permission is a browser state — no dispatcher needed beyond a re-render
+    // which happens via realtime events below. Kept as no-op for flow parity.
+  };
 
   const handleToggle = useCallback(async () => {
     if (!supported) return;
