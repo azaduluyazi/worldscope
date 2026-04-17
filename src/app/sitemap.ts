@@ -6,6 +6,12 @@ import { getTopEntities } from "@/lib/db/entities";
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
 
+// Force request-time generation: prevents Next.js build-time static generation
+// from timing out on Supabase queries when IO budget is tight. ISR via the
+// `revalidate` export still caches the result for cold requests.
+export const dynamic = "force-dynamic";
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [];
 

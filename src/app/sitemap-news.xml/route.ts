@@ -2,6 +2,10 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/db/supabase";
 
 export const runtime = "nodejs";
+// Force request-time generation: avoids Next.js build-time static generation
+// hitting Supabase under IO pressure (build would fail with 60s timeout).
+// ISR via `revalidate` still caches the result for 5 minutes after first hit.
+export const dynamic = "force-dynamic";
 export const revalidate = 300;
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
@@ -79,11 +83,12 @@ export async function GET() {
       }
     }
 
+    // Use published_at (matches events table schema — there is no created_at column)
     const { data: events } = await db
       .from("events")
-      .select("id, title, created_at")
-      .gte("created_at", cutoff.toISOString())
-      .order("created_at", { ascending: false })
+      .select("id, title, published_at")
+      .gte("published_at", cutoff.toISOString())
+      .order("published_at", { ascending: false })
       .limit(200);
 
     if (events) {
@@ -96,7 +101,7 @@ export async function GET() {
         <news:name>${PUBLICATION_NAME}</news:name>
         <news:language>${PUBLICATION_LANG}</news:language>
       </news:publication>
-      <news:publication_date>${new Date(e.created_at).toISOString()}</news:publication_date>
+      <news:publication_date>${new Date(e.published_at).toISOString()}</news:publication_date>
       <news:title>${escapeXml(e.title || "Live Intelligence Event")}</news:title>
     </news:news>
   </url>`,
