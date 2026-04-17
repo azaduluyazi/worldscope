@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore } from "react";
 
 /**
  * ConnectionStatus — monitors browser connectivity + SSE stream health.
@@ -16,27 +16,36 @@ const MAX_RECONNECT_DELAY = 60_000;
 const INITIAL_RECONNECT_DELAY = 5_000;
 const HIDE_AFTER_RETRIES = 3; // hide SSE banner after N retries (SWR still fetches)
 
+// ── navigator.onLine via useSyncExternalStore ────────────────────
+// Reading navigator.onLine in a useState lazy initializer was causing
+// React #418 ("Text content does not match server-rendered HTML"):
+// server renders with `true` (no navigator), client with actual status.
+// useSyncExternalStore is React's built-in way to subscribe to browser
+// state with SSR-correct snapshots: getServerSnapshot returns true so
+// hydration matches, then useSyncExternalStore swaps in the real value
+// on the client without a state flip inside an effect.
+const subscribeOnline = (cb: () => void) => {
+  window.addEventListener("online", cb);
+  window.addEventListener("offline", cb);
+  return () => {
+    window.removeEventListener("online", cb);
+    window.removeEventListener("offline", cb);
+  };
+};
+const getOnlineSnapshot = () => navigator.onLine;
+const getOnlineServerSnapshot = () => true;
+
 export function ConnectionStatus() {
-  const [online, setOnline] = useState(() =>
-    typeof navigator !== "undefined" ? navigator.onLine : true
+  const online = useSyncExternalStore(
+    subscribeOnline,
+    getOnlineSnapshot,
+    getOnlineServerSnapshot
   );
   const [sseConnected, setSseConnected] = useState(false);
   const [eventCount, setEventCount] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
   const esRef = useRef<EventSource | null>(null);
   const reconnectDelayRef = useRef(INITIAL_RECONNECT_DELAY);
-
-  // Browser online/offline
-  useEffect(() => {
-    const handleOnline = () => setOnline(true);
-    const handleOffline = () => setOnline(false);
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
 
   // SSE connection with exponential backoff
   useEffect(() => {
