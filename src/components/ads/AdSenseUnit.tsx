@@ -12,6 +12,21 @@ interface AdSenseUnitProps {
 /**
  * Google AdSense display unit.
  * Only renders when ADSENSE_PUB_ID is configured and consent is given.
+ *
+ * Follows the OFFICIAL AdSense pattern recommended by Google:
+ *   (window.adsbygoogle = window.adsbygoogle || []).push({})
+ *
+ * Why this pattern matters: our next/script tag for adsbygoogle.js uses
+ * `strategy="afterInteractive"`, which means it loads AFTER React hydrates.
+ * This component's useEffect fires during/right after hydration, often BEFORE
+ * the AdSense script has executed. The previous `if (adsbygoogle) push(...)`
+ * guard silently returned when the global was still undefined, leaving
+ * pushed.current = false, and the effect has `[]` deps — so it never retried.
+ * Net effect: every ad slot shipped "unfilled" on every page load.
+ *
+ * The lazy-init queue pattern handles this race for us: adsbygoogle.js picks
+ * up queued pushes once it loads. Correctness doesn't depend on script arrival
+ * order any more.
  */
 export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUnitProps) {
   const adRef = useRef<HTMLModElement>(null);
@@ -31,13 +46,15 @@ export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUn
     }
 
     try {
-      const adsbygoogle = (window as unknown as { adsbygoogle: unknown[] }).adsbygoogle;
-      if (adsbygoogle) {
-        adsbygoogle.push({});
-        pushed.current = true;
-      }
+      // Lazy-init the adsbygoogle queue and push unconditionally.
+      // If adsbygoogle.js has already loaded, push() fires immediately.
+      // If not, our push sits in the queue and fires when the script arrives.
+      const w = window as unknown as { adsbygoogle?: unknown[] };
+      w.adsbygoogle = w.adsbygoogle || [];
+      w.adsbygoogle.push({});
+      pushed.current = true;
     } catch {
-      // AdSense not loaded
+      // Malformed environment (e.g. CSP blocked script) — skip silently.
     }
   }, []);
 
@@ -54,8 +71,17 @@ export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUn
     ...(format === "vertical" && { width: "160px", height: "600px" }),
   };
 
+  // Wrapper min-height matches the ad slot so unfilled slots don't collapse
+  // to 0px and hurt CLS. Horizontal: 90px, Rectangle: 250px, Vertical: 600px,
+  // Auto: 100px as a reasonable minimum (Google usually returns ≥100px).
+  const wrapperMinHeight =
+    format === "horizontal" ? 90 :
+    format === "rectangle" ? 250 :
+    format === "vertical" ? 600 :
+    100;
+
   return (
-    <div className={`ad-unit ${className}`}>
+    <div className={`ad-unit ${className}`} style={{ minHeight: wrapperMinHeight }}>
       <div className="font-mono text-[7px] text-hud-muted mb-1 text-center tracking-wider">
         ADVERTISEMENT
       </div>
@@ -65,7 +91,9 @@ export function AdSenseUnit({ slot, format = "auto", className = "" }: AdSenseUn
         style={style}
         data-ad-client={ADSENSE_PUB_ID}
         data-ad-slot={slot}
-        data-ad-format={format === "auto" ? "auto" : undefined}
+        // Always emit data-ad-format so AdSense knows the expected shape.
+        // Horizontal adds responsive flag so it adapts to viewport width.
+        data-ad-format={format}
         data-full-width-responsive={format === "horizontal" ? "true" : undefined}
       />
     </div>
