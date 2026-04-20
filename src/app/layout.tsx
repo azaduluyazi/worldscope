@@ -198,17 +198,36 @@ export default async function RootLayout({
             />
           </>
         )}
-        {/* Plausible Analytics — privacy-friendly, cookie-free */}
-        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
-          <Script
-            defer
-            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
-            src={process.env.NEXT_PUBLIC_PLAUSIBLE_HOST
-              ? `${process.env.NEXT_PUBLIC_PLAUSIBLE_HOST}/js/script.js`
-              : "https://plausible.io/js/script.js"}
-            strategy="lazyOnload"
-          />
+        {/* Plausible Analytics — privacy-friendly, cookie-free.
+            Uses the newer Plausible Analytics (PA) script format where the
+            site id is embedded in the script path. Set
+            NEXT_PUBLIC_PLAUSIBLE_SCRIPT_ID in Vercel env to the literal id
+            shown in the Plausible dashboard (e.g. "pa-TsvQfIzzKqn4Ko-W_Z6bE").
+            Falls back to the legacy data-domain script if the new id is
+            not configured but NEXT_PUBLIC_PLAUSIBLE_DOMAIN is. */}
+        {process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_ID && (
+          <>
+            <Script
+              async
+              src={`https://plausible.io/js/${process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_ID}.js`}
+              strategy="afterInteractive"
+            />
+            <Script id="plausible-init" strategy="afterInteractive">
+              {`window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()`}
+            </Script>
+          </>
         )}
+        {!process.env.NEXT_PUBLIC_PLAUSIBLE_SCRIPT_ID &&
+          process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
+            <Script
+              defer
+              data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+              src={process.env.NEXT_PUBLIC_PLAUSIBLE_HOST
+                ? `${process.env.NEXT_PUBLIC_PLAUSIBLE_HOST}/js/script.js`
+                : "https://plausible.io/js/script.js"}
+              strategy="lazyOnload"
+            />
+          )}
       </head>
       <body className="min-h-screen bg-hud-base text-hud-text overflow-hidden">
         {/* Skip to content — accessibility */}
