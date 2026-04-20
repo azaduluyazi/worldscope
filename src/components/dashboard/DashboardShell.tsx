@@ -73,6 +73,10 @@ const AIStrategicBrief = dynamic(
   () => import("./AIStrategicBrief").then((m) => ({ default: m.AIStrategicBrief })),
   { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
 );
+const WorldScopeChat = dynamic(
+  () => import("./WorldScopeChat").then((m) => ({ default: m.WorldScopeChat })),
+  { ssr: false, loading: () => <div className="h-full flex items-center justify-center"><span className="font-mono text-[9px] text-hud-muted animate-pulse">LOADING...</span></div> }
+);
 /** Theme-specific banners — only loaded when active theme needs them */
 const DefconBar = dynamic(() => import("./DefconBar").then((m) => ({ default: m.DefconBar })), { ssr: false });
 const NeonBreakingBanner = dynamic(() => import("./NeonBreakingBanner").then((m) => ({ default: m.NeonBreakingBanner })), { ssr: false });
@@ -142,7 +146,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   }));
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [leftTab, setLeftTab] = useState<"signal" | "breaking" | "stories">("signal");
-  const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
+  const [rightTab, setRightTab] = useState<"chat" | "intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];
 
@@ -381,7 +385,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
           {/* ── Col 1: Tabbed — Signal / Breaking / Storylines ── */}
           <div className="flex-[3] min-w-0 flex flex-col col-stagger-1">
-            <div className="flex border-b border-hud-border/50 mb-1 shrink-0" role="tablist" aria-label="Signal panels">
+            <div className="flex border-b border-hud-border/50 mb-1 shrink-0 overflow-x-auto scrollbar-hide" role="tablist" aria-label="Signal panels">
               {([
                 { id: "signal" as const, label: "SIGNAL", icon: "Ω" },
                 { id: "breaking" as const, label: "BREAKING", icon: "⚠" },
@@ -446,8 +450,9 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
           {/* ── Col 3: Intel Feed + 6 analysis tabs ── */}
           <div className="flex-[3] min-w-0 max-lg:hidden flex flex-col col-stagger-3">
             {/* Tab bar */}
-            <div className="flex border-b border-hud-border/50 mb-1 shrink-0">
+            <div className="flex border-b border-hud-border/50 mb-1 shrink-0 overflow-x-auto scrollbar-hide">
               {([
+                { id: "chat" as const, label: "CHAT", icon: "✦" },
                 { id: "intel" as const, label: "INTEL", icon: "📡" },
                 { id: "predictions" as const, label: "PREDICT", icon: "📊" },
                 { id: "economics" as const, label: "ECON", icon: "💹" },
@@ -473,6 +478,11 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
 
             {/* Tab content */}
             <div className="flex-1 min-h-0 overflow-y-auto">
+              {rightTab === "chat" && (
+                <ErrorBoundary section="chat">
+                  <WorldScopeChat />
+                </ErrorBoundary>
+              )}
               {rightTab === "intel" && (
                 <ErrorBoundary section="feed" fallback={<IntelFeedSkeleton />}>
                   <div className="px-1 pt-1 pb-0.5">
