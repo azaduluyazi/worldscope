@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
   email TEXT UNIQUE NOT NULL,
   display_name TEXT,
   locale TEXT DEFAULT 'en',
-  theme_id TEXT DEFAULT 'military',
+  theme_id TEXT DEFAULT 'warroom',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
