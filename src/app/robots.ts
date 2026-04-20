@@ -26,6 +26,13 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: "Google-Extended",
         disallow: ["/"],
       },
+      // Explicit allow for AdSense crawler — prevents any future rule from
+      // accidentally blocking ad serving. Mediapartners-Google is the AdSense
+      // crawler and is distinct from Googlebot and Google-Extended.
+      {
+        userAgent: "Mediapartners-Google",
+        allow: ["/"],
+      },
     ],
     sitemap: [
       `${BASE_URL}/sitemap.xml`,
