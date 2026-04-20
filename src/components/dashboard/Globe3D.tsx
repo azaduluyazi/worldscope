@@ -2,6 +2,7 @@
 
 import { useRef, useMemo, useEffect, useState, useCallback } from "react";
 import Globe from "react-globe.gl";
+import { useTheme } from "@/components/shared/ThemeProvider";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useFlightTracker } from "@/hooks/useFlightTracker";
 import { useVesselTracker } from "@/hooks/useVesselTracker";
@@ -60,9 +61,19 @@ function GlobeEventCard({ item, onClose }: { item: IntelItem; onClose: () => voi
  * All layers (intel, flights, ships, weather, fires, satellites, etc.)
  * are toggled via the layer system using enabledLayers.
  */
+/** Mythological sacred anchor points — always pulse, independent of data layers.
+ *  Troia (Hisarlik, the brand anchor), Olympus (Mt Olympus, seat of gods),
+ *  Delphi (the oracle). Visually ties the globe to the pantheon theme. */
+const SACRED_RINGS = [
+  { lat: 39.96, lng: 26.24, maxR: 3, propagationSpeed: 0.9, repeatPeriod: 2200, color: "#ffc55a" },
+  { lat: 40.08, lng: 22.36, maxR: 3, propagationSpeed: 0.9, repeatPeriod: 2200, color: "#ffc55a" },
+  { lat: 38.48, lng: 22.50, maxR: 3, propagationSpeed: 0.9, repeatPeriod: 2200, color: "#ffc55a" },
+];
+
 export function Globe3D({ variant: _variant = "world", onEventClick, enabledLayers }: Globe3DProps) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const globeRef = useRef<any>(null);
+  const { theme } = useTheme();
   const { items } = useIntelFeed();
   const { aircraft } = useFlightTracker();
   const { vessels } = useVesselTracker();
@@ -236,26 +247,59 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
 
   return (
     <div ref={containerRef} className="w-full h-full relative bg-black" role="img" aria-label="Interactive 3D globe showing global intelligence events">
-      {/* Outer atmosphere glow ring — CSS overlay */}
+      {/* Outer atmosphere glow ring — theme-adaptive */}
       <div className="absolute inset-0 pointer-events-none z-[1] flex items-center justify-center">
-        <div className="w-[85%] h-[85%] max-w-[600px] max-h-[600px] rounded-full"
+        <div
+          className="w-[85%] h-[85%] max-w-[600px] max-h-[600px] rounded-full"
           style={{
-            background: "radial-gradient(circle, transparent 45%, rgba(0,229,255,0.03) 55%, rgba(0,229,255,0.08) 62%, rgba(0,229,255,0.04) 70%, transparent 78%)",
+            background: `radial-gradient(circle, transparent 45%, ${theme.colors.accent}10 55%, ${theme.colors.accent}30 62%, ${theme.colors.accent}15 70%, transparent 78%)`,
             filter: "blur(8px)",
           }}
         />
       </div>
 
-      <Globe ref={globeRef} width={dimensions.w} height={dimensions.h}
-        globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-        bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
-        backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-        atmosphereColor="#00e5ff" atmosphereAltitude={0.18}
-        pointsData={pointsData} pointLat="lat" pointLng="lng" pointAltitude={0.015} pointRadius="size" pointColor="color" pointLabel="label" pointsMerge={pointsData.length > 150}
+      <Globe
+        ref={globeRef}
+        width={dimensions.w}
+        height={dimensions.h}
+        // Stylised pantheon globe — no realistic night-texture / sky box.
+        // The atmosphere, sacred rings, arcs, and data layers do the work.
+        globeImageUrl={null}
+        bumpImageUrl={null}
+        backgroundImageUrl={null}
+        backgroundColor="rgba(0,0,0,0)"
+        showGraticules
+        atmosphereColor={theme.colors.accent}
+        atmosphereAltitude={0.22}
+        pointsData={pointsData}
+        pointLat="lat"
+        pointLng="lng"
+        pointAltitude={0.015}
+        pointRadius="size"
+        pointColor="color"
+        pointLabel="label"
+        pointsMerge={pointsData.length > 150}
         onPointClick={handlePointClick}
-        ringsData={ringsData} ringLat="lat" ringLng="lng" ringMaxRadius="maxR" ringPropagationSpeed="propagationSpeed" ringRepeatPeriod="repeatPeriod" ringColor={() => "#ff475760"}
-        arcsData={flightArc} arcStartLat="startLat" arcStartLng="startLng" arcEndLat="endLat" arcEndLng="endLng" arcColor="color" arcDashLength={0.4} arcDashGap={0.2} arcDashAnimateTime={1200} arcStroke={1.8}
-        animateIn={true} waitForGlobeReady={true}
+        // Sacred anchor rings pulse permanently; intel rings overlay on top.
+        ringsData={[...SACRED_RINGS, ...ringsData]}
+        ringLat="lat"
+        ringLng="lng"
+        ringMaxRadius="maxR"
+        ringPropagationSpeed="propagationSpeed"
+        ringRepeatPeriod="repeatPeriod"
+        ringColor={(d: { color?: string }) => d.color ?? "#ff475760"}
+        arcsData={flightArc}
+        arcStartLat="startLat"
+        arcStartLng="startLng"
+        arcEndLat="endLat"
+        arcEndLng="endLng"
+        arcColor="color"
+        arcDashLength={0.4}
+        arcDashGap={0.2}
+        arcDashAnimateTime={1200}
+        arcStroke={1.8}
+        animateIn={true}
+        waitForGlobeReady={true}
       />
 
       {enabledLayers?.has("aviation") && <FlightSearch onResult={handleFlightResult} />}

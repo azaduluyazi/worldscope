@@ -422,9 +422,10 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             </div>
           </div>
 
-          {/* ── Col 2: Globe 3D + Live Broadcasts ── */}
+          {/* ── Col 2: Globe 3D + Live Broadcasts — 60 / 40 split
+                 so the TV player is tall enough to actually watch. ── */}
           <div className="flex-[4.5] flex flex-col gap-1 min-w-0 col-stagger-2">
-            <div className="flex-[7] relative overflow-hidden rounded-lg border border-hud-border min-h-0 [contain:strict]">
+            <div className="flex-[6] relative overflow-hidden rounded-lg border border-hud-border min-h-0 [contain:strict]">
               {theme.effect === "warzone" && <div className="warzone-crosshair" aria-hidden="true" />}
               <MapLayerPanel layers={layers} onToggleLayer={toggleMapLayer} />
               {mapReady ? (
@@ -435,7 +436,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
                 <MapSkeleton />
               )}
             </div>
-            <div className="flex-[3] min-h-0 [contain:strict]">
+            <div className="flex-[4] min-h-[280px] [contain:strict]">
               <ErrorBoundary section="broadcasts">
                 <LiveBroadcasts />
               </ErrorBoundary>
