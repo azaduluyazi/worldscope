@@ -3,6 +3,7 @@ import { JetBrains_Mono, Inter, Orbitron, Rajdhani, Share_Tech_Mono, Syne, Cormo
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
@@ -269,6 +270,7 @@ export default async function RootLayout({
         {/* <Script id="sw-register" strategy="lazyOnload">
           {`if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}`}
         </Script> */}
+        <SpeedInsights />
       </body>
     </html>
   );
