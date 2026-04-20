@@ -41,6 +41,7 @@
     { "path": "/api/cron/unified-report", "schedule": "0 8 * * *" },
     { "path": "/api/cron/seed-to-events", "schedule": "*/10 * * * *" },
     { "path": "/api/cron/telegram-signals", "schedule": "0,15,30,45 * * * *" },
-    { "path": "/api/cron/bluesky-ingest", "schedule": "*/10 * * * *" }
+    { "path": "/api/cron/bluesky-ingest", "schedule": "*/10 * * * *" },
+    { "path": "/api/cron/run-alerts", "schedule": "3,13,23,33,43,53 * * * *" }
   ]
 }
