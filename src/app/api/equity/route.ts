@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { cachedFetch } from "@/lib/cache/redis";
 import {
   fetchFinnhubQuote,
@@ -7,10 +8,25 @@ import {
   fetchRecommendation,
   fetchFinnhubNews,
 } from "@/lib/api/finnhub";
+import { hasAtLeast, resolveAccess } from "@/lib/subscriptions/access";
 
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
+  // Pro tier gate — Equity Research (analyst targets, recommendations,
+  // full financials) is a Prometheus-tier feature. Matches WM's parity.
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "sign-in required" }, { status: 401 });
+  }
+  const access = await resolveAccess(userId);
+  if (!hasAtLeast(access, "pro")) {
+    return NextResponse.json(
+      { error: "prometheus tier required", currentTier: access.tier },
+      { status: 402 },
+    );
+  }
+
   const url = new URL(req.url);
   const symbol = url.searchParams.get("symbol");
   if (!symbol)
