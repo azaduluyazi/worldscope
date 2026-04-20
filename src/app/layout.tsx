@@ -265,10 +265,14 @@ export default async function RootLayout({
             <div className="scanlines" aria-hidden="true" />
           </ThemeProvider>
         </NextIntlClientProvider>
-        {/* Service Worker registration — temporarily disabled for dev */}
-        {/* <Script id="sw-register" strategy="lazyOnload">
-          {`if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}`}
-        </Script> */}
+        {/* Service Worker registration — enables offline cache for the
+            PWA install. Registered lazyOnload so it never blocks first
+            paint. The SW itself lives at public/sw.js and is opt-in by
+            manifest.json. Skipped on localhost so dev reloads aren't
+            cached. */}
+        <Script id="sw-register" strategy="lazyOnload">
+          {`if('serviceWorker' in navigator && location.hostname !== 'localhost'){navigator.serviceWorker.register('/sw.js').catch(()=>{})}`}
+        </Script>
       </body>
     </html>
   );
