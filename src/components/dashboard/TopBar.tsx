@@ -14,6 +14,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { ThemeSelector } from "./ThemeSelector";
 import { useThreatIndex } from "@/hooks/useThreatIndex";
 import { FaHorseHead } from "react-icons/fa";
+import { useAuth, UserButton } from "@clerk/nextjs";
 
 /** Map threat score to DEFCON level (1=max threat, 5=lowest) */
 function scoreToDefcon(score: number): { level: number; color: string; label: string } {
@@ -131,7 +132,42 @@ export function TopBar({ variant = "world" }: TopBarProps) {
         <button className="w-5 h-5 md:w-6 md:h-6 border border-hud-border rounded flex items-center justify-center hover:border-hud-accent/30 transition-colors text-xs md:text-base">
           🔔
         </button>
+
+        {/* ── Clerk auth affordance ── */}
+        <ClerkAuthSlot />
       </div>
     </header>
+  );
+}
+
+/** Client-side auth-aware slot: SIGN IN button when signed out,
+ *  UserButton when signed in. useAuth keeps this reactive. */
+function ClerkAuthSlot() {
+  const { isLoaded, isSignedIn } = useAuth();
+  if (!isLoaded) {
+    // avoid flicker — render a size-matched spacer while Clerk boots
+    return <span className="inline-block w-6 h-6 md:w-7 md:h-7" aria-hidden="true" />;
+  }
+  if (!isSignedIn) {
+    return (
+      <Link
+        href="/sign-in"
+        className="hidden sm:inline-flex items-center gap-1 font-mono text-[8px] font-bold tracking-wider px-2 py-0.5 rounded border border-hud-accent/30 text-hud-accent hover:bg-hud-accent/10 transition-colors"
+      >
+        SIGN IN
+      </Link>
+    );
+  }
+  return (
+    <div className="flex items-center" aria-label="User menu">
+      <UserButton
+        appearance={{
+          elements: {
+            avatarBox: "w-6 h-6 md:w-7 md:h-7 ring-1 ring-hud-accent/30",
+            userButtonPopoverCard: "bg-hud-panel border border-hud-border",
+          },
+        }}
+      />
+    </div>
   );
 }
