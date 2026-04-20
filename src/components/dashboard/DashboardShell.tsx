@@ -11,7 +11,6 @@ const BreakingToast = dynamic(
 );
 
 /** Heavy components — lazy loaded to reduce initial JS bundle */
-const MarketTicker = dynamic(() => import("./MarketTicker").then((m) => ({ default: m.MarketTicker })), { ssr: false });
 const IntelFeed = dynamic(
   () => import("./IntelFeed").then((m) => ({ default: m.IntelFeed })),
   { ssr: false, loading: () => <IntelFeedSkeleton /> }
@@ -23,11 +22,6 @@ const StorylinePanel = dynamic(() => import("./StorylinePanel").then((m) => ({ d
 const KeyboardHelp = dynamic(() => import("./KeyboardHelp").then((m) => ({ default: m.KeyboardHelp })), { ssr: false });
 const StatusFooter = dynamic(() => import("./StatusFooter").then((m) => ({ default: m.StatusFooter })), { ssr: false });
 const NewsTicker = dynamic(() => import("./NewsTicker").then((m) => ({ default: m.NewsTicker })), { ssr: false });
-const MapViewToggle = dynamic(
-  () => import("./MapViewToggle").then((m) => ({ default: m.MapViewToggle })),
-  { ssr: false }
-);
-import type { MapMode } from "./MapViewToggle";
 const NewsletterPopup = dynamic(
   () => import("./NewsletterPopup").then((m) => ({ default: m.NewsletterPopup })),
   { ssr: false }
@@ -88,10 +82,6 @@ const SourceSelector = dynamic(
   () => import("./SourceSelector").then((m) => ({ default: m.SourceSelector })),
   { ssr: false }
 );
-const SortablePanels = dynamic(
-  () => import("./SortablePanels").then((m) => ({ default: m.SortablePanels })),
-  { ssr: false }
-);
 import { ErrorBoundary } from "@/components/shared/ErrorBoundary";
 import { useKeyboardShortcuts, CATEGORY_KEYS } from "@/hooks/useKeyboardShortcuts";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
@@ -105,15 +95,9 @@ import { AD_PLACEMENTS } from "@/config/ads";
 
 const PANEL_ORDER: MobilePanel[] = ["map", "feed", "live", "alerts"];
 
-/** Dynamic import TacticalMap — 3.2MB mapbox-gl only loads when needed */
-/** Dynamic import Globe3D — Three.js only loads when 3D mode is active */
+/** Dynamic import Globe3D — Three.js only loads on mount (3D is the only map mode now) */
 const Globe3D = dynamic(
   () => import("./Globe3D").then((mod) => ({ default: mod.Globe3D })),
-  { ssr: false, loading: () => <MapSkeleton /> }
-);
-
-const TacticalMap = dynamic(
-  () => import("./TacticalMap").then((mod) => ({ default: mod.TacticalMap })),
   { ssr: false, loading: () => <MapSkeleton /> }
 );
 
@@ -157,7 +141,7 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
     severities: new Set<string>(),
   }));
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
-  const [mapMode, setMapMode] = useState<MapMode>("2d");
+  const [leftTab, setLeftTab] = useState<"signal" | "breaking" | "stories">("signal");
   const [rightTab, setRightTab] = useState<"intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];
@@ -307,13 +291,10 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
             MOBILE LAYOUT (<md): Full-screen panels via bottom nav
             ═══════════════════════════════════════════════════════ */}
         <div ref={swipeRef} className="flex-1 md:hidden relative overflow-hidden">
-          {/* Map — deferred until browser idle to reduce TBT */}
+          {/* Globe — 3D only, deferred until browser idle */}
           <div className={`absolute inset-0 ${mobilePanel === "map" ? "z-10" : "z-0"}`}>
-            <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-              {mapReady ? <TacticalMap filters={filters} variant={variant} enabledLayers={enabledLayerIds} /> : <MapSkeleton />}
-            </ErrorBoundary>
-            <ErrorBoundary section="ticker">
-              <MarketTicker />
+            <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
+              {mapReady ? <Globe3D variant={variant} enabledLayers={enabledLayerIds} /> : <MapSkeleton />}
             </ErrorBoundary>
           </div>
 
@@ -391,81 +372,77 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
         </div>
 
         {/* ═══════════════════════════════════════════════════════
-            DESKTOP LAYOUT (md+): 3-column balanced
+            DESKTOP LAYOUT (md+) — A2 mockup: 3-column
+            Col 1: Tabbed Signal / Breaking / Storylines
+            Col 2: Globe 3D (top) + Live Broadcasts (bottom)
+            Col 3: Intel Feed + 6 analysis tabs (unchanged)
             ═══════════════════════════════════════════════════════ */}
         <div className="flex-1 hidden md:flex gap-1 p-1 overflow-hidden">
 
-          {/* ── Column 1: Map + Webcams ── */}
-          <div className="flex-[3.5] flex flex-col gap-1 min-w-0 col-stagger-1">
-            {/* Map — 2D tactical or 3D globe modes */}
-            <div className="flex-[5.5] relative overflow-hidden rounded-lg border border-hud-border min-h-0 [contain:strict]">
-              {/* Warzone crosshair overlay on map/globe */}
-              {theme.effect === "warzone" && <div className="warzone-crosshair" aria-hidden="true" />}
-              <MapViewToggle mode={mapMode} onModeChange={setMapMode} />
-              <MapLayerPanel layers={layers} onToggleLayer={toggleMapLayer} />
-              {!mapReady ? (
-                <MapSkeleton />
-              ) : mapMode === "2d" ? (
-                <ErrorBoundary section="map" fallback={<MapSkeleton />}>
-                  <TacticalMap filters={filters} variant={variant} enabledLayers={enabledLayerIds} />
-                </ErrorBoundary>
-              ) : (
-                <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
-                  <Globe3D variant={variant} enabledLayers={enabledLayerIds} />
+          {/* ── Col 1: Tabbed — Signal / Breaking / Storylines ── */}
+          <div className="flex-[3] min-w-0 flex flex-col col-stagger-1">
+            <div className="flex border-b border-hud-border/50 mb-1 shrink-0" role="tablist" aria-label="Signal panels">
+              {([
+                { id: "signal" as const, label: "SIGNAL", icon: "Ω" },
+                { id: "breaking" as const, label: "BREAKING", icon: "⚠" },
+                { id: "stories" as const, label: "STORYLINES", icon: "◈" },
+              ]).map((tab) => (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={leftTab === tab.id}
+                  onClick={() => setLeftTab(tab.id)}
+                  className={`flex-1 flex items-center justify-center gap-1 py-1.5 font-mono text-[8px] tracking-wider transition-all ${
+                    leftTab === tab.id
+                      ? "text-hud-accent border-b-2 border-hud-accent"
+                      : "text-hud-muted hover:text-hud-text"
+                  }`}
+                >
+                  <span className="text-[10px]">{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex-1 min-h-0 overflow-hidden">
+              {leftTab === "signal" && (
+                <ErrorBoundary section="convergence">
+                  <ConvergencePanel />
                 </ErrorBoundary>
               )}
-              {mapMode === "2d" && (
-                <ErrorBoundary section="ticker">
-                  <MarketTicker />
+              {leftTab === "breaking" && (
+                <ErrorBoundary section="alerts">
+                  <BreakingAlerts />
+                </ErrorBoundary>
+              )}
+              {leftTab === "stories" && (
+                <ErrorBoundary section="storylines">
+                  <StorylinePanel />
                 </ErrorBoundary>
               )}
             </div>
+          </div>
 
-            {/* Convergence panel */}
-            <div className="flex-[4.5] min-h-0 [contain:strict]">
-              <ErrorBoundary section="convergence">
-                <ConvergencePanel />
+          {/* ── Col 2: Globe 3D + Live Broadcasts ── */}
+          <div className="flex-[4.5] flex flex-col gap-1 min-w-0 col-stagger-2">
+            <div className="flex-[7] relative overflow-hidden rounded-lg border border-hud-border min-h-0 [contain:strict]">
+              {theme.effect === "warzone" && <div className="warzone-crosshair" aria-hidden="true" />}
+              <MapLayerPanel layers={layers} onToggleLayer={toggleMapLayer} />
+              {mapReady ? (
+                <ErrorBoundary section="globe" fallback={<MapSkeleton />}>
+                  <Globe3D variant={variant} enabledLayers={enabledLayerIds} />
+                </ErrorBoundary>
+              ) : (
+                <MapSkeleton />
+              )}
+            </div>
+            <div className="flex-[3] min-h-0 [contain:strict]">
+              <ErrorBoundary section="broadcasts">
+                <LiveBroadcasts />
               </ErrorBoundary>
             </div>
           </div>
 
-          {/* ── Column 2: Live TV + Breaking + Storylines (Drag & Drop) ── */}
-          <div className="flex-[3.5] min-w-0 col-stagger-2">
-            <SortablePanels
-              className="h-full"
-              panels={[
-                {
-                  id: "storylines",
-                  label: "STORYLINES",
-                  node: (
-                    <ErrorBoundary section="storylines">
-                      <StorylinePanel />
-                    </ErrorBoundary>
-                  ),
-                },
-                {
-                  id: "broadcasts",
-                  label: "LIVE TV",
-                  node: (
-                    <ErrorBoundary section="broadcasts">
-                      <LiveBroadcasts />
-                    </ErrorBoundary>
-                  ),
-                },
-                {
-                  id: "alerts",
-                  label: "ALERTS",
-                  node: (
-                    <ErrorBoundary section="alerts">
-                      <BreakingAlerts />
-                    </ErrorBoundary>
-                  ),
-                },
-              ]}
-            />
-          </div>
-
-          {/* ── Column 3: Tabbed Panel (Intel / Predictions / Economics) ── */}
+          {/* ── Col 3: Intel Feed + 6 analysis tabs ── */}
           <div className="flex-[3] min-w-0 max-lg:hidden flex flex-col col-stagger-3">
             {/* Tab bar */}
             <div className="flex border-b border-hud-border/50 mb-1 shrink-0">
