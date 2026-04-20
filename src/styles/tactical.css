@@ -1330,3 +1330,192 @@ aside button:active {
   will-change: opacity, transform;
   contain: layout style;
 }
+
+/* ══════════════════════════════════════════════════════════════════════
+   A2 THEME PORT — full visual identity per theme
+   Activated via [data-theme="warroom"] / [data-theme="cyberpunk"]
+   applied to <html> by ThemeProvider. Supersedes older effect-*
+   styling for these two themes.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ---------- shared: font variables available to both ---------- */
+:root {
+  --font-display-warroom: var(--font-syne), 'Syne', 'Rajdhani', sans-serif;
+  --font-serif-warroom: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  --font-display-cyber: var(--font-orbitron), 'Orbitron', 'Rajdhani', sans-serif;
+}
+
+/* ======================================================================
+   TROIA WAR ROOM — amber command center
+   ====================================================================== */
+[data-theme="warroom"] {
+  --font-display: var(--font-display-warroom);
+  --font-serif-active: var(--font-serif-warroom);
+  --primary-glow: rgba(245, 165, 36, 0.32);
+}
+
+[data-theme="warroom"] body {
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 5%, rgba(245, 165, 36, 0.07), transparent 60%),
+    radial-gradient(ellipse 50% 50% at 85% 90%, rgba(255, 59, 48, 0.05), transparent 55%),
+    var(--color-hud-base, #060509);
+}
+
+/* CRT scanlines — subtle multiply overlay */
+[data-theme="warroom"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 998;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.18) 2px 3px
+  );
+  mix-blend-mode: multiply;
+}
+
+/* amber noise grain */
+[data-theme="warroom"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Display-font adoption — Syne replaces generic sans for headers */
+[data-theme="warroom"] .font-display,
+[data-theme="warroom"] h1,
+[data-theme="warroom"] h2,
+[data-theme="warroom"] h3 {
+  font-family: var(--font-display-warroom);
+  letter-spacing: 0.02em;
+}
+
+/* Serif accent — Cormorant italic for editorial moments */
+[data-theme="warroom"] .font-serif-accent,
+[data-theme="warroom"] blockquote,
+[data-theme="warroom"] .alert-item-title,
+[data-theme="warroom"] .story-title {
+  font-family: var(--font-serif-warroom);
+  font-style: italic;
+}
+
+/* Amber accent glow on interactive HUD borders */
+[data-theme="warroom"] [class*="border-hud-accent"],
+[data-theme="warroom"] .panel-amber {
+  box-shadow: 0 0 24px -12px var(--primary-glow);
+}
+
+/* Troia horse / brand mark amber drop-shadow */
+[data-theme="warroom"] [class*="drop-shadow"] {
+  filter: drop-shadow(0 0 10px var(--primary-glow));
+}
+
+/* Threat-level red for critical severity keeps warning clarity */
+[data-theme="warroom"] .severity-critical {
+  color: #ff3b30;
+  border-left-color: #ff3b30;
+}
+[data-theme="warroom"] .severity-high {
+  color: #ff9500;
+  border-left-color: #ff9500;
+}
+[data-theme="warroom"] .severity-medium {
+  color: #f5a524;
+  border-left-color: #f5a524;
+}
+[data-theme="warroom"] .severity-low {
+  color: #6effb8;
+  border-left-color: #6effb8;
+}
+
+/* ======================================================================
+   NEON CYBERPUNK — magenta + cyan
+   ====================================================================== */
+[data-theme="cyberpunk"] {
+  --font-display: var(--font-display-cyber);
+  --primary-glow: rgba(255, 43, 214, 0.42);
+  --secondary-glow: rgba(0, 240, 255, 0.32);
+}
+
+[data-theme="cyberpunk"] body {
+  background:
+    radial-gradient(ellipse 50% 40% at 15% 10%, rgba(255, 43, 214, 0.14), transparent 60%),
+    radial-gradient(ellipse 40% 50% at 85% 85%, rgba(0, 240, 255, 0.12), transparent 55%),
+    radial-gradient(ellipse 30% 35% at 50% 50%, rgba(179, 77, 255, 0.05), transparent 70%),
+    var(--color-hud-base, #06011a);
+}
+
+/* Scanlines — additive cyan tint via screen blend */
+[data-theme="cyberpunk"] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 998;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    rgba(0, 240, 255, 0.04) 2px 3px
+  );
+  mix-blend-mode: screen;
+}
+
+[data-theme="cyberpunk"] body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 999;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* Orbitron everywhere for displayed strings — cyberpunk defining look */
+[data-theme="cyberpunk"] .font-display,
+[data-theme="cyberpunk"] h1,
+[data-theme="cyberpunk"] h2,
+[data-theme="cyberpunk"] h3,
+[data-theme="cyberpunk"] .troia-shimmer {
+  font-family: var(--font-display-cyber);
+  letter-spacing: 0.04em;
+}
+
+/* Magenta glow on interactive borders */
+[data-theme="cyberpunk"] [class*="border-hud-accent"],
+[data-theme="cyberpunk"] .panel-neon {
+  box-shadow: 0 0 24px -10px var(--primary-glow), 0 0 40px -20px var(--secondary-glow);
+}
+
+/* Cyan secondary pulse on live indicators */
+[data-theme="cyberpunk"] .live-glow,
+[data-theme="cyberpunk"] [class*="chip-live"] {
+  box-shadow: 0 0 14px var(--secondary-glow);
+}
+
+[data-theme="cyberpunk"] [class*="drop-shadow"] {
+  filter: drop-shadow(0 0 10px var(--primary-glow));
+}
+
+/* Severity palette — neon-adjacent, readability preserved */
+[data-theme="cyberpunk"] .severity-critical {
+  color: #ff004d;
+  border-left-color: #ff004d;
+}
+[data-theme="cyberpunk"] .severity-high {
+  color: #ffb300;
+  border-left-color: #ffb300;
+}
+[data-theme="cyberpunk"] .severity-medium {
+  color: #ff2bd6;
+  border-left-color: #ff2bd6;
+}
+[data-theme="cyberpunk"] .severity-low {
+  color: #00f0ff;
+  border-left-color: #00f0ff;
+}

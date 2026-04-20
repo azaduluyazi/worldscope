@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono, Inter, Orbitron, Rajdhani, Share_Tech_Mono } from "next/font/google";
+import { JetBrains_Mono, Inter, Orbitron, Rajdhani, Share_Tech_Mono, Syne, Cormorant_Garamond } from "next/font/google";
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
@@ -45,6 +45,22 @@ const shareTechMono = Share_Tech_Mono({
   subsets: ["latin"],
   weight: ["400"],
   variable: "--font-share-tech-mono",
+  display: "swap",
+});
+
+/** Troia War Room theme — Syne (display) + Cormorant Garamond (serif italic) */
+const syne = Syne({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-syne",
+  display: "swap",
+});
+
+const cormorant = Cormorant_Garamond({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
+  variable: "--font-cormorant",
   display: "swap",
 });
 
@@ -168,7 +184,7 @@ export default async function RootLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`dark ${jetbrainsMono.variable} ${inter.variable} ${orbitron.variable} ${rajdhani.variable} ${shareTechMono.variable}`}>
+    <html lang={locale} className={`dark ${jetbrainsMono.variable} ${inter.variable} ${orbitron.variable} ${rajdhani.variable} ${shareTechMono.variable} ${syne.variable} ${cormorant.variable}`}>
       <head>
         {/* PWA & Mobile meta */}
         <meta name="theme-color" content="#050a12" />
