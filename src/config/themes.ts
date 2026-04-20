@@ -1,6 +1,10 @@
 /**
- * Dashboard Theme System — 20 visual themes.
- * Each theme defines CSS custom property overrides + layout/typography hints.
+ * Dashboard Theme System — 2 themes only.
+ *
+ * Previously had 16 themes. Reduced to 2 after A2 redesign session
+ * (2026-04-20) — see wiki log for motivation. Users whose localStorage
+ * held removed theme IDs (spartan-red, warzone, amber, bloomberg, etc.)
+ * will automatically fall back to DEFAULT_THEME via getThemeById().
  */
 
 export interface DashboardTheme {
@@ -8,7 +12,7 @@ export interface DashboardTheme {
   name: string;
   icon: string;
   description: string;
-  group: "tactical" | "ambient" | "terminal" | "broadcast" | "modern" | "mythology";
+  group: "mythology";
   colors: {
     base: string;
     surface: string;
@@ -17,7 +21,7 @@ export interface DashboardTheme {
     muted: string;
     text: string;
     accent: string;
-    /** Optional secondary accent (e.g. neon cyan alongside neon pink) */
+    /** Optional secondary accent */
     accent2?: string;
   };
   glow?: string;
@@ -39,463 +43,86 @@ export interface DashboardTheme {
   };
   /** Whether to show a DEFCON / threat-level bar */
   defconBar?: boolean;
-  /** Whether the breaking banner uses gradient animation */
+  /** Whether top header is a gradient critical banner */
   gradientBanner?: boolean;
-  /** Custom grid overlay color (rgba) */
+  /** Grid overlay CSS (e.g. subtle dotted grid) */
   gridOverlay?: string;
 }
 
 export const THEMES: DashboardTheme[] = [
-  // ══════════════════════════════════════════════════════
-  // DARK TACTICAL (1-6) — existing themes
-  // ══════════════════════════════════════════════════════
-
-{
-    id: "intelligence",
-    name: "Intelligence",
-    icon: "🕵️",
-    description: "Classified intel operations",
-    group: "tactical",
+  {
+    id: "warroom",
+    name: "Troia War Room",
+    icon: "🐴",
+    description: "Amber command center · CRT scanlines · Pantheon nav",
+    group: "mythology",
     colors: {
-      base: "#0a0a0f",
-      surface: "#0f0f18",
-      panel: "#141420",
-      border: "#1e1e35",
-      muted: "#3a3a5c",
-      text: "#d4d4e8",
-      accent: "#7c6aff",
+      base: "#060509",
+      surface: "#0a0810",
+      panel: "#110d14",
+      border: "#2d1e08",
+      muted: "#7e7866",
+      text: "#f1ede3",
+      accent: "#f5a524",
+      accent2: "#6effb8",
     },
-    glow: "rgba(124, 106, 255, 0.12)",
-    scanlines: false,
+    glow: "#f5a524",
+    scanlines: true,
     fontMode: "mono",
     cardRadius: "none",
+    cardShadow: "glow",
+    effect: "warzone",
+    defconBar: true,
+    gradientBanner: true,
+    severityColors: {
+      critical: "#ff3b30",
+      high: "#ff9500",
+      medium: "#f5a524",
+      low: "#6effb8",
+      info: "#c5bfae",
+    },
   },
-
   {
     id: "cyberpunk",
     name: "Neon Cyberpunk",
-    icon: "🌆",
-    description: "Neon glow, pulse animations, gradient cards",
-    group: "tactical",
+    icon: "⚡",
+    description: "Magenta + cyan + violet · Orbitron · screen-blend CRT",
+    group: "mythology",
     colors: {
-      base: "#0a0015",
-      surface: "#100020",
-      panel: "#150028",
-      border: "#2d0040",
-      muted: "#5a2d6a",
-      text: "#e8d5f0",
-      accent: "#ff2d95",
-      accent2: "#00e5ff",
+      base: "#06011a",
+      surface: "#0a0230",
+      panel: "#120340",
+      border: "#3d0a56",
+      muted: "#6a7a99",
+      text: "#eaf8ff",
+      accent: "#ff2bd6",
+      accent2: "#00f0ff",
     },
-    glow: "rgba(255, 45, 149, 0.25)",
-    scanlines: false,
+    glow: "#ff2bd6",
+    scanlines: true,
     fontMode: "mono",
     displayFont: "orbitron",
-    cardRadius: "md",
+    cardRadius: "none",
     cardShadow: "glow",
     effect: "neon-cyberpunk",
-    severityColors: {
-      critical: "#ff2d55",
-      high: "#ff8c00",
-      medium: "#ffd600",
-      low: "#00e5ff",
-      info: "#a855f7",
-    },
-    gradientBanner: true,
-  },
-
-  {
-    id: "arctic",
-    name: "Arctic",
-    icon: "❄️",
-    description: "Polar research station",
-    group: "tactical",
-    colors: {
-      base: "#070d14",
-      surface: "#0b1320",
-      panel: "#0e182a",
-      border: "#1a2d4a",
-      muted: "#3a5a7a",
-      text: "#dce8f4",
-      accent: "#4ecdc4",
-    },
-    glow: "rgba(78, 205, 196, 0.12)",
-    scanlines: false,
-    fontMode: "mono",
-    cardRadius: "sm",
-  },
-
-  {
-    id: "emerald",
-    name: "Emerald Ops",
-    icon: "🟢",
-    description: "Night-vision tactical operations",
-    group: "tactical",
-    colors: {
-      base: "#040a08",
-      surface: "#081210",
-      panel: "#0c1a16",
-      border: "#153025",
-      muted: "#2a5a45",
-      text: "#c8e8d8",
-      accent: "#10b981",
-    },
-    glow: "rgba(16, 185, 129, 0.12)",
-    scanlines: false,
-    fontMode: "mono",
-    cardRadius: "none",
-    cardShadow: "glow",
-  },
-
-  {
-    id: "crimson",
-    name: "Crimson Alert",
-    icon: "🔴",
-    description: "DEFCON 1 — maximum threat",
-    group: "tactical",
-    colors: {
-      base: "#0f0808",
-      surface: "#180c0c",
-      panel: "#201010",
-      border: "#3a1818",
-      muted: "#6a3030",
-      text: "#f0d0d0",
-      accent: "#ef4444",
-    },
-    glow: "rgba(239, 68, 68, 0.15)",
-    scanlines: true,
-    fontMode: "mono",
-    cardRadius: "none",
-    effect: "alert-mode",
-  },
-
-  {
-    id: "warzone",
-    name: "Warzone",
-    icon: "⚠️",
-    description: "Red dominant, DEFCON bar, CRT scans, flashing alerts",
-    group: "tactical",
-    colors: {
-      base: "#080404",
-      surface: "#0c0606",
-      panel: "#120808",
-      border: "#2a1111",
-      muted: "#553333",
-      text: "#d4d4d4",
-      accent: "#cc3333",
-      accent2: "#ff8800",
-    },
-    glow: "rgba(200, 0, 0, 0.2)",
-    scanlines: true,
-    fontMode: "mono",
-    displayFont: "rajdhani",
-    cardRadius: "none",
-    cardShadow: "none",
-    effect: "warzone",
-    severityColors: {
-      critical: "#ff3333",
-      high: "#ff8800",
-      medium: "#cccc00",
-      low: "#44aa44",
-      info: "#6699cc",
-    },
     defconBar: true,
-    gridOverlay: "rgba(255,0,0,0.02)",
-  },
-
-  // ══════════════════════════════════════════════════════
-  // DARK AMBIENT (7-10)
-  // ══════════════════════════════════════════════════════
-
-  {
-    id: "amber",
-    name: "Amber",
-    icon: "🌅",
-    description: "Warm desert operations",
-    group: "ambient",
-    colors: {
-      base: "#0f0a05",
-      surface: "#1a1208",
-      panel: "#201a0c",
-      border: "#3d2e14",
-      muted: "#6b5530",
-      text: "#e8dcc8",
-      accent: "#f0a030",
-    },
-    glow: "rgba(240, 160, 48, 0.15)",
-    scanlines: true,
-    fontMode: "mono",
-    cardRadius: "none",
-  },
-
-{
-    id: "tokyo",
-    name: "Tokyo Night",
-    icon: "🌃",
-    description: "Soft neon city after midnight",
-    group: "ambient",
-    colors: {
-      base: "#1a1b2e",
-      surface: "#1e1f35",
-      panel: "#24253d",
-      border: "#2f3050",
-      muted: "#565f89",
-      text: "#c0caf5",
-      accent: "#7aa2f7",
-    },
-    glow: "rgba(122, 162, 247, 0.1)",
-    scanlines: false,
-    fontMode: "mono",
-    cardRadius: "md",
-    cardShadow: "sm",
-  },
-
-// ══════════════════════════════════════════════════════
-  // TERMINAL (11-13)
-  // ══════════════════════════════════════════════════════
-
-  {
-    id: "bloomberg",
-    name: "Bloomberg Terminal",
-    icon: "📊",
-    description: "Pure black, orange mono, ASCII, zero decoration",
-    group: "terminal",
-    colors: {
-      base: "#000000",
-      surface: "#0a0a0a",
-      panel: "#111111",
-      border: "#222222",
-      muted: "#555555",
-      text: "#ff8c00",
-      accent: "#ff8c00",
-      accent2: "#00ccff",
-    },
-    scanlines: false,
-    fontMode: "mono",
-    displayFont: "share-tech-mono",
-    cardRadius: "none",
-    cardShadow: "none",
-    effect: "bloomberg-terminal",
-    severityColors: {
-      critical: "#ff2d2d",
-      high: "#ff8c00",
-      medium: "#cccc00",
-      low: "#00cc66",
-      info: "#666666",
-    },
-  },
-
-  {
-    id: "matrix",
-    name: "Matrix",
-    icon: "🖥️",
-    description: "Green phosphor terminal rain",
-    group: "terminal",
-    colors: {
-      base: "#000000",
-      surface: "#020802",
-      panel: "#041004",
-      border: "#0a200a",
-      muted: "#1a4a1a",
-      text: "#00ff41",
-      accent: "#00ff41",
-    },
-    glow: "rgba(0, 255, 65, 0.15)",
-    scanlines: true,
-    fontMode: "mono",
-    cardRadius: "none",
-    cardShadow: "glow",
-    effect: "phosphor-glow",
-  },
-
-  {
-    id: "solarized",
-    name: "Solarized",
-    icon: "☀️",
-    description: "Developer-friendly warm dark",
-    group: "terminal",
-    colors: {
-      base: "#002b36",
-      surface: "#073642",
-      panel: "#073642",
-      border: "#586e75",
-      muted: "#657b83",
-      text: "#93a1a1",
-      accent: "#268bd2",
-    },
-    glow: "rgba(38, 139, 210, 0.1)",
-    scanlines: false,
-    fontMode: "mono",
-    cardRadius: "sm",
-    cardShadow: "none",
-  },
-
-  // ══════════════════════════════════════════════════════
-  // BROADCAST (14-15)
-  // ══════════════════════════════════════════════════════
-
-  {
-    id: "broadcast",
-    name: "Broadcast",
-    icon: "📺",
-    description: "24-hour news control room",
-    group: "broadcast",
-    colors: {
-      base: "#0c0c14",
-      surface: "#12121c",
-      panel: "#181828",
-      border: "#cc0000",
-      muted: "#4a4a6a",
-      text: "#f0f0f8",
-      accent: "#cc0000",
-    },
-    glow: "rgba(204, 0, 0, 0.12)",
-    scanlines: false,
-    fontMode: "sans",
-    cardRadius: "sm",
-    cardShadow: "sm",
-    effect: "broadcast-bar",
-  },
-
-// ══════════════════════════════════════════════════════
-  // MODERN (16)
-  // ══════════════════════════════════════════════════════
-
-  {
-    id: "frost",
-    name: "Frost Glass",
-    icon: "✨",
-    description: "Translucent glassmorphism",
-    group: "modern",
-    colors: {
-      base: "#0f1729",
-      surface: "#141e37",
-      panel: "#192646",
-      border: "#2a3a5c",
-      muted: "#5a7aa0",
-      text: "#e8f0ff",
-      accent: "#60a5fa",
-    },
-    glow: "rgba(96, 165, 250, 0.1)",
-    scanlines: false,
-    fontMode: "sans",
-    cardRadius: "lg",
-    cardShadow: "md",
-    effect: "glassmorphism",
-  },
-
-// ══════════════════════════════════════════════════════
-  // MYTHOLOGY — Troia-themed Greek mythology aesthetics
-  // ══════════════════════════════════════════════════════
-
-  {
-    id: "olympus-gold",
-    name: "Olympus Gold",
-    icon: "🏛️",
-    description: "Golden throne of the gods — divine bronze and marble",
-    group: "mythology",
-    colors: {
-      base: "#0a0804",
-      surface: "#12100a",
-      panel: "#1a1610",
-      border: "#2e2618",
-      muted: "#6b5a3a",
-      text: "#e8dcc4",
-      accent: "#d4af37",
-      accent2: "#f0d060",
-    },
-    glow: "rgba(212, 175, 55, 0.18)",
-    scanlines: false,
-    fontMode: "serif",
-    displayFont: "rajdhani",
-    cardRadius: "sm",
-    cardShadow: "glow",
-    severityColors: {
-      critical: "#c0392b",
-      high: "#d4af37",
-      medium: "#b8860b",
-      low: "#8fbc8f",
-      info: "#c8a951",
-    },
     gradientBanner: true,
-  },
-
-  {
-    id: "aegean-dark",
-    name: "Aegean Dark",
-    icon: "🌊",
-    description: "Deep Aegean seas — Poseidon's domain of waves and storms",
-    group: "mythology",
-    colors: {
-      base: "#040810",
-      surface: "#06101e",
-      panel: "#081628",
-      border: "#0e2a4a",
-      muted: "#1e4a6e",
-      text: "#c4dce8",
-      accent: "#4db8d4",
-      accent2: "#1e90ff",
-    },
-    glow: "rgba(77, 184, 212, 0.15)",
-    scanlines: false,
-    fontMode: "mono",
-    displayFont: "rajdhani",
-    cardRadius: "sm",
-    cardShadow: "glow",
     severityColors: {
-      critical: "#e74c3c",
-      high: "#e67e22",
-      medium: "#4db8d4",
-      low: "#2ecc71",
-      info: "#1e90ff",
+      critical: "#ff004d",
+      high: "#ffb300",
+      medium: "#ff2bd6",
+      low: "#00f0ff",
+      info: "#a7c5e8",
     },
-  },
-
-  {
-    id: "spartan-red",
-    name: "Spartan Red",
-    icon: "🛡️",
-    description: "Blood and bronze — the warrior's forge of Ares",
-    group: "mythology",
-    colors: {
-      base: "#0a0406",
-      surface: "#120810",
-      panel: "#1a0c14",
-      border: "#301520",
-      muted: "#5a2a3a",
-      text: "#e8d0d8",
-      accent: "#c0392b",
-      accent2: "#cd7f32",
-    },
-    glow: "rgba(192, 57, 43, 0.2)",
-    scanlines: true,
-    fontMode: "mono",
-    displayFont: "rajdhani",
-    cardRadius: "none",
-    cardShadow: "glow",
-    effect: "warzone",
-    severityColors: {
-      critical: "#e74c3c",
-      high: "#cd7f32",
-      medium: "#b8860b",
-      low: "#6b8e6b",
-      info: "#8b7d6b",
-    },
-    defconBar: true,
-    gridOverlay: "rgba(192,57,43,0.02)",
   },
 ];
 
-export const DEFAULT_THEME = THEMES.find(t => t.id === "spartan-red") || THEMES[0];
+export const DEFAULT_THEME =
+  THEMES.find((t) => t.id === "warroom") || THEMES[0];
 
-export const THEME_GROUPS = {
-  mythology: "Troia Mythology",
-  tactical: "Dark Tactical",
-  ambient: "Dark Ambient",
-  terminal: "Terminal",
-  broadcast: "Broadcast",
-  modern: "Modern",
-} as const;
+export const THEME_GROUPS: Record<string, string> = {
+  mythology: "Troia Themes",
+};
 
 export function getThemeById(id: string): DashboardTheme {
   return THEMES.find((t) => t.id === id) || DEFAULT_THEME;

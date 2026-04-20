@@ -2,8 +2,10 @@ import { describe, it, expect } from "vitest";
 import { THEMES, getThemeById, DEFAULT_THEME, THEME_GROUPS } from "@/config/themes";
 
 describe("Theme system", () => {
-  it("has 16 themes defined", () => {
-    expect(THEMES.length).toBe(16);
+  it("has exactly 2 themes (warroom + cyberpunk)", () => {
+    expect(THEMES.length).toBe(2);
+    const ids = THEMES.map((t) => t.id).sort();
+    expect(ids).toEqual(["cyberpunk", "warroom"]);
   });
 
   it("every theme has required color properties", () => {
@@ -16,18 +18,26 @@ describe("Theme system", () => {
     }
   });
 
-  it("getThemeById returns correct theme", () => {
+  it("getThemeById returns correct theme for known ids", () => {
+    expect(getThemeById("warroom").id).toBe("warroom");
     expect(getThemeById("cyberpunk").id).toBe("cyberpunk");
-    expect(getThemeById("bloomberg").id).toBe("bloomberg");
-    expect(getThemeById("warzone").id).toBe("warzone");
   });
 
-  it("getThemeById returns default for unknown id", () => {
+  it("getThemeById falls back to default for legacy/unknown ids", () => {
+    // Previously valid IDs — all should gracefully fall back to warroom
+    // so existing users with a removed theme in localStorage don't break.
+    expect(getThemeById("bloomberg").id).toBe(DEFAULT_THEME.id);
+    expect(getThemeById("warzone").id).toBe(DEFAULT_THEME.id);
+    expect(getThemeById("spartan-red").id).toBe(DEFAULT_THEME.id);
     expect(getThemeById("nonexistent").id).toBe(DEFAULT_THEME.id);
   });
 
+  it("DEFAULT_THEME is warroom", () => {
+    expect(DEFAULT_THEME.id).toBe("warroom");
+  });
+
   it("no duplicate theme IDs", () => {
-    const ids = THEMES.map(t => t.id);
+    const ids = THEMES.map((t) => t.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
@@ -38,22 +48,20 @@ describe("Theme system", () => {
     }
   });
 
-  it("warzone has defconBar enabled", () => {
-    expect(getThemeById("warzone").defconBar).toBe(true);
+  it("warroom has defconBar + gradientBanner enabled", () => {
+    const t = getThemeById("warroom");
+    expect(t.defconBar).toBe(true);
+    expect(t.gradientBanner).toBe(true);
   });
 
-  it("cyberpunk has gradientBanner enabled", () => {
-    expect(getThemeById("cyberpunk").gradientBanner).toBe(true);
+  it("cyberpunk has defconBar + gradientBanner enabled", () => {
+    const t = getThemeById("cyberpunk");
+    expect(t.defconBar).toBe(true);
+    expect(t.gradientBanner).toBe(true);
   });
 
-  it("bloomberg has zero card radius and no card shadow", () => {
-    const bloomberg = getThemeById("bloomberg");
-    expect(bloomberg.cardRadius).toBe("none");
-    expect(bloomberg.cardShadow).toBe("none");
-  });
-
-  it("no light themes remain after editorial removal", () => {
-    const lightThemes = THEMES.filter(t => t.lightMode);
+  it("no light themes remain", () => {
+    const lightThemes = THEMES.filter((t) => t.lightMode);
     expect(lightThemes.length).toBe(0);
   });
 });
