@@ -5,15 +5,50 @@ import { LegalFooter } from "@/components/shared/LegalFooter";
 export const metadata: Metadata = {
   title: "Pricing — WorldScope",
   description:
-    "WorldScope core platform is 100% free. Real-time global news dashboard with AI analytics, interactive maps, live international news channels, and more. Optional premium briefing tier coming soon.",
+    "WorldScope core platform is 100% free. Real-time global news dashboard with AI analytics, interactive maps, 8,246 live international news channels, and more. Optional paid briefing tiers launching soon.",
   openGraph: {
     title: "Pricing — WorldScope",
     description:
-      "Free core platform. Real-time global news monitoring with AI analytics, 3D maps, live international news channels, and 20+ themes. Premium briefing tier coming soon.",
+      "Free core platform. Real-time global news monitoring with AI analytics, 3D maps, 8,246 live international news channels, and 30 languages. Paid briefing tiers launching soon.",
     type: "website",
   },
   alternates: { canonical: "/pricing" },
 };
+
+interface TierProps {
+  name: string;
+  greek: string;
+  price: string;
+  unit: string;
+  tag: string;
+  lede: string;
+  bullets: string[];
+}
+
+function Tier({ name, greek, price, unit, tag, lede, bullets }: TierProps) {
+  return (
+    <div className="border border-amber-400/40 rounded-sm p-5 bg-amber-400/[0.03]">
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
+          {tag}
+        </span>
+        <h3 className="text-base font-bold text-amber-300 tracking-wide uppercase">
+          {name} <span className="text-amber-200/60 font-normal">· {greek}</span>
+        </h3>
+      </div>
+      <div className="flex items-baseline gap-2 mb-3">
+        <span className="text-3xl font-bold text-amber-300">{price}</span>
+        <span className="text-xs text-gray-500">{unit}</span>
+      </div>
+      <p className="text-sm text-gray-300 mb-3">{lede}</p>
+      <ul className="space-y-2 text-sm text-gray-200">
+        {bullets.map((b) => (
+          <Feature key={b} text={b} />
+        ))}
+      </ul>
+    </div>
+  );
+}
 
 export default function PricingPage() {
   return (
@@ -27,35 +62,37 @@ export default function PricingPage() {
         </Link>
 
         <h1 className="text-xl font-bold text-cyan-400 mb-1 tracking-wider uppercase">
-          Free Core, Optional Premium
+          Free Core · Pantheon of Premium
         </h1>
         <p className="text-gray-500 text-xs mb-8">
-          Full dashboard free forever. Optional paid briefing tier launching soon.
+          The full dashboard is free forever. Optional paid briefing tiers —
+          named after the Greek pantheon — are launching in phases.
         </p>
 
-        {/* Hero card */}
+        {/* Hero card — Free */}
         <div className="border-2 border-cyan-400/30 rounded-sm p-6 mb-8 bg-cyan-400/5">
           <div className="flex items-baseline gap-3 mb-4">
             <span className="text-4xl font-bold text-cyan-400">$0</span>
-            <span className="text-sm text-gray-500">forever</span>
+            <span className="text-sm text-gray-500">forever — no sign-up</span>
           </div>
           <p className="text-sm text-gray-300 mb-6">
             WorldScope is a free, ad-supported global intelligence platform.
-            Every feature is included — no account required, no credit card, no limits.
+            Every feature is included — no account required, no credit card, no
+            limits.
           </p>
 
           <ul className="space-y-3 text-sm text-gray-200">
             <Feature text="Real-time global news dashboard" />
             <Feature text="Interactive 2D & 3D world maps" />
-            <Feature text="232 live international news channels" />
-            <Feature text="549 RSS feed sources" />
-            <Feature text="10 dashboard variants (Finance, Weather, Sports...)" />
-            <Feature text="News translation in 30 languages" />
-            <Feature text="AI-powered analytics & trend detection" />
-            <Feature text="Daily email briefing (newsletter)" />
+            <Feature text="8,246 live IPTV channels + 106 YouTube news streams" />
+            <Feature text="689 curated RSS feed sources" />
+            <Feature text="11 dashboard variants (Olympus, Ares, Hephaestus, Hermes…)" />
+            <Feature text="30 languages + full RTL support (Arabic, Persian)" />
+            <Feature text="AI-powered analytics, convergence engine & trend detection" />
+            <Feature text="Daily email briefing (free newsletter)" />
             <Feature text="Text-to-speech news reader" />
-            <Feature text="20+ visual themes" />
-            <Feature text="5 globe visualization modes" />
+            <Feature text="2 curated visual themes — Troia War Room & Neon Cyberpunk" />
+            <Feature text="Programmatic country pages — 195 countries × 9 variants" />
             <Feature text="Data export (CSV)" />
           </ul>
         </div>
@@ -73,38 +110,91 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Premium Briefing — Coming Soon */}
-        <div className="border-2 border-amber-400/40 rounded-sm p-6 mb-8 bg-amber-400/5">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
-              Coming Soon
+        {/* Pantheon of tiers — Greek pantheon */}
+        <h2 className="text-sm font-bold text-amber-300 mb-4 tracking-wide uppercase">
+          Pantheon of Premium Briefings
+        </h2>
+
+        <div className="grid md:grid-cols-2 gap-4 mb-8">
+          <Tier
+            name="Chora"
+            greek="Χώρα — the land"
+            price="$1"
+            unit="per country / month"
+            tag="Coming Soon"
+            lede="Pick a single country and receive a personalized daily situation report generated from WorldScope's full aggregation network."
+            bullets={[
+              "Personalized daily email for one country",
+              "AI situation reports from 2,000+ sources",
+              "Priority delivery before the free newsletter",
+              "Cancel anytime",
+            ]}
+          />
+          <Tier
+            name="Pleiades"
+            greek="Πλειάδες — seven sisters"
+            price="$5"
+            unit="5 countries / month"
+            tag="Planned"
+            lede="A curated bundle of five countries of your choosing — built for regional analysts tracking an arc of conflict, trade, or markets."
+            bullets={[
+              "5 countries, one subscription",
+              "Daily cross-country convergence briefing",
+              "Regional scoring — early signals across the set",
+              "Full AI summarization",
+            ]}
+          />
+          <Tier
+            name="Gaia"
+            greek="Γαῖα — the Earth"
+            price="$9"
+            unit="global / month"
+            tag="Planned"
+            lede="The entire planet in one briefing. Gaia delivers a daily worldwide digest: tier-1 events, convergence storylines, and macro signals."
+            bullets={[
+              "Every country, every day",
+              "Convergence T1–T4 storyline feed",
+              "Weekly macro digest",
+              "Priority delivery",
+            ]}
+          />
+          <Tier
+            name="Prometheus"
+            greek="Προμηθεύς — the fire bringer"
+            price="$19"
+            unit="pro / month"
+            tag="Planned"
+            lede="Power-user toolkit — WorldScope Chat, MCP connector for Claude/GPT, alert rules engine, custom widgets, and AI digest delivery to Slack, Telegram, email, and webhooks."
+            bullets={[
+              "Everything in Gaia",
+              "WorldScope Chat (multi-turn, 30 languages)",
+              "MCP connector (bring-your-own LLM)",
+              "Custom alert rules with quiet hours",
+              "Slack / Telegram / Webhook digest delivery",
+            ]}
+          />
+        </div>
+
+        <div className="border border-gray-800 rounded-sm p-5 mb-8 bg-purple-400/5">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            <span className="text-[10px] font-bold text-purple-300 bg-purple-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
+              Enterprise
             </span>
-            <h2 className="text-sm font-bold text-amber-300 tracking-wide uppercase">
-              Premium Intelligence Briefing
-            </h2>
+            <h3 className="text-base font-bold text-purple-300 tracking-wide uppercase">
+              Pantheon <span className="text-purple-200/60 font-normal">· Πάνθεον — council of the gods</span>
+            </h3>
           </div>
-          <div className="flex items-baseline gap-3 mb-4">
-            <span className="text-3xl font-bold text-amber-300">$1</span>
-            <span className="text-xs text-gray-500">
-              per country / month — optional add-on
-            </span>
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="text-3xl font-bold text-purple-300">$99</span>
+            <span className="text-xs text-gray-500">team / month</span>
           </div>
-          <p className="text-sm text-gray-300 mb-4">
-            An optional paid email briefing tier sitting on top of the free
-            dashboard. Subscribe for just <strong>$1</strong> and select the
-            country or countries you want to follow — receive a personalized
-            daily situation report generated from our full aggregation network.
+          <p className="text-sm text-gray-300 mb-2">
+            Team tier — up to 5 seats, shared watchlists, SSO, private MCP
+            servers, priority support. Designed for newsrooms, intelligence
+            desks, and trading teams.
           </p>
-          <ul className="space-y-2 text-sm text-gray-200 mb-4">
-            <Feature text="Personalized daily email — one or more countries" />
-            <Feature text="AI-generated situation reports from 2,000+ sources" />
-            <Feature text="Priority delivery ahead of the free newsletter" />
-            <Feature text="Cancel anytime — no long-term commitment" />
-          </ul>
           <p className="text-[11px] text-gray-500">
-            A higher <strong>$5</strong> tier with expanded regional coverage
-            and deeper analytics is planned for a later release. The core
-            WorldScope dashboard will always remain free.
+            Contact <a href="mailto:info@troiamedia.com" className="text-purple-300 hover:underline">info@troiamedia.com</a> to be notified at launch.
           </p>
         </div>
 
@@ -143,23 +233,27 @@ export default function PricingPage() {
           <div className="space-y-4 text-sm text-gray-400">
             <FaqItem
               q="What is WorldScope?"
-              a="WorldScope is a real-time global news monitoring platform. It aggregates data from 2,000+ sources, provides interactive maps, live international news channels, AI-powered analytics, and customizable dashboards — all in your browser."
+              a="WorldScope is a real-time global news monitoring platform. It aggregates data from 2,000+ sources, provides interactive maps, 8,246 live IPTV channels, AI-powered analytics, and customizable dashboards — all in your browser."
             />
             <FaqItem
               q="Is WorldScope really free?"
-              a="Yes. The entire WorldScope dashboard — maps, news feeds, channels, AI analytics, daily newsletter — is free and ad-supported. We are preparing to launch an optional paid premium briefing add-on ($1/country) for users who want personalized email intelligence reports, but every current dashboard feature will always remain free."
+              a="Yes. The entire WorldScope dashboard — maps, news feeds, IPTV channels, AI analytics, daily newsletter — is free and ad-supported. Optional paid briefing tiers (Chora, Pleiades, Gaia, Prometheus, Pantheon) are launching in phases for users who want personalized or power-user features. Every current dashboard feature will always remain free."
+            />
+            <FaqItem
+              q="Why are the tiers named after Greek mythology?"
+              a="WorldScope's 11 dashboard variants (Olympus, Ares, Hephaestus, Hermes, Athena, Poseidon, Apollo, Zeus, Demeter, Nike, Eirene) are each named after a deity whose domain matches the focus — war, markets, cyber, weather. The paid tiers extend that theme: Chora (a single land), Pleiades (seven sisters — a bundle), Gaia (the Earth — global), Prometheus (bringer of fire and knowledge — pro tools), and Pantheon (the council of gods — team)."
             />
             <FaqItem
               q="Do I need an account?"
-              a="No. WorldScope is fully accessible without registration. You can optionally sign up for a free daily email briefing."
+              a="No. WorldScope is fully accessible without registration. You can optionally sign up for a free daily email briefing or a paid tier."
+            />
+            <FaqItem
+              q="How is payment processed?"
+              a="Paid tiers are handled through a global merchant of record, which means the processor — not WorldScope — is the seller of record and is responsible for regional sales tax, VAT, and chargeback handling."
             />
             <FaqItem
               q="What data sources does WorldScope use?"
-              a="We aggregate content from 2,000+ publicly available sources including government data feeds, news agency RSS feeds, financial market APIs, weather services, and other open data providers."
-            />
-            <FaqItem
-              q="Is WorldScope a software product?"
-              a="Yes. WorldScope is a web-based software platform that you access through your browser. There is nothing to download or install."
+              a="We aggregate content from 2,000+ publicly available sources including government data feeds, 689 news agency RSS feeds, 171 financial and geopolitical APIs, weather services, and other open data providers."
             />
             <FaqItem
               q="How do I get the daily email briefing?"

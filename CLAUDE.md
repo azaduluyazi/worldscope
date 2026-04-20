@@ -4,9 +4,10 @@ Real-time global intelligence dashboard.
 
 ## Tech Stack
 - Next.js 16 (App Router), React 19, TypeScript
-- Mapbox GL JS, Supabase, Upstash Redis
-- Tailwind CSS, shadcn/ui, Vercel AI SDK
-- next-intl (EN + TR)
+- Mapbox GL JS + react-globe.gl, Supabase (Pro), Upstash Redis
+- Tailwind CSS, shadcn/ui, Vercel AI SDK (Groq + OpenAI + Anthropic failover)
+- next-intl — **30 locales** incl. RTL (ar, fa). See `src/i18n/config.ts`
+- Lemon Squeezy (Merchant of Record) — webhook + checkout wired (migration 020)
 
 ## Commands
 - `npm run dev` — development server
@@ -29,7 +30,9 @@ Real-time global intelligence dashboard.
 - All data fetching via SWR hooks in `src/hooks/`
 - Severity levels: critical, high, medium, low, info
 - Colors: red=#ff4757, yellow=#ffd000, cyan=#00e5ff, green=#00ff88, purple=#8a5cf6
-- Theme system: 21 themes via CSS cascade + `data-*` attributes (see `src/config/themes.ts`)
+- Theme system: **2 themes** (`warroom`, `cyberpunk`) via CSS cascade + `data-theme` attribute. See `src/config/themes.ts`. Unknown/legacy theme ids fall back to `warroom` via `getThemeById`.
+- Variants: **11 Greek pantheon variants** (Olympus, Ares, Hephaestus, Hermes, Athena, Poseidon, Apollo, Zeus, Demeter, Nike, Eirene) — see `src/config/variants.ts`. 9 are SEO-indexed at `/country/[code]/[variant]`.
+- Pricing tiers (planned, pantheon-named): Chora ($1/country), Pleiades ($5/5-country), Gaia ($9/global), Prometheus ($19/pro), Pantheon ($99/team).
 - Validation schemas in `src/lib/validators/`
 - Rate limiting via `src/lib/middleware/rate-limit.ts`
 
@@ -48,6 +51,9 @@ Real-time global intelligence dashboard.
 - `ADMIN_KEY` — Admin panel access key
 - `RESEND_API_KEY` — Email sending (optional)
 - `NEXT_PUBLIC_SENTRY_DSN` — Sentry error tracking (optional)
+- `LEMONSQUEEZY_API_KEY` — Lemon Squeezy API key (payments)
+- `LEMONSQUEEZY_WEBHOOK_SECRET` — HMAC secret for inbound webhooks
+- `LEMONSQUEEZY_STORE_ID` — numeric store id
 
 ### Vercel Deployment
 1. Connect GitHub repo to Vercel
@@ -57,7 +63,8 @@ Real-time global intelligence dashboard.
 ### Supabase Setup
 1. Create project at supabase.com
 2. Run migrations in order: `supabase db push`
-   - **After v3 convergence work**: ensure `009_convergence_storylines.sql` and `010_convergence_telemetry.sql` are applied. These create the `convergence_storylines` table, `convergence_telemetry` table, the `convergence_ctr_buckets` view, and the `archive_expired_storylines()` RPC.
+   - Latest migration: `020_lemon_squeezy_integration.sql` — extends `subscriptions` with Lemon columns, adds `lemon_webhook_events` (idempotency) and `subscription_events` (audit log).
+   - Migration `015` is intentionally skipped — number is reserved.
 3. Enable Realtime on `events` table
 
 ### Cron Jobs (Vercel)
