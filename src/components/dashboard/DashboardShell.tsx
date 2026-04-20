@@ -147,6 +147,22 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("map");
   const [leftTab, setLeftTab] = useState<"signal" | "breaking" | "stories">("signal");
   const [rightTab, setRightTab] = useState<"chat" | "intel" | "predictions" | "economics" | "risk" | "equity" | "geopolitics" | "escalation">("intel");
+
+  // Hash-based deep link — TopBar's CHAT button navigates to "#chat" and
+  // any external /#chat link also works. We read the hash once on mount
+  // and whenever it changes, and flip the right column tab to match.
+  useEffect(() => {
+    function applyHash() {
+      const h = window.location.hash.replace("#", "");
+      if (h === "chat") setRightTab("chat");
+      else if (h === "intel" || h === "predictions" || h === "economics" || h === "risk" || h === "equity" || h === "geopolitics" || h === "escalation") {
+        setRightTab(h);
+      }
+    }
+    applyHash();
+    window.addEventListener("hashchange", applyHash);
+    return () => window.removeEventListener("hashchange", applyHash);
+  }, []);
   const { layers, toggleLayer: toggleMapLayer, enabledLayerIds } = useMapLayers();
   const variantConfig = VARIANTS[variant];
 

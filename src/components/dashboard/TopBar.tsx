@@ -111,6 +111,17 @@ export function TopBar({ variant = "world" }: TopBarProps) {
           <ThemeSelector />
           <FullscreenToggle />
           <QuickNav />
+          {/* Chat quick-launch — jumps the right column to the CHAT tab via
+              the #chat hash, which DashboardShell reacts to. Visible at md+
+              so the top bar stays clean on mobile. */}
+          <Link
+            href="#chat"
+            aria-label="Open WorldScope Chat"
+            title="WorldScope Chat · Prometheus"
+            className="flex items-center gap-1 font-display text-[9px] font-bold tracking-[0.2em] px-2 py-1 border border-hud-accent/40 text-hud-accent hover:bg-hud-accent/10 transition-colors"
+          >
+            ✦ CHAT
+          </Link>
         </div>
         {/* Language selector — dropdown for 30 languages */}
         <LanguageSelector />
