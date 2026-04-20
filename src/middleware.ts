@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { rateLimiters, getTierForPath, getClientId } from "./lib/ratelimit";
 import {
   BRIEFING_COOKIE,
@@ -7,13 +8,23 @@ import {
 } from "./lib/ab/briefing-headline";
 
 /**
- * Middleware: Rate limiting for API routes + security headers for all routes.
+ * Middleware: Clerk auth + Rate limiting + CORS + A/B cookie + security
+ * headers.
  *
- * - API routes (/api/*) get rate limiting via Upstash Redis
- * - Cron routes (/api/cron/*) are skipped (they use Bearer auth)
- * - All responses get security headers
+ * - Clerk wraps everything so `auth()` is available inside pages / API.
+ * - Protected routes (currently /account, /settings) force sign-in.
+ * - All API routes get rate limiting + CORS. Cron routes skip the rate
+ *   limiter (they use Bearer CRON_SECRET).
+ * - /briefing visits get an A/B variant cookie.
+ * - All responses get the standard security header set.
  */
-export async function middleware(request: NextRequest) {
+
+const isProtectedRoute = createRouteMatcher([
+  "/account(.*)",
+  "/settings(.*)",
+]);
+
+async function runPipeline(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   // ── CORS: restrict API origins to our domain ──
@@ -73,7 +84,6 @@ export async function middleware(request: NextRequest) {
           );
         }
 
-        // Attach rate limit + CORS headers to successful responses
         const response = NextResponse.next();
         response.headers.set("X-RateLimit-Limit", String(limit));
         response.headers.set("X-RateLimit-Remaining", String(remaining));
@@ -81,24 +91,18 @@ export async function middleware(request: NextRequest) {
         response.headers.set("Access-Control-Allow-Origin", corsOrigin);
         return response;
       } catch {
-        // If Redis is down, allow the request through (fail-open)
         const response = NextResponse.next();
         response.headers.set("Access-Control-Allow-Origin", corsOrigin);
         return response;
       }
     }
 
-    // Non-rate-limited API routes still get CORS
     const response = NextResponse.next();
     response.headers.set("Access-Control-Allow-Origin", corsOrigin);
     return response;
   }
 
   // ── A/B test: briefing headline variant assignment ──
-  // On a fresh /briefing visit, sample a variant by weight and
-  // pin it via a 90-day cookie so repeat visitors see the same
-  // headline. Bots without cookies fall back to the control
-  // variant server-side in the page component.
   const response = NextResponse.next();
 
   if (pathname === "/briefing" || pathname === "/briefing/") {
@@ -110,7 +114,7 @@ export async function middleware(request: NextRequest) {
         path: "/",
         sameSite: "lax",
         secure: true,
-        httpOnly: false, // readable by client analytics
+        httpOnly: false,
       });
       response.headers.set("x-briefing-variant", variant);
     } else {
@@ -118,8 +122,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // ── Security headers for all responses ──
-
+  // ── Security headers for all page responses ──
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");
@@ -132,11 +135,22 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+export default clerkMiddleware(async (auth, request) => {
+  // Protect auth-required routes. `auth.protect()` redirects to sign-in
+  // if the visitor is not signed in.
+  if (isProtectedRoute(request)) {
+    await auth.protect();
+  }
+
+  return runPipeline(request);
+});
+
 export const config = {
   matcher: [
     // Match all API routes
     "/api/:path*",
-    // Match page routes (for security headers) but exclude static files
-    "/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|robots.txt|sitemap.xml).*)",
+    // Match page routes (for security headers + Clerk session) but exclude
+    // static files and the Next.js internals.
+    "/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|robots.txt|sitemap.xml|sw.js).*)",
   ],
 };

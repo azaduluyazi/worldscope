@@ -3,6 +3,7 @@ import { JetBrains_Mono, Inter, Orbitron, Rajdhani, Share_Tech_Mono, Syne, Cormo
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
+import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
@@ -253,18 +254,40 @@ export default async function RootLayout({
         >
           Skip to content
         </a>
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <ThemeProvider>
-            <WebVitals />
-            <main id="main-content">
-              {children}
-            </main>
-            <ScrollToTop />
-            <NewsletterStickyBar />
-            <AdConsentBanner />
-            <div className="scanlines" aria-hidden="true" />
-          </ThemeProvider>
-        </NextIntlClientProvider>
+        <ClerkProvider
+          appearance={{
+            variables: {
+              colorPrimary: "#f5a524",
+              colorBackground: "#060509",
+              colorText: "#f1ede3",
+              colorInputBackground: "#110d14",
+              colorInputText: "#f1ede3",
+              borderRadius: "2px",
+              fontFamily: "var(--font-mono)",
+            },
+            elements: {
+              card: "bg-[#0a0810] border border-[#2d1e08] shadow-[0_0_24px_-12px_rgba(245,165,36,.4)]",
+              headerTitle: "font-[var(--font-syne)] tracking-[.08em] text-[#f1ede3]",
+              socialButtonsBlockButton: "border-[#2d1e08] hover:bg-[#f5a524]/10",
+              formButtonPrimary: "bg-[#f5a524] text-[#060509] hover:bg-[#ffc55a]",
+            },
+          }}
+          signInFallbackRedirectUrl="/"
+          signUpFallbackRedirectUrl="/"
+        >
+          <NextIntlClientProvider locale={locale} messages={messages}>
+            <ThemeProvider>
+              <WebVitals />
+              <main id="main-content">
+                {children}
+              </main>
+              <ScrollToTop />
+              <NewsletterStickyBar />
+              <AdConsentBanner />
+              <div className="scanlines" aria-hidden="true" />
+            </ThemeProvider>
+          </NextIntlClientProvider>
+        </ClerkProvider>
         {/* Service Worker registration — enables offline cache for the
             PWA install. Registered lazyOnload so it never blocks first
             paint. The SW itself lives at public/sw.js and is opt-in by
