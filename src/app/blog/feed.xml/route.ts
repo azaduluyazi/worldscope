@@ -1,6 +1,8 @@
 import { createServerClient } from "@/lib/db/supabase";
 
-export const revalidate = 600; // 10 min cache
+// Skip build prerender — Supabase query has exceeded 60s build worker limit.
+export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 export async function GET() {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";

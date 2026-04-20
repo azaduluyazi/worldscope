@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTopEntities, type Entity } from "@/lib/db/entities";
 
-// 30 min — index shows "trending", needs faster refresh than detail pages
+// Skip build prerender: getTopEntities runs 4 parallel Supabase queries and
+// has intermittently exceeded the 60s build worker limit. Render on request
+// with CDN cache via ISR-style revalidation.
+export const dynamic = "force-dynamic";
 export const revalidate = 1800;
 
 export const metadata: Metadata = {

@@ -4,7 +4,10 @@ import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit } from "@/components/ads";
 import { AD_PLACEMENTS } from "@/config/ads";
 
-export const revalidate = 600; // ISR: revalidate every 10 min
+// Skip build prerender — Supabase query has exceeded 60s build worker limit.
+// Render on request; CDN caches for 10 min via revalidate.
+export const dynamic = "force-dynamic";
+export const revalidate = 600;
 
 export const metadata: Metadata = {
   title: "Intelligence Blog — WorldScope",
