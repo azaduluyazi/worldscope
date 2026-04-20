@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useIntelFeed } from "@/hooks/useIntelFeed";
 import { useFeedRanking } from "@/hooks/useFeedRanking";
 import { IntelCard } from "./IntelCard";
+import { BookmarkButton } from "@/components/shared/BookmarkButton";
 import { VoteButtons } from "./VoteButtons";
 import { AIBrief } from "./AIBrief";
 import { NewsPreviewModal } from "./NewsPreviewModal";
@@ -173,6 +174,9 @@ export function IntelFeed({ variant = "world", excludedSources }: IntelFeedProps
                   <VoteButtons itemId={item.id} compact />
                   <div className="flex-1 min-w-0">
                     <IntelCard item={item} onPreview={setPreviewItem} />
+                  </div>
+                  <div className="flex items-start pt-1.5">
+                    <BookmarkButton eventId={item.id} />
                   </div>
                 </div>
                 {(index + 1) % FEED_AD_INTERVAL === 0 && <NativeAdCard />}
