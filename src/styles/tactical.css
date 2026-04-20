@@ -780,10 +780,20 @@ aside button:active {
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+/* Theme-adaptive critical gradient banner.
+   Each theme defines --banner-gradient below; the component stays the same. */
 .neon-breaking-banner {
-  background: linear-gradient(90deg, #ff2d95, #ff6b35, #a855f7, #00e5ff, #ff2d95);
-  background-size: 300% 100%;
-  animation: neonGradientShift 3s linear infinite;
+  background: var(--banner-gradient, linear-gradient(90deg, #ff2d95, #ff6b35, #a855f7, #00e5ff, #ff2d95));
+  background-size: 200% 100%;
+  animation: neonGradientShift 6s linear infinite;
+}
+/* Warroom: bordeaux → red → amber → red → bordeaux (A2 mockup) */
+[data-theme="warroom"] {
+  --banner-gradient: linear-gradient(90deg, #5a0b07 0%, #ff3b30 28%, #ffc55a 52%, #ff3b30 76%, #5a0b07 100%);
+}
+/* Cyberpunk: plum → magenta → hot-pink → magenta → plum (A2 mockup) */
+[data-theme="cyberpunk"] {
+  --banner-gradient: linear-gradient(90deg, #6b0d56 0%, #ff2bd6 28%, #ff7aea 52%, #ff2bd6 76%, #6b0d56 100%);
 }
 
 /* Neon: globe ring decorations */

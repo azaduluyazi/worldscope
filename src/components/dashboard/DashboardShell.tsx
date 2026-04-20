@@ -82,7 +82,8 @@ const AIStrategicBrief = dynamic(
 /** Theme-specific banners — only loaded when active theme needs them */
 const DefconBar = dynamic(() => import("./DefconBar").then((m) => ({ default: m.DefconBar })), { ssr: false });
 const NeonBreakingBanner = dynamic(() => import("./NeonBreakingBanner").then((m) => ({ default: m.NeonBreakingBanner })), { ssr: false });
-const WarzoneBreakingAlert = dynamic(() => import("./WarzoneBreakingAlert").then((m) => ({ default: m.WarzoneBreakingAlert })), { ssr: false });
+// WarzoneBreakingAlert retired 2026-04-20 — unified into NeonBreakingBanner
+// with --banner-gradient theme variable. Component file kept for reference.
 const SourceSelector = dynamic(
   () => import("./SourceSelector").then((m) => ({ default: m.SourceSelector })),
   { ssr: false }
@@ -286,10 +287,10 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       className="h-screen w-screen flex flex-col overflow-hidden"
       style={{ "--variant-accent": variantConfig.accent } as React.CSSProperties}
     >
-      {/* Theme-specific: Neon gradient breaking banner */}
+      {/* Unified theme-adaptive critical banner — replaces the previous
+          two-banner stack (NeonBreakingBanner + WarzoneBreakingAlert).
+          Colors come from --banner-gradient defined per-theme. */}
       <NeonBreakingBanner text={topBreaking?.title} />
-      {/* Theme-specific: Warzone flashing red alert */}
-      <WarzoneBreakingAlert text={topBreaking?.title} time={topBreaking ? new Date(topBreaking.publishedAt).toUTCString().split(" ")[4] + " UTC" : undefined} />
 
       <TopBar variant={variant} />
 
