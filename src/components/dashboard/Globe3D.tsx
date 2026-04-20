@@ -237,6 +237,17 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
     if (controls) { controls.autoRotate = true; controls.autoRotateSpeed = 0.3; controls.enableDamping = true; }
   }, []);
 
+  // Hover pauses auto-rotation so users can read overlays / click markers.
+  // Resumes after pointer leaves the globe container.
+  const [isHovered, setIsHovered] = useState(false);
+  useEffect(() => {
+    const globe = globeRef.current;
+    if (!globe) return;
+    const controls = globe.controls();
+    if (!controls) return;
+    controls.autoRotate = !isHovered;
+  }, [isHovered]);
+
   const handlePointClick = useCallback((point: object) => {
     const p = point as { item?: IntelItem };
     if (p.item) {
@@ -246,7 +257,14 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
   }, [onEventClick]);
 
   return (
-    <div ref={containerRef} className="w-full h-full relative bg-black" role="img" aria-label="Interactive 3D globe showing global intelligence events">
+    <div
+      ref={containerRef}
+      className="w-full h-full relative bg-black"
+      role="img"
+      aria-label="Interactive 3D globe showing global intelligence events"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* Outer atmosphere glow ring — theme-adaptive */}
       <div className="absolute inset-0 pointer-events-none z-[1] flex items-center justify-center">
         <div
@@ -257,6 +275,73 @@ export function Globe3D({ variant: _variant = "world", onEventClick, enabledLaye
           }}
         />
       </div>
+
+      {/* ── Anemoi — four ancient Greek winds at compass points ──
+           Overlay only; the globe underneath stays interactive because
+           labels have pointer-events-none. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 pointer-events-none z-[2] font-serif italic tracking-[0.22em] text-[11px] md:text-[12px]"
+        style={{ color: theme.colors.accent, textShadow: `0 0 14px ${theme.colors.accent}aa` }}
+      >
+        <span className="absolute top-2 left-1/2 -translate-x-1/2 text-center">
+          ΒΟΡΕΑΣ
+          <span className="block font-sans not-italic text-[8px] tracking-[0.22em] opacity-70 mt-0.5">north</span>
+        </span>
+        <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-center">
+          ΝΟΤΟΣ
+          <span className="block font-sans not-italic text-[8px] tracking-[0.22em] opacity-70 mt-0.5">south</span>
+        </span>
+        <span className="absolute right-1 top-1/2 -translate-y-1/2 rotate-90 origin-center">
+          ΕΥΡΟΣ
+          <span className="block font-sans not-italic text-[8px] tracking-[0.22em] opacity-70 mt-0.5">east</span>
+        </span>
+        <span className="absolute left-1 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
+          ΖΕΦΥΡΟΣ
+          <span className="block font-sans not-italic text-[8px] tracking-[0.22em] opacity-70 mt-0.5">west</span>
+        </span>
+      </div>
+
+      {/* ── Corner brackets — A2 mockup signature ── */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none z-[2]">
+        <span
+          className="absolute top-1.5 left-1.5 w-3.5 h-3.5 border-l border-t"
+          style={{ borderColor: theme.colors.accent, opacity: 0.7 }}
+        />
+        <span
+          className="absolute top-1.5 right-1.5 w-3.5 h-3.5 border-r border-t"
+          style={{ borderColor: theme.colors.accent, opacity: 0.7 }}
+        />
+        <span
+          className="absolute bottom-1.5 left-1.5 w-3.5 h-3.5 border-l border-b"
+          style={{ borderColor: theme.colors.accent, opacity: 0.7 }}
+        />
+        <span
+          className="absolute bottom-1.5 right-1.5 w-3.5 h-3.5 border-r border-b"
+          style={{ borderColor: theme.colors.accent, opacity: 0.7 }}
+        />
+      </div>
+
+      {/* ── Omphalos — "navel of the world" — Troia coordinates ── */}
+      <div
+        aria-hidden="true"
+        className="absolute bottom-2 left-3 z-[3] font-serif italic text-[10px] md:text-[11px] tracking-[0.12em]"
+        style={{ color: "#c5bfae" }}
+      >
+        <span style={{ color: theme.colors.accent, fontWeight: 600 }}>Ὀμφαλός</span>
+        {" · 39.96°N · 26.24°E · "}
+        <span style={{ color: theme.colors.accent }}>ΤΡΟΙΑ</span>
+      </div>
+
+      {/* ── Hover hint — shows "HOVER TO PAUSE" until the user hovers ── */}
+      {!isHovered && (
+        <div
+          aria-hidden="true"
+          className="absolute bottom-2 right-3 z-[3] font-mono text-[9px] tracking-[0.25em] text-gray-500"
+        >
+          ⊙ HOVER TO PAUSE
+        </div>
+      )}
 
       <Globe
         ref={globeRef}
