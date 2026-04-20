@@ -4,7 +4,6 @@ import Link from "next/link";
 import { COUNTRIES, COUNTRY_MAP } from "@/config/countries";
 import {
   VARIANT_SEO_META,
-  SEO_VARIANT_IDS,
   getVariantSeoMeta,
 } from "@/config/variants";
 import { createServerClient } from "@/lib/db/supabase";
@@ -28,37 +27,13 @@ import {
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
 
+// Skip build prerender entirely. Even a trimmed priority list of 30 × 9 =
+// 270 pages exhausted Supabase connection throughput during concurrent build
+// workers and hit the 60s per-page timeout. Dynamic render + ISR cache is
+// safer: first request pays the query cost, subsequent requests hit the CDN
+// for `revalidate` seconds. Crawlers still see full HTML + schema markup.
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
-
-// Build timeout guard: 197 countries × 9 variants = 1,773 static pages with
-// 2 Supabase queries each = ~3,546 queries. Under concurrent build workers
-// and Supabase IO throttling, outlier combos (e.g. /country/ad/sports with
-// near-zero data) exceed the 60s per-page limit and fail the build.
-//
-// Strategy: prerender only the top 30 priority countries at build time
-// (home market + G7 + major Asia/MENA + hot conflict/geopolitical zones).
-// Remaining ~167 countries are still served via ISR on first request,
-// preserving SEO while keeping build deterministic.
-const PRIORITY_COUNTRIES = [
-  "TR", "US", "UK", "DE", "FR", "IT", "ES", "RU", "UA", "PL",
-  "NL", "CH", "SE", "GR", "CN", "JP", "KR", "IN", "BR", "MX",
-  "CA", "AU", "IL", "IR", "SA", "AE", "EG", "ZA", "NG", "QA",
-];
-
-export async function generateStaticParams() {
-  const priority = new Set(PRIORITY_COUNTRIES);
-  const params: Array<{ code: string; variant: string }> = [];
-  for (const country of COUNTRIES) {
-    if (!priority.has(country.code)) continue;
-    for (const variant of SEO_VARIANT_IDS) {
-      params.push({
-        code: country.code.toLowerCase(),
-        variant,
-      });
-    }
-  }
-  return params;
-}
 
 interface Params {
   code: string;
