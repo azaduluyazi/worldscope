@@ -1,0 +1,46 @@
+{
+  "name": "@worldscope/mcp",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server for WorldScope — query live intel, convergence storylines, country briefings, and markets from Claude Desktop, Cursor, or any MCP-compatible client.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "worldscope",
+    "troiamedia",
+    "osint",
+    "intelligence",
+    "claude"
+  ],
+  "homepage": "https://troiamedia.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/azaduluyazi/worldscope.git",
+    "directory": "mcp-server"
+  },
+  "license": "MIT",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "worldscope-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.4.0"
+  }
+}
