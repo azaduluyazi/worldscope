@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { UserProfile } from "@clerk/nextjs";
 import { resolveAccess, TIER_TO_PANTHEON, type TierId } from "@/lib/subscriptions/access";
+import { SavedEvents } from "./SavedEvents";
 
 export const metadata: Metadata = {
   title: "Account — WorldScope",
@@ -122,6 +123,18 @@ export default async function AccountPage() {
               </a>
             )}
           </div>
+        </div>
+
+        {/* Saved events */}
+        <div className="border border-gray-800 rounded-sm p-4 bg-[#0a0810] mb-6">
+          <h2 className="text-sm font-bold text-amber-400 mb-3 tracking-wide uppercase">
+            Saved Events
+          </h2>
+          <p className="text-xs text-gray-500 mb-4">
+            Events you&apos;ve bookmarked across the dashboard. Star any intel
+            row to pin it here.
+          </p>
+          <SavedEvents />
         </div>
 
         {/* Clerk profile widget */}
