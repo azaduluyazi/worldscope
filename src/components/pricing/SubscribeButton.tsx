@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@clerk/nextjs";
 import type { TierSlug } from "@/lib/subscriptions/tier-config";
 
 interface SubscribeButtonProps {
@@ -10,23 +9,23 @@ interface SubscribeButtonProps {
   /** True when the tier's Lemon variant id is configured. When false,
    *  we render "Coming Soon" instead of a clickable button. */
   purchasable: boolean;
-  /** Accent class — tier cards pick amber / purple etc. */
   className?: string;
-  /** Text shown in the default state. */
   label?: string;
 }
 
 /**
- * Button that kicks off the Lemon Squeezy checkout for a given tier.
+ * Tier Subscribe button.
  *
- * Flow:
- *   1. Click → POST /api/checkout/tier { slug }
- *   2. 401 with redirect hint → push user to /sign-up (come back here)
- *   3. 409 (existing subscription) → surface the reason + portalHint
- *   4. 200 { url } → window.location = url (Lemon checkout)
- *
- * The server route does the variant-id lookup and attaches the Clerk
- * user id into custom_data so the webhook can bind the subscription.
+ * Design note — this used to check `useAuth().isLoaded` client-side to
+ * disable the button until Clerk hydrated. That created a race where a
+ * cold pricing page would sit with the button in a disabled state for
+ * a full second on slow connections, and if Clerk failed to hydrate
+ * entirely the button stayed permanently dead. Fixed 2026-04-21 by
+ * letting the server be the source of truth: the button is always
+ * live, the POST to /api/checkout/tier decides what happens, and the
+ * server either returns the checkout URL, a sign-up redirect (401),
+ * or an existing-subscription conflict (409). One less hydration
+ * dependency, one less failure mode.
  */
 export function SubscribeButton({
   slug,
@@ -35,31 +34,21 @@ export function SubscribeButton({
   label = "SUBSCRIBE",
 }: SubscribeButtonProps) {
   const router = useRouter();
-  const { isLoaded, isSignedIn } = useAuth();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!purchasable) {
     return (
-      <div className={`inline-block px-3 py-2 text-xs font-bold tracking-wider border border-amber-400/30 text-amber-300/60 ${className}`}>
+      <div
+        className={`inline-block px-3 py-2 text-xs font-bold tracking-wider border border-amber-400/30 text-amber-300/60 ${className}`}
+      >
         COMING SOON
       </div>
     );
   }
 
-  const disabled = !isLoaded || pending;
-
   async function onClick() {
     setError(null);
-
-    // Shortcut: if we already know the visitor is signed out, send them
-    // straight to /sign-up with a redirect back to /pricing so they can
-    // click again after auth.
-    if (isLoaded && !isSignedIn) {
-      router.push(`/sign-up?redirect_url=/pricing%23${slug}`);
-      return;
-    }
-
     setPending(true);
     try {
       const res = await fetch("/api/checkout/tier", {
@@ -75,15 +64,16 @@ export function SubscribeButton({
         portalHint?: string;
       } = await res.json().catch(() => ({}));
 
-      if (res.status === 401 && body.redirect) {
-        router.push(body.redirect);
+      if (res.status === 401) {
+        router.push(
+          body.redirect ?? `/sign-up?redirect_url=/pricing%23${slug}`,
+        );
         return;
       }
       if (res.status === 409) {
         const msg = body.reason ?? body.error ?? "Existing subscription.";
         setError(msg);
         if (body.portalHint) {
-          // Brief pause so the user sees the message before redirect.
           setTimeout(() => router.push(body.portalHint!), 1500);
         }
         return;
@@ -105,8 +95,8 @@ export function SubscribeButton({
       <button
         type="button"
         onClick={onClick}
-        disabled={disabled}
-        className="w-full px-3 py-2 text-xs font-bold tracking-wider bg-amber-400 text-[#060509] hover:bg-amber-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        disabled={pending}
+        className="w-full px-3 py-2 text-xs font-bold tracking-wider bg-amber-400 text-[#060509] hover:bg-amber-300 disabled:opacity-60 disabled:cursor-wait transition-colors cursor-pointer"
       >
         {pending ? "…" : label}
       </button>
