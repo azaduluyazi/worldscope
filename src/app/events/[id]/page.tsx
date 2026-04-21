@@ -11,7 +11,11 @@ import {
 import { AdSenseUnit } from "@/components/ads/AdSenseUnit";
 import { AD_PLACEMENTS } from "@/config/ads";
 
-export const revalidate = 1800; // 30 min
+// Skip build prerender — same pattern as /country and /blog. Supabase
+// lookup for a specific event id can exceed the 60s build worker
+// limit; render on request with the same 30-min ISR window.
+export const dynamic = "force-dynamic";
+export const revalidate = 1800;
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";

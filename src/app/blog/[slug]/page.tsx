@@ -5,7 +5,11 @@ import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit } from "@/components/ads";
 import { AD_PLACEMENTS } from "@/config/ads";
 
-export const revalidate = 3600; // ISR: revalidate hourly
+// Skip build prerender — same pattern as /blog. Supabase query has hit
+// the 60s build worker ceiling under concurrent generation; dynamic
+// render + ISR caching after first request.
+export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 interface BlogPost {
   slug: string;

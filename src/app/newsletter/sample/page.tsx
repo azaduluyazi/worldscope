@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createServerClient } from "@/lib/db/supabase";
 
+// Skip build prerender — /newsletter/sample build worker hit the 60s
+// limit on the deploy at 2026-04-22 09:51 (user-reported). Dynamic
+// render + CDN cache via revalidate below.
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {

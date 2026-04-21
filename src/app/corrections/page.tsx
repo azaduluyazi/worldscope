@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import { createServerClient } from "@/lib/db/supabase";
 import { BreadcrumbSchema } from "@/components/seo/StructuredData";
 
+// Skip build prerender — Supabase query exceeded 60s build worker limit
+// (same pattern as /country, /entity, /blog, /blog/feed.xml). Render on
+// request; CDN caches per the revalidate window below.
+export const dynamic = "force-dynamic";
 export const revalidate = 3600;
 
 const SITE_URL =
