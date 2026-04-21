@@ -132,78 +132,35 @@ export default function PricingPage() {
           Pantheon of Premium Briefings
         </h2>
 
-        <div className="grid md:grid-cols-2 gap-4 mb-8">
-          <Tier
-            slug="pleiades"
-            name="Pleiades"
-            greek="Πλειάδες — seven sisters"
-            price="$5"
-            unit="5 countries / month"
-            tag="Planned"
-            lede="A curated bundle of five countries of your choosing — built for regional analysts tracking an arc of conflict, trade, or markets."
-            bullets={[
-              "5 countries, one subscription",
-              "Daily cross-country convergence briefing",
-              "Regional scoring — early signals across the set",
-              "Full AI summarization",
-            ]}
-          />
+        <div className="max-w-xl mx-auto mb-8">
           <Tier
             slug="gaia"
             name="Gaia"
             greek="Γαῖα — the Earth"
             price="$9"
-            unit="global / month"
-            tag="Planned"
-            lede="The entire planet in one briefing. Gaia delivers a daily worldwide digest: tier-1 events, convergence storylines, and macro signals."
+            unit="everything / month"
+            tag="Single Tier"
+            lede="One price, every feature. The Sunday Convergence Report, WorldScope Chat, Equity Research, custom alerts, and everything else we build — all unlocked at the same tier. No plan comparison matrix. No decision fatigue."
             bullets={[
-              "Every country, every day",
-              "Convergence T1–T4 storyline feed",
-              "Weekly macro digest",
-              "Priority delivery",
+              "Weekly Sunday Convergence Report (AI-curated PDF)",
+              "WorldScope Chat — multi-turn, grounded in the live feed",
+              "Equity Research across 92 exchanges (Finnhub)",
+              "Bookmarks + persistent saved events across devices",
+              "Custom alert rules with quiet hours & multi-channel delivery",
+              "MCP connector for Claude / GPT / custom LLMs",
+              "Ad-free dashboard experience",
+              "Priority support via email",
             ]}
           />
-          <Tier
-            slug="prometheus"
-            name="Prometheus"
-            greek="Προμηθεύς — the fire bringer"
-            price="$19"
-            unit="pro / month"
-            tag="Planned"
-            lede="Power-user toolkit — WorldScope Chat, MCP connector for Claude/GPT, alert rules engine, custom widgets, and AI digest delivery to Slack, Telegram, email, and webhooks."
-            bullets={[
-              "Everything in Gaia",
-              "WorldScope Chat (multi-turn, 30 languages)",
-              "MCP connector (bring-your-own LLM)",
-              "Custom alert rules with quiet hours",
-              "Slack / Telegram / Webhook digest delivery",
-            ]}
-          />
-        </div>
-
-        <div
-          id="pantheon"
-          className="border border-gray-800 rounded-sm p-5 mb-8 bg-purple-400/5 scroll-mt-24"
-        >
-          <div className="flex items-center gap-2 mb-2 flex-wrap">
-            <span className="text-[10px] font-bold text-purple-300 bg-purple-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
-              Enterprise
-            </span>
-            <h3 className="text-base font-bold text-purple-300 tracking-wide uppercase">
-              Pantheon <span className="text-purple-200/60 font-normal">· Πάνθεον — council of the gods</span>
-            </h3>
-          </div>
-          <div className="flex items-baseline gap-2 mb-3">
-            <span className="text-3xl font-bold text-purple-300">$99</span>
-            <span className="text-xs text-gray-500">team / month</span>
-          </div>
-          <p className="text-sm text-gray-300 mb-2">
-            Team tier — up to 5 seats, shared watchlists, SSO, private MCP
-            servers, priority support. Designed for newsrooms, intelligence
-            desks, and trading teams.
-          </p>
-          <p className="text-[11px] text-gray-500">
-            Contact <a href="mailto:info@troiamedia.com" className="text-purple-300 hover:underline">info@troiamedia.com</a> to be notified at launch.
+          <p className="text-[11px] text-gray-500 mt-4 text-center">
+            Teams &amp; enterprise: contact{" "}
+            <a
+              href="mailto:info@troiamedia.com"
+              className="text-amber-300 hover:underline"
+            >
+              info@troiamedia.com
+            </a>{" "}
+            for seat-based pricing and SSO.
           </p>
         </div>
 

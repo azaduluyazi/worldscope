@@ -9,43 +9,32 @@
 import { createServerClient } from "@/lib/db/supabase";
 
 /**
- * Tier catalogue. `briefing_country` / "chora" was designed as a $1-per-
- * country entry tier but retired 2026-04-21 — Lemon Squeezy's fixed $0.50
- * per-transaction fee makes $1 pricing uneconomical (55% effective
- * commission). The value stays in the DB CHECK constraint as a superset
- * to keep old migrations forward-compatible, but is no longer offered in
- * code.
+ * Tier catalogue — deliberately minimal.
+ *
+ * Single paid tier strategy (decided 2026-04-21): one price, one product,
+ * one checkout URL. Removes tier-switch complexity from onboarding and
+ * locks the revenue model to a flat "N × $9" formula. When paid-API
+ * features (Finnhub live, DeepSeek reasoning, scenario engine with
+ * outside inference) land, a second "Pro+" tier will be added above
+ * this one. Until then every subscriber gets everything.
+ *
+ * The DB CHECK constraint on subscriptions.plan (migration 024) stays
+ * permissive (free|briefing_country|bundle5|global|pro|team|enterprise)
+ * to keep the schema forward-compatible, but code-level TierId is
+ * narrowed to what we actually sell today.
  */
-export type TierId =
-  | "free"
-  | "bundle5"
-  | "global"
-  | "pro"
-  | "team"
-  | "enterprise";
+export type TierId = "free" | "global" | "enterprise";
 
 export type PantheonName =
   | "mortal" // == free; not stored, used for UX copy
-  | "pleiades"
   | "gaia"
-  | "prometheus"
   | "pantheon";
 
-export const TIER_ORDER: TierId[] = [
-  "free",
-  "bundle5",
-  "global",
-  "pro",
-  "team",
-  "enterprise",
-];
+export const TIER_ORDER: TierId[] = ["free", "global", "enterprise"];
 
 export const TIER_TO_PANTHEON: Record<TierId, PantheonName> = {
   free: "mortal",
-  bundle5: "pleiades",
   global: "gaia",
-  pro: "prometheus",
-  team: "pantheon",
   enterprise: "pantheon",
 };
 

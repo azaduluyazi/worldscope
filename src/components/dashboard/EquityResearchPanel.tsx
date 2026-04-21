@@ -75,8 +75,8 @@ export function EquityResearchPanel({ className = "" }: EquityResearchPanelProps
   const [symbol, setSymbol] = useState("");
   const [activeSymbol, setActiveSymbol] = useState("");
 
-  const isPro = hasAtLeast(access, "pro");
-  const gated = isLoaded && !accessLoading && (!isSignedIn || !isPro);
+  const isPaid = hasAtLeast(access, "global");
+  const gated = isLoaded && !accessLoading && (!isSignedIn || !isPaid);
 
   const { data, isLoading } = useSWR<EquityData>(
     !gated && activeSymbol ? `/api/equity?symbol=${activeSymbol}` : null,
@@ -107,7 +107,7 @@ export function EquityResearchPanel({ className = "" }: EquityResearchPanelProps
         <div className="font-mono text-[11px] text-amber-300 tracking-[0.3em]">SIGN IN REQUIRED</div>
         <p className="text-xs text-gray-400 max-w-xs">
           Equity research (analyst targets, recommendations, full financials)
-          is a Prometheus-tier feature.
+          is part of the Gaia tier.
         </p>
         <Link
           href="/sign-in?redirect_url=/"
@@ -119,16 +119,16 @@ export function EquityResearchPanel({ className = "" }: EquityResearchPanelProps
     );
   }
 
-  if (!isPro) {
+  if (!isPaid) {
     return (
       <div className={`h-full flex flex-col items-center justify-center text-center gap-3 p-4 ${className}`}>
-        <div className="font-mono text-[11px] text-amber-300 tracking-[0.3em]">◈ PROMETHEUS TIER</div>
+        <div className="font-mono text-[11px] text-amber-300 tracking-[0.3em]">◈ GAIA TIER</div>
         <p className="text-xs text-gray-400 max-w-xs">
           Equity research — price targets across 92 exchanges, buy/hold/sell
-          ratings, company financials — unlocks with Prometheus ($19/mo).
+          ratings, company financials — unlocks with Gaia ($9/mo).
         </p>
         <Link
-          href="/pricing#prometheus"
+          href="/pricing#gaia"
           className="px-3 py-1.5 text-[11px] font-bold tracking-wider border border-amber-400/50 text-amber-300 hover:bg-amber-400/10"
         >
           UPGRADE →

@@ -13,16 +13,15 @@ import { hasAtLeast, resolveAccess } from "@/lib/subscriptions/access";
 export const runtime = "nodejs";
 
 export async function GET(req: Request) {
-  // Pro tier gate — Equity Research (analyst targets, recommendations,
-  // full financials) is a Prometheus-tier feature. Matches WM's parity.
+  // Gaia gate — single paid tier unlocks all premium features.
   const { userId } = await auth();
   if (!userId) {
     return NextResponse.json({ error: "sign-in required" }, { status: 401 });
   }
   const access = await resolveAccess(userId);
-  if (!hasAtLeast(access, "pro")) {
+  if (!hasAtLeast(access, "global")) {
     return NextResponse.json(
-      { error: "prometheus tier required", currentTier: access.tier },
+      { error: "gaia tier required", currentTier: access.tier },
       { status: 402 },
     );
   }

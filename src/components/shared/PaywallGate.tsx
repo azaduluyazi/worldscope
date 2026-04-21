@@ -13,10 +13,7 @@ interface PaywallGateProps {
 
 const TIER_LABEL: Record<TierId, string> = {
   free: "Mortal",
-  bundle5: "Pleiades",
   global: "Gaia",
-  pro: "Prometheus",
-  team: "Pantheon",
   enterprise: "Pantheon",
 };
 

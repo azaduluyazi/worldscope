@@ -71,11 +71,11 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "sign-in required" }, { status: 401 });
   }
 
-  // Pro-tier gate (Prometheus). Free/Chora/Pleiades/Gaia don't get chat.
+  // Gaia gate — single paid tier (2026-04-21).
   const access = await resolveAccess(userId);
-  if (!hasAtLeast(access, "pro")) {
+  if (!hasAtLeast(access, "global")) {
     return NextResponse.json(
-      { error: "prometheus tier required", currentTier: access.tier },
+      { error: "gaia tier required", currentTier: access.tier },
       { status: 402 },
     );
   }

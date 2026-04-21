@@ -1,7 +1,7 @@
 /**
  * POST /api/checkout/tier
  *
- * Body: { slug: "pleiades" | "gaia" | "prometheus" | "pantheon" }
+ * Body: { slug: "gaia" }
  *
  * Resolves the slug → Lemon Squeezy variant id server-side (so a client
  * can't tamper with the price), binds the current Clerk user id into
@@ -34,7 +34,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const BodySchema = z.object({
-  slug: z.enum(["pleiades", "gaia", "prometheus", "pantheon"]),
+  slug: z.enum(["gaia"]),
 });
 
 export async function POST(req: Request) {

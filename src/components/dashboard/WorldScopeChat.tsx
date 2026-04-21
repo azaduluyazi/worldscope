@@ -38,7 +38,7 @@ export function WorldScopeChat() {
     });
   }, [messages, streaming]);
 
-  const isPro = ["pro", "team", "enterprise"].includes(tier);
+  const isPaid = tier !== "free";
 
   async function send(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -114,17 +114,17 @@ export function WorldScopeChat() {
     );
   }
 
-  if (!isPro) {
+  if (!isPaid) {
     return (
       <div className="h-full p-4 flex flex-col items-center justify-center text-center gap-3">
-        <div className="font-mono text-[11px] text-amber-300 tracking-[0.3em]">◈ PROMETHEUS TIER</div>
+        <div className="font-mono text-[11px] text-amber-300 tracking-[0.3em]">◈ GAIA TIER</div>
         <p className="text-xs text-gray-400 max-w-xs">
-          WorldScope Chat with live-feed grounding is part of the Prometheus
-          ($19/mo) tier. Upgrade to bring WorldScope into Claude, GPT, and
-          your dashboard in plain English.
+          WorldScope Chat with live-feed grounding is part of Gaia ($9/mo).
+          Upgrade to bring WorldScope into Claude, GPT, and your dashboard
+          in plain English.
         </p>
         <Link
-          href="/pricing#prometheus"
+          href="/pricing#gaia"
           className="px-3 py-1.5 text-[11px] font-bold tracking-wider border border-amber-400/50 text-amber-300 hover:bg-amber-400/10"
         >
           UPGRADE →

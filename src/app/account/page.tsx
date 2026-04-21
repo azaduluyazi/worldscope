@@ -16,19 +16,13 @@ export const dynamic = "force-dynamic";
 
 const TIER_LABEL: Record<TierId, string> = {
   free: "Mortal",
-  bundle5: "Pleiades",
   global: "Gaia",
-  pro: "Prometheus",
-  team: "Pantheon",
   enterprise: "Pantheon",
 };
 
 const TIER_PRICE: Record<TierId, string> = {
   free: "$0",
-  bundle5: "$5 / month",
   global: "$9 / month",
-  pro: "$19 / month",
-  team: "$99 / month",
   enterprise: "Custom",
 };
 
