@@ -79,58 +79,13 @@ export default function PricingPage() {
           &larr; Back to Dashboard
         </Link>
 
-        <h1 className="text-xl font-bold text-cyan-400 mb-1 tracking-wider uppercase">
-          Free Core · Pantheon of Premium
+        <h1 className="text-xl font-bold text-amber-300 mb-1 tracking-wider uppercase">
+          Gaia — one tier, everything unlocked
         </h1>
         <p className="text-gray-500 text-xs mb-8">
-          The full dashboard is free forever. Optional paid briefing tiers —
-          named after the Greek pantheon — are launching in phases.
+          WorldScope runs on a single subscription. One price covers every
+          premium feature we ship today and every one we ship next.
         </p>
-
-        {/* Hero card — Free */}
-        <div className="border-2 border-cyan-400/30 rounded-sm p-6 mb-8 bg-cyan-400/5">
-          <div className="flex items-baseline gap-3 mb-4">
-            <span className="text-4xl font-bold text-cyan-400">$0</span>
-            <span className="text-sm text-gray-500">forever — no sign-up</span>
-          </div>
-          <p className="text-sm text-gray-300 mb-6">
-            WorldScope is a free, ad-supported global intelligence platform.
-            Every feature is included — no account required, no credit card, no
-            limits.
-          </p>
-
-          <ul className="space-y-3 text-sm text-gray-200">
-            <Feature text="Real-time global news dashboard" />
-            <Feature text="Interactive 2D & 3D world maps" />
-            <Feature text="8,246 live IPTV channels + 106 YouTube news streams" />
-            <Feature text="689 curated RSS feed sources" />
-            <Feature text="11 dashboard variants (Olympus, Ares, Hephaestus, Hermes…)" />
-            <Feature text="30 languages + full RTL support (Arabic, Persian)" />
-            <Feature text="AI-powered analytics, convergence engine & trend detection" />
-            <Feature text="Text-to-speech news reader" />
-            <Feature text="2 curated visual themes — Troia War Room & Neon Cyberpunk" />
-            <Feature text="Programmatic country pages — 195 countries × 9 variants" />
-            <Feature text="Data export (CSV)" />
-          </ul>
-        </div>
-
-        {/* How we stay free */}
-        <div className="border border-gray-800 rounded-sm p-4 mb-8">
-          <h2 className="text-sm font-bold text-cyan-400 mb-3 tracking-wide uppercase">
-            How We Stay Free
-          </h2>
-          <p className="text-sm text-gray-400">
-            The WorldScope core dashboard is supported by non-intrusive
-            advertising. We use ads to cover our infrastructure costs so that
-            every dashboard feature remains free for everyone — no feature
-            gates, no account walls.
-          </p>
-        </div>
-
-        {/* Pantheon of tiers — Greek pantheon */}
-        <h2 className="text-sm font-bold text-amber-300 mb-4 tracking-wide uppercase">
-          Pantheon of Premium Briefings
-        </h2>
 
         <div className="max-w-xl mx-auto mb-8">
           <Tier
@@ -164,35 +119,16 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Gaia launch CTA — replaces the legacy free email capture.
-            Free newsletter sign-up has been paused while Gaia ($9/mo) goes
-            through merchant-of-record review. See
-            wiki/sorunlar/briefing-free-signup-still-open.md. */}
-        <div className="border border-amber-400/40 rounded-sm p-6 mb-8 bg-amber-400/5 scroll-mt-24" id="briefing">
-          <h2 className="text-sm font-bold text-amber-400 mb-2 tracking-wide uppercase">
-            The Sunday Convergence Report
-          </h2>
-          <p className="text-sm text-gray-300 mb-4">
-            One AI-curated PDF every Sunday at 07:00 UTC — moving to the Gaia
-            tier. Create an account now so you&apos;re one click away from
-            enrolling when the tier opens.
-          </p>
-          <div className="flex gap-2 flex-wrap">
-            <Link
-              href="/sign-up?redirect_url=/briefing"
-              className="px-4 py-2 bg-amber-400 text-[#060509] text-sm font-bold rounded-sm hover:bg-amber-300 transition-colors whitespace-nowrap"
-            >
-              Create Account
-            </Link>
-            <Link
-              href="#gaia"
-              className="px-4 py-2 border border-amber-400/50 text-amber-300 text-sm font-bold rounded-sm hover:bg-amber-400/10 transition-colors whitespace-nowrap"
-            >
-              See Gaia →
-            </Link>
-          </div>
-          <p className="text-[10px] text-gray-600 mt-2">
-            Existing subscribers: your Sunday delivery continues uninterrupted.
+        {/* Public dashboard footnote — no more "Free Core" framing. The
+            dashboard stays ad-supported; Gaia is the only subscription. */}
+        <div className="border border-gray-800 rounded-sm p-4 mb-8 text-xs text-gray-500">
+          <p>
+            The public dashboard at{" "}
+            <Link href="/" className="text-gray-300 hover:text-amber-300">
+              troiamedia.com
+            </Link>{" "}
+            remains ad-supported and open to everyone. Gaia is the only paid
+            subscription — it removes ads and unlocks the features above.
           </p>
         </div>
 

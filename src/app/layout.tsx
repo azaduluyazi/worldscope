@@ -9,7 +9,9 @@ import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { ADSENSE_PUB_ID } from "@/config/ads";
 import { AdConsentBanner } from "@/components/ads";
-import { NewsletterStickyBar } from "@/components/newsletter/NewsletterStickyBar";
+// NewsletterStickyBar removed 2026-04-21 — free newsletter signup funnel
+// was retired with the single-tier pricing switch. The sticky bar's job
+// (bottom-of-page Gaia CTA) is covered by /pricing itself now.
 import "./globals.css";
 
 /** Self-hosted fonts via next/font — eliminates render-blocking external requests */
@@ -292,7 +294,6 @@ export default async function RootLayout({
                 {children}
               </main>
               <ScrollToTop />
-              <NewsletterStickyBar />
               <AdConsentBanner />
               <div className="scanlines" aria-hidden="true" />
             </ThemeProvider>

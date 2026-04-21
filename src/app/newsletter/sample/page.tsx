@@ -149,15 +149,14 @@ export default async function SampleNewsletterPage() {
               Subscribe — Daily
             </Link>
             <Link
-              href="/#subscribe"
-              className="px-6 py-2.5 bg-hud-panel border border-hud-border rounded font-mono text-xs text-hud-muted hover:text-hud-text hover:border-hud-accent/30 transition-colors"
+              href="/pricing#gaia"
+              className="px-6 py-2.5 bg-amber-400 text-[#060509] rounded font-mono text-xs font-bold hover:bg-amber-300 transition-colors"
             >
-              Subscribe — Weekly
+              Subscribe · $9/mo
             </Link>
           </div>
           <div className="mt-3 font-mono text-[8px] text-hud-muted/50">
-            Free forever — No spam — 570+ sources — 195 countries — Unsubscribe
-            anytime
+            Part of Gaia · 689 sources · 195 countries · Cancel anytime
           </div>
         </div>
 

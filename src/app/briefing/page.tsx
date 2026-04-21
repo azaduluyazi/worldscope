@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title:
     "The Sunday Convergence Report — Real-Time Global Intelligence Briefing",
   description:
-    "Join analysts, traders and journalists receiving a weekly AI-curated intelligence digest. 689 sources, 195 countries, one PDF every Sunday morning. Free forever.",
+    "Join analysts, traders and journalists receiving a weekly AI-curated intelligence digest. 689 sources, 195 countries, one PDF every Sunday morning. Part of Gaia ($9/month).",
   alternates: { canonical: `${SITE_URL}/briefing` },
   openGraph: {
     title: "The Sunday Convergence Report — WorldScope Briefing",

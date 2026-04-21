@@ -22,10 +22,9 @@ const StorylinePanel = dynamic(() => import("./StorylinePanel").then((m) => ({ d
 const KeyboardHelp = dynamic(() => import("./KeyboardHelp").then((m) => ({ default: m.KeyboardHelp })), { ssr: false });
 const StatusFooter = dynamic(() => import("./StatusFooter").then((m) => ({ default: m.StatusFooter })), { ssr: false });
 const NewsTicker = dynamic(() => import("./NewsTicker").then((m) => ({ default: m.NewsTicker })), { ssr: false });
-const NewsletterPopup = dynamic(
-  () => import("./NewsletterPopup").then((m) => ({ default: m.NewsletterPopup })),
-  { ssr: false }
-);
+// NewsletterPopup removed 2026-04-21 — free email capture funnel retired
+// with the single-tier pricing switch. Dashboard visitors see the CHAT
+// tab's upsell and the top-bar SIGN IN / CHAT buttons instead.
 const ConnectionStatus = dynamic(
   () => import("./ConnectionStatus").then((m) => ({ default: m.ConnectionStatus })),
   { ssr: false }
@@ -600,7 +599,6 @@ export function DashboardShell({ variant = "world" }: DashboardShellProps) {
       {/* Command Palette — Ctrl/Cmd+K */}
       <CommandPalette />
       {/* Newsletter signup popup */}
-      <NewsletterPopup />
     </div>
   );
 }
