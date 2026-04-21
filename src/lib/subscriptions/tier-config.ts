@@ -16,9 +16,10 @@ import type { TierId } from "./access";
 
 export type PurchasableTier = Exclude<TierId, "free" | "enterprise">;
 
-/** Canonical pantheon slugs used in /pricing#<slug> and API tier params. */
+/** Canonical pantheon slugs used in /pricing#<slug> and API tier params.
+ *  Chora ($1-per-country) was retired 2026-04-21 — uneconomic under
+ *  Lemon Squeezy's 5% + $0.50 fee model (55% effective commission). */
 export type TierSlug =
-  | "chora"
   | "pleiades"
   | "gaia"
   | "prometheus"
@@ -26,7 +27,6 @@ export type TierSlug =
 
 /** DB tier id -> public pantheon slug used in URLs and checkout payloads. */
 export const TIER_TO_SLUG: Record<PurchasableTier, TierSlug> = {
-  briefing_country: "chora",
   bundle5: "pleiades",
   global: "gaia",
   pro: "prometheus",
@@ -35,7 +35,6 @@ export const TIER_TO_SLUG: Record<PurchasableTier, TierSlug> = {
 
 /** Reverse lookup for the checkout route. */
 export const SLUG_TO_TIER: Record<TierSlug, PurchasableTier> = {
-  chora: "briefing_country",
   pleiades: "bundle5",
   gaia: "global",
   prometheus: "pro",
@@ -44,7 +43,6 @@ export const SLUG_TO_TIER: Record<TierSlug, PurchasableTier> = {
 
 /** Env var names — kept in one place so onboarding docs can link here. */
 export const TIER_VARIANT_ENV: Record<TierSlug, string> = {
-  chora: "NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_CHORA",
   pleiades: "NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_PLEIADES",
   gaia: "NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_GAIA",
   prometheus: "NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_PROMETHEUS",

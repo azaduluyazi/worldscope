@@ -8,9 +8,16 @@
 
 import { createServerClient } from "@/lib/db/supabase";
 
+/**
+ * Tier catalogue. `briefing_country` / "chora" was designed as a $1-per-
+ * country entry tier but retired 2026-04-21 — Lemon Squeezy's fixed $0.50
+ * per-transaction fee makes $1 pricing uneconomical (55% effective
+ * commission). The value stays in the DB CHECK constraint as a superset
+ * to keep old migrations forward-compatible, but is no longer offered in
+ * code.
+ */
 export type TierId =
   | "free"
-  | "briefing_country"
   | "bundle5"
   | "global"
   | "pro"
@@ -19,7 +26,6 @@ export type TierId =
 
 export type PantheonName =
   | "mortal" // == free; not stored, used for UX copy
-  | "chora"
   | "pleiades"
   | "gaia"
   | "prometheus"
@@ -27,7 +33,6 @@ export type PantheonName =
 
 export const TIER_ORDER: TierId[] = [
   "free",
-  "briefing_country",
   "bundle5",
   "global",
   "pro",
@@ -37,7 +42,6 @@ export const TIER_ORDER: TierId[] = [
 
 export const TIER_TO_PANTHEON: Record<TierId, PantheonName> = {
   free: "mortal",
-  briefing_country: "chora",
   bundle5: "pleiades",
   global: "gaia",
   pro: "prometheus",

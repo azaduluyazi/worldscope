@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 interface TierProps {
   /** Used as the element id so /pricing#<slug> can deep-link here.
    *  Must match the tier slugs in lib/subscriptions/tier-config.ts
-   *  (chora, pleiades, gaia, prometheus, pantheon). */
+   *  (pleiades, gaia, prometheus, pantheon). */
   slug: TierSlug;
   name: string;
   greek: string;
@@ -133,21 +133,6 @@ export default function PricingPage() {
         </h2>
 
         <div className="grid md:grid-cols-2 gap-4 mb-8">
-          <Tier
-            slug="chora"
-            name="Chora"
-            greek="Χώρα — the land"
-            price="$1"
-            unit="per country / month"
-            tag="Coming Soon"
-            lede="Pick a single country and receive a personalized daily situation report generated from WorldScope's full aggregation network."
-            bullets={[
-              "Personalized daily email for one country",
-              "AI situation reports from 2,000+ sources",
-              "Priority delivery before the free newsletter",
-              "Cancel anytime",
-            ]}
-          />
           <Tier
             slug="pleiades"
             name="Pleiades"

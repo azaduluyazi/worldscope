@@ -16,7 +16,6 @@ export const dynamic = "force-dynamic";
 
 const TIER_LABEL: Record<TierId, string> = {
   free: "Mortal",
-  briefing_country: "Chora",
   bundle5: "Pleiades",
   global: "Gaia",
   pro: "Prometheus",
@@ -26,7 +25,6 @@ const TIER_LABEL: Record<TierId, string> = {
 
 const TIER_PRICE: Record<TierId, string> = {
   free: "$0",
-  briefing_country: "$1 / country",
   bundle5: "$5 / month",
   global: "$9 / month",
   pro: "$19 / month",
