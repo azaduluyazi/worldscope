@@ -63,13 +63,19 @@ const nextConfig: NextConfig = {
           key: "Content-Security-Policy",
           value: [
             "default-src 'self'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com https://plausible.io https://*.plausible.io",
+            // Clerk serves its JS bundle from our own satellite subdomain
+            // (clerk.troiamedia.com) and its API from the same. It also
+            // fetches avatars and session tokens from *.clerk.accounts.dev
+            // (legacy/dev) and *.clerk.com (managed assets). Added 2026-04-21
+            // after the prod-instance switch left CSP stuck on the old
+            // allowlist, silently blocking clerk-js load on /sign-up.
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.troiamedia.com https://*.clerk.com https://*.clerk.accounts.dev https://pagead2.googlesyndication.com https://plausible.io https://*.plausible.io",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.mapbox.com",
             "font-src 'self' https://fonts.gstatic.com data:",
             "img-src 'self' data: blob: https: http:",
-            "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mapbox.com https://*.mapbox.com https://api.groq.com https://api.openai.com https://api.anthropic.com https://opensky-network.org https://*.aisstream.io https://pagead2.googlesyndication.com https://plausible.io https://*.plausible.io https://firms.modaps.eosdis.nasa.gov https://earthquake.usgs.gov https://celestrak.org https://api.stlouisfed.org https://finnhub.io",
-            "frame-src 'self' https://pagead2.googlesyndication.com https://*.youtube.com",
-            "worker-src 'self' blob:",
+            "connect-src 'self' https://clerk.troiamedia.com https://*.clerk.com https://*.clerk.accounts.dev https://*.supabase.co wss://*.supabase.co https://api.mapbox.com https://*.mapbox.com https://api.groq.com https://api.openai.com https://api.anthropic.com https://opensky-network.org https://*.aisstream.io https://pagead2.googlesyndication.com https://plausible.io https://*.plausible.io https://firms.modaps.eosdis.nasa.gov https://earthquake.usgs.gov https://celestrak.org https://api.stlouisfed.org https://finnhub.io",
+            "frame-src 'self' https://clerk.troiamedia.com https://*.clerk.com https://pagead2.googlesyndication.com https://*.youtube.com",
+            "worker-src 'self' blob: https://clerk.troiamedia.com",
             "media-src 'self' blob: https:",
             "object-src 'none'",
             "base-uri 'self'",
