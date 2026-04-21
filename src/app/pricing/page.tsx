@@ -16,6 +16,10 @@ export const metadata: Metadata = {
 };
 
 interface TierProps {
+  /** Used as the element id so /pricing#<slug> can deep-link here.
+   *  Must match the tier slugs in lib/subscriptions/access.ts
+   *  (chora, pleiades, gaia, prometheus, pantheon). */
+  slug: string;
   name: string;
   greek: string;
   price: string;
@@ -25,9 +29,12 @@ interface TierProps {
   bullets: string[];
 }
 
-function Tier({ name, greek, price, unit, tag, lede, bullets }: TierProps) {
+function Tier({ slug, name, greek, price, unit, tag, lede, bullets }: TierProps) {
   return (
-    <div className="border border-amber-400/40 rounded-sm p-5 bg-amber-400/[0.03]">
+    <div
+      id={slug}
+      className="border border-amber-400/40 rounded-sm p-5 bg-amber-400/[0.03] scroll-mt-24"
+    >
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
           {tag}
@@ -89,7 +96,6 @@ export default function PricingPage() {
             <Feature text="11 dashboard variants (Olympus, Ares, Hephaestus, Hermes…)" />
             <Feature text="30 languages + full RTL support (Arabic, Persian)" />
             <Feature text="AI-powered analytics, convergence engine & trend detection" />
-            <Feature text="Daily email briefing (free newsletter)" />
             <Feature text="Text-to-speech news reader" />
             <Feature text="2 curated visual themes — Troia War Room & Neon Cyberpunk" />
             <Feature text="Programmatic country pages — 195 countries × 9 variants" />
@@ -117,6 +123,7 @@ export default function PricingPage() {
 
         <div className="grid md:grid-cols-2 gap-4 mb-8">
           <Tier
+            slug="chora"
             name="Chora"
             greek="Χώρα — the land"
             price="$1"
@@ -131,6 +138,7 @@ export default function PricingPage() {
             ]}
           />
           <Tier
+            slug="pleiades"
             name="Pleiades"
             greek="Πλειάδες — seven sisters"
             price="$5"
@@ -145,6 +153,7 @@ export default function PricingPage() {
             ]}
           />
           <Tier
+            slug="gaia"
             name="Gaia"
             greek="Γαῖα — the Earth"
             price="$9"
@@ -159,6 +168,7 @@ export default function PricingPage() {
             ]}
           />
           <Tier
+            slug="prometheus"
             name="Prometheus"
             greek="Προμηθεύς — the fire bringer"
             price="$19"
@@ -175,7 +185,10 @@ export default function PricingPage() {
           />
         </div>
 
-        <div className="border border-gray-800 rounded-sm p-5 mb-8 bg-purple-400/5">
+        <div
+          id="pantheon"
+          className="border border-gray-800 rounded-sm p-5 mb-8 bg-purple-400/5 scroll-mt-24"
+        >
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className="text-[10px] font-bold text-purple-300 bg-purple-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
               Enterprise
@@ -198,30 +211,35 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Newsletter signup */}
-        <div className="border border-gray-800 rounded-sm p-6 mb-8 bg-cyan-400/5">
-          <h2 className="text-sm font-bold text-cyan-400 mb-2 tracking-wide uppercase">
-            Stay Informed
+        {/* Gaia launch CTA — replaces the legacy free email capture.
+            Free newsletter sign-up has been paused while Gaia ($9/mo) goes
+            through merchant-of-record review. See
+            wiki/sorunlar/briefing-free-signup-still-open.md. */}
+        <div className="border border-amber-400/40 rounded-sm p-6 mb-8 bg-amber-400/5 scroll-mt-24" id="briefing">
+          <h2 className="text-sm font-bold text-amber-400 mb-2 tracking-wide uppercase">
+            The Sunday Convergence Report
           </h2>
-          <p className="text-sm text-gray-400 mb-4">
-            Get a free daily briefing delivered to your inbox — AI-generated
-            situation reports covering the most important global events.
+          <p className="text-sm text-gray-300 mb-4">
+            One AI-curated PDF every Sunday at 07:00 UTC — moving to the Gaia
+            tier. Create an account now so you&apos;re one click away from
+            enrolling when the tier opens.
           </p>
-          <div className="flex gap-2">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="flex-1 px-3 py-2 bg-[#0a1628] border border-gray-700 rounded-sm text-sm text-gray-200 placeholder:text-gray-600 focus:border-cyan-400 focus:outline-none"
-            />
+          <div className="flex gap-2 flex-wrap">
             <Link
-              href="/"
-              className="px-4 py-2 bg-cyan-400 text-[#050a12] text-sm font-bold rounded-sm hover:bg-cyan-300 transition-colors whitespace-nowrap"
+              href="/sign-up?redirect_url=/briefing"
+              className="px-4 py-2 bg-amber-400 text-[#060509] text-sm font-bold rounded-sm hover:bg-amber-300 transition-colors whitespace-nowrap"
             >
-              Subscribe Free
+              Create Account
+            </Link>
+            <Link
+              href="#gaia"
+              className="px-4 py-2 border border-amber-400/50 text-amber-300 text-sm font-bold rounded-sm hover:bg-amber-400/10 transition-colors whitespace-nowrap"
+            >
+              See Gaia →
             </Link>
           </div>
           <p className="text-[10px] text-gray-600 mt-2">
-            No spam. Unsubscribe anytime. We never share your email.
+            Existing subscribers: your Sunday delivery continues uninterrupted.
           </p>
         </div>
 
