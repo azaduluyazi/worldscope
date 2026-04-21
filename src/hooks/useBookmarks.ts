@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useUser } from "./useUser";
 
 export interface BookmarkEvent {
   id: string;
@@ -28,7 +28,7 @@ export interface Bookmark {
  * list for an /account view.
  */
 export function useBookmarks() {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
   const [ids, setIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);

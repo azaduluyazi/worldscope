@@ -16,16 +16,10 @@ interface SubscribeButtonProps {
 /**
  * Tier Subscribe button.
  *
- * Design note — this used to check `useAuth().isLoaded` client-side to
- * disable the button until Clerk hydrated. That created a race where a
- * cold pricing page would sit with the button in a disabled state for
- * a full second on slow connections, and if Clerk failed to hydrate
- * entirely the button stayed permanently dead. Fixed 2026-04-21 by
- * letting the server be the source of truth: the button is always
- * live, the POST to /api/checkout/tier decides what happens, and the
- * server either returns the checkout URL, a sign-up redirect (401),
- * or an existing-subscription conflict (409). One less hydration
- * dependency, one less failure mode.
+ * Design note — the server is the single source of truth: the button is
+ * always clickable, and the POST to /api/checkout/tier returns either a
+ * Lemon checkout URL, a sign-up redirect (401), or an existing-subscription
+ * conflict (409). No client-side auth gate, no hydration race.
  */
 export function SubscribeButton({
   slug,

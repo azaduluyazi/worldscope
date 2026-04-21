@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { createServerClient as createSSRClient } from "@supabase/ssr";
 import { rateLimiters, getTierForPath, getClientId } from "./lib/ratelimit";
 import {
   BRIEFING_COOKIE,
@@ -8,21 +8,65 @@ import {
 } from "./lib/ab/briefing-headline";
 
 /**
- * Middleware: Clerk auth + Rate limiting + CORS + A/B cookie + security
- * headers.
+ * Middleware: Supabase session refresh + Rate limiting + CORS + A/B cookie +
+ * security headers.
  *
- * - Clerk wraps everything so `auth()` is available inside pages / API.
- * - Protected routes (currently /account, /settings) force sign-in.
- * - All API routes get rate limiting + CORS. Cron routes skip the rate
- *   limiter (they use Bearer CRON_SECRET).
- * - /briefing visits get an A/B variant cookie.
- * - All responses get the standard security header set.
+ * Responsibilities (in order, gated by `matcher` below):
+ * - API routes: CORS, rate limiting, preflight handling. Auth is enforced
+ *   per-route by `getCurrentUser()` — the middleware just keeps the cookie
+ *   session fresh.
+ * - Page routes: Supabase session refresh (required on every request so the
+ *   JWT cookie stays under its 1h TTL), A/B cookie for /briefing, standard
+ *   security headers.
+ * - Protected pages (`/account`, `/settings`): redirect to `/sign-in` if the
+ *   user is anonymous. Replaces `auth.protect()` from the old Clerk setup.
+ *
+ * Switched from Clerk to Supabase Auth on 2026-04-21 — see migration 021
+ * (handle_new_auth_user trigger) which replaces the external Clerk webhook
+ * with an in-database sync of auth.users → public.user_profiles.
  */
 
-const isProtectedRoute = createRouteMatcher([
-  "/account(.*)",
-  "/settings(.*)",
-]);
+const PROTECTED_PREFIXES = ["/account", "/settings"];
+
+function isProtectedPath(pathname: string): boolean {
+  return PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+}
+
+/**
+ * Wraps a NextResponse with Supabase's cookie-writing hooks so that when
+ * `supabase.auth.getUser()` refreshes the access token, the new cookie is
+ * propagated back to both the response (for the browser) and the request
+ * (for anything downstream in the same request).
+ */
+async function withSupabaseSession(
+  request: NextRequest,
+  response: NextResponse,
+): Promise<{ response: NextResponse; userId: string | null }> {
+  const supabase = createSSRClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value),
+          );
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options),
+          );
+        },
+      },
+    },
+  );
+
+  const { data } = await supabase.auth.getUser();
+  return { response, userId: data.user?.id ?? null };
+}
 
 async function runPipeline(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
@@ -57,6 +101,7 @@ async function runPipeline(request: NextRequest): Promise<NextResponse> {
     }
 
     const tier = getTierForPath(pathname);
+    const response = NextResponse.next();
 
     if (tier) {
       try {
@@ -80,31 +125,43 @@ async function runPipeline(request: NextRequest): Promise<NextResponse> {
                 "X-RateLimit-Reset": String(reset),
                 "Retry-After": String(Math.ceil((reset - Date.now()) / 1000)),
               },
-            }
+            },
           );
         }
 
-        const response = NextResponse.next();
         response.headers.set("X-RateLimit-Limit", String(limit));
         response.headers.set("X-RateLimit-Remaining", String(remaining));
         response.headers.set("X-RateLimit-Reset", String(reset));
-        response.headers.set("Access-Control-Allow-Origin", corsOrigin);
-        return response;
       } catch {
-        const response = NextResponse.next();
-        response.headers.set("Access-Control-Allow-Origin", corsOrigin);
-        return response;
+        // Rate limiter down — fail open to avoid denial of service.
       }
     }
 
-    const response = NextResponse.next();
     response.headers.set("Access-Control-Allow-Origin", corsOrigin);
-    return response;
+
+    // Refresh Supabase cookie so API routes can read the current user.
+    const wrapped = await withSupabaseSession(request, response);
+    return wrapped.response;
   }
 
-  // ── A/B test: briefing headline variant assignment ──
-  const response = NextResponse.next();
+  // ── Page routes ──
+  let response = NextResponse.next();
 
+  // Refresh session first — this also tells us if the user is signed in
+  // so we can redirect on protected paths.
+  const { response: sessionResponse, userId } = await withSupabaseSession(
+    request,
+    response,
+  );
+  response = sessionResponse;
+
+  if (isProtectedPath(pathname) && !userId) {
+    const signInUrl = new URL("/sign-in", request.url);
+    signInUrl.searchParams.set("redirect_to", pathname);
+    return NextResponse.redirect(signInUrl);
+  }
+
+  // A/B test: briefing headline variant
   if (pathname === "/briefing" || pathname === "/briefing/") {
     const existing = request.cookies.get(BRIEFING_COOKIE)?.value;
     if (!existing) {
@@ -122,35 +179,28 @@ async function runPipeline(request: NextRequest): Promise<NextResponse> {
     }
   }
 
-  // ── Security headers for all page responses ──
+  // Standard security headers
   response.headers.set("X-Content-Type-Options", "nosniff");
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-XSS-Protection", "1; mode=block");
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set(
     "Permissions-Policy",
-    "camera=(), microphone=(), geolocation=(self)"
+    "camera=(), microphone=(), geolocation=(self)",
   );
 
   return response;
 }
 
-export default clerkMiddleware(async (auth, request) => {
-  // Protect auth-required routes. `auth.protect()` redirects to sign-in
-  // if the visitor is not signed in.
-  if (isProtectedRoute(request)) {
-    await auth.protect();
-  }
-
+export default async function middleware(request: NextRequest) {
   return runPipeline(request);
-});
+}
 
 export const config = {
   matcher: [
     // Match all API routes
     "/api/:path*",
-    // Match page routes (for security headers + Clerk session) but exclude
-    // static files and the Next.js internals.
+    // Match page routes (excluding static + Next.js internals)
     "/((?!_next/static|_next/image|favicon.ico|icons|manifest.json|robots.txt|sitemap.xml|sw.js).*)",
   ],
 };

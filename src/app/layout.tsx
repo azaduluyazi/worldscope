@@ -3,7 +3,6 @@ import { JetBrains_Mono, Inter, Orbitron, Rajdhani, Share_Tech_Mono, Syne, Cormo
 import Script from "next/script";
 import { NextIntlClientProvider } from "next-intl";
 import { getLocale, getMessages } from "next-intl/server";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/shared/ThemeProvider";
 import { WebVitals } from "@/components/shared/WebVitals";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
@@ -256,49 +255,17 @@ export default async function RootLayout({
         >
           Skip to content
         </a>
-        <ClerkProvider
-          appearance={{
-            variables: {
-              colorPrimary: "#f5a524",
-              colorBackground: "#060509",
-              colorText: "#f1ede3",
-              colorInputBackground: "#110d14",
-              colorInputText: "#f1ede3",
-              borderRadius: "2px",
-              // Keep Clerk's own font stack so sizing/readability aren't
-              // collapsed by the dashboard's mono font.
-              fontSize: "15px",
-            },
-            elements: {
-              rootBox: "text-[15px]",
-              card: "bg-[#0a0810] border border-[#2d1e08] shadow-[0_0_24px_-12px_rgba(245,165,36,.4)] text-[15px]",
-              cardBox: "text-[15px]",
-              headerTitle: "text-[#f1ede3] text-xl tracking-wide",
-              headerSubtitle: "text-gray-400 text-sm",
-              socialButtonsBlockButton: "border-[#2d1e08] hover:bg-[#f5a524]/10 text-[14px]",
-              formButtonPrimary: "bg-[#f5a524] text-[#060509] hover:bg-[#ffc55a] text-[14px] font-semibold",
-              formFieldLabel: "text-[#c5bfae] text-[13px]",
-              formFieldInput: "text-[15px]",
-              footerActionLink: "text-[#f5a524] hover:text-[#ffc55a]",
-              dividerLine: "bg-[#2d1e08]",
-              dividerText: "text-gray-500 text-[12px]",
-            },
-          }}
-          signInFallbackRedirectUrl="/"
-          signUpFallbackRedirectUrl="/"
-        >
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            <ThemeProvider>
-              <WebVitals />
-              <main id="main-content">
-                {children}
-              </main>
-              <ScrollToTop />
-              <AdConsentBanner />
-              <div className="scanlines" aria-hidden="true" />
-            </ThemeProvider>
-          </NextIntlClientProvider>
-        </ClerkProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            <WebVitals />
+            <main id="main-content">
+              {children}
+            </main>
+            <ScrollToTop />
+            <AdConsentBanner />
+            <div className="scanlines" aria-hidden="true" />
+          </ThemeProvider>
+        </NextIntlClientProvider>
         {/* Service Worker registration — enables offline cache for the
             PWA install. Registered lazyOnload so it never blocks first
             paint. The SW itself lives at public/sw.js and is opt-in by

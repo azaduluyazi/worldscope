@@ -9,14 +9,14 @@
  * Body: { messages: CoreMessage[] }  — as produced by useChat
  * Returns: streaming text/plain response
  *
- * Auth: signed-in Clerk user required. Tier gating (Prometheus / Pro) is
- * enforced at the page level via <PaywallGate>, but we also double-check
- * here so a direct API call can't bypass the UI.
+ * Auth: signed-in Supabase user required. Tier gating (Gaia) is enforced
+ * at the page level via <PaywallGate>, but we also double-check here so
+ * a direct API call can't bypass the UI.
  */
 
 import { NextResponse } from "next/server";
 import { streamText, type ModelMessage } from "ai";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/db/supabase-server";
 import { briefModel } from "@/lib/ai/providers";
 import { fetchPersistedEvents } from "@/lib/db/events";
 import { resolveAccess, hasAtLeast } from "@/lib/subscriptions/access";
@@ -66,13 +66,13 @@ async function buildEventsBlock(): Promise<string> {
 }
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return NextResponse.json({ error: "sign-in required" }, { status: 401 });
   }
 
   // Gaia gate — single paid tier (2026-04-21).
-  const access = await resolveAccess(userId);
+  const access = await resolveAccess(user.id);
   if (!hasAtLeast(access, "global")) {
     return NextResponse.json(
       { error: "gaia tier required", currentTier: access.tier },

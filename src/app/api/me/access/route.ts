@@ -7,17 +7,17 @@
  */
 
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/db/supabase-server";
 import { resolveAccess, FREE_CONTEXT } from "@/lib/subscriptions/access";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return NextResponse.json(FREE_CONTEXT);
   }
-  const access = await resolveAccess(userId);
+  const access = await resolveAccess(user.id);
   return NextResponse.json(access);
 }

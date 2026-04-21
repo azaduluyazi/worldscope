@@ -1,7 +1,7 @@
 "use client";
 
 import { useBookmarks } from "@/hooks/useBookmarks";
-import { useAuth } from "@clerk/nextjs";
+import { useUser } from "@/hooks/useUser";
 
 interface BookmarkButtonProps {
   eventId: string;
@@ -18,7 +18,7 @@ interface BookmarkButtonProps {
  * sign in lives in the TopBar.
  */
 export function BookmarkButton({ eventId, variant = "compact", className }: BookmarkButtonProps) {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
   const { ids, toggle, loading } = useBookmarks();
 
   if (!isLoaded || !isSignedIn) return null;

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { auth, currentUser } from "@clerk/nextjs/server";
-import { UserProfile } from "@clerk/nextjs";
+import { getCurrentUser } from "@/lib/db/supabase-server";
 import { resolveAccess, TIER_TO_PANTHEON, type TierId } from "@/lib/subscriptions/access";
 import { SavedEvents } from "./SavedEvents";
 
@@ -32,19 +31,20 @@ function formatDate(iso: string | null): string {
 }
 
 export default async function AccountPage() {
-  const { userId } = await auth();
-  if (!userId) redirect("/sign-in?redirect_url=/account");
+  const user = await getCurrentUser();
+  if (!user) redirect("/sign-in?redirect_to=/account");
 
-  const [user, access] = await Promise.all([currentUser(), resolveAccess(userId)]);
+  const access = await resolveAccess(user.id);
 
-  const email =
-    user?.primaryEmailAddress?.emailAddress ??
-    user?.emailAddresses?.[0]?.emailAddress ??
-    "—";
+  const email = user.email ?? "—";
+  const metadata = user.user_metadata ?? {};
   const displayName =
-    user?.firstName || user?.username
-      ? [user?.firstName, user?.lastName].filter(Boolean).join(" ") || user?.username
-      : email;
+    (metadata.full_name as string | undefined) ||
+    (metadata.name as string | undefined) ||
+    email.split("@")[0];
+  const provider = user.app_metadata?.provider ?? "email";
+  const createdAt = user.created_at ?? null;
+  const lastSignIn = user.last_sign_in_at ?? null;
 
   const tierLabel = TIER_LABEL[access.tier];
   const tierPrice = TIER_PRICE[access.tier];
@@ -94,8 +94,8 @@ export default async function AccountPage() {
             </dl>
           ) : (
             <p className="text-sm text-gray-400 mb-4">
-              You&apos;re on the free (Mortal) tier. Upgrade to Chora, Pleiades, Gaia, or
-              Prometheus for personalized briefings and pro tools.
+              You&apos;re on the free (Mortal) tier. Upgrade to Gaia ($9/mo) to unlock
+              the full dashboard, premium briefings, and the pantheon analyst chat.
             </p>
           )}
 
@@ -104,7 +104,7 @@ export default async function AccountPage() {
               href="/pricing"
               className="inline-block px-3 py-1.5 text-[11px] font-bold tracking-wider border border-amber-400/50 text-amber-300 hover:bg-amber-400/10 transition-colors"
             >
-              SEE ALL TIERS →
+              SEE PRICING →
             </Link>
             {access.tier !== "free" && (
               <a
@@ -129,16 +129,32 @@ export default async function AccountPage() {
           <SavedEvents />
         </div>
 
-        {/* Clerk profile widget */}
+        {/* Profile & Security — native Supabase info (no third-party widget) */}
         <div className="border border-gray-800 rounded-sm p-4 bg-[#0a0810]">
           <h2 className="text-sm font-bold text-amber-400 mb-3 tracking-wide uppercase">
-            Profile & Security
+            Profile &amp; Security
           </h2>
-          <p className="text-xs text-gray-500 mb-4">
-            Manage email addresses, connected accounts, password, two-factor
-            authentication, and active sessions.
-          </p>
-          <UserProfile routing="hash" />
+          <dl className="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-2 text-xs">
+            <dt className="text-gray-500">Email</dt>
+            <dd className="text-gray-200">{email}</dd>
+            <dt className="text-gray-500">Display name</dt>
+            <dd className="text-gray-200">{displayName}</dd>
+            <dt className="text-gray-500">Sign-in method</dt>
+            <dd className="text-gray-200 capitalize">{provider}</dd>
+            <dt className="text-gray-500">Account created</dt>
+            <dd className="text-gray-200">{formatDate(createdAt)}</dd>
+            <dt className="text-gray-500">Last sign-in</dt>
+            <dd className="text-gray-200">{formatDate(lastSignIn)}</dd>
+          </dl>
+
+          <form action="/auth/sign-out" method="post" className="mt-6 pt-4 border-t border-gray-800">
+            <button
+              type="submit"
+              className="inline-block px-3 py-1.5 text-[11px] font-bold tracking-wider border border-red-500/40 text-red-300 hover:bg-red-500/10 transition-colors"
+            >
+              SIGN OUT
+            </button>
+          </form>
         </div>
       </div>
     </div>

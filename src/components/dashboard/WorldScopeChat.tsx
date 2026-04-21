@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, type FormEvent } from "react";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { useUser } from "@/hooks/useUser";
 import { useAccess } from "@/hooks/useAccess";
 
 interface ChatMessage {
@@ -22,7 +22,7 @@ interface ChatMessage {
  * direct API call can't bypass.
  */
 export function WorldScopeChat() {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
   const { access, loading: accessLoading } = useAccess();
   const tier = access.tier;
   const [messages, setMessages] = useState<ChatMessage[]>([]);

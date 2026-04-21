@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import useSWR from "swr";
 import Link from "next/link";
 import { useAccess } from "@/hooks/useAccess";
-import { useAuth } from "@clerk/nextjs";
+import { useUser } from "@/hooks/useUser";
 import { hasAtLeast } from "@/lib/subscriptions/access";
 
 /* ── types ── */
@@ -70,7 +70,7 @@ function formatMarketCap(m: number | undefined | null): string {
 
 /* ── component ── */
 export function EquityResearchPanel({ className = "" }: EquityResearchPanelProps) {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useUser();
   const { access, loading: accessLoading } = useAccess();
   const [symbol, setSymbol] = useState("");
   const [activeSymbol, setActiveSymbol] = useState("");

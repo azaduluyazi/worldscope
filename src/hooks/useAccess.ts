@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
+import { useUser } from "./useUser";
 import { FREE_CONTEXT, type AccessContext } from "@/lib/subscriptions/access";
 
 /**
  * Fetches the signed-in user's tier + subscription from /api/me/access
- * once on mount, plus when Clerk auth state flips. Returns FREE_CONTEXT
+ * once on mount, plus when Supabase auth state flips. Returns FREE_CONTEXT
  * for signed-out visitors so consumers can always read .tier without
  * null-checking.
  */
 export function useAccess(): { access: AccessContext; loading: boolean } {
-  const { isSignedIn, isLoaded } = useAuth();
+  const { isSignedIn, isLoaded } = useUser();
   const [access, setAccess] = useState<AccessContext>(FREE_CONTEXT);
   const [loading, setLoading] = useState(true);
 

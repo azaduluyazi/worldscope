@@ -1,9 +1,9 @@
 /**
  * Subscription access helpers.
  *
- * Maps the Clerk user id to a local user_profiles row, then reads
- * subscriptions to decide which tier the user is on and what features
- * they can see. Pure data layer — no UI, no redirects.
+ * Maps the Supabase auth.users.id to a local user_profiles row, then
+ * reads subscriptions to decide which tier the user is on and what
+ * features they can see. Pure data layer — no UI, no redirects.
  */
 
 import { createServerClient } from "@/lib/db/supabase";
@@ -65,17 +65,18 @@ export const FREE_CONTEXT: AccessContext = {
 };
 
 /**
- * Resolve the subscription tier for a Clerk user id. Returns FREE_CONTEXT
- * when the user has no synced profile (webhook hasn't fired yet) or has
- * no active subscription row.
+ * Resolve the subscription tier for a Supabase auth user id. Returns
+ * FREE_CONTEXT when the user has no synced profile (shouldn't happen —
+ * migration 021's trigger creates it in-transaction) or no active
+ * subscription row.
  */
-export async function resolveAccess(clerkUserId: string | null): Promise<AccessContext> {
-  if (!clerkUserId) return FREE_CONTEXT;
+export async function resolveAccess(authUserId: string | null): Promise<AccessContext> {
+  if (!authUserId) return FREE_CONTEXT;
   const db = createServerClient();
   const { data: profile, error: profileErr } = await db
     .from("user_profiles")
     .select("id")
-    .eq("auth_id", clerkUserId)
+    .eq("auth_id", authUserId)
     .maybeSingle();
   if (profileErr || !profile) return FREE_CONTEXT;
 

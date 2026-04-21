@@ -14,7 +14,8 @@ import { ThemeToggle } from "./ThemeToggle";
 import { ThemeSelector } from "./ThemeSelector";
 import { useThreatIndex } from "@/hooks/useThreatIndex";
 import { FaHorseHead } from "react-icons/fa";
-import { useAuth, UserButton } from "@clerk/nextjs";
+import { useUser } from "@/hooks/useUser";
+import { UserMenu } from "./UserMenu";
 
 /** Map threat score to DEFCON level (1=max threat, 5=lowest) */
 function scoreToDefcon(score: number): { level: number; color: string; label: string } {
@@ -144,22 +145,22 @@ export function TopBar({ variant = "world" }: TopBarProps) {
           🔔
         </button>
 
-        {/* ── Clerk auth affordance ── */}
-        <ClerkAuthSlot />
+        {/* ── Auth affordance: sign-in link or user avatar dropdown ── */}
+        <AuthSlot />
       </div>
     </header>
   );
 }
 
 /** Client-side auth-aware slot: SIGN IN button when signed out,
- *  UserButton when signed in. useAuth keeps this reactive. */
-function ClerkAuthSlot() {
-  const { isLoaded, isSignedIn } = useAuth();
+ *  UserMenu (custom dropdown) when signed in. useUser keeps this reactive. */
+function AuthSlot() {
+  const { isLoaded, isSignedIn, user } = useUser();
   if (!isLoaded) {
-    // avoid flicker — render a size-matched spacer while Clerk boots
+    // avoid flicker — render a size-matched spacer while Supabase boots
     return <span className="inline-block w-6 h-6 md:w-7 md:h-7" aria-hidden="true" />;
   }
-  if (!isSignedIn) {
+  if (!isSignedIn || !user) {
     return (
       <Link
         href="/sign-in"
@@ -169,16 +170,5 @@ function ClerkAuthSlot() {
       </Link>
     );
   }
-  return (
-    <div className="flex items-center" aria-label="User menu">
-      <UserButton
-        appearance={{
-          elements: {
-            avatarBox: "w-6 h-6 md:w-7 md:h-7 ring-1 ring-hud-accent/30",
-            userButtonPopoverCard: "bg-hud-panel border border-hud-border",
-          },
-        }}
-      />
-    </div>
-  );
+  return <UserMenu user={user} />;
 }

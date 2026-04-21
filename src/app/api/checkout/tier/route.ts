@@ -4,7 +4,7 @@
  * Body: { slug: "gaia" }
  *
  * Resolves the slug → Lemon Squeezy variant id server-side (so a client
- * can't tamper with the price), binds the current Clerk user id into
+ * can't tamper with the price), binds the current Supabase user id into
  * custom_data so the webhook can link the resulting subscription to
  * the right user_profiles row, and returns { url } — the Lemon-hosted
  * checkout URL the caller redirects to.
@@ -20,7 +20,7 @@
 
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/db/supabase-server";
 import { createCheckoutUrl } from "@/lib/lemon-squeezy";
 import { resolveAccess } from "@/lib/subscriptions/access";
 import {
@@ -39,16 +39,17 @@ const BodySchema = z.object({
 
 export async function POST(req: Request) {
   // 1. Auth
-  const { userId } = await auth();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return NextResponse.json(
       {
         error: "sign-in required",
-        redirect: "/sign-up?redirect_url=/pricing",
+        redirect: "/sign-up?redirect_to=/pricing",
       },
       { status: 401 },
     );
   }
+  const userId = user.id;
 
   // 2. Parse body
   let body: unknown;
@@ -98,10 +99,7 @@ export async function POST(req: Request) {
   }
 
   // 5. Create Lemon checkout
-  const user = await currentUser();
-  const email =
-    user?.primaryEmailAddress?.emailAddress ??
-    user?.emailAddresses?.[0]?.emailAddress;
+  const email = user.email;
 
   try {
     const url = await createCheckoutUrl({

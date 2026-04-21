@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/db/supabase-server";
 import { cachedFetch } from "@/lib/cache/redis";
 import {
   fetchFinnhubQuote,
@@ -14,11 +14,11 @@ export const runtime = "nodejs";
 
 export async function GET(req: Request) {
   // Gaia gate — single paid tier unlocks all premium features.
-  const { userId } = await auth();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return NextResponse.json({ error: "sign-in required" }, { status: 401 });
   }
-  const access = await resolveAccess(userId);
+  const access = await resolveAccess(user.id);
   if (!hasAtLeast(access, "global")) {
     return NextResponse.json(
       { error: "gaia tier required", currentTier: access.tier },

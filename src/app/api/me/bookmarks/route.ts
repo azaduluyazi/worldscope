@@ -6,12 +6,14 @@
  *   DELETE → remove ?eventId=
  *
  * Uses the bookmarks table (migration 005). Scoped by user_profiles.id
- * resolved from the Clerk auth_id so a user can only read/modify their
- * own rows. Webhook sync on first sign-in ensures user_profiles exists.
+ * resolved from the Supabase auth user id so a user can only read/modify
+ * their own rows. The DB trigger in migration 021 guarantees the
+ * user_profiles row exists the instant auth.users gains one, so there's
+ * no race between first sign-in and first write.
  */
 
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { getCurrentUser } from "@/lib/db/supabase-server";
 import { z } from "zod";
 import { createServerClient } from "@/lib/db/supabase";
 
@@ -19,23 +21,26 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 async function requireProfileId(): Promise<string | NextResponse> {
-  const { userId } = await auth();
-  if (!userId) {
+  const user = await getCurrentUser();
+  if (!user) {
     return NextResponse.json({ error: "sign-in required" }, { status: 401 });
   }
   const db = createServerClient();
   const { data, error } = await db
     .from("user_profiles")
     .select("id")
-    .eq("auth_id", userId)
+    .eq("auth_id", user.id)
     .maybeSingle();
   if (error) {
     console.error("[bookmarks] profile lookup failed", error);
     return NextResponse.json({ error: "profile lookup failed" }, { status: 500 });
   }
   if (!data) {
-    // Webhook hasn't synced yet — treat as "not ready".
-    return NextResponse.json({ error: "profile not synced yet" }, { status: 409 });
+    // Trigger 021 creates the row inside the same auth.users insert tx,
+    // so this should never happen for a signed-in user. If it does,
+    // surface it as a hard error rather than silently bouncing.
+    console.error("[bookmarks] no profile for", user.id);
+    return NextResponse.json({ error: "profile missing" }, { status: 500 });
   }
   return data.id as string;
 }
