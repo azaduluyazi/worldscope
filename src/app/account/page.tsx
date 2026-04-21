@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/db/supabase-server";
-import { resolveAccess, TIER_TO_PANTHEON, type TierId } from "@/lib/subscriptions/access";
+import { resolveAccess, hasAtLeast, TIER_TO_PANTHEON, type TierId } from "@/lib/subscriptions/access";
 import { SavedEvents } from "./SavedEvents";
+import { BriefingPreferencesCard } from "@/components/account/BriefingPreferencesCard";
 
 export const metadata: Metadata = {
   title: "Account — WorldScope",
@@ -30,11 +31,18 @@ function formatDate(iso: string | null): string {
   return new Date(iso).toISOString().slice(0, 10);
 }
 
-export default async function AccountPage() {
+export default async function AccountPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ welcome?: string }>;
+}) {
+  const { welcome } = await searchParams;
   const user = await getCurrentUser();
   if (!user) redirect("/sign-in?redirect_to=/account");
 
   const access = await resolveAccess(user.id);
+  const isPaid = hasAtLeast(access, "global");
+  const isWelcome = welcome === "1";
 
   const email = user.email ?? "—";
   const metadata = user.user_metadata ?? {};
@@ -116,6 +124,9 @@ export default async function AccountPage() {
             )}
           </div>
         </div>
+
+        {/* Briefing preferences — Gaia value-prop core */}
+        <BriefingPreferencesCard openByDefault={isWelcome} isPaid={isPaid} />
 
         {/* Saved events */}
         <div className="border border-gray-800 rounded-sm p-4 bg-[#0a0810] mb-6">
