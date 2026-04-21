@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalFooter } from "@/components/shared/LegalFooter";
+import { SubscribeButton } from "@/components/pricing/SubscribeButton";
+import { describeTier, type TierSlug } from "@/lib/subscriptions/tier-config";
 
 export const metadata: Metadata = {
   title: "Pricing — WorldScope",
@@ -17,9 +19,9 @@ export const metadata: Metadata = {
 
 interface TierProps {
   /** Used as the element id so /pricing#<slug> can deep-link here.
-   *  Must match the tier slugs in lib/subscriptions/access.ts
+   *  Must match the tier slugs in lib/subscriptions/tier-config.ts
    *  (chora, pleiades, gaia, prometheus, pantheon). */
-  slug: string;
+  slug: TierSlug;
   name: string;
   greek: string;
   price: string;
@@ -30,14 +32,17 @@ interface TierProps {
 }
 
 function Tier({ slug, name, greek, price, unit, tag, lede, bullets }: TierProps) {
+  const { purchasable } = describeTier(slug);
+  const effectiveTag = purchasable ? "Available" : tag;
+
   return (
     <div
       id={slug}
-      className="border border-amber-400/40 rounded-sm p-5 bg-amber-400/[0.03] scroll-mt-24"
+      className="border border-amber-400/40 rounded-sm p-5 bg-amber-400/[0.03] scroll-mt-24 flex flex-col"
     >
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
-          {tag}
+          {effectiveTag}
         </span>
         <h3 className="text-base font-bold text-amber-300 tracking-wide uppercase">
           {name} <span className="text-amber-200/60 font-normal">· {greek}</span>
@@ -48,11 +53,17 @@ function Tier({ slug, name, greek, price, unit, tag, lede, bullets }: TierProps)
         <span className="text-xs text-gray-500">{unit}</span>
       </div>
       <p className="text-sm text-gray-300 mb-3">{lede}</p>
-      <ul className="space-y-2 text-sm text-gray-200">
+      <ul className="space-y-2 text-sm text-gray-200 mb-4 flex-1">
         {bullets.map((b) => (
           <Feature key={b} text={b} />
         ))}
       </ul>
+      <SubscribeButton
+        slug={slug}
+        purchasable={purchasable}
+        label={`SUBSCRIBE · ${name.toUpperCase()}`}
+        className="mt-auto"
+      />
     </div>
   );
 }
