@@ -198,14 +198,57 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/**
+ * Fetch RSS/Atom XML via native fetch. Beats rss-parser's built-in
+ * http module on two fronts:
+ *   1. Sends modern browser-style headers (Sec-Fetch-*, Accept-Encoding
+ *      honored, automatic gzip decompression) so Cloudflare / Akamai
+ *      bot-detection stops returning 403 for feeds like Al Arabiya,
+ *      Times of Israel, ISW, Peterson Institute, OPCW, OHCHR.
+ *   2. Follows redirects explicitly so Haaretz (405-on-HEAD) and
+ *      friends resolve correctly.
+ */
+async function fetchXml(url: string, timeoutMs: number = 15000): Promise<string> {
+  const res = await fetch(url, {
+    method: "GET",
+    redirect: "follow",
+    signal: AbortSignal.timeout(timeoutMs),
+    headers: {
+      "User-Agent": getNextUserAgent(),
+      Accept:
+        "application/rss+xml, application/xml, application/atom+xml, text/xml, */*;q=0.1",
+      "Accept-Language": "en-US,en;q=0.9,tr;q=0.8",
+      "Cache-Control": "no-cache",
+      "Sec-Fetch-Dest": "document",
+      "Sec-Fetch-Mode": "navigate",
+      "Sec-Fetch-Site": "none",
+      "Sec-Fetch-User": "?1",
+      "Upgrade-Insecure-Requests": "1",
+    },
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.text();
+}
+
 export async function fetchFeed(url: string, feedName: string): Promise<IntelItem[]> {
   if (!isUrlSafe(url)) return [];
 
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
-      // Create fresh parser with rotated User-Agent for each attempt
+      // Primary path: native fetch + parseString (handles 403-bot-blockers).
+      // Fallback: rss-parser's built-in parseURL (handles quirky legacy feeds
+      // whose content-type makes fetch() reject the body).
       const p = createParser();
-      const feed = await p.parseURL(url);
+      let feed;
+      try {
+        const xml = await fetchXml(url);
+        feed = await p.parseString(xml);
+      } catch (primaryErr) {
+        // Only fall back on bad response or parse errors — not on timeout
+        const msg = primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
+        if (/timeout|aborted/i.test(msg)) throw primaryErr;
+        feed = await p.parseURL(url);
+      }
       return (feed.items || []).slice(0, 30).map((item, idx) => {
         const title = item.title || "Untitled";
         const raw = item.link || item.guid || `${feedName}-${idx}-${title}`;
