@@ -137,7 +137,13 @@ export function renderBriefingEmail(props: BriefingEmailProps): {
   const { kind, date, recipient_name, countries, preferences_url, unsubscribe_url } =
     props;
 
-  const countryLabels = countries.map((c) => c.country_name).join(" · ");
+  // Subject line must stay under ~70 chars for mail client previews.
+  // Up to 3 countries we list them; beyond that we summarise ("+N more")
+  // so a 15-country subscriber still sees a readable inbox line.
+  const countryLabels =
+    countries.length <= 3
+      ? countries.map((c) => c.country_name).join(" · ")
+      : `${countries[0].country_name} +${countries.length - 1} more`;
   const subject =
     kind === "daily"
       ? `WorldScope · ${countryLabels} · ${date}`

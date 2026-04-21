@@ -95,8 +95,9 @@ export default function PricingPage() {
             price="$9"
             unit="everything / month"
             tag="Single Tier"
-            lede="One price, every feature. The Sunday Convergence Report, WorldScope Chat, Equity Research, custom alerts, and everything else we build — all unlocked at the same tier. No plan comparison matrix. No decision fatigue."
+            lede="One price, every feature. Personalized country briefings in your inbox, the Sunday Convergence Report, WorldScope Chat, Equity Research, custom alerts — all unlocked at the same tier. No plan comparison matrix. No decision fatigue."
             bullets={[
+              "Daily + weekly intelligence briefings for up to 15 countries you pick",
               "Weekly Sunday Convergence Report (AI-curated PDF)",
               "WorldScope Chat — multi-turn, grounded in the live feed",
               "Equity Research across 92 exchanges (Finnhub)",

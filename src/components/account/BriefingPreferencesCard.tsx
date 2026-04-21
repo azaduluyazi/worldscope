@@ -12,7 +12,7 @@ interface Preferences {
   last_weekly_sent_at: string | null;
 }
 
-const MAX_COUNTRIES = 5;
+const MAX_COUNTRIES = 15;
 
 interface Props {
   /** True when the user landed via ?welcome=1 and has no prefs yet. */
@@ -175,7 +175,7 @@ export function BriefingPreferencesCard({ openByDefault = false, isPaid = false 
       )}
 
       {/* Selected chips */}
-      <div className="flex flex-wrap gap-2 mb-4 min-h-[28px]">
+      <div className="flex flex-wrap gap-2 mb-4 min-h-[32px] items-start">
         {prefs.country_codes.map((code) => {
           const c = countByCode.get(code);
           if (!c) return null;
@@ -194,7 +194,7 @@ export function BriefingPreferencesCard({ openByDefault = false, isPaid = false 
         })}
         {prefs.country_codes.length === 0 && (
           <span className="font-mono text-[11px] text-gray-500">
-            No countries yet. Search below to add up to 5.
+            No countries yet. Search below to add up to {MAX_COUNTRIES}.
           </span>
         )}
       </div>
@@ -247,10 +247,11 @@ export function BriefingPreferencesCard({ openByDefault = false, isPaid = false 
         />
       </div>
 
-      {/* Save state + error */}
-      <div className="flex items-center justify-between text-[10px] font-mono">
+      {/* Save state + error — fixed height so toggling daily/weekly
+          doesn't cause layout shift as the status text appears/hides. */}
+      <div className="flex items-center justify-between text-[10px] font-mono h-[14px] leading-[14px]">
         <span className="text-gray-500">
-          {saving ? "Saving…" : saved ? "Saved ✓" : ""}
+          {saving ? "Saving…" : saved ? "Saved ✓" : "\u00a0"}
         </span>
         {error && <span className="text-red-400">{error}</span>}
       </div>

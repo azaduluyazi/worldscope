@@ -23,7 +23,7 @@ const PutSchema = z.object({
   country_codes: z
     .array(z.string().regex(/^[A-Z]{2}$/))
     .min(0)
-    .max(5)
+    .max(15)
     .refine(
       (codes) => codes.every((c) => COUNTRY_MAP.has(c)),
       { message: "unknown country code" },
