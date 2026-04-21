@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import type { TierSlug } from "@/lib/subscriptions/tier-config";
+import type { BillingCycle, TierSlug } from "@/lib/subscriptions/tier-config";
 
 interface SubscribeButtonProps {
   slug: TierSlug;
   /** True when the tier's Lemon variant id is configured. When false,
    *  we render "Coming Soon" instead of a clickable button. */
   purchasable: boolean;
+  /** Which Lemon variant to check out against. Defaults to "monthly" so
+   *  existing callers keep working; the pricing page passes this
+   *  explicitly based on the annual/monthly toggle. */
+  cycle?: BillingCycle;
   className?: string;
   label?: string;
 }
@@ -24,6 +28,7 @@ interface SubscribeButtonProps {
 export function SubscribeButton({
   slug,
   purchasable,
+  cycle = "monthly",
   className = "",
   label = "SUBSCRIBE",
 }: SubscribeButtonProps) {
@@ -48,7 +53,7 @@ export function SubscribeButton({
       const res = await fetch("/api/checkout/tier", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ slug }),
+        body: JSON.stringify({ slug, cycle }),
       });
       const body: {
         url?: string;

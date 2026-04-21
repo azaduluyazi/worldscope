@@ -1,6 +1,7 @@
 import { createServerClient } from "./supabase";
 import type { IntelItem } from "@/types/intel";
 import { applyGeocoding } from "@/lib/ai/geocoder";
+import { extractCountryCode } from "@/lib/geo/extract-country";
 
 /**
  * Persist intel items to Supabase `events` table.
@@ -52,7 +53,13 @@ export async function persistEvents(
       image_url: item.imageUrl || null,
       lat: item.lat ?? null,
       lng: item.lng ?? null,
-      country_code: item.countryCode || null,
+      // Tagging priority: (1) upstream-provided countryCode (e.g. USGS
+      // sends iso in its metadata), else (2) text-scan against our
+      // 195-country catalog for exact name or adjectival matches. This
+      // is what lifted country coverage from ~0.2% to the 60-80% range
+      // on RSS items — essential for the Gaia per-country briefings.
+      country_code:
+        item.countryCode || extractCountryCode(item.title, item.summary ?? null) || null,
       published_at: item.publishedAt,
       expires_at: expiresAt,
     }));

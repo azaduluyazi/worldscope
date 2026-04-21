@@ -29,7 +29,51 @@ interface PrefRow {
   locale: string;
   unsubscribe_token: string;
   last_daily_sent_at: string | null;
+  quiet_hours_enabled: boolean;
+  quiet_start: string; // "HH:MM:SS"
+  quiet_end: string;
+  timezone: string;
   user_profiles: { email: string; display_name: string | null } | null;
+}
+
+/**
+ * Returns true when "now, expressed in the user's timezone" falls inside
+ * their quiet window. Handles windows that cross midnight (e.g. 23:00 →
+ * 07:00). On a bad/unknown IANA zone we fall back to UTC so we don't
+ * silently swallow a cron.
+ */
+function isQuietNow(pref: PrefRow): boolean {
+  if (!pref.quiet_hours_enabled) return false;
+  const tz = pref.timezone || "UTC";
+  const now = new Date();
+  let localHM: string;
+  try {
+    // Intl handles DST; pull HH:MM
+    localHM = new Intl.DateTimeFormat("en-GB", {
+      timeZone: tz,
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).format(now);
+  } catch {
+    localHM = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "UTC",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).format(now);
+  }
+  const [hh, mm] = localHM.split(":").map(Number);
+  const nowMin = hh * 60 + mm;
+  const [sh, sm] = pref.quiet_start.split(":").map(Number);
+  const [eh, em] = pref.quiet_end.split(":").map(Number);
+  const startMin = sh * 60 + sm;
+  const endMin = eh * 60 + em;
+  if (startMin === endMin) return false; // empty window
+  // Overnight window (e.g. 23:00 → 07:00): quiet if now >= start OR now < end
+  if (startMin > endMin) return nowMin >= startMin || nowMin < endMin;
+  // Same-day window: quiet if start <= now < end
+  return nowMin >= startMin && nowMin < endMin;
 }
 
 interface CountryBriefingRow {
@@ -66,7 +110,7 @@ export async function POST(req: Request) {
   const { data: prefs, error: prefErr } = await db
     .from("briefing_preferences")
     .select(
-      "id, user_profile_id, country_codes, locale, unsubscribe_token, last_daily_sent_at, user_profiles(email, display_name)",
+      "id, user_profile_id, country_codes, locale, unsubscribe_token, last_daily_sent_at, quiet_hours_enabled, quiet_start, quiet_end, timezone, user_profiles(email, display_name)",
     )
     .eq("daily_enabled", true);
 
@@ -78,7 +122,8 @@ export async function POST(req: Request) {
     (p) =>
       p.country_codes.length > 0 &&
       p.user_profiles?.email &&
-      (p.last_daily_sent_at?.slice(0, 10) ?? "") < today,
+      (p.last_daily_sent_at?.slice(0, 10) ?? "") < today &&
+      !isQuietNow(p),
   );
 
   if (eligibleIds.length === 0) {

@@ -10,7 +10,31 @@ interface Preferences {
   locale: "en" | "tr";
   last_daily_sent_at: string | null;
   last_weekly_sent_at: string | null;
+  quiet_hours_enabled: boolean;
+  quiet_start: string;
+  quiet_end: string;
+  timezone: string;
 }
+
+/** Common IANA zones a casual user might pick. Full IANA list is huge;
+ *  anyone needing a rare zone can call the API directly. */
+const TIMEZONES = [
+  "UTC",
+  "Europe/Istanbul",
+  "Europe/London",
+  "Europe/Berlin",
+  "Europe/Moscow",
+  "America/New_York",
+  "America/Los_Angeles",
+  "America/Chicago",
+  "Asia/Dubai",
+  "Asia/Tehran",
+  "Asia/Jerusalem",
+  "Asia/Tokyo",
+  "Asia/Shanghai",
+  "Asia/Kolkata",
+  "Australia/Sydney",
+];
 
 const MAX_COUNTRIES = 15;
 
@@ -88,6 +112,10 @@ export function BriefingPreferencesCard({ openByDefault = false, isPaid = false 
           daily_enabled: next.daily_enabled,
           weekly_enabled: next.weekly_enabled,
           locale: next.locale,
+          quiet_hours_enabled: next.quiet_hours_enabled,
+          quiet_start: next.quiet_start.slice(0, 5),
+          quiet_end: next.quiet_end.slice(0, 5),
+          timezone: next.timezone,
         }),
       });
       if (!res.ok) throw new Error(`save failed (${res.status})`);
@@ -245,6 +273,102 @@ export function BriefingPreferencesCard({ openByDefault = false, isPaid = false 
           onToggle={() => toggle("weekly_enabled")}
           lastSent={prefs.last_weekly_sent_at}
         />
+      </div>
+
+      {/* Quiet hours — mute a contiguous window each day so the briefing
+          doesn't land in the middle of the night. Overnight windows
+          (23:00–07:00) are normalised in the send cron. */}
+      <div className="mt-4 border border-gray-800 rounded-sm p-3 bg-[#060509]">
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <div>
+            <div className="font-mono text-xs text-gray-200 font-bold">
+              Quiet hours
+            </div>
+            <div className="font-mono text-[10px] text-gray-500 mt-0.5">
+              Skip delivery inside this window (overnight windows are fine).
+            </div>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={prefs.quiet_hours_enabled}
+            onClick={() => {
+              const next = {
+                ...prefs,
+                quiet_hours_enabled: !prefs.quiet_hours_enabled,
+              };
+              setPrefs(next);
+              void save(next);
+            }}
+            className={`relative w-10 h-5 rounded-full border transition-colors shrink-0 ${
+              prefs.quiet_hours_enabled
+                ? "bg-amber-400 border-amber-400"
+                : "bg-gray-800 border-gray-700"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 w-4 h-4 bg-[#060509] rounded-full transition-transform ${
+                prefs.quiet_hours_enabled
+                  ? "translate-x-[22px]"
+                  : "translate-x-[2px]"
+              }`}
+            />
+          </button>
+        </div>
+        {prefs.quiet_hours_enabled && (
+          <div className="grid grid-cols-3 gap-2 mt-3">
+            <label className="block">
+              <span className="block font-mono text-[10px] text-gray-500 mb-1">
+                From
+              </span>
+              <input
+                type="time"
+                value={prefs.quiet_start.slice(0, 5)}
+                onChange={(e) => {
+                  const next = { ...prefs, quiet_start: e.target.value };
+                  setPrefs(next);
+                  void save(next);
+                }}
+                className="w-full px-2 py-1 bg-[#0a0810] border border-gray-800 rounded-sm font-mono text-xs text-gray-200 focus:outline-none focus:border-amber-400/50"
+              />
+            </label>
+            <label className="block">
+              <span className="block font-mono text-[10px] text-gray-500 mb-1">
+                To
+              </span>
+              <input
+                type="time"
+                value={prefs.quiet_end.slice(0, 5)}
+                onChange={(e) => {
+                  const next = { ...prefs, quiet_end: e.target.value };
+                  setPrefs(next);
+                  void save(next);
+                }}
+                className="w-full px-2 py-1 bg-[#0a0810] border border-gray-800 rounded-sm font-mono text-xs text-gray-200 focus:outline-none focus:border-amber-400/50"
+              />
+            </label>
+            <label className="block">
+              <span className="block font-mono text-[10px] text-gray-500 mb-1">
+                Timezone
+              </span>
+              <select
+                value={prefs.timezone}
+                onChange={(e) => {
+                  const next = { ...prefs, timezone: e.target.value };
+                  setPrefs(next);
+                  void save(next);
+                }}
+                className="w-full px-2 py-1 bg-[#0a0810] border border-gray-800 rounded-sm font-mono text-xs text-gray-200 focus:outline-none focus:border-amber-400/50"
+              >
+                {TIMEZONES.map((tz) => (
+                  <option key={tz} value={tz}>
+                    {tz}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        )}
       </div>
 
       {/* Save state + error — fixed height so toggling daily/weekly

@@ -31,6 +31,12 @@ const PutSchema = z.object({
   daily_enabled: z.boolean(),
   weekly_enabled: z.boolean(),
   locale: z.enum(["en", "tr"]),
+  quiet_hours_enabled: z.boolean().optional(),
+  // HH:MM or HH:MM:SS — Postgres time literal
+  quiet_start: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/).optional(),
+  quiet_end: z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/).optional(),
+  // IANA zone string — we don't enumerate here, send cron validates.
+  timezone: z.string().min(3).max(64).optional(),
 });
 
 async function requireProfile() {
@@ -54,7 +60,7 @@ export async function GET() {
   const { data } = await db!
     .from("briefing_preferences")
     .select(
-      "country_codes, daily_enabled, weekly_enabled, locale, last_daily_sent_at, last_weekly_sent_at",
+      "country_codes, daily_enabled, weekly_enabled, locale, last_daily_sent_at, last_weekly_sent_at, quiet_hours_enabled, quiet_start, quiet_end, timezone",
     )
     .eq("user_profile_id", profile!.id)
     .maybeSingle();
@@ -67,6 +73,10 @@ export async function GET() {
       locale: "en",
       last_daily_sent_at: null,
       last_weekly_sent_at: null,
+      quiet_hours_enabled: false,
+      quiet_start: "23:00",
+      quiet_end: "07:00",
+      timezone: "UTC",
     },
   );
 }
@@ -95,6 +105,10 @@ export async function PUT(req: Request) {
     daily_enabled: parsed.data.daily_enabled,
     weekly_enabled: parsed.data.weekly_enabled,
     locale: parsed.data.locale,
+    quiet_hours_enabled: parsed.data.quiet_hours_enabled ?? false,
+    quiet_start: parsed.data.quiet_start ?? "23:00",
+    quiet_end: parsed.data.quiet_end ?? "07:00",
+    timezone: parsed.data.timezone ?? "UTC",
     updated_at: new Date().toISOString(),
   };
 

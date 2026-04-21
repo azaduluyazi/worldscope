@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LegalFooter } from "@/components/shared/LegalFooter";
-import { SubscribeButton } from "@/components/pricing/SubscribeButton";
+import { PricingTierCard } from "@/components/pricing/PricingTierCard";
 import { describeTier, type TierSlug } from "@/lib/subscriptions/tier-config";
 
 export const metadata: Metadata = {
@@ -17,58 +17,29 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pricing" },
 };
 
-interface TierProps {
-  /** Used as the element id so /pricing#<slug> can deep-link here.
-   *  Must match the tier slugs in lib/subscriptions/tier-config.ts
-   *  (pleiades, gaia, prometheus, pantheon). */
-  slug: TierSlug;
-  name: string;
-  greek: string;
-  price: string;
-  unit: string;
-  tag: string;
-  lede: string;
-  bullets: string[];
+/** Compute monthly + annual tier descriptors server-side so the client
+ *  card just reads them — avoids env var reads on the browser. */
+function tierCycles(slug: TierSlug) {
+  const monthly = describeTier(slug, "monthly");
+  const annualDesc = describeTier(slug, "annual");
+  return {
+    monthly,
+    annual: annualDesc.purchasable ? annualDesc : null,
+  };
 }
 
-function Tier({ slug, name, greek, price, unit, tag, lede, bullets }: TierProps) {
-  const { purchasable } = describeTier(slug);
-  const effectiveTag = purchasable ? "Available" : tag;
-
+function Persona({ label, desc }: { label: string; desc: string }) {
   return (
-    <div
-      id={slug}
-      className="border border-amber-400/40 rounded-sm p-5 bg-amber-400/[0.03] scroll-mt-24 flex flex-col"
-    >
-      <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <span className="text-[10px] font-bold text-amber-300 bg-amber-400/20 px-2 py-0.5 rounded-sm tracking-wider uppercase">
-          {effectiveTag}
-        </span>
-        <h3 className="text-base font-bold text-amber-300 tracking-wide uppercase">
-          {name} <span className="text-amber-200/60 font-normal">· {greek}</span>
-        </h3>
-      </div>
-      <div className="flex items-baseline gap-2 mb-3">
-        <span className="text-3xl font-bold text-amber-300">{price}</span>
-        <span className="text-xs text-gray-500">{unit}</span>
-      </div>
-      <p className="text-sm text-gray-300 mb-3">{lede}</p>
-      <ul className="space-y-2 text-sm text-gray-200 mb-4 flex-1">
-        {bullets.map((b) => (
-          <Feature key={b} text={b} />
-        ))}
-      </ul>
-      <SubscribeButton
-        slug={slug}
-        purchasable={purchasable}
-        label={`SUBSCRIBE · ${name.toUpperCase()}`}
-        className="mt-auto"
-      />
+    <div className="border border-gray-800 rounded-sm p-3 bg-[#0a0810]">
+      <div className="font-mono text-[11px] text-amber-300 mb-1">{label}</div>
+      <p className="text-[11px] text-gray-400 leading-relaxed">{desc}</p>
     </div>
   );
 }
 
 export default function PricingPage() {
+  const gaiaCycles = tierCycles("gaia");
+
   return (
     <div className="min-h-screen bg-[#050a12] text-gray-200 p-6 font-mono" lang="en">
       <div className="max-w-3xl mx-auto">
@@ -88,16 +59,16 @@ export default function PricingPage() {
         </p>
 
         <div className="max-w-xl mx-auto mb-8">
-          <Tier
+          <PricingTierCard
             slug="gaia"
             name="Gaia"
             greek="Γαῖα — the Earth"
-            price="$9"
-            unit="everything / month"
             tag="Single Tier"
             lede="One price, every feature. Personalized country briefings in your inbox, the Sunday Convergence Report, WorldScope Chat, Equity Research, custom alerts — all unlocked at the same tier. No plan comparison matrix. No decision fatigue."
             bullets={[
               "Daily + weekly intelligence briefings for up to 15 countries you pick",
+              "Quiet hours — pause delivery while you sleep, in your timezone",
+              "Priority data refresh (60s) vs free tier's 10 min",
               "Weekly Sunday Convergence Report (AI-curated PDF)",
               "WorldScope Chat — multi-turn, grounded in the live feed",
               "Equity Research across 92 exchanges (Finnhub)",
@@ -107,6 +78,8 @@ export default function PricingPage() {
               "Ad-free dashboard experience",
               "Priority support via email",
             ]}
+            monthly={gaiaCycles.monthly}
+            annual={gaiaCycles.annual}
           />
           <p className="text-[11px] text-gray-500 mt-4 text-center">
             Teams &amp; enterprise: contact{" "}
@@ -118,6 +91,78 @@ export default function PricingPage() {
             </a>{" "}
             for seat-based pricing and SSO.
           </p>
+        </div>
+
+        {/* ── Built for people who need fast signal ── */}
+        <div className="mb-10">
+          <h2 className="text-sm font-bold text-amber-300 tracking-wider uppercase mb-4">
+            Built for people who need fast signal
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Persona
+              label="Investors & portfolio managers"
+              desc="Track global equities, analyst targets, and macro indicators alongside the geopolitical risk signals that move them."
+            />
+            <Persona
+              label="Energy & commodity traders"
+              desc="Shipping movement, cargo inference, supply-chain disruption, and the geopolitical triggers that show up in futures first."
+            />
+            <Persona
+              label="Researchers & analysts"
+              desc="Equity research, economic analytics, and geopolitical frameworks for deeper analysis and reporting."
+            />
+            <Persona
+              label="Journalists & media"
+              desc="Follow fast-moving developments across markets and regions without manually stitching sources yourself."
+            />
+            <Persona
+              label="Government & institutions"
+              desc="Macro-policy tracking, central-bank monitoring, and situational awareness over geopolitical and infrastructure signals."
+            />
+            <Persona
+              label="Anyone watching Türkiye + region"
+              desc="Pick Türkiye plus up to 14 neighbors, allies, or energy partners. Daily or weekly brief. No fluff, no ads, no headline-spam."
+            />
+          </div>
+        </div>
+
+        {/* ── Why Gaia vs the obvious alternative ── */}
+        <div className="mb-10 border border-amber-400/30 rounded-sm p-5 bg-amber-400/[0.02]">
+          <h2 className="text-sm font-bold text-amber-300 tracking-wider uppercase mb-3">
+            Why Gaia at $9 beats the $39 tier elsewhere
+          </h2>
+          <ul className="space-y-2 text-sm text-gray-300">
+            <li>
+              <strong className="text-amber-200">4× cheaper</strong> — the
+              nearest comparable platform charges $39.99/mo. Same live data
+              categories (689 sources, 195 countries).
+            </li>
+            <li>
+              <strong className="text-amber-200">Country-personal</strong> —
+              pick 1–15 specific countries; get a brief written just for
+              those. Competitors send one global digest to everyone.
+            </li>
+            <li>
+              <strong className="text-amber-200">
+                Turkish-first editorial
+              </strong>{" "}
+              — Türk, Arap, İran, İsrail kaynakları yerinde ağırlıkta.
+              Western-only feeds&apos;in göremediği şeyleri görürsün.
+            </li>
+            <li>
+              <strong className="text-amber-200">
+                Annual save — 2 months free
+              </strong>{" "}
+              — $90/year vs $108 monthly-billed.
+            </li>
+            <li>
+              <strong className="text-amber-200">
+                No paywall for the dashboard
+              </strong>{" "}
+              — the 3D globe + news feed + maps stay free with ads. Gaia
+              unlocks personalization + emails + ad-free mode.
+            </li>
+          </ul>
         </div>
 
         {/* Public dashboard footnote — no more "Free Core" framing. The
@@ -173,15 +218,6 @@ export default function PricingPage() {
         <LegalFooter />
       </div>
     </div>
-  );
-}
-
-function Feature({ text }: { text: string }) {
-  return (
-    <li className="flex items-start gap-2">
-      <span className="mt-0.5 text-cyan-400">&#10003;</span>
-      <span>{text}</span>
-    </li>
   );
 }
 

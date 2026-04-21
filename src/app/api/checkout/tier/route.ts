@@ -35,6 +35,7 @@ export const dynamic = "force-dynamic";
 
 const BodySchema = z.object({
   slug: z.enum(["gaia"]),
+  cycle: z.enum(["monthly", "annual"]).optional().default("monthly"),
 });
 
 export async function POST(req: Request) {
@@ -66,9 +67,10 @@ export async function POST(req: Request) {
     );
   }
   const slug: TierSlug = parsed.data.slug;
+  const cycle = parsed.data.cycle;
 
   // 3. Tier availability check — variant id must be set in env
-  const tier = describeTier(slug);
+  const tier = describeTier(slug, cycle);
   if (!tier.purchasable || !tier.variantId) {
     return NextResponse.json(
       { error: "tier not yet available", slug },
@@ -109,6 +111,7 @@ export async function POST(req: Request) {
       customData: {
         user_id: userId,
         tier_slug: slug,
+        cycle,
       },
       redirectUrl: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://troiamedia.com"}/account?welcome=1`,
     });

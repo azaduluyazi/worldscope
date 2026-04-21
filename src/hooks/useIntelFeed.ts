@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import useSWR from "swr";
 import { useLocale } from "next-intl";
+import { useTierInterval } from "./useTierInterval";
 import type { IntelFeedResponse, IntelItem } from "@/types/intel";
 import { SEVERITY_ORDER } from "@/types/intel";
 import { useRealtimeEvents } from "./useRealtimeEvents";
@@ -9,11 +10,12 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export function useIntelFeed() {
   const locale = useLocale();
+  const refreshInterval = useTierInterval(60_000);
   const { data, error, isLoading, mutate } = useSWR<IntelFeedResponse>(
     `/api/intel?lang=${locale}&limit=50`,
     fetcher,
     {
-      refreshInterval: 60_000,
+      refreshInterval,
       revalidateOnFocus: false,
       dedupingInterval: 60_000,
     }

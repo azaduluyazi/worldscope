@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import useSWR from "swr";
+import { useTierInterval } from "./useTierInterval";
 import type { MarketDataResponse } from "@/types/market";
 import type { FearGreedData } from "@/lib/api/fear-greed";
 
@@ -17,11 +18,16 @@ export function useMarketData() {
     return () => clearTimeout(t);
   }, []);
 
+  // Finnhub is our tightest quota (free tier: 60 calls/min). Free-tier
+  // viewers poll at 5min so a quiet-hours page doesn't exhaust it;
+  // Gaia subscribers get the 30s rate we designed for.
+  const refreshInterval = useTierInterval(30_000);
+
   const { data, error, isLoading } = useSWR<MarketResponse>(
     enabled ? "/api/market" : null,
     fetcher,
     {
-      refreshInterval: 30_000,
+      refreshInterval,
       revalidateOnFocus: false,
     }
   );
