@@ -45,6 +45,11 @@ export function AuthCard({ mode }: AuthCardProps) {
       provider: "google",
       options: {
         redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirectTo)}`,
+        // Force Google to show the account chooser instead of silently
+        // signing the user in with whichever account Chrome remembers.
+        // Important for shared browsers, family devices, and for users
+        // with multiple Google accounts (work vs personal).
+        queryParams: { prompt: "select_account" },
       },
     });
     if (oauthError) setError(oauthError.message);
