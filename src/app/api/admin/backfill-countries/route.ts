@@ -40,25 +40,33 @@ export async function POST(req: Request) {
   if (guard) return guard;
 
   const url = new URL(req.url);
-  const batch = Math.min(Math.max(Number(url.searchParams.get("batch") ?? 500), 50), 1000);
+  // Smaller default batch — without ORDER BY the heap scan is fast but
+  // larger batches mean more parallel UPDATEs, and Supabase's connection
+  // pool caps out around 200. 300 per batch keeps us safely under.
+  const batch = Math.min(Math.max(Number(url.searchParams.get("batch") ?? 300), 50), 1000);
   const max = Math.min(Math.max(Number(url.searchParams.get("max") ?? 5000), 100), 100000);
   const dry = url.searchParams.get("dry") === "1";
 
   const db = createServerClient();
   let processed = 0;
   let tagged = 0;
-  let cursor: string | null = null;
+  const cursor: string | null = null;
 
   while (processed < max) {
     // Grab the next batch of NULL-country rows. Keyset pagination over
     // `id` so we don't re-scan already-processed rows between batches.
-    let query = db
+    // No ORDER BY — Postgres scans heap pages until it finds `batch` rows
+    // matching WHERE country_code IS NULL and stops. On a 195k table with
+    // no partial index this is dramatically faster than an ORDER BY id
+    // variant (which tries to full-scan and times out at 8s). Safe to
+    // skip the cursor because tagged rows drop out of the filter, so the
+    // same rows don't come back on the next call.
+    const query = db
       .from("events")
       .select("id, title, summary")
       .is("country_code", null)
-      .order("id", { ascending: true })
       .limit(batch);
-    if (cursor) query = query.gt("id", cursor);
+    void cursor;
 
     const { data: rows, error } = await query;
     if (error) {
@@ -105,7 +113,6 @@ export async function POST(req: Request) {
 
     processed += rows.length;
     tagged += updates.length;
-    cursor = rows[rows.length - 1].id as string;
 
     // Yield to the runtime so we don't hog the function invocation for
     // the full 300s on trivial passes.
