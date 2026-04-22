@@ -12,6 +12,7 @@ export function LegalFooter() {
         <Link href="/about" className="hover:text-hud-accent transition-colors">About</Link>
         <Link href="/blog" className="hover:text-hud-accent transition-colors">Blog</Link>
         <Link href="/pricing" className="hover:text-hud-accent transition-colors">Pricing</Link>
+        <Link href="/osint" className="hover:text-hud-accent transition-colors">OSINT</Link>
         <Link href="/terms" className="hover:text-hud-accent transition-colors">Terms of Service</Link>
         <Link href="/privacy" className="hover:text-hud-accent transition-colors">Privacy Policy</Link>
         <Link href="/cookies" className="hover:text-hud-accent transition-colors">Cookie Policy</Link>

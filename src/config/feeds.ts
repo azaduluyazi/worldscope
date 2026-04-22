@@ -859,6 +859,17 @@ export const SEED_FEEDS: FeedConfig[] = [
 
   // ── P11: Pacific / Australia (1) ──────────────────────────────────
   { name: "Guardian Australia", url: "https://www.theguardian.com/australia-news/rss", category: "conflict", defaultSeverity: "medium", region: "asia" },
+
+  // ── OSINT / awesome-osint additions (5) ──────────────────────────
+  // Sourced from github.com/azaduluyazi/awesome-osint, curated for feeds
+  // with real RSS endpoints that fit our event-stream model. Most other
+  // OSINT resources are API-keyed or non-RSS; those are surfaced on
+  // /osint directory instead (see src/config/osint-resources.ts).
+  { name: "MITRE ATT&CK Blog", url: "https://medium.com/feed/mitre-attack", category: "cyber", defaultSeverity: "high", region: "global" },
+  { name: "CERT-EU News", url: "https://cert.europa.eu/publications/security-advisories-rss", category: "cyber", defaultSeverity: "high", region: "europe" },
+  { name: "ENISA News", url: "https://www.enisa.europa.eu/news/enisa-news/RSS", category: "cyber", defaultSeverity: "medium", region: "europe" },
+  { name: "AusCERT Bulletins", url: "https://www.auscert.org.au/bulletins/rss/", category: "cyber", defaultSeverity: "high", region: "asia" },
+  { name: "Cyware News", url: "https://cyware.com/allnews/feed", category: "cyber", defaultSeverity: "medium", region: "global" },
 ];
 
 export const FEED_COUNT = SEED_FEEDS.length;

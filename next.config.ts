@@ -68,7 +68,11 @@ const nextConfig: NextConfig = {
             "font-src 'self' https://fonts.gstatic.com data:",
             "img-src 'self' data: blob: https: http:",
             "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mapbox.com https://*.mapbox.com https://api.groq.com https://api.openai.com https://api.anthropic.com https://opensky-network.org https://*.aisstream.io https://pagead2.googlesyndication.com https://plausible.io https://*.plausible.io https://firms.modaps.eosdis.nasa.gov https://earthquake.usgs.gov https://celestrak.org https://api.stlouisfed.org https://finnhub.io",
-            "frame-src 'self' https://pagead2.googlesyndication.com https://*.youtube.com",
+            // OSINT live-maps page (/osint/live-maps) embeds third-party threat maps
+            // and weather widgets. Each host below is reviewed in osint-resources.ts.
+            // Some upstream sites set X-Frame-Options: DENY and will still refuse to
+            // embed even with these allowed — those are filtered at the page level.
+            "frame-src 'self' https://pagead2.googlesyndication.com https://*.youtube.com https://cybermap.kaspersky.com https://threatmap.bitdefender.com https://threatmap.checkpoint.com https://fortiguard.fortinet.com https://livethreatmap.radware.com https://www.imperva.com https://horizon.netscout.com https://threatlabz.zscaler.com https://exchange.xforce.ibmcloud.com https://embed.windy.com https://www.windy.com https://zoom.earth https://liveuamap.com https://www.suncalc.org https://satellites.pro",
             "worker-src 'self' blob:",
             "media-src 'self' blob: https:",
             "object-src 'none'",
