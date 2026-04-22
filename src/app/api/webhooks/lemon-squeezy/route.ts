@@ -18,6 +18,8 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase.generated";
 import {
   verifyWebhookSignature,
+  resolveBillingCycle,
+  priceCentsForCycle,
   type LemonWebhookPayload,
   type LemonEventName,
 } from "@/lib/lemon-squeezy";
@@ -236,6 +238,12 @@ async function upsertSubscription(
     ? String(payload.meta.custom_data.user_id)
     : null;
 
+  // Derive billing cycle + price from variant id. Falls back to NULL
+  // for unknown variants (future tiers) — the admin panel can still
+  // show these, MRR calc just skips unknowns.
+  const billingCycle = resolveBillingCycle(attrs.variant_id);
+  const priceCents = priceCentsForCycle(billingCycle);
+
   const row = {
     lemon_subscription_id: subId,
     lemon_customer_id: attrs.customer_id ? String(attrs.customer_id) : null,
@@ -247,6 +255,10 @@ async function upsertSubscription(
     renews_at: attrs.renews_at ?? null,
     ends_at: attrs.ends_at ?? null,
     trial_ends_at: attrs.trial_ends_at ?? null,
+    billing_cycle: billingCycle,
+    price_cents: priceCents,
+    currency: "USD",
+    plan: billingCycle === "annual" ? "gaia_annual" : billingCycle === "monthly" ? "gaia_monthly" : null,
     updated_at: new Date().toISOString(),
     ...(userId ? { user_id: userId } : {}),
   };

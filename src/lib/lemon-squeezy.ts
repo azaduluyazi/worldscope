@@ -73,7 +73,7 @@ export function verifyWebhookSignature(
   }
 }
 
-class LemonApiError extends Error {
+export class LemonApiError extends Error {
   constructor(
     message: string,
     public readonly status: number,
@@ -155,4 +155,202 @@ export async function createCheckoutUrl(opts: CheckoutOptions): Promise<string> 
     { method: "POST", body: JSON.stringify(body) },
   );
   return res.data.attributes.url;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  Admin actions — wrappers around Lemon Squeezy's REST mutations.
+//  All of them eventually trigger a webhook back to
+//  /api/webhooks/lemon-squeezy, so the local `subscriptions` table
+//  converges to the new state automatically.
+// ═══════════════════════════════════════════════════════════════════
+
+export interface LemonSubscriptionAttrs {
+  status: string;
+  status_formatted?: string;
+  customer_id?: number;
+  variant_id?: number;
+  product_id?: number;
+  order_id?: number;
+  user_name?: string;
+  user_email?: string;
+  card_brand?: string | null;
+  card_last_four?: string | null;
+  pause?: { mode: string; resumes_at?: string } | null;
+  cancelled?: boolean;
+  trial_ends_at?: string | null;
+  renews_at?: string | null;
+  ends_at?: string | null;
+  created_at?: string;
+  updated_at?: string;
+  urls?: {
+    update_payment_method?: string;
+    customer_portal?: string;
+    customer_portal_update_subscription?: string;
+  };
+}
+
+export interface LemonSubscription {
+  id: string;
+  type: "subscriptions";
+  attributes: LemonSubscriptionAttrs;
+}
+
+/** Fetch the live subscription state from Lemon (bypasses local cache). */
+export async function fetchSubscription(
+  lemonSubscriptionId: string,
+): Promise<LemonSubscription> {
+  const res = await lemonFetch<{ data: LemonSubscription }>(
+    `/subscriptions/${lemonSubscriptionId}`,
+  );
+  return res.data;
+}
+
+/**
+ * Cancel a subscription. Lemon keeps the subscription active until
+ * `ends_at`, which is set to the end of the current billing period;
+ * after that the `subscription_expired` webhook fires. To cancel
+ * immediately, also call with prorate=false (currently unsupported —
+ * Lemon requires customer portal for mid-cycle termination).
+ */
+export async function cancelSubscription(
+  lemonSubscriptionId: string,
+): Promise<LemonSubscription> {
+  const res = await lemonFetch<{ data: LemonSubscription }>(
+    `/subscriptions/${lemonSubscriptionId}`,
+    { method: "DELETE" },
+  );
+  return res.data;
+}
+
+/** Un-cancel before `ends_at` is reached. */
+export async function resumeSubscription(
+  lemonSubscriptionId: string,
+): Promise<LemonSubscription> {
+  return patchSubscription(lemonSubscriptionId, { cancelled: false });
+}
+
+/**
+ * Pause an active subscription. `mode` defaults to `void` (stop
+ * charging + stop delivery). `resumes_at` optional ISO string.
+ */
+export async function pauseSubscription(
+  lemonSubscriptionId: string,
+  resumesAt?: string,
+): Promise<LemonSubscription> {
+  return patchSubscription(lemonSubscriptionId, {
+    pause: { mode: "void", ...(resumesAt ? { resumes_at: resumesAt } : {}) },
+  });
+}
+
+/** Resume a paused subscription. */
+export async function unpauseSubscription(
+  lemonSubscriptionId: string,
+): Promise<LemonSubscription> {
+  return patchSubscription(lemonSubscriptionId, { pause: null });
+}
+
+/**
+ * Move the subscription to a different variant (plan change). Lemon
+ * pro-rates by default; pass `invoice_immediately: true` to bill the
+ * prorated amount now instead of at next renewal.
+ */
+export async function changeSubscriptionVariant(
+  lemonSubscriptionId: string,
+  variantId: string,
+  options: { invoiceImmediately?: boolean; disableProrate?: boolean } = {},
+): Promise<LemonSubscription> {
+  return patchSubscription(lemonSubscriptionId, {
+    variant_id: Number(variantId),
+    ...(options.invoiceImmediately !== undefined
+      ? { invoice_immediately: options.invoiceImmediately }
+      : {}),
+    ...(options.disableProrate !== undefined
+      ? { disable_prorate: options.disableProrate }
+      : {}),
+  });
+}
+
+/**
+ * Refund a subscription invoice. Lemon charges the platform fee back
+ * to the store; full refund amount is whatever `amount` specifies or
+ * the full invoice total if `amount` is omitted.
+ */
+export async function refundSubscriptionInvoice(
+  invoiceId: string,
+): Promise<unknown> {
+  return lemonFetch(`/subscription-invoices/${invoiceId}/refund`, {
+    method: "POST",
+  });
+}
+
+/** List invoices for a subscription (most recent first). */
+export async function listSubscriptionInvoices(
+  lemonSubscriptionId: string,
+): Promise<
+  Array<{
+    id: string;
+    attributes: {
+      status: string;
+      total: number;
+      total_usd: number;
+      currency: string;
+      subtotal: number;
+      refunded: boolean;
+      refunded_at: string | null;
+      created_at: string;
+    };
+  }>
+> {
+  const res = await lemonFetch<{
+    data: Array<{ id: string; attributes: {
+      status: string; total: number; total_usd: number; currency: string;
+      subtotal: number; refunded: boolean; refunded_at: string | null;
+      created_at: string;
+    }}>;
+  }>(
+    `/subscription-invoices?filter[subscription_id]=${lemonSubscriptionId}&sort=-created_at`,
+  );
+  return res.data;
+}
+
+async function patchSubscription(
+  lemonSubscriptionId: string,
+  attributes: Record<string, unknown>,
+): Promise<LemonSubscription> {
+  const body = {
+    data: {
+      type: "subscriptions",
+      id: lemonSubscriptionId,
+      attributes,
+    },
+  };
+  const res = await lemonFetch<{ data: LemonSubscription }>(
+    `/subscriptions/${lemonSubscriptionId}`,
+    { method: "PATCH", body: JSON.stringify(body) },
+  );
+  return res.data;
+}
+
+/**
+ * Resolve a Lemon variant id into a known billing cycle by matching
+ * against the NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_GAIA* env values.
+ * Returns null for variants we don't recognise (future tiers, etc.).
+ */
+export function resolveBillingCycle(
+  variantId: string | number | null | undefined,
+): "monthly" | "annual" | null {
+  if (variantId == null) return null;
+  const id = String(variantId);
+  if (id === process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_GAIA) return "monthly";
+  if (id === process.env.NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_GAIA_ANNUAL) return "annual";
+  return null;
+}
+
+/** Canonical USD cents for each known cycle. Keep in sync with tier-config. */
+export function priceCentsForCycle(
+  cycle: "monthly" | "annual" | null,
+): number | null {
+  if (cycle === "monthly") return 900;   // $9.00
+  if (cycle === "annual") return 9000;   // $90.00
+  return null;
 }
