@@ -23,6 +23,11 @@ import {
   type LemonWebhookPayload,
   type LemonEventName,
 } from "@/lib/lemon-squeezy";
+import { sendMail } from "@/lib/mail/sender";
+import {
+  buildWelcomeEmail,
+  buildPaymentFailedEmail,
+} from "@/lib/mail/subscription-templates";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -186,23 +191,33 @@ async function dispatchEvent(
       return;
 
     case "subscription_created":
+      // Brand-new subscription: write row, ensure preferences, fan out
+      // welcome email. sendWelcomeEmail is fail-soft — logging but not
+      // blocking the webhook response.
+      await upsertSubscription(payload, db);
+      await ensureBriefingPreferences(payload, db);
+      await sendWelcomeEmail(payload);
+      return;
+
     case "subscription_resumed":
     case "subscription_unpaused":
     case "subscription_payment_success":
-      // Activation / re-activation events: after the subscription row
-      // is written, ensure a briefing_preferences row exists so the
-      // send-weekly-briefings cron will actually pick this user up.
-      // Without this the paid subscriber would see no email until they
-      // manually opened /preferences — silent churn trigger.
+      // Re-activation: row + preferences, no welcome (already had one).
       await upsertSubscription(payload, db);
       await ensureBriefingPreferences(payload, db);
+      return;
+
+    case "subscription_payment_failed":
+      // Row update first (records past_due if Lemon set that), then a
+      // recovery email with a direct link to update payment method.
+      await upsertSubscription(payload, db);
+      await sendPaymentFailedEmail(payload);
       return;
 
     case "subscription_updated":
     case "subscription_cancelled":
     case "subscription_expired":
     case "subscription_paused":
-    case "subscription_payment_failed":
     case "subscription_payment_refunded":
       await upsertSubscription(payload, db);
       return;
@@ -367,6 +382,87 @@ async function ensureBriefingPreferences(
   } catch (err) {
     console.error(
       "[lemon-webhook] ensureBriefingPreferences unexpected (non-fatal)",
+      err,
+    );
+  }
+}
+
+// ─── Transactional email senders ───────────────────────────────────
+// All fail-soft: logged on error, never surfaced to Lemon so a dead
+// Resend service doesn't cascade into webhook retries.
+
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || "https://troiamedia.com";
+
+interface LemonUrlsBag {
+  update_payment_method?: string;
+  customer_portal?: string;
+  customer_portal_update_subscription?: string;
+}
+
+function extractLemonUrls(payload: LemonWebhookPayload): LemonUrlsBag {
+  const attrs = payload.data.attributes as { urls?: unknown };
+  if (attrs?.urls && typeof attrs.urls === "object") {
+    return attrs.urls as LemonUrlsBag;
+  }
+  return {};
+}
+
+async function sendWelcomeEmail(payload: LemonWebhookPayload): Promise<void> {
+  try {
+    const attrs = payload.data.attributes as {
+      user_email?: string;
+      variant_id?: number;
+    };
+    const email = attrs.user_email;
+    if (!email) {
+      console.warn("[lemon-webhook] welcome skipped — no user_email");
+      return;
+    }
+    const cycle = resolveBillingCycle(attrs.variant_id);
+    const urls = extractLemonUrls(payload);
+    const tmpl = buildWelcomeEmail({
+      cycle,
+      manageUrl: `${SITE_URL}/settings/subscription`,
+      customerPortalUrl: urls.customer_portal ?? null,
+    });
+    const ok = await sendMail({ to: email, subject: tmpl.subject, html: tmpl.html });
+    if (!ok) {
+      console.warn("[lemon-webhook] welcome email send returned false");
+    }
+  } catch (err) {
+    console.error("[lemon-webhook] welcome email failed (non-fatal)", err);
+  }
+}
+
+async function sendPaymentFailedEmail(
+  payload: LemonWebhookPayload,
+): Promise<void> {
+  try {
+    const attrs = payload.data.attributes as {
+      user_email?: string;
+      variant_id?: number;
+    };
+    const email = attrs.user_email;
+    if (!email) {
+      console.warn("[lemon-webhook] payment-failed skipped — no user_email");
+      return;
+    }
+    const cycle = resolveBillingCycle(attrs.variant_id);
+    const urls = extractLemonUrls(payload);
+    const tmpl = buildPaymentFailedEmail({
+      cycle,
+      updatePaymentUrl: urls.update_payment_method ?? null,
+      customerPortalUrl: urls.customer_portal ?? null,
+      manageUrl: `${SITE_URL}/settings/subscription`,
+    });
+    const ok = await sendMail({ to: email, subject: tmpl.subject, html: tmpl.html });
+    if (!ok) {
+      console.warn("[lemon-webhook] payment-failed email send returned false");
+    }
+  } catch (err) {
+    console.error(
+      "[lemon-webhook] payment-failed email failed (non-fatal)",
       err,
     );
   }
