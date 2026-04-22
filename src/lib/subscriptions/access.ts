@@ -72,46 +72,90 @@ export const FREE_CONTEXT: AccessContext = {
  */
 export async function resolveAccess(authUserId: string | null): Promise<AccessContext> {
   if (!authUserId) return FREE_CONTEXT;
-  const db = createServerClient();
-  const { data: profile, error: profileErr } = await db
-    .from("user_profiles")
-    .select("id")
-    .eq("auth_id", authUserId)
-    .maybeSingle();
-  if (profileErr || !profile) return FREE_CONTEXT;
 
-  const { data: sub } = await db
-    .from("subscriptions")
-    .select("id, plan, status, renews_at, ends_at, email")
-    .eq("user_id", profile.id)
-    .in("status", ["active", "on_trial"])
-    .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+  // Each query races a 2s timeout so a slow / saturated DB can't crash
+  // the /account page (Next's default error boundary turns it into the
+  // "SYSTEM MALFUNCTION" screen). Graceful degradation: if we can't
+  // resolve the subscription, treat as free tier — the page still
+  // renders with an "upgrade" CTA instead of a fatal error.
+  try {
+    const db = createServerClient();
 
-  if (!sub) {
+    const profilePromise = db
+      .from("user_profiles")
+      .select("id")
+      .eq("auth_id", authUserId)
+      .maybeSingle();
+    const profile = await raceTimeout(profilePromise, 2000, "profile");
+    if (!profile || !profile.data) return FREE_CONTEXT;
+    const profileId = profile.data.id as string;
+
+    const subPromise = db
+      .from("subscriptions")
+      .select("id, plan, status, renews_at, ends_at, email")
+      .eq("user_id", profileId)
+      .in("status", ["active", "on_trial"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const subResult = await raceTimeout(subPromise, 2000, "subscription");
+    const sub = subResult?.data ?? null;
+
+    if (!sub) {
+      return {
+        userProfileId: profileId,
+        tier: "free",
+        pantheon: "mortal",
+        subscription: null,
+      };
+    }
+
+    const plan = (sub.plan as TierId) ?? "free";
     return {
-      userProfileId: profile.id as string,
-      tier: "free",
-      pantheon: "mortal",
-      subscription: null,
+      userProfileId: profileId,
+      tier: plan,
+      pantheon: TIER_TO_PANTHEON[plan] ?? "mortal",
+      subscription: {
+        id: sub.id as string,
+        plan,
+        status: sub.status as string,
+        renewsAt: (sub.renews_at as string) ?? null,
+        endsAt: (sub.ends_at as string) ?? null,
+        email: (sub.email as string) ?? null,
+      },
     };
+  } catch (err) {
+    console.error("[resolveAccess] falling back to FREE_CONTEXT:", err);
+    return FREE_CONTEXT;
   }
+}
 
-  const plan = (sub.plan as TierId) ?? "free";
-  return {
-    userProfileId: profile.id as string,
-    tier: plan,
-    pantheon: TIER_TO_PANTHEON[plan] ?? "mortal",
-    subscription: {
-      id: sub.id as string,
-      plan,
-      status: sub.status as string,
-      renewsAt: (sub.renews_at as string) ?? null,
-      endsAt: (sub.ends_at as string) ?? null,
-      email: (sub.email as string) ?? null,
-    },
-  };
+/**
+ * Race a promise against a timeout. On timeout returns null (callers
+ * treat null as "query unavailable, degrade gracefully"); on rejection
+ * logs and returns null. Never throws, so resolveAccess stays crash-
+ * free even when Supabase is saturated.
+ */
+async function raceTimeout<T>(
+  // Supabase query builders are thenable but not strict Promise<T>;
+  // PromiseLike keeps Promise.race + await happy without an `as any`.
+  p: PromiseLike<T>,
+  ms: number,
+  label: string,
+): Promise<T | null> {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  try {
+    const timeout = new Promise<null>((resolve) => {
+      timer = setTimeout(() => resolve(null), ms);
+    });
+    const winner = await Promise.race([Promise.resolve(p), timeout]);
+    return winner as T | null;
+  } catch (err) {
+    console.warn(`[resolveAccess] ${label} query failed:`, err);
+    return null;
+  } finally {
+    if (timer) clearTimeout(timer);
+  }
 }
 
 export function tierRank(t: TierId): number {
