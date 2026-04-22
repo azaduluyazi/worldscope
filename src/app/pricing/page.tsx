@@ -4,6 +4,16 @@ import { LegalFooter } from "@/components/shared/LegalFooter";
 import { PricingTierCard } from "@/components/pricing/PricingTierCard";
 import { describeTier, type TierSlug } from "@/lib/subscriptions/tier-config";
 
+// Force per-request render. `describeTier()` reads
+// NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_GAIA* env vars at call time; those
+// decide whether SubscribeButton shows "SUBSCRIBE" or "COMING SOON".
+// A static build inlines whatever the env held at build-time, so a
+// page built before Lemon variants were configured would serve
+// "COMING SOON" forever even after env was set + redeployed if the
+// CDN edge still held the old chunk. force-dynamic sidesteps that.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Pricing — WorldScope",
   description:
