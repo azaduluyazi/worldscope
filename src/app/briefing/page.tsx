@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { cookies } from "next/headers";
-// BriefingSignupForm removed 2026-04-20 — free email collection paused
-// while Gaia ($9/mo) merchant-of-record review completes. See
-// wiki/sorunlar/briefing-free-signup-still-open.md.
+import { GaiaCheckoutButton } from "@/components/newsletter/GaiaCheckoutButton";
 import {
   NewsArticleSchema,
   BreadcrumbSchema,
@@ -13,6 +11,10 @@ import {
   BRIEFING_COOKIE,
   getVariant,
 } from "@/lib/ab/briefing-headline";
+import {
+  getVariantId,
+  isTierPurchasable,
+} from "@/lib/subscriptions/tier-config";
 
 // A/B test reads a per-visitor cookie set by middleware; rendering
 // must be dynamic so each visitor sees their own variant.
@@ -97,36 +99,61 @@ export default async function BriefingLandingPage() {
             </p>
           </div>
 
-          {/* Signup — temporarily paused while the Gaia ($9/mo) paid tier
-              completes its merchant-of-record review. The form used to
-              collect free email signups here; that behaviour is retired
-              pending the paid checkout flow per user decision on
-              2026-04-20. */}
+          {/* Signup — two states, keyed on whether the Gaia variant env
+              is configured. Launch day = set `NEXT_PUBLIC_LEMONSQUEEZY_VARIANT_GAIA`,
+              no redeploy-gated UI change required. */}
           <div className="max-w-xl mx-auto mb-16">
-            <div className="border border-amber-400/40 bg-amber-400/5 rounded-md p-5 text-center">
-              <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-amber-300 mb-2">
-                ◈ Launching soon — Γαῖα / Gaia tier
+            {isTierPurchasable("gaia", "monthly") ? (
+              <div className="border border-amber-400/40 bg-amber-400/5 rounded-md p-5 text-center">
+                <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-amber-300 mb-2">
+                  ◈ Γαῖα / Gaia — $9/month
+                </div>
+                <p className="font-mono text-xs text-gray-300 leading-relaxed mb-4">
+                  Weekly Sunday Convergence Report · 689 sources · 195 countries ·
+                  Cancel anytime.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <GaiaCheckoutButton
+                    variantId={getVariantId("gaia", "monthly")!}
+                    label="SUBSCRIBE · $9/MO"
+                  />
+                  <Link
+                    href="/pricing#gaia"
+                    className="inline-block px-4 py-2 font-mono text-[11px] font-bold tracking-wider border border-amber-400/50 text-amber-300 hover:bg-amber-400/10 transition-colors"
+                  >
+                    COMPARE TIERS →
+                  </Link>
+                </div>
+                <div className="mt-3 font-mono text-[10px] text-hud-muted">
+                  Billed monthly via Lemon Squeezy (merchant of record).
+                </div>
               </div>
-              <p className="font-mono text-xs text-gray-300 leading-relaxed mb-4">
-                The Sunday Convergence Report is moving behind Gaia ($9/mo global
-                briefing). Sign up for an account now — when the tier opens
-                you&apos;ll be one click away from enrolling.
-              </p>
-              <div className="flex flex-wrap items-center justify-center gap-2">
-                <Link
-                  href="/sign-up?redirect_url=/briefing"
-                  className="inline-block px-4 py-2 font-mono text-[11px] font-bold tracking-wider bg-amber-400 text-[#060509] hover:bg-amber-300 transition-colors"
-                >
-                  CREATE ACCOUNT
-                </Link>
-                <Link
-                  href="/pricing#gaia"
-                  className="inline-block px-4 py-2 font-mono text-[11px] font-bold tracking-wider border border-amber-400/50 text-amber-300 hover:bg-amber-400/10 transition-colors"
-                >
-                  SEE GAIA →
-                </Link>
+            ) : (
+              <div className="border border-amber-400/40 bg-amber-400/5 rounded-md p-5 text-center">
+                <div className="font-mono text-[10px] tracking-[0.3em] uppercase text-amber-300 mb-2">
+                  ◈ Launching soon — Γαῖα / Gaia tier
+                </div>
+                <p className="font-mono text-xs text-gray-300 leading-relaxed mb-4">
+                  The Sunday Convergence Report is moving behind Gaia ($9/mo global
+                  briefing). Sign up for an account now — when the tier opens
+                  you&apos;ll be one click away from enrolling.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <Link
+                    href="/sign-up?redirect_url=/briefing"
+                    className="inline-block px-4 py-2 font-mono text-[11px] font-bold tracking-wider bg-amber-400 text-[#060509] hover:bg-amber-300 transition-colors"
+                  >
+                    CREATE ACCOUNT
+                  </Link>
+                  <Link
+                    href="/pricing#gaia"
+                    className="inline-block px-4 py-2 font-mono text-[11px] font-bold tracking-wider border border-amber-400/50 text-amber-300 hover:bg-amber-400/10 transition-colors"
+                  >
+                    SEE GAIA →
+                  </Link>
+                </div>
               </div>
-            </div>
+            )}
             <div className="text-center font-mono text-[10px] text-hud-muted mt-3">
               Existing subscribers: your delivery is uninterrupted. No action needed.
             </div>
