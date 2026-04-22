@@ -1,5 +1,8 @@
 import { createServerClient } from "./supabase";
 import type { Convergence } from "@/lib/convergence/types";
+import type { Database } from "@/types/supabase.generated";
+
+type ConvergenceHistoryInsert = Database["public"]["Tables"]["convergence_history"]["Insert"];
 
 // ═══════════════════════════════════════════════════════════════════
 //  Convergence History Repository
@@ -79,11 +82,10 @@ export async function persistConvergences(convergences: Convergence[]): Promise<
     const rows = convergences.map((c) => toRow(c, cycleTs));
     // `signals` / `impact_chain` / `predictions` columns are JSONB in
     // the DB; typed as specific domain shapes in HistoryRow. Runtime-
-    // identical — single-point cast at the boundary.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // identical — single-point cast to the generated Insert row type.
     const { error, count } = await supabase
       .from(TABLE)
-      .upsert(rows as unknown as any, { onConflict: "id", count: "exact" });
+      .upsert(rows as unknown as ConvergenceHistoryInsert[], { onConflict: "id", count: "exact" });
     if (error) {
       console.error("[convergence-history.persist] error:", error);
       return 0;
