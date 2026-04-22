@@ -28,8 +28,8 @@ interface PricingTierCardProps {
 
 function Feature({ text }: { text: string }) {
   return (
-    <li className="flex items-start gap-2">
-      <span className="text-amber-400 mt-0.5">◆</span>
+    <li className="flex items-start gap-2 leading-snug">
+      <span className="text-amber-400 mt-0.5 text-[10px]">◆</span>
       <span className="text-gray-200">{text}</span>
     </li>
   );
@@ -115,12 +115,28 @@ export function PricingTierCard({
         <span className="text-3xl font-bold text-amber-300">{active.price}</span>
         <span className="text-xs text-gray-500">{active.unit}</span>
       </div>
-      <p className="text-sm text-gray-300 mb-3">{lede}</p>
-      <ul className="space-y-2 text-sm text-gray-200 mb-4 flex-1">
+
+      {/* Primary CTA — rendered directly under the price so the
+       * SUBSCRIBE button is visible without scrolling past the
+       * 11-bullet feature list. The user reported that on typical
+       * viewports the bottom-aligned button fell below the fold,
+       * making the tier look like a "COMING SOON" card. */}
+      <SubscribeButton
+        slug={slug}
+        cycle={active.cycle}
+        purchasable={active.purchasable}
+        label={`SUBSCRIBE · ${name.toUpperCase()}`}
+        className="mb-4"
+      />
+
+      <p className="text-xs text-gray-300 mb-3 leading-relaxed">{lede}</p>
+      <ul className="space-y-1 text-xs text-gray-200 mb-4 flex-1">
         {bullets.map((b) => (
           <Feature key={b} text={b} />
         ))}
       </ul>
+      {/* Secondary CTA — mirrors the top button for users who scan
+       * the bullets before clicking. Same handler, same state. */}
       <SubscribeButton
         slug={slug}
         cycle={active.cycle}
