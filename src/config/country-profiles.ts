@@ -230,6 +230,312 @@ export const COUNTRY_PROFILES: Record<string, CountryProfile> = {
     recentFocus:
       "Tracking focuses on Kantei (Cabinet Office) statements, MOD defense-budget and posture updates, BoJ policy and yen-intervention signals, METI export-control announcements on semiconductor equipment, China-Coast-Guard Senkaku incident logs, and North Korean missile-test telemetry as reported by Self-Defense Forces and US Indo-Pacific Command.",
   },
+
+  BR: {
+    overview:
+      "Brazil is a federal presidential republic of roughly 215 million people across twenty-six states and a federal district, the largest country in Latin America by every major metric — population, land area, economic output. The economy combines globally significant commodity exports (soy, iron ore, beef, coffee, sugar, orange juice, and increasingly crude oil from pre-salt offshore fields) with a sophisticated financial sector centered in São Paulo and a large, protected domestic industrial base. Brasília hosts all three branches of government; Rio de Janeiro remains the cultural and diplomatic reference point.",
+    strategicContext:
+      "Brazil anchors BRICS, chairs or co-chairs rotating blocs across the Global South, and exercises outsized influence over Amazon basin climate negotiations that directly shape EU and US trade policy. Its strategic autonomy tradition — simultaneously courting US, Chinese, European, and Russian partners — has made Brazilian diplomacy a bellwether for emerging-market alignment. Petrobras output decisions, BNDES lending policy, and the São Paulo stock exchange (B3) all carry spillover implications across Latin America and the broader commodities complex.",
+    riskProfile: [
+      "Amazon deforestation and wildfire seasons with direct climate-finance and trade-policy consequences.",
+      "Organized-crime violence: PCC and Comando Vermelho operations across prison systems, borders, and coastal ports.",
+      "Electoral and institutional frictions: Supreme Federal Tribunal rulings, congressional impeachment cycles.",
+      "Currency and fiscal volatility: real weakness recurring alongside debt-path reassessments.",
+      "Flooding and landslide events: Rio Grande do Sul, Minas Gerais, and São Paulo peri-urban basins.",
+      "Indigenous land-rights conflicts with mining and agribusiness interests in the Legal Amazon.",
+    ],
+    recentFocus:
+      "Editorial attention covers Planalto presidential decrees, Central Bank of Brazil Selic decisions, Petrobras pricing and governance changes, IBAMA enforcement against illegal Amazon activity, Federal Police operations against transnational drug and arms trafficking, Supreme Federal Tribunal rulings on electoral and corruption matters, and COP-adjacent climate diplomacy from Itamaraty.",
+  },
+
+  MX: {
+    overview:
+      "Mexico is a federal presidential republic of approximately 129 million people across thirty-one states and Mexico City, the second-largest economy in Latin America and the top US trading partner by goods volume. Manufacturing is concentrated in the northern border corridor and the Bajío region, with automotive, aerospace, electronics, and medical-device clusters that have absorbed substantial nearshoring investment since 2020. The economy also depends on remittances from a large US-based diaspora and on Pemex crude and refined-product flows.",
+    strategicContext:
+      "Mexico sits at the center of three interlocking dynamics that matter to North American and global intelligence: the USMCA trade framework, the southern-border migration and narcotics corridor, and the Chinese-automaker nearshoring wave routing into the United States through Mexican plants. Decisions made in Palacio Nacional — on energy-sector nationalism, on judicial reform, on security policy — reshape the strategic calculations of neighboring states and multinational investors.",
+    riskProfile: [
+      "Cartel violence: CJNG, Sinaloa, and regional factions with homicide rates clustered in Michoacán, Guanajuato, Zacatecas, and the northern border.",
+      "Fentanyl and precursor flows: the primary narcotics-related friction point in the US-Mexico bilateral.",
+      "Migration surges: northward flows from Central America, Haiti, Venezuela, and beyond produce recurring policy crises.",
+      "Energy-sector statism: Pemex and CFE prioritization policies raise contract and ratings risk.",
+      "Hurricane and earthquake exposure along Pacific and Gulf coasts and the Trans-Mexican Volcanic Belt.",
+      "Judicial-reform and rule-of-law signals: constitutional amendments affecting elected judges and oversight bodies.",
+    ],
+    recentFocus:
+      "We track Palacio Nacional daily mañanera briefings, Banxico monetary decisions, Secretaría de Seguridad cartel-operations updates, INM migration-flow reporting, DEA and US Treasury sanctions actions against Mexican financial targets, Pemex bond and production disclosures, and border-crossing throughput at Laredo, Tijuana, and Ciudad Juárez as a nearshoring-volume proxy.",
+  },
+
+  CA: {
+    overview:
+      "Canada is a federal parliamentary constitutional monarchy of approximately 40 million people spanning ten provinces and three territories across nearly 10 million square kilometers. The economy is commodity-heavy (oil sands, natural gas, uranium, potash, lumber, aluminum, agricultural grains) with a concentrated financial-services sector in Toronto and a technology cluster bridging Toronto, Montreal, Vancouver, and Waterloo. Governance splits significant authority between Ottawa and provincial capitals, especially on health, resource extraction, and taxation.",
+    strategicContext:
+      "Canadian policy matters globally through three channels: cross-border integration with the United States (making Ottawa an involuntary participant in US-China decoupling), Arctic sovereignty and NORAD modernization at the center of Sino-Russian high-north posturing, and critical-minerals supply security where Canadian reserves of lithium, nickel, cobalt, copper, and uranium are increasingly contested. The Bank of Canada's policy moves cluster with the Fed but diverge on housing-market mechanics that produce distinct fiscal dynamics.",
+    riskProfile: [
+      "Wildfire seasons: British Columbia, Alberta, and increasingly Quebec with air-quality impacts reaching US northeast.",
+      "Housing-market fragility: leverage in Toronto and Vancouver with persistent Bank of Canada attention.",
+      "Arctic sovereignty signals: Russian long-range aviation, Chinese Polar Silk Road activity, NATO exercises.",
+      "Critical-mineral supply-chain frictions with both Chinese investment screening and US IRA alignment.",
+      "Quebec separatism and Indigenous reconciliation as structural political dynamics.",
+      "Cyber-intrusion activity: CSE public attributions to Chinese, Russian, and Iranian-linked operators.",
+    ],
+    recentFocus:
+      "Coverage includes PMO statements, Bank of Canada policy decisions, CSIS and CSE public advisories, Department of Finance budget measures on critical minerals and defense, Canadian Armed Forces deployment updates (NATO, Latvia, Indo-Pacific), RCMP national-security enforcement actions, and quarterly provincial-election results in Ontario, Quebec, Alberta, and British Columbia.",
+  },
+
+  AU: {
+    overview:
+      "Australia is a federal parliamentary constitutional monarchy of approximately 27 million people on a continent-sized island of roughly 7.7 million square kilometers. The economy is resource-export dominant (iron ore, LNG, coal, lithium, rare earths, agricultural products) complemented by a large financial-services sector anchored in Sydney and Melbourne and a growing advanced-manufacturing base in defense and space. Governance is split across six states and two self-governing territories, with Canberra as the federal capital.",
+    strategicContext:
+      "Canberra's strategic gravity has increased sharply with AUKUS, which commits Australia to nuclear-powered submarine acquisition and deep industrial integration with the US and UK defense-industrial bases. Australia's position across the Indian Ocean, South Pacific, and Antarctic approaches gives it outsized influence in three oceanic theaters, and its mineral endowment — especially in lithium, rare earths, and uranium — is central to contested critical-mineral supply chains. Pacific Islands Forum diplomacy is a Chinese-Australian contest zone of first-order importance.",
+    riskProfile: [
+      "Bushfire and extreme-heat seasons with recurring national-emergency episodes and air-quality impacts.",
+      "Cyclone and flood activity across Queensland, Northern Territory, and Western Australia's Pilbara iron-ore corridor.",
+      "PRC maritime and airspace interactions in the South China Sea, Taiwan Strait, and Pacific Islands.",
+      "Cyber-intrusion campaigns: ASD public attributions targeting government, universities, and critical infrastructure.",
+      "Commodity-price volatility: iron ore and LNG revenue concentration produces fiscal and FX sensitivity.",
+      "Housing affordability and immigration-intake policy frictions as structural political dynamics.",
+    ],
+    recentFocus:
+      "Tracking priorities include PM&C cabinet statements, RBA policy moves, ASIO public threat assessments, ADF deployment disclosures including Pitch Black and Talisman Sabre exercises, Pacific Islands Forum outcomes, DFAT aid and diplomatic packages to Pacific states, and Australian Signals Directorate cyber advisories. Mining-safety and environmental-approval disputes in the Pilbara are also monitored.",
+  },
+
+  KR: {
+    overview:
+      "South Korea (Republic of Korea) is a unitary presidential republic of approximately 52 million people on the southern half of the Korean Peninsula. The economy is the world's twelfth-largest, built on a chaebol-led industrial base led by Samsung, SK, Hyundai, LG, and Posco across semiconductors, automotive, shipbuilding, petrochemicals, and batteries. Seoul is both the political capital and the financial and technology center; K-pop, film, and television constitute a cultural-export sector with measurable macro effects.",
+    strategicContext:
+      "Seoul sits on the world's most heavily militarized frontier, across the DMZ from a nuclear-armed North Korea, with 28,500 US Forces Korea personnel stationed under a combined-command structure. South Korean semiconductor capacity — especially Samsung and SK Hynix memory fabs — is a pivotal node in global technology supply chains and the primary stake in US-China export-control contests. Trilateral coordination with the US and Japan has deepened materially since 2023.",
+    riskProfile: [
+      "North Korean missile and nuclear activity: ballistic, cruise, and hypersonic test cadence tracked continuously.",
+      "Cyber threats: Lazarus and Kimsuky clusters active against financial institutions, defense, and cryptocurrency exchanges.",
+      "Demographic collapse: lowest total fertility rate globally with compounding fiscal and labor-market stress.",
+      "Political polarization: adversarial rotation between progressive and conservative blocs with aggressive prosecutorial cycles.",
+      "Export-demand sensitivity: semiconductor cycle and Chinese final-demand dependence.",
+      "Typhoon and monsoon flooding events, especially across the Han River basin and Jeju.",
+    ],
+    recentFocus:
+      "We follow Blue House (Yongsan) statements, JCS and Ministry of National Defense briefings on DPRK activity, Bank of Korea policy, FSS and KFTC financial-regulation actions, chaebol governance and capex disclosures, and the US-Korea-Japan trilateral coordination calendar across defense and critical-technology tracks.",
+  },
+
+  IT: {
+    overview:
+      "Italy is a parliamentary republic of approximately 59 million people across twenty regions, the eurozone's third-largest economy and the EU's second-largest manufacturing base. Industrial activity is concentrated in the northern triangle of Milan, Turin, and Genoa, with global leadership in luxury, fashion, machinery, specialty chemicals, and defense; the center and south retain significant agricultural and tourism economies. Rome hosts national government and the Vatican, which itself constitutes a distinct geopolitical actor with global Catholic reach.",
+    strategicContext:
+      "Italy anchors NATO's southern flank, controls Mediterranean sea lanes that carry a significant share of Europe's LNG and North African hydrocarbon imports, and hosts US Sixth Fleet facilities at Naples and Sigonella. Roman diplomacy has historically bridged European positions with North African, Libyan, and Levantine counterparties, giving Palazzo Chigi a distinctive voice on Mediterranean migration and stabilization policy. The Italian debt market is the third-largest sovereign bond pool in the eurozone and a recurring ECB attention point.",
+    riskProfile: [
+      "Sovereign-debt and fiscal trajectory: recurring rating-agency and ECB scrutiny.",
+      "Mediterranean migration flows: Libyan and Tunisian departure-point dynamics with direct arrival impact.",
+      "Seismic and volcanic activity: Apennine fault system, Etna and Stromboli activity, Campi Flegrei unrest.",
+      "Organized crime: 'Ndrangheta, Cosa Nostra, and Camorra with extensive cross-border financial footprints.",
+      "Political cycle volatility: frequent coalition recomposition with measurable market impact.",
+      "Industrial-competitiveness pressures: energy costs and Chinese competition in machinery and automotive.",
+    ],
+    recentFocus:
+      "Coverage centers on Palazzo Chigi press statements, Banca d'Italia financial-stability reports, ECB-relevant Italian bank and sovereign dynamics, Guardia di Finanza and DIA anti-mafia actions, Ministry of Interior migration-landing data, civil-protection earthquake and volcanic advisories, and parliamentary votes on EU and NATO posture.",
+  },
+
+  ES: {
+    overview:
+      "Spain is a parliamentary constitutional monarchy of approximately 48 million people across seventeen autonomous communities with substantial devolved authority, particularly in Catalonia, the Basque Country, Galicia, and Andalusia. The economy is the eurozone's fourth-largest, anchored by tourism, automotive manufacturing, renewable energy (wind and solar), banking (Santander, BBVA), and agricultural exports. Madrid hosts national government and financial markets; Barcelona remains a distinct economic and political center.",
+    strategicContext:
+      "Spain controls the Strait of Gibraltar together with the UK and Morocco, making it a critical node in Mediterranean-Atlantic maritime flows. The country hosts major US facilities at Rota and Morón, maintains an expeditionary NATO contribution, and exercises significant influence across Latin America through historical, linguistic, and corporate ties — Spanish banks, telecoms, and utilities dominate large-country markets from Mexico to Chile. Madrid is also a primary EU voice on North African stability, the Sahel, and Mediterranean migration.",
+    riskProfile: [
+      "Catalan and Basque autonomy dynamics: periodic constitutional and electoral crises.",
+      "Heat, drought, and wildfire seasons intensifying across the Iberian peninsula.",
+      "Migration-landing volume at the Canary Islands, Ceuta, and Melilla.",
+      "Energy-transition pressure on traditional industrial sectors including steel and cement.",
+      "Sovereign-fiscal dynamics: eurozone recovery-fund execution and ECB coordination.",
+      "Separatist-linked political violence: historically significant but now at low operational baseline.",
+    ],
+    recentFocus:
+      "Editorial attention includes Moncloa government statements, Banco de España financial-sector notes, Guardia Civil and National Police counter-terror and anti-trafficking operations, Ministry of Interior migration statistics from the Atlantic and Mediterranean routes, and quarterly regional-election outcomes in Catalonia, the Basque Country, and Andalusia.",
+  },
+
+  SA: {
+    overview:
+      "Saudi Arabia is an absolute monarchy of approximately 36 million people (roughly two-thirds Saudi citizens, the balance expatriate workers) covering most of the Arabian Peninsula. The economy remains dominated by Saudi Aramco and state-directed investment under Vision 2030, which is reshaping non-oil sectors including tourism (Red Sea projects, AlUla, Diriyah), entertainment, renewable energy, mining, and logistics. Governance is concentrated in the royal family and the Crown Prince's Court, with the Public Investment Fund functioning as both sovereign-wealth manager and industrial-policy instrument.",
+    strategicContext:
+      "Riyadh is the world's largest crude exporter, the swing producer within OPEC+, and a first-order actor in every major Middle Eastern security question including Yemen, Iran, Iraq, and the Abraham Accords / Israel track. US-Saudi security coordination and the diversification of Saudi defense partnerships — expanding toward China and France — shape broader Gulf alignment. Vision 2030 capital deployment by the PIF has become a global market-moving force across sports, technology, gaming, and mining.",
+    riskProfile: [
+      "Yemen conflict residuals: ceasefire dynamics, cross-border missile and drone risk, Houthi relations.",
+      "Iran-Saudi normalization trajectory: fragile diplomatic opening with security-sector interactions.",
+      "Oil-price policy calibration via OPEC+ with recurring global market impact.",
+      "Mega-project execution risk on NEOM, Red Sea, Qiddiya, and Diriyah with fiscal and timeline pressure.",
+      "Hajj and Umrah operational risk: crowd-management and health-event exposure.",
+      "Human-rights and press-freedom dynamics shaping Western investment and technology-partnership policy.",
+    ],
+    recentFocus:
+      "Tracking covers Royal Court statements, SAMA (central bank) decisions, Saudi Aramco quarterly disclosures, OPEC+ meeting outcomes, PIF portfolio announcements, Ministry of Defence procurement news, Ministry of Energy LNG and renewable auction results, and the Yemen-related operational environment as reported by the Saudi-led coalition and counterparties.",
+  },
+
+  AE: {
+    overview:
+      "The United Arab Emirates is a federation of seven emirates with approximately 10 million residents, only about 12 percent of whom are Emirati citizens. Abu Dhabi serves as the political and hydrocarbon-revenue capital; Dubai operates as the region's preeminent logistics, finance, tourism, and real-estate hub. The economy has substantially diversified from its hydrocarbon base, with ADNOC and Mubadala financing aggressive investment in AI, semiconductors, renewable energy, and global logistics, while Dubai's free zones host a disproportionate share of Middle East-focused multinational regional headquarters.",
+    strategicContext:
+      "The UAE runs the most active independent foreign policy in the Gulf, with military and economic footprints stretching from Sudan and Libya through Yemen, the Horn of Africa, and into South Asia. Emirati ports (Jebel Ali, Khalifa) and DP World's global port concessions make the federation a critical maritime logistics node. Abu Dhabi's technology partnerships — including G42's activity in AI compute — have placed the UAE at the intersection of US and Chinese technology-transfer policies, particularly on advanced semiconductors.",
+    riskProfile: [
+      "Houthi long-range strike capability following the 2022 Abu Dhabi incidents.",
+      "Iran proxy activity and Strait of Hormuz chokepoint exposure.",
+      "Sudan conflict entanglement: alleged RSF support and humanitarian optics.",
+      "Technology-export-control scrutiny on AI compute and semiconductor flows.",
+      "Real-estate and expatriate-labor cycle sensitivity in Dubai's economy.",
+      "Extreme-heat days and recurring flash-flood events along urban drainage systems.",
+    ],
+    recentFocus:
+      "We track Crown Prince's Court statements, Central Bank of the UAE macro notes, ADNOC and Mubadala announcements, DP World concession and incident reports, G42 and related AI-ecosystem partnerships, Ministry of Foreign Affairs diplomatic statements on Yemen, Sudan, Gaza, and Iran, and hydrographic-services advisories from the Arabian Gulf and Strait of Hormuz.",
+  },
+
+  EG: {
+    overview:
+      "Egypt is a presidential republic of approximately 109 million people, the Arab world's most populous country, concentrated along the Nile Valley and Delta. The economy spans Suez Canal transit revenues, hydrocarbon production (with increasingly significant offshore gas from the Zohr field and adjacent blocks), tourism, agriculture, textiles, and a large public-sector employment footprint. Cairo hosts national government, Arab League headquarters, and Al-Azhar, the most influential Sunni religious institution in the world.",
+    strategicContext:
+      "Egypt controls the Suez Canal — through which roughly 12 percent of global trade passes — and shares borders with Libya, Sudan, Israel, and Gaza, giving Cairo mediating and interdicting roles in several simultaneous conflicts. The country is the world's second-largest recipient of US military assistance, a central counterparty in any Gaza-related ceasefire architecture, and a key actor in Nile-basin water diplomacy with Ethiopia and Sudan around the Grand Ethiopian Renaissance Dam.",
+    riskProfile: [
+      "Sinai Peninsula insurgency: Wilayat Sinai and associated groups in the northern Sinai with episodic escalation.",
+      "Currency and external-debt stress: IMF program cycles and recurring EGP depreciation.",
+      "Gaza spillover: Rafah crossing dynamics, humanitarian corridor management, border-security incidents.",
+      "Suez Canal traffic disruption: Houthi-driven Red Sea rerouting with direct canal-revenue impact.",
+      "GERD water-security tensions with Ethiopia.",
+      "Libyan-border arms and migration flows.",
+    ],
+    recentFocus:
+      "Coverage includes Presidency statements, Central Bank of Egypt FX decisions, Ministry of Petroleum gas-discovery updates, Suez Canal Authority traffic statistics, Egyptian Armed Forces operational bulletins on Sinai and the Libyan border, Ministry of Foreign Affairs Gaza and GERD statements, and IMF Article IV and Extended Fund Facility milestones.",
+  },
+
+  ZA: {
+    overview:
+      "South Africa is a parliamentary republic of approximately 61 million people across nine provinces, with Pretoria as the executive capital, Cape Town as the legislative capital, and Bloemfontein as the judicial capital. The economy is sub-Saharan Africa's most industrialized, with global presence in mining (platinum, gold, coal, manganese, chromium), financial services centered in Johannesburg, and agricultural exports. Governance operates under one of the world's most progressive constitutions, with strong judicial institutions despite significant implementation challenges.",
+    strategicContext:
+      "Pretoria anchors the African National Congress-led post-apartheid order and chairs rotating leadership across the African Union, BRICS, and regional organizations. South African positioning on Russia-Ukraine, Israel-Gaza, and the International Court of Justice reflects a distinctive non-aligned posture that has measurably diverged from Western consensus. The country's mineral endowment — especially platinum-group metals essential to automotive catalytic converters and emerging hydrogen technologies — gives it disproportionate weight in global critical-mineral discussions.",
+    riskProfile: [
+      "Energy crisis: Eskom load-shedding cycles with direct GDP impact.",
+      "Criminal violence: one of the world's highest homicide rates, concentrated in Cape Town and Gauteng.",
+      "ANC political fragmentation: coalition governance and Government of National Unity dynamics.",
+      "Currency volatility: rand weakness linked to commodity cycles and fiscal signals.",
+      "Xenophobic violence episodes targeting African-immigrant communities.",
+      "Water-scarcity crises in Gauteng and episodic 'Day Zero' events in Cape Town.",
+    ],
+    recentFocus:
+      "Editorial attention covers the Presidency's Union Buildings statements, South African Reserve Bank policy decisions, Eskom load-shedding stage updates, SAPS crime-statistics releases, Department of International Relations statements on ICJ and BRICS matters, Chamber of Mines disclosures, and Independent Electoral Commission rolling electoral indicators.",
+  },
+
+  NG: {
+    overview:
+      "Nigeria is a federal presidential republic of approximately 224 million people across thirty-six states and the Federal Capital Territory, the most populous country in Africa and home to the continent's largest economy alongside South Africa. The economy is dominated by hydrocarbon exports from the Niger Delta — though production volumes have declined sharply from historical peaks — complemented by a large agricultural sector, rapidly growing fintech and entertainment industries (Nollywood, Afrobeats), and a significant informal economy. Abuja hosts federal government; Lagos is the financial and cultural capital.",
+    strategicContext:
+      "Lagos is West Africa's financial gateway, and Nigerian policy shapes ECOWAS decisions across regional security, monetary policy, and the evolving response to Sahel coup governments. Naira policy, OPEC-compatible crude production, and fintech regulation all have cross-border impact. Nigerian demographic weight — half the population under twenty — makes the country a structural pillar of continental development and migration trajectories.",
+    riskProfile: [
+      "Boko Haram and ISWAP insurgency in the Northeast, particularly Borno, Yobe, and Adamawa.",
+      "Banditry and kidnapping across the Northwest and Middle Belt.",
+      "Niger Delta oil-theft and pipeline-vandalism affecting crude export volumes.",
+      "Biafra-related separatist agitation in the Southeast.",
+      "FX and inflation stress: naira depreciation cycles and fuel-subsidy reform aftermath.",
+      "Flooding along Niger and Benue River basins during monsoon peaks.",
+    ],
+    recentFocus:
+      "We track Aso Villa presidential statements, Central Bank of Nigeria monetary and FX decisions, NNPCL crude production and refinery disclosures, Nigerian Armed Forces operational updates on insurgency fronts, EFCC anti-corruption actions, SEC fintech-regulation announcements, and National Emergency Management Agency flood and displacement bulletins.",
+  },
+
+  PK: {
+    overview:
+      "Pakistan is a federal parliamentary republic of approximately 240 million people across four provinces and two autonomous territories, the world's fifth-most-populous country and a declared nuclear-weapons state. The economy is agriculture-heavy with growing textile and increasingly IT-services exports, but is structurally constrained by external-sector fragility, recurrent IMF programs, and a large informal economy. Islamabad hosts the federal government; Karachi is the financial and largest urban center; Lahore is the cultural capital of Punjab.",
+    strategicContext:
+      "Pakistan's strategic importance flows from three vectors: its nuclear arsenal and India-Pakistan deterrence dynamics, its geographic role as a land bridge between China (via the CPEC economic corridor) and the Arabian Sea, and its long entanglement with Afghan stability including the post-2021 Taliban regime next door. The military and ISI wield substantial political and economic authority regardless of civilian-government composition, making Rawalpindi a first-tier intelligence address.",
+    riskProfile: [
+      "Tehrik-i-Taliban Pakistan (TTP) and Baloch separatist violence, especially in Khyber Pakhtunkhwa and Balochistan.",
+      "India-Pakistan border frictions: Line of Control incidents and Kashmir-linked diplomatic cycles.",
+      "Taliban-adjacent cross-border security: Afghan refugees, Durand Line tensions, TTP safe havens.",
+      "External-financing fragility: IMF program dependence and recurrent reserve crises.",
+      "Political-system volatility: civil-military tension, judicial confrontations, PTI-PMLN-PPP dynamics.",
+      "Monsoon flooding and glacial-lake outburst events across Indus basin.",
+    ],
+    recentFocus:
+      "Tracking priorities include PM Office and Army House statements, State Bank of Pakistan policy, ISPR military-operations briefings, Ministry of Finance IMF-program milestones, Supreme Court and High Court political rulings, and NDMA flood and displacement bulletins. CPEC project-execution status is monitored as an independent Chinese-relationship indicator.",
+  },
+
+  ID: {
+    overview:
+      "Indonesia is a presidential republic of approximately 278 million people across more than 17,000 islands spanning three time zones — the world's largest archipelagic state, fourth-most-populous country, and the most populous Muslim-majority nation. The economy is Southeast Asia's largest, built on commodity exports (nickel, coal, palm oil, natural gas), a substantial manufacturing base, and a rapidly expanding digital economy. Jakarta has been the administrative capital; the Nusantara capital project aims to shift federal functions to East Kalimantan over the coming decade.",
+    strategicContext:
+      "Indonesia controls the Malacca, Sunda, and Lombok straits — maritime chokepoints through which roughly a quarter of global trade passes — and anchors ASEAN's diplomatic posture on the South China Sea, Myanmar, and great-power competition. The country's 2020 nickel-ore export ban catalyzed domestic battery and stainless-steel industrial policy that has reshaped global EV supply chains. Jakarta pursues an avowedly non-aligned 'free and active' foreign policy, making it a pivotal swing state in US-China strategic competition.",
+    riskProfile: [
+      "Seismic and volcanic activity: the country sits on the Pacific Ring of Fire with persistent earthquake and eruption risk.",
+      "Natuna and North Natuna Sea incidents with Chinese coast guard and fishing vessels.",
+      "Papua region unrest: West Papua independence activity and security-force responses.",
+      "Terrorism: Jemaah Islamiyah, JAD, and associated networks at reduced but persistent operational baseline.",
+      "Deforestation and peat-fire seasons with transboundary haze effects on Malaysia and Singapore.",
+      "Rupiah and external-sector volatility tied to commodity cycles and Fed policy.",
+    ],
+    recentFocus:
+      "Coverage includes Istana Merdeka presidential statements, Bank Indonesia policy, BMKG seismic and volcanic advisories, TNI operational updates on Papua and maritime incidents, Ministry of Energy nickel and coal export-policy announcements, Nusantara capital-transition milestones, and OJK financial-regulatory actions.",
+  },
+
+  TH: {
+    overview:
+      "Thailand is a constitutional monarchy with parliamentary government of approximately 70 million people, Southeast Asia's second-largest economy and a regional manufacturing and tourism hub. The economy spans automotive assembly (especially Japanese OEMs), electronics, agricultural exports (rice, rubber, seafood), and a tourism sector that generates a double-digit GDP share in normal years. Bangkok concentrates political, financial, and cultural activity; the Eastern Economic Corridor around Chonburi and Rayong hosts major industrial zones.",
+    strategicContext:
+      "Bangkok traditionally balances between the United States (a formal treaty ally) and China (the dominant trade and investment partner), producing a distinct hedging posture within ASEAN. Thailand's position astride mainland Southeast Asia, its porous border with Myanmar, and its influence within ASEAN diplomacy give the country outsized weight in regional security discussions. Military-royal interactions and the 2014 coup legacy continue to shape institutional trajectories.",
+    riskProfile: [
+      "Deep South insurgency: Patani-related violence across Narathiwat, Yala, and Pattani provinces.",
+      "Civil-military political cycles: coups, royal-succession dynamics, lèse-majesté enforcement.",
+      "Myanmar-border spillover: refugees, narcotics, and cross-border militia interactions.",
+      "Tourism-revenue sensitivity to regional security incidents and Chinese outbound demand.",
+      "Flooding and monsoon-season events in Bangkok and the central plain.",
+      "Air-quality crises in Chiang Mai and the North during biomass-burning seasons.",
+    ],
+    recentFocus:
+      "Editorial tracking covers Government House statements, Bank of Thailand monetary decisions, Ministry of Defence and ISOC operational updates on the Deep South and Myanmar border, TAT tourism-inflow reporting, SEC capital-markets actions, and Constitutional Court rulings on party-dissolution and political-figure cases.",
+  },
+
+  VN: {
+    overview:
+      "Vietnam is a single-party socialist republic of approximately 100 million people, governed by the Communist Party of Vietnam through a bureaucratic structure centered on the Politburo, Central Committee, and Secretariat. The economy has transformed dramatically since Đổi Mới reforms, with manufacturing-export-led growth concentrated around Ho Chi Minh City in the south and Hanoi-Hai Phong in the north. Vietnam has become a primary beneficiary of China-plus-one supply-chain diversification, particularly in electronics, textiles, and furniture.",
+    strategicContext:
+      "Hanoi executes a sophisticated 'bamboo diplomacy' that simultaneously upgrades relationships with the United States (now a Comprehensive Strategic Partner), China (a Comprehensive Strategic Cooperative Partnership), Russia, Japan, India, and the European Union. Vietnam's South China Sea disputes with China over the Paracels and Spratlys, coupled with its central role in apparel, electronics, and increasingly semiconductor-packaging supply chains, place Hanoi at the intersection of geopolitical and industrial-policy contests.",
+    riskProfile: [
+      "South China Sea incidents: Chinese coast guard and survey-vessel activity in Vietnamese-claimed EEZ.",
+      "Anti-corruption 'blazing furnace' campaign cycles with executive and provincial leadership turnover.",
+      "Tropical storm and flooding exposure across the central coast and Mekong Delta.",
+      "Mekong River upstream water-management dependence on Chinese and Laotian dam policy.",
+      "US trade-currency monitoring exposure: labeling and tariff risk on bilateral surplus.",
+      "Power-supply constraints during industrial growth cycles, periodic production curtailments.",
+    ],
+    recentFocus:
+      "We track Party and Government press releases, State Bank of Vietnam policy, Ministry of Foreign Affairs South China Sea protests, Ministry of Industry and Trade export data, Ministry of National Defence exercise and engagement announcements, and the anti-corruption-campaign leadership changes that repeatedly redistribute political authority.",
+  },
+
+  PH: {
+    overview:
+      "The Philippines is a presidential republic of approximately 117 million people across more than 7,600 islands. The economy is services- and remittance-driven, with substantial BPO and IT-BPM industries, a young population, and growing manufacturing and electronics-assembly sectors. Manila hosts national government; Cebu and Davao are secondary urban centers. The country is a treaty ally of the United States under a Mutual Defense Treaty dating to 1951 and has been reinvigorating that relationship since 2022.",
+    strategicContext:
+      "Manila has become the sharpest flashpoint in the South China Sea, with repeated China Coast Guard water-cannon and ramming incidents at Second Thomas Shoal and Scarborough Shoal. The 2023 Enhanced Defense Cooperation Agreement expansion added four additional US-accessible sites, and US-Philippine-Japanese trilateral coordination has rapidly formalized. The Philippines also anchors Southeast Asian typhoon and disaster-response operations given the country's annual exposure profile.",
+    riskProfile: [
+      "South China Sea confrontations with Chinese maritime forces at Ayungin Shoal (Second Thomas), Bajo de Masinloc (Scarborough), and Iroquois Reef.",
+      "Mindanao conflict residuals: Bangsamoro Autonomous Region political-transition dynamics and NPA insurgency.",
+      "Typhoon season: twenty or more named storms annually with repeated mass-displacement events.",
+      "Volcanic activity: Taal, Mayon, and Kanlaon with evacuation-level flare-ups.",
+      "Drug-policy and human-rights scrutiny: ICC investigation residuals into the 2016-2022 campaign period.",
+      "Peso volatility tied to Fed policy and remittance cycles.",
+    ],
+    recentFocus:
+      "Tracking priorities include Malacañang presidential statements, BSP monetary decisions, Philippine Coast Guard and AFP Western Command disclosures on South China Sea incidents, PAGASA typhoon and PHIVOLCS volcanic bulletins, NDRRMC disaster-response updates, and trilateral US-Japan-Philippines defense announcements.",
+  },
+
+  SG: {
+    overview:
+      "Singapore is a parliamentary republic and city-state of approximately 6 million residents on a main island of roughly 730 square kilometers, one of Southeast Asia's three high-income economies and the region's preeminent financial, logistics, and legal-arbitration center. The economy is built on entrepôt trade, banking (DBS, OCBC, UOB and a deep bench of regional subsidiaries of global banks), petrochemical refining on Jurong Island, semiconductor manufacturing and assembly, and a growing biomedical cluster. The People's Action Party has governed continuously since independence in 1965.",
+    strategicContext:
+      "Singapore punches vastly above its size in global affairs: its port handles one of the world's highest container throughputs, it hosts the Shangri-La Dialogue as Asia's premier defense forum, and the Monetary Authority of Singapore's policy decisions influence regional FX and capital flows. Singaporean strategic posture relies on a strong bilateral relationship with the United States (including extensive military-access agreements) balanced against deep commercial and regulatory ties to China, producing what successive Prime Ministers have described as a 'rules-based order' emphasis.",
+    riskProfile: [
+      "Transit-chokepoint exposure: Malacca Strait incident risk, piracy, and maritime-cyber dimensions.",
+      "Cross-border haze episodes from Indonesian peat fires.",
+      "Malaysian-border water-supply and labor-dependency dynamics.",
+      "Cybersecurity incidents against CSA-designated critical information infrastructure.",
+      "Regional capital-flow volatility affecting SGD and property markets.",
+      "Geopolitical fence-sitting scrutiny: US and Chinese pressure on specific technology and sanctions questions.",
+    ],
+    recentFocus:
+      "We track Prime Minister's Office statements, MAS policy and currency-band adjustments, MINDEF and Shangri-La Dialogue proceedings, Maritime and Port Authority incident reports, CSA and Cyber Security Agency advisories, and the Competition and Consumer Commission's digital-platform enforcement as a regional regulatory bellwether.",
+  },
 };
 
 /** Helper: does this country have an editorial profile? */
