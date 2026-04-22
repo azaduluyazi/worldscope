@@ -11,10 +11,7 @@ import {
   BRIEFING_COOKIE,
   getVariant,
 } from "@/lib/ab/briefing-headline";
-import {
-  getVariantId,
-  isTierPurchasable,
-} from "@/lib/subscriptions/tier-config";
+import { isTierPurchasable } from "@/lib/subscriptions/tier-config";
 
 // A/B test reads a per-visitor cookie set by middleware; rendering
 // must be dynamic so each visitor sees their own variant.
@@ -114,8 +111,9 @@ export default async function BriefingLandingPage() {
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-2">
                   <GaiaCheckoutButton
-                    variantId={getVariantId("gaia", "monthly")!}
                     label="SUBSCRIBE · $9/MO"
+                    cycle="monthly"
+                    redirectTo="/briefing"
                   />
                   <Link
                     href="/pricing#gaia"

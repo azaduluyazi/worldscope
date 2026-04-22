@@ -1,36 +1,39 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 /**
  * GaiaCheckoutButton — One-click entry into the Gaia ($9/mo) checkout.
  *
- * Hits /api/checkout/create with the configured Gaia variant id,
- * then redirects to the Lemon Squeezy hosted checkout. The caller is
- * responsible for gating render on `isTierPurchasable("gaia", ...)`
- * so this button only shows when the variant env var is set — the
- * button itself assumes it is.
+ * Routes through /api/checkout/tier so the auth-gate + server-side
+ * variant resolution kick in. Three outcomes:
+ *   401 → not signed in, redirect to /sign-up?redirect_to=/briefing.
+ *         Without this, the post-payment subscriptions row would land
+ *         with user_id=NULL, and send-weekly-briefings (which filters
+ *         by active subscriptions.user_id) wouldn't deliver.
+ *   404 → tier not purchasable (variant env unset server-side).
+ *   200 → returned URL → window.location.href = Lemon hosted checkout.
  *
- * `email` is optional pre-fill; Lemon will ask if omitted. Pass
- * `cycle="annual"` to drive the $90/yr variant instead.
+ * The caller is responsible for gating render on
+ * `isTierPurchasable("gaia", ...)` so the button only shows when the
+ * server-side env is configured.
  */
 
 interface Props {
-  variantId: string;
-  email?: string;
-  redirectPath?: string;
   label: string;
   cycle?: "monthly" | "annual";
+  redirectTo?: string;
   compact?: boolean;
 }
 
 export function GaiaCheckoutButton({
-  variantId,
-  email,
-  redirectPath = "/briefing?welcome=1",
   label,
+  cycle = "monthly",
+  redirectTo = "/briefing",
   compact = false,
 }: Props) {
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -39,25 +42,25 @@ export function GaiaCheckoutButton({
     setLoading(true);
     setError("");
     try {
-      const origin =
-        typeof window !== "undefined"
-          ? window.location.origin
-          : "https://troiamedia.com";
-      const res = await fetch("/api/checkout/create", {
+      const res = await fetch("/api/checkout/tier", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          variantId,
-          email,
-          redirectUrl: `${origin}${redirectPath}`,
-        }),
+        body: JSON.stringify({ slug: "gaia", cycle }),
       });
+
+      if (res.status === 401) {
+        const body = (await res.json().catch(() => ({}))) as { redirect?: string };
+        router.push(body.redirect ?? `/sign-up?redirect_to=${encodeURIComponent(redirectTo)}`);
+        return;
+      }
+
       if (!res.ok) {
         const body = (await res.json().catch(() => ({}))) as { error?: string };
         setError(body.error || "Checkout failed — please retry");
         setLoading(false);
         return;
       }
+
       const { url } = (await res.json()) as { url: string };
       window.location.href = url;
     } catch {
