@@ -138,21 +138,45 @@ export async function generateCountryBriefing(
 
 /**
  * Find every country that has at least one event in the last `hoursBack`
- * hours. We only generate briefings for these — skipping the 100+ quiet
- * ISO codes saves ~75% of LLM spend on a typical day.
+ * hours. Returns the codes sorted by event volume DESCENDING so the cron
+ * processes high-traffic countries (TR, US, IR, RU, UA, IL…) first — if
+ * the 5-minute wall-clock ceiling triggers before the list finishes, the
+ * countries most subscribers care about are already generated.
+ *
+ * Implementation note: Supabase-js caps a single `.select()` response
+ * at the project's `db-max-rows` (default 1000). For a 22k-event day
+ * that cap gave us an unrepresentative slice — the 2026-04-22 run
+ * produced briefings only for Angola and Estonia because the first 1000
+ * rows happened to tag those. We now paginate in 1000-row chunks with
+ * `.range()` so every tagged event is counted.
  */
 export async function activeCountries(hoursBack: number = 24): Promise<string[]> {
   const db = createServerClient();
   const since = new Date(Date.now() - hoursBack * 3600_000).toISOString();
-  const { data, error } = await db
-    .from("events")
-    .select("country_code")
-    .gte("published_at", since)
-    .not("country_code", "is", null);
-  if (error) throw new Error(`activeCountries failed: ${error.message}`);
-  const set = new Set<string>();
-  for (const row of data ?? []) {
-    if (row.country_code) set.add(String(row.country_code).toUpperCase());
+
+  const counts = new Map<string, number>();
+  const PAGE = 1000;
+  for (let page = 0; page < 25; page++) {
+    // Hard cap at 25 pages = 25k rows — comfortably above our daily
+    // ingest (~12k) and well under any runaway scenario.
+    const { data, error } = await db
+      .from("events")
+      .select("country_code")
+      .gte("published_at", since)
+      .not("country_code", "is", null)
+      .range(page * PAGE, page * PAGE + PAGE - 1);
+    if (error) throw new Error(`activeCountries failed: ${error.message}`);
+    if (!data || data.length === 0) break;
+    for (const row of data) {
+      if (row.country_code) {
+        const cc = String(row.country_code).toUpperCase();
+        counts.set(cc, (counts.get(cc) ?? 0) + 1);
+      }
+    }
+    if (data.length < PAGE) break;
   }
-  return [...set].sort();
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .map(([cc]) => cc);
 }
