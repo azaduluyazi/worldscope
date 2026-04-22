@@ -13,7 +13,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/supabase.generated";
 import {
@@ -184,13 +184,22 @@ async function dispatchEvent(
       return;
 
     case "subscription_created":
-    case "subscription_updated":
     case "subscription_resumed":
     case "subscription_unpaused":
+    case "subscription_payment_success":
+      // Activation / re-activation events: after the subscription row
+      // is written, ensure a briefing_preferences row exists so the
+      // send-weekly-briefings cron will actually pick this user up.
+      // Without this the paid subscriber would see no email until they
+      // manually opened /preferences — silent churn trigger.
+      await upsertSubscription(payload, db);
+      await ensureBriefingPreferences(payload, db);
+      return;
+
+    case "subscription_updated":
     case "subscription_cancelled":
     case "subscription_expired":
     case "subscription_paused":
-    case "subscription_payment_success":
     case "subscription_payment_failed":
     case "subscription_payment_refunded":
       await upsertSubscription(payload, db);
@@ -265,4 +274,88 @@ async function upsertSubscription(
     new_status: row.status,
     metadata: { payload_id: payload.data.id },
   });
+}
+
+/**
+ * Guarantee the subscriber has a `briefing_preferences` row so the
+ * weekly/daily cron can email them. Without this, a paid Gaia
+ * subscriber who never opens /preferences receives no briefing —
+ * which the cron's inner join on `user_profile_id` silently filters
+ * out. See sorunlar/gaia-subscription-no-briefing-email.md.
+ *
+ * Idempotent via the `user_profile_id` UNIQUE constraint; existing
+ * preference rows are left untouched so we don't overwrite the user's
+ * own country / locale / quiet-hour choices.
+ *
+ * Fail-soft: any error is logged but doesn't surface to the caller.
+ * The subscription row is the source of truth for billing — losing
+ * the preferences row on first activation is recoverable later (user
+ * can visit /preferences manually), but flipping the webhook to 500
+ * here would make Lemon retry the delivery and re-insert
+ * subscription rows we already have.
+ */
+async function ensureBriefingPreferences(
+  payload: LemonWebhookPayload,
+  db: Db,
+): Promise<void> {
+  const userIdRaw = payload.meta?.custom_data?.user_id;
+  if (userIdRaw == null) {
+    console.warn(
+      "[lemon-webhook] activation without user_id — briefing_preferences skipped (anonymous checkout?)",
+      { subscriptionId: payload.data.id },
+    );
+    return;
+  }
+  const userId = String(userIdRaw);
+
+  try {
+    // Look up the user's locale so the first briefing respects their
+    // language preference. `user_profiles.id` is the same id we bind
+    // to subscription.user_id via custom_data.
+    const { data: profile } = await db
+      .from("user_profiles")
+      .select("id, locale")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (!profile) {
+      console.warn(
+        "[lemon-webhook] no user_profile for user_id — briefing_preferences skipped",
+        { userId },
+      );
+      return;
+    }
+
+    // CHECK constraint briefing_preferences_locale_valid accepts only
+    // 'en' | 'tr'; fall back to 'en' for any other profile locale.
+    const locale = profile.locale === "tr" ? "tr" : "en";
+
+    const { error } = await db.from("briefing_preferences").upsert(
+      {
+        user_profile_id: profile.id,
+        country_codes: [],
+        daily_enabled: false,
+        weekly_enabled: true,
+        locale,
+        unsubscribe_token: randomBytes(24).toString("base64url"),
+        quiet_hours_enabled: false,
+        quiet_start: "22:00:00",
+        quiet_end: "07:00:00",
+        timezone: "UTC",
+      },
+      { onConflict: "user_profile_id", ignoreDuplicates: true },
+    );
+
+    if (error) {
+      console.error(
+        "[lemon-webhook] briefing_preferences upsert failed (non-fatal)",
+        { userId, code: error.code, message: error.message },
+      );
+    }
+  } catch (err) {
+    console.error(
+      "[lemon-webhook] ensureBriefingPreferences unexpected (non-fatal)",
+      err,
+    );
+  }
 }
