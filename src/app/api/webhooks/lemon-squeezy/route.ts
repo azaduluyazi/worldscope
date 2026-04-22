@@ -14,7 +14,8 @@
 
 import { NextResponse } from "next/server";
 import { createHash } from "node:crypto";
-import { createServerClient } from "@/lib/db/supabase";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/supabase.generated";
 import {
   verifyWebhookSignature,
   type LemonWebhookPayload,
@@ -23,6 +24,27 @@ import {
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/**
+ * The webhook handler MUST use the service role key — the
+ * `lemon_webhook_events` + `subscriptions` tables have RLS policies
+ * that only allow service_role writes. Falling back to the anon key
+ * (which the generic `createServerClient` helper does when the service
+ * key is missing from env) silently bypasses the insert and returns
+ * "record failed" 500s. Fail fast + loud instead.
+ */
+function createAdminClient(): SupabaseClient<Database> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !serviceKey) {
+    throw new Error(
+      "webhook admin client requires NEXT_PUBLIC_SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY",
+    );
+  }
+  return createClient<Database>(url, serviceKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
 
 function eventIdFor(eventName: string, rawBody: string): string {
   // Stable fingerprint of this exact payload — used as dedup key.
@@ -56,29 +78,49 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "missing event_name" }, { status: 400 });
   }
 
-  const db = createServerClient();
+  let db: SupabaseClient<Database>;
+  try {
+    db = createAdminClient();
+  } catch (err) {
+    console.error("[lemon-webhook] admin client unavailable:", err);
+    return NextResponse.json(
+      { error: "server misconfigured: SUPABASE_SERVICE_ROLE_KEY missing" },
+      { status: 500 },
+    );
+  }
+
   const eventId = eventIdFor(eventName, rawBody);
 
   // Idempotency: return 200 if we've already processed this exact payload.
-  const { data: existing } = await db
+  const { data: existing, error: existingErr } = await db
     .from("lemon_webhook_events")
     .select("id, processed_at")
     .eq("event_id", eventId)
     .maybeSingle();
 
+  if (existingErr) {
+    console.error("[lemon-webhook] idempotency lookup failed:", existingErr);
+    return NextResponse.json(
+      { error: "lookup failed", detail: existingErr.message, code: existingErr.code },
+      { status: 500 },
+    );
+  }
+
   if (existing?.processed_at) {
     return NextResponse.json({ status: "duplicate", id: existing.id });
   }
 
-  // Record the event (idempotency row). If insert conflicts, another
-  // request is racing us — safe to continue; final status wins.
+  // Record the event (idempotency row). `webhook_id` coerced to string
+  // because Lemon sends it as an integer.
+  const webhookIdRaw = payload.meta?.webhook_id;
   const { data: inserted, error: insertErr } = await db
     .from("lemon_webhook_events")
     .upsert(
       {
         event_id: eventId,
         event_name: eventName,
-        webhook_id: payload.meta?.webhook_id ?? null,
+        webhook_id:
+          webhookIdRaw != null ? String(webhookIdRaw) : null,
         // `payload` column is JSONB — cast to the Database-provided Json
         // shape so TS accepts the write. The object is already plain
         // JSON-compatible (parsed from the request body).
@@ -90,8 +132,19 @@ export async function POST(req: Request) {
     .single();
 
   if (insertErr || !inserted) {
-    console.error("[lemon-webhook] failed to record event", insertErr);
-    return NextResponse.json({ error: "record failed" }, { status: 500 });
+    console.error(
+      "[lemon-webhook] failed to record event",
+      { eventName, eventId, webhookIdRaw, insertErr },
+    );
+    return NextResponse.json(
+      {
+        error: "record failed",
+        detail: insertErr?.message,
+        code: insertErr?.code,
+        hint: insertErr?.hint,
+      },
+      { status: 500 },
+    );
   }
 
   try {
@@ -114,7 +167,7 @@ export async function POST(req: Request) {
   }
 }
 
-type Db = ReturnType<typeof createServerClient>;
+type Db = SupabaseClient<Database>;
 
 async function dispatchEvent(
   eventName: LemonEventName,
@@ -122,6 +175,14 @@ async function dispatchEvent(
   db: Db,
 ): Promise<void> {
   switch (eventName) {
+    case "customer_created":
+    case "customer_updated":
+    case "license_key_created":
+    case "license_key_updated":
+      // Audit-only — recorded by the idempotency insert above. No
+      // subscriptions side-effect. Keeps the handler non-500 on these.
+      return;
+
     case "subscription_created":
     case "subscription_updated":
     case "subscription_resumed":

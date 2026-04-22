@@ -26,6 +26,14 @@ export const LEMON_EVENTS = [
   "subscription_payment_success",
   "subscription_payment_failed",
   "subscription_payment_refunded",
+  // Customer lifecycle events — Lemon fires these on profile updates
+  // and email changes. No subscriptions side-effect; we accept + audit.
+  "customer_created",
+  "customer_updated",
+  // License key events — not used but Lemon may still deliver if store
+  // offers license products. Ignored without error.
+  "license_key_created",
+  "license_key_updated",
 ] as const;
 
 export type LemonEventName = (typeof LEMON_EVENTS)[number];
