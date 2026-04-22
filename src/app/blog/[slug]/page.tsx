@@ -31,8 +31,19 @@ async function getPost(slug: string): Promise<BlogPost | null> {
       .eq("slug", slug)
       .eq("published", true)
       .single();
-    return data;
-  } catch {
+    if (!data) return null;
+    return {
+      slug: data.slug,
+      title: data.title,
+      excerpt: data.excerpt,
+      content: data.content,
+      category: data.category,
+      tags: data.tags ?? [],
+      author: data.author,
+      published_at: data.published_at ?? new Date().toISOString(),
+    };
+  } catch (err) {
+    console.error("[blog/getPost]", err);
     return null;
   }
 }

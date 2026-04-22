@@ -13,7 +13,7 @@ const CATEGORIES = [
   { id: "finance", label: "Finance", icon: "chart" },
   { id: "cyber", label: "Cyber", icon: "lock" },
   { id: "tech", label: "Tech", icon: "cpu" },
-  { id: "weather", label: "Weather", icon: "cloud" },
+  { id: "natural", label: "Weather", icon: "cloud" },
   { id: "aviation", label: "Aviation", icon: "plane" },
   { id: "energy", label: "Energy", icon: "zap" },
   { id: "diplomacy", label: "Diplomacy", icon: "flag" },

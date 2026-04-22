@@ -266,7 +266,12 @@ export default function RelationshipGraph() {
     simulationRef.current = simulation;
 
     return () => {
+      // Unbind tick handler so it can't fire with stale DOM refs during
+      // the teardown window, then halt the physics loop and release the
+      // ref so the simulation object is GC-eligible.
+      simulation.on("tick", null);
       simulation.stop();
+      simulationRef.current = null;
     };
   }, [graph]);
 

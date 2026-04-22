@@ -49,7 +49,7 @@ export async function GET() {
         <news:name>${PUBLICATION_NAME}</news:name>
         <news:language>${PUBLICATION_LANG}</news:language>
       </news:publication>
-      <news:publication_date>${new Date(r.generated_at).toISOString()}</news:publication_date>
+      <news:publication_date>${new Date(r.generated_at ?? Date.now()).toISOString()}</news:publication_date>
       <news:title>${title}</news:title>
     </news:news>
   </url>`,
@@ -75,7 +75,7 @@ export async function GET() {
         <news:name>${PUBLICATION_NAME}</news:name>
         <news:language>${PUBLICATION_LANG}</news:language>
       </news:publication>
-      <news:publication_date>${new Date(p.published_at).toISOString()}</news:publication_date>
+      <news:publication_date>${new Date(p.published_at ?? Date.now()).toISOString()}</news:publication_date>
       <news:title>${escapeXml(p.title)}</news:title>
     </news:news>
   </url>`,

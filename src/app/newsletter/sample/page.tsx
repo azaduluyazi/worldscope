@@ -39,8 +39,15 @@ async function getLatestReport(): Promise<Report | null> {
       .order("date", { ascending: false })
       .limit(1)
       .single();
-    return data;
-  } catch {
+    if (!data) return null;
+    return {
+      type: data.type,
+      date: data.date,
+      content: data.content,
+      event_count: data.event_count ?? 0,
+    };
+  } catch (err) {
+    console.error("[newsletter/sample]", err);
     return null;
   }
 }

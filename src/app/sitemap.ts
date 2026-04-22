@@ -94,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       for (const report of data) {
         entries.push({
           url: `${BASE_URL}/reports/${report.type}/${report.date}`,
-          lastModified: new Date(report.generated_at),
+          lastModified: new Date(report.generated_at ?? Date.now()),
           changeFrequency: report.type === "weekly" ? "weekly" : "daily",
           priority: 0.6,
         });
@@ -118,7 +118,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       for (const post of data) {
         entries.push({
           url: `${BASE_URL}/blog/${post.slug}`,
-          lastModified: new Date(post.published_at),
+          lastModified: new Date(post.published_at ?? Date.now()),
           changeFrequency: "weekly",
           priority: 0.6,
         });

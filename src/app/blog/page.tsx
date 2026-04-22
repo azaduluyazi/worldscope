@@ -45,8 +45,18 @@ async function getBlogPosts(): Promise<BlogPost[]> {
       .eq("published", true)
       .order("published_at", { ascending: false })
       .limit(50);
-    return data || [];
-  } catch {
+    return (data ?? []).map((row) => ({
+      slug: row.slug,
+      title: row.title,
+      excerpt: row.excerpt,
+      category: row.category,
+      tags: row.tags ?? [],
+      lang: row.lang,
+      author: row.author,
+      published_at: row.published_at ?? new Date().toISOString(),
+    }));
+  } catch (err) {
+    console.error("[blog/getBlogPosts]", err);
     return [];
   }
 }
