@@ -33,14 +33,20 @@ function applyThemeToDOM(theme: DashboardTheme) {
   const root = document.documentElement;
   const c = theme.colors;
 
-  // Core color variables
-  root.style.setProperty("--color-hud-base", c.base);
-  root.style.setProperty("--color-hud-surface", c.surface);
-  root.style.setProperty("--color-hud-panel", c.panel);
-  root.style.setProperty("--color-hud-border", c.border);
-  root.style.setProperty("--color-hud-muted", c.muted);
-  root.style.setProperty("--color-hud-text", c.text);
-  root.style.setProperty("--color-hud-accent", c.accent);
+  // Core color variables — write the *short* names (`--hud-base`, …)
+  // because globals.css threads them through `@theme inline` via
+  // `--color-hud-base: var(--hud-base, <default>)`. Writing the long
+  // `--color-hud-*` names used to be a no-op for Tailwind utilities
+  // under `@theme inline` (see sorunlar/theme-not-applying).
+  root.style.setProperty("--hud-base", c.base);
+  root.style.setProperty("--hud-surface", c.surface);
+  root.style.setProperty("--hud-panel", c.panel);
+  root.style.setProperty("--hud-border", c.border);
+  root.style.setProperty("--hud-muted", c.muted);
+  root.style.setProperty("--hud-text", c.text);
+  root.style.setProperty("--hud-accent", c.accent);
+  // shadcn tokens (--background, --foreground, …) are plain `:root`
+  // variables (not behind @theme inline), so direct override works.
   root.style.setProperty("--background", c.base);
   root.style.setProperty("--foreground", c.text);
   root.style.setProperty("--card", c.panel);
@@ -50,21 +56,21 @@ function applyThemeToDOM(theme: DashboardTheme) {
   root.style.setProperty("--muted-foreground", c.muted);
   root.style.setProperty("--input", c.border);
 
-  if (theme.glow) root.style.setProperty("--color-hud-glow", theme.glow);
+  if (theme.glow) root.style.setProperty("--hud-glow", theme.glow);
 
   // Secondary accent (neon cyan, warzone orange, etc.)
   if (theme.colors.accent2) {
-    root.style.setProperty("--color-hud-accent2", theme.colors.accent2);
+    root.style.setProperty("--hud-accent2", theme.colors.accent2);
   }
 
   // Custom severity color overrides
   if (theme.severityColors) {
     const sc = theme.severityColors;
-    if (sc.critical) root.style.setProperty("--color-severity-critical", sc.critical);
-    if (sc.high) root.style.setProperty("--color-severity-high", sc.high);
-    if (sc.medium) root.style.setProperty("--color-severity-medium", sc.medium);
-    if (sc.low) root.style.setProperty("--color-severity-low", sc.low);
-    if (sc.info) root.style.setProperty("--color-severity-info", sc.info);
+    if (sc.critical) root.style.setProperty("--severity-critical", sc.critical);
+    if (sc.high) root.style.setProperty("--severity-high", sc.high);
+    if (sc.medium) root.style.setProperty("--severity-medium", sc.medium);
+    if (sc.low) root.style.setProperty("--severity-low", sc.low);
+    if (sc.info) root.style.setProperty("--severity-info", sc.info);
   }
 
   // Card radius

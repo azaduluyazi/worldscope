@@ -51,21 +51,27 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Troia HUD Colors — Spartan Red default */
-  --color-hud-base: #0a0406;
-  --color-hud-surface: #120810;
-  --color-hud-panel: #1a0c14;
-  --color-hud-border: #301520;
-  --color-hud-muted: #5a2a3a;
-  --color-hud-text: #e8d0d8;
-  --color-hud-accent: #c0392b;
+  /* Troia HUD Colors — indirection through `--hud-X` so ThemeProvider can
+   * swap themes at runtime. `@theme inline` would otherwise inline the hex
+   * value into utilities like `bg-hud-accent` at build time, making runtime
+   * `--color-hud-*` overrides invisible to Tailwind classes. Fallbacks below
+   * preserve the Spartan Red defaults until ThemeProvider mounts. */
+  --color-hud-base: var(--hud-base, #060509);
+  --color-hud-surface: var(--hud-surface, #0a0810);
+  --color-hud-panel: var(--hud-panel, #110d14);
+  --color-hud-border: var(--hud-border, #2d1e08);
+  --color-hud-muted: var(--hud-muted, #7e7866);
+  --color-hud-text: var(--hud-text, #f1ede3);
+  --color-hud-accent: var(--hud-accent, #f5a524);
+  --color-hud-accent2: var(--hud-accent2, #6effb8);
+  --color-hud-glow: var(--hud-glow, #f5a524);
 
-  /* Severity Colors */
-  --color-severity-critical: #ff4757;
-  --color-severity-high: #ffd000;
-  --color-severity-medium: #00e5ff;
-  --color-severity-low: #00ff88;
-  --color-severity-info: #8a5cf6;
+  /* Severity Colors — same indirection so per-theme severityColors overrides work */
+  --color-severity-critical: var(--severity-critical, #ff4757);
+  --color-severity-high: var(--severity-high, #ffd000);
+  --color-severity-medium: var(--severity-medium, #00e5ff);
+  --color-severity-low: var(--severity-low, #00ff88);
+  --color-severity-info: var(--severity-info, #8a5cf6);
 
   /* Market Colors */
   --color-market-up: #00ff88;
