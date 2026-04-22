@@ -125,9 +125,10 @@ export default function AboutPage() {
               by advertising. Every dashboard feature — live news feeds,
               interactive maps, news channels, AI analytics, data export,
               daily email briefings, and more — is available at no cost with
-              no account required. An optional <strong>$1 premium briefing
-              tier</strong> for personalized country-level email intelligence
-              reports is launching soon. See our{" "}
+              no account required. An optional <strong>Gaia subscription</strong>{" "}
+              ($9/month or $90/year) unlocks the weekly Sunday Convergence
+              Report PDF, personalized country-level briefings, and an
+              ad-free mode. See our{" "}
               <Link href="/pricing" className="text-hud-accent hover:underline">
                 Pricing page
               </Link>{" "}

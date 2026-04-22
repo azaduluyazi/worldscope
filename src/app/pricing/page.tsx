@@ -81,15 +81,16 @@ export default function PricingPage() {
             monthly={gaiaCycles.monthly}
             annual={gaiaCycles.annual}
           />
-          <p className="text-[11px] text-gray-500 mt-4 text-center">
-            Teams &amp; enterprise: contact{" "}
+          <p className="text-[11px] text-gray-500 mt-4 text-center leading-relaxed">
+            Need more than the 15-country cap, a custom delivery
+            frequency, API access, or a team / enterprise plan?{" "}
             <a
-              href="mailto:info@troiamedia.com"
+              href="mailto:info@troiamedia.com?subject=Custom%20Gaia%20coverage"
               className="text-amber-300 hover:underline"
             >
               info@troiamedia.com
             </a>{" "}
-            for seat-based pricing and SSO.
+            — we reply within 2 business days with options and a quote.
           </p>
         </div>
 
@@ -190,7 +191,7 @@ export default function PricingPage() {
             />
             <FaqItem
               q="Is WorldScope really free?"
-              a="Yes. The entire WorldScope dashboard — maps, news feeds, IPTV channels, AI analytics, daily newsletter — is free and ad-supported. Optional paid briefing tiers (Chora, Pleiades, Gaia, Prometheus, Pantheon) are launching in phases for users who want personalized or power-user features. Every current dashboard feature will always remain free."
+              a="Yes. The entire WorldScope dashboard — maps, news feeds, IPTV channels, AI analytics, daily newsletter — is free and ad-supported. Gaia ($9/month or $90/year) is the one optional paid tier that unlocks the Sunday Convergence Report PDF, personalized country-level briefings, ad-free mode, and priority tooling. Every current dashboard feature will always remain free."
             />
             <FaqItem
               q="Why are the tiers named after Greek mythology?"
