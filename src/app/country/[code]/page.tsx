@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { COUNTRIES, COUNTRY_MAP } from "@/config/countries";
+import { getCountryProfile } from "@/config/country-profiles";
 import { CountryDashboard } from "@/components/country/CountryDashboard";
 import { AdSenseUnit } from "@/components/ads";
 import { AD_PLACEMENTS } from "@/config/ads";
@@ -27,7 +28,12 @@ export async function generateMetadata({
   if (!country) return { title: "Country Not Found — WorldScope" };
 
   const title = `${country.name} Intelligence Report — WorldScope`;
-  const description = `Real-time intelligence monitoring for ${country.name}. Live events, threat analysis, security updates, economic indicators, and geopolitical risk assessment. Track conflicts, cyber threats, weather events, and breaking news in ${country.name} (${country.region}) with WorldScope's 570+ source global intelligence dashboard.`;
+  const profile = getCountryProfile(code);
+  // Prefer the editorial profile's overview sentence for unique per-country
+  // meta descriptions. Falls back to the template where no profile exists.
+  const description = profile
+    ? `${profile.overview.split(/(?<=\.)\s+/)[0]} WorldScope tracks live events, risk indicators, and intelligence feeds for ${country.name}.`
+    : `Real-time intelligence monitoring for ${country.name}. Live events, threat analysis, security updates, economic indicators, and geopolitical risk assessment. Track conflicts, cyber threats, weather events, and breaking news in ${country.name} (${country.region}) with WorldScope's 570+ source global intelligence dashboard.`;
 
   return {
     title,
@@ -57,30 +63,79 @@ export async function generateMetadata({
   };
 }
 
-/** Server-rendered SEO content visible to both crawlers and users */
+/** Server-rendered SEO content visible to both crawlers and users.
+ *
+ * Two modes:
+ *   - Profiled countries (see country-profiles.ts) render a ~400-word
+ *     editorial brief with unique prose per country. Required for AdSense
+ *     low-value-content remediation (Paket 2, 2026-04-22).
+ *   - Unprofiled countries fall back to the original compact overview so
+ *     the 1,782-page ISR build stays intact while profiles are rolled out.
+ */
 function CountrySEOContent({ name, region, code }: { name: string; region: string; code: string }) {
   const regionCountries = COUNTRIES.filter(
     (c) => c.region === region && c.code !== code.toUpperCase()
   ).slice(0, 8);
+  const profile = getCountryProfile(code);
 
   return (
     <section className="max-w-5xl mx-auto px-4 py-6 font-mono text-hud-text" aria-label={`${name} Intelligence Overview`}>
       <h1 className="text-lg font-bold text-cyan-400 mb-2">{name} Intelligence Report</h1>
-      <p className="text-[11px] text-hud-muted leading-relaxed mb-4">
-        Real-time intelligence monitoring for {name} ({region}). Tracking security incidents,
-        cyber threats, economic indicators, weather events, and geopolitical developments
-        via 570+ verified sources.
-      </p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] text-hud-muted mb-4">
-        <span>■ Security &amp; Conflict</span>
-        <span>■ Cyber Threats</span>
-        <span>■ Economic Data</span>
-        <span>■ Weather &amp; Disasters</span>
-        <span>■ Political Events</span>
-        <span>■ Health &amp; Pandemic</span>
-      </div>
+
+      {profile ? (
+        <div className="space-y-5 text-[12px] leading-relaxed text-hud-text/90">
+          <div>
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-cyan-400/80 mb-1.5">
+              Overview
+            </h2>
+            <p>{profile.overview}</p>
+          </div>
+
+          <div>
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-cyan-400/80 mb-1.5">
+              Why {name} Matters
+            </h2>
+            <p>{profile.strategicContext}</p>
+          </div>
+
+          <div>
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-cyan-400/80 mb-1.5">
+              Risk Profile
+            </h2>
+            <ul className="list-disc list-inside space-y-1 text-hud-text/80">
+              {profile.riskProfile.map((item, i) => (
+                <li key={i}>{item}</li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-cyan-400/80 mb-1.5">
+              What We Track
+            </h2>
+            <p>{profile.recentFocus}</p>
+          </div>
+        </div>
+      ) : (
+        <>
+          <p className="text-[11px] text-hud-muted leading-relaxed mb-4">
+            Real-time intelligence monitoring for {name} ({region}). Tracking security incidents,
+            cyber threats, economic indicators, weather events, and geopolitical developments
+            via 570+ verified sources.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-[10px] text-hud-muted mb-4">
+            <span>■ Security &amp; Conflict</span>
+            <span>■ Cyber Threats</span>
+            <span>■ Economic Data</span>
+            <span>■ Weather &amp; Disasters</span>
+            <span>■ Political Events</span>
+            <span>■ Health &amp; Pandemic</span>
+          </div>
+        </>
+      )}
+
       {regionCountries.length > 0 && (
-        <nav className="text-[10px] text-hud-muted" aria-label={`${region} countries`}>
+        <nav className="mt-5 text-[10px] text-hud-muted" aria-label={`${region} countries`}>
           <span className="text-hud-text">Also in {region}: </span>
           {regionCountries.map((c, i) => (
             <span key={c.code}>
