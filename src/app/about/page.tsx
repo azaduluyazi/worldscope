@@ -55,6 +55,53 @@ export default function AboutPage() {
             </div>
           </Section>
 
+          {/* Editor — explicit human accountability for E-E-A-T */}
+          <Section title="Editor and Principal Analyst">
+            <p className="mb-3">
+              WorldScope is designed, operated, and editorially supervised by{" "}
+              <strong>Azad Uluyazi</strong>, an independent technologist based in
+              Istanbul with a decade of hands-on experience building data-driven
+              web platforms, API integrations, and real-time information
+              pipelines. Azad is personally responsible for source selection,
+              editorial policy, AI-assisted output review, and every
+              human-reviewed report published on the platform.
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-hud-text/80">
+              <li>
+                <strong>Focus areas:</strong> open-source intelligence (OSINT),
+                geopolitical risk monitoring, cybersecurity threat aggregation,
+                macroeconomic signal detection, full-stack engineering.
+              </li>
+              <li>
+                <strong>Platform responsibilities:</strong> source vetting
+                pipeline, AI prompt design and review, severity taxonomy,
+                editorial corrections, user-facing communication.
+              </li>
+              <li>
+                <strong>Public contact:</strong> editorial or correction
+                requests at{" "}
+                <a
+                  href="mailto:info@troiamedia.com"
+                  className="text-hud-accent hover:underline"
+                >
+                  info@troiamedia.com
+                </a>{" "}
+                — every inquiry is answered by the same person who runs the
+                platform, not an anonymous support queue.
+              </li>
+            </ul>
+            <p className="mt-3 text-xs text-hud-muted">
+              WorldScope does not employ ghostwritten bylines. Where a
+              human-authored analysis is attributed, it reflects Azad&apos;s own
+              review and sign-off. AI drafts are explicitly labeled and reviewed
+              before publication — see the{" "}
+              <Link href="/editorial-policy" className="text-hud-accent hover:underline">
+                Editorial Policy
+              </Link>{" "}
+              for the full review workflow.
+            </p>
+          </Section>
+
           <Section title="Mission">
             <p>
               WorldScope is a web-based software platform (SaaS) that makes

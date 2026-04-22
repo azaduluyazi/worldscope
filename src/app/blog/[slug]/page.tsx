@@ -92,11 +92,19 @@ function ArticleJsonLd({ post }: { post: BlogPost }) {
     "@type": "Article",
     headline: post.title,
     description: post.excerpt || post.title,
-    author: { "@type": "Organization", name: post.author },
+    author: {
+      "@type": "Person",
+      name: post.author,
+      url: "https://troiamedia.com/about",
+    },
     publisher: {
       "@type": "Organization",
       name: "WorldScope",
       url: "https://troiamedia.com",
+      logo: {
+        "@type": "ImageObject",
+        url: "https://troiamedia.com/icon-512.png",
+      },
     },
     datePublished: post.published_at,
     mainEntityOfPage: `https://troiamedia.com/blog/${post.slug}`,

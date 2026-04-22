@@ -9,8 +9,15 @@ export interface AdPlacement {
   enabled: boolean;
 }
 
-/** AdSense publisher ID — set via env */
-export const ADSENSE_PUB_ID = process.env.NEXT_PUBLIC_ADSENSE_PUB_ID || "";
+/** AdSense publisher ID.
+ *
+ * Prefer NEXT_PUBLIC_ADSENSE_PUB_ID from env. We ship a hardcoded fallback
+ * because the value is public anyway (it's in /ads.txt and every <ins> tag)
+ * and if the env var is missing in Vercel the entire AdSense integration
+ * silently vanishes from the HTML — which is what Googlebot then sees, and
+ * is how the 2026-04-22 "site not ready" review was triggered. */
+export const ADSENSE_PUB_ID =
+  process.env.NEXT_PUBLIC_ADSENSE_PUB_ID || "ca-pub-7094478712569423";
 
 /** Carbon Ads serve URL */
 export const CARBON_SERVE = process.env.NEXT_PUBLIC_CARBON_SERVE || "";
