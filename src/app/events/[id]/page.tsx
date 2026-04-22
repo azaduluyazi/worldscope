@@ -64,17 +64,30 @@ async function getEvent(id: string): Promise<EventRow | null> {
 async function getConvergence(
   eventId: string,
 ): Promise<ConvergenceLink | null> {
+  // Hard 1.5s timeout — `event_convergence_scores` is a materialized
+  // view that can be empty immediately after schema changes, and we'd
+  // rather render the page without the convergence badge than block
+  // the user behind a slow/incomplete materialisation.
   try {
     const db = createServerClient();
-    const { data } = await db
+    const query = db
       .from("event_convergence_scores")
       .select(
         "storyline_id, storyline_headline, peak_confidence, categories, affected_regions",
       )
       .eq("event_id", eventId)
       .maybeSingle();
-    return data as ConvergenceLink | null;
-  } catch {
+
+    const timeout = new Promise<null>((resolve) =>
+      setTimeout(() => resolve(null), 1500),
+    );
+    const result = await Promise.race([query, timeout]);
+    if (!result || "then" in result) return null;
+    // result is the Supabase response object
+    const data = (result as { data?: ConvergenceLink | null }).data;
+    return data ?? null;
+  } catch (err) {
+    console.error("[events/[id] getConvergence]", err);
     return null;
   }
 }
