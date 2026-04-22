@@ -63,3 +63,5 @@ export const CATEGORY_ICONS: Record<Category, string> = {
   health: "🏥",
   sports: "⚽",
 };
+
+export const ALL_CATEGORIES: readonly Category[] = Object.keys(CATEGORY_ICONS) as Category[];

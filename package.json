@@ -12,6 +12,7 @@
     "test:e2e": "playwright test",
     "backtest:convergence": "vitest run src/lib/convergence/__tests__/backtest.test.ts --reporter=verbose",
     "test:e2e:ui": "playwright test --ui",
+    "gen:types": "supabase gen types typescript --linked --schema public > src/types/supabase.generated.ts",
     "prepare": "husky"
   },
   "dependencies": {
