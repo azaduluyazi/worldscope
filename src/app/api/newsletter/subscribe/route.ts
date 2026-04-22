@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabase } from "@/lib/db/supabase";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "edge";
 
@@ -14,6 +15,8 @@ export const runtime = "edge";
  * }
  */
 export async function POST(request: NextRequest) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     const {
       email,
@@ -102,7 +105,8 @@ export async function POST(request: NextRequest) {
       success: true,
       message: `Subscribed to ${frequency} intelligence digest`,
     });
-  } catch {
+  } catch (err) {
+    console.error("[newsletter/subscribe] unexpected:", err);
     return NextResponse.json(
       { error: "Subscription failed" },
       { status: 500 }

@@ -52,7 +52,8 @@ export async function GET(req: NextRequest) {
         const data = await intelRes.json();
         items = (data.items || []).slice(0, 20);
       }
-    } catch {
+    } catch (err) {
+      console.error("[podcast/generate]", err);
       // If intel fetch fails, use a minimal script
     }
 
@@ -128,7 +129,8 @@ export async function GET(req: NextRequest) {
         "Content-Disposition": `inline; filename="worldscope-briefing-${today}.mp3"`,
       },
     });
-  } catch {
+  } catch (err) {
+    console.error("[podcast/generate]", err);
     return NextResponse.json(
       { error: "Audio generation error" },
       { status: 500 }

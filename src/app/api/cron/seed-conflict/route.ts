@@ -3,6 +3,7 @@ import { runSeeder, seedPublish } from "@/lib/seed/seed-utils";
 import { TTL } from "@/lib/cache/redis";
 import { fetchAcledEvents } from "@/lib/api/acled";
 import { fetchGdeltArticles } from "@/lib/api/gdelt";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -25,18 +26,20 @@ export async function GET(request: Request) {
     // ACLED conflict events
     try {
       const acled = await fetchAcledEvents(100);
-      await seedPublish("seed:conflict:acled", acled, TTL.SLOW, "seed-conflict");
+      await seedPublish(SEED_KEYS.conflict.acled, acled, TTL.SLOW, "seed-conflict");
       results.acled = acled.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-conflict]", err);
       results.acled = 0;
     }
 
     // GDELT articles
     try {
       const gdelt = await fetchGdeltArticles("conflict OR war OR attack");
-      await seedPublish("seed:conflict:gdelt", gdelt, TTL.SLOW, "seed-conflict");
+      await seedPublish(SEED_KEYS.conflict.gdelt, gdelt, TTL.SLOW, "seed-conflict");
       results.gdelt = gdelt.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-conflict]", err);
       results.gdelt = 0;
     }
 

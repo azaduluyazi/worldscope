@@ -5,6 +5,7 @@ import { fetchStockQuote, fetchForexQuote } from "@/lib/api/alpha-vantage";
 import { fetchFearGreedIndex } from "@/lib/api/fear-greed";
 import { seedRead } from "@/lib/seed/seed-utils";
 import type { MarketQuote } from "@/types/market";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 
@@ -12,9 +13,9 @@ export async function GET() {
   try {
     // Seed-first: try pre-populated cache
     const [seededQuotes, seededFearGreed] = await Promise.all([
-      seedRead<MarketQuote[]>("seed:market:quotes"),
-      seedRead<unknown>("seed:market:fear-greed"),
-      seedRead<MarketQuote[]>("seed:market:crypto"),
+      seedRead<MarketQuote[]>(SEED_KEYS.market.quotes),
+      seedRead<unknown>(SEED_KEYS.market.fearGreed),
+      seedRead<MarketQuote[]>(SEED_KEYS.market.crypto),
     ]);
     if (seededQuotes && seededFearGreed) {
       return NextResponse.json({
@@ -67,7 +68,8 @@ export async function GET() {
       fearGreed,
       lastUpdated: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
+    console.error("[market]", err);
     return NextResponse.json({ quotes: [], lastUpdated: new Date().toISOString() }, { status: 500 });
   }
 }

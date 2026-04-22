@@ -5,6 +5,7 @@ import { fetchCryptoQuotes } from "@/lib/api/coingecko";
 import { fetchStockQuote, fetchForexQuote } from "@/lib/api/alpha-vantage";
 import { fetchFearGreedIndex } from "@/lib/api/fear-greed";
 import type { MarketQuote } from "@/types/market";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -47,18 +48,20 @@ export async function GET(request: Request) {
       }
       if (eurusd.status === "fulfilled" && eurusd.value) quotes.push(eurusd.value);
 
-      await seedPublish("seed:market:quotes", quotes, TTL.FAST, "seed-market");
+      await seedPublish(SEED_KEYS.market.quotes, quotes, TTL.FAST, "seed-market");
       results.quotes = quotes.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-market]", err);
       results.quotes = 0;
     }
 
     // Fear & Greed Index
     try {
       const fearGreed = await fetchFearGreedIndex();
-      await seedPublish("seed:market:fear-greed", fearGreed, TTL.MEDIUM, "seed-market");
+      await seedPublish(SEED_KEYS.market.fearGreed, fearGreed, TTL.MEDIUM, "seed-market");
       results.fearGreed = 1;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-market]", err);
       results.fearGreed = 0;
     }
 
@@ -68,9 +71,10 @@ export async function GET(request: Request) {
         "bitcoin", "ethereum", "solana", "cardano", "ripple",
         "dogecoin", "polkadot", "chainlink", "avalanche-2", "polygon",
       ]);
-      await seedPublish("seed:market:crypto", crypto, TTL.FAST, "seed-market");
+      await seedPublish(SEED_KEYS.market.crypto, crypto, TTL.FAST, "seed-market");
       results.crypto = crypto.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-market]", err);
       results.crypto = 0;
     }
 

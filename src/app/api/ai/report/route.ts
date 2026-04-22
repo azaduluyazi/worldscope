@@ -3,6 +3,7 @@ import { generateText } from "ai";
 import { briefModel } from "@/lib/ai/providers";
 import { createServerClient } from "@/lib/db/supabase";
 import { fetchPersistedEvents } from "@/lib/db/events";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -13,6 +14,8 @@ export const maxDuration = 60;
  * Saves the report to Supabase for SEO pages.
  */
 export async function POST(request: Request) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     const body = await request.json().catch(() => ({}));
     const type: "daily" | "weekly" = body.type === "weekly" ? "weekly" : "daily";
@@ -91,7 +94,8 @@ Keep between 500-800 words.`;
       content: text,
       eventCount: events.length,
     });
-  } catch {
+  } catch (err) {
+    console.error("[ai/report]", err);
     return NextResponse.json(
       { error: "Report generation failed" },
       { status: 500 }

@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
     });
 
     return res;
-  } catch {
+  } catch (err) {
+    console.error("[locale]", err);
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 }

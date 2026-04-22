@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { runSeeder, seedPublish } from "@/lib/seed/seed-utils";
 import { TTL } from "@/lib/cache/redis";
 import { fetchAllCyberThreats } from "@/lib/api/cyber-threats";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -23,9 +24,10 @@ export async function GET(request: Request) {
 
     try {
       const threats = await fetchAllCyberThreats();
-      await seedPublish("seed:cyber:threats", threats, TTL.SLOW, "seed-cyber");
+      await seedPublish(SEED_KEYS.cyber.threats, threats, TTL.SLOW, "seed-cyber");
       results.threats = threats.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-cyber]", err);
       results.threats = 0;
     }
 

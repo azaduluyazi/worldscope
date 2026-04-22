@@ -34,7 +34,8 @@ export async function GET(req: NextRequest) {
       .single();
 
     return NextResponse.json({ isSubscribed: !!subscriber });
-  } catch {
+  } catch (err) {
+    console.error("[subscription/check]", err);
     return NextResponse.json({ isSubscribed: false });
   }
 }

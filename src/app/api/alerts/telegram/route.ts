@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@/lib/db/supabase";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 /**
  * POST /api/alerts/telegram — Subscribe a Telegram chat to intelligence alerts.
@@ -17,6 +18,8 @@ import { createServerClient } from "@/lib/db/supabase";
  */
 
 export async function POST(request: NextRequest) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     const body = await request.json();
     const chatId = body.chat_id;
@@ -58,7 +61,8 @@ export async function POST(request: NextRequest) {
       min_severity: minSeverity,
       message: "Subscribed! You will receive alerts for matching events.",
     });
-  } catch {
+  } catch (err) {
+    console.error("[alerts/telegram]", err);
     return NextResponse.json(
       { error: "Subscription failed" },
       { status: 500 }
@@ -90,12 +94,15 @@ export async function GET(request: NextRequest) {
       min_severity: data.min_severity,
       is_active: data.is_active,
     });
-  } catch {
+  } catch (err) {
+    console.error("[alerts/telegram]", err);
     return NextResponse.json({ subscribed: false });
   }
 }
 
 export async function DELETE(request: NextRequest) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     const body = await request.json();
     const chatId = body.chat_id;
@@ -110,7 +117,8 @@ export async function DELETE(request: NextRequest) {
       .eq("chat_id", String(chatId));
 
     return NextResponse.json({ success: true, message: "Unsubscribed" });
-  } catch {
+  } catch (err) {
+    console.error("[alerts/telegram]", err);
     return NextResponse.json(
       { error: "Unsubscribe failed" },
       { status: 500 }

@@ -66,7 +66,8 @@ export async function GET(req: NextRequest) {
       severities,
       period: "7d",
     });
-  } catch {
+  } catch (err) {
+    console.error("[analytics/country-risk]", err);
     return NextResponse.json({ error: "Failed to calculate risk" }, { status: 500 });
   }
 }

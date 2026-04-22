@@ -8,7 +8,8 @@ export async function GET() {
   try {
     const items = await fetchAuroraForecast();
     return NextResponse.json({ items, total: items.length });
-  } catch {
+  } catch (err) {
+    console.error("[aurora]", err);
     return NextResponse.json({ items: [], total: 0, error: "Failed to fetch aurora forecast" }, { status: 500 });
   }
 }

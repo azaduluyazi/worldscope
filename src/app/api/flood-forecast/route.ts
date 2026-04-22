@@ -8,7 +8,8 @@ export async function GET() {
   try {
     const items = await fetchFloodForecasts();
     return NextResponse.json({ items, total: items.length });
-  } catch {
+  } catch (err) {
+    console.error("[flood-forecast]", err);
     return NextResponse.json({ items: [], total: 0, error: "Failed to fetch flood forecasts" }, { status: 500 });
   }
 }

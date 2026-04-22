@@ -21,7 +21,8 @@ export async function GET() {
       total: alerts.length,
       lastUpdated: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
+    console.error("[oref]", err);
     return NextResponse.json({ alerts: [], total: 0, lastUpdated: new Date().toISOString() });
   }
 }

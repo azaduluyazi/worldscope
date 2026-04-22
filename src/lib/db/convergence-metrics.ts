@@ -24,7 +24,8 @@ export async function recordTrackMetrics(metrics: TrackMetrics): Promise<void> {
   try {
     const supabase = createServerClient();
     const row = toRow(metrics);
-    const { error } = await supabase.from(TABLE).insert(row);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from(TABLE).insert(row as any);
     if (error) {
       console.error("[convergence-metrics.record] error:", error.message);
     }
@@ -45,7 +46,8 @@ export async function recordBothTrackMetrics(
   try {
     const supabase = createServerClient();
     const rows = metrics.map(toRow);
-    const { error } = await supabase.from(TABLE).insert(rows);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await supabase.from(TABLE).insert(rows as any);
     if (error) {
       console.error("[convergence-metrics.recordBoth] error:", error.message);
     }
@@ -80,7 +82,22 @@ export async function fetchTrackHealthSummary(): Promise<
       .from("convergence_track_health")
       .select("*");
     if (error || !data) return [];
-    return data;
+    // The view's columns come back nullable (aggregate nulls) — narrow
+    // with zero defaults so the caller gets the non-nullable contract.
+    return data
+      .filter((r): r is typeof r & { track: "geo" | "topic" } =>
+        r.track === "geo" || r.track === "topic")
+      .map((r) => ({
+        track: r.track,
+        cycles: r.cycles ?? 0,
+        total_events_seen: r.total_events_seen ?? 0,
+        total_clusters: r.total_clusters ?? 0,
+        avg_clusters_per_cycle: r.avg_clusters_per_cycle ?? 0,
+        empty_cycles: r.empty_cycles ?? 0,
+        failure_cycles: r.failure_cycles ?? 0,
+        avg_duration_ms: r.avg_duration_ms ?? 0,
+        top_failure_reason: r.top_failure_reason,
+      }));
   } catch (err) {
     console.error("[convergence-metrics.fetchHealth] exception:", err);
     return [];

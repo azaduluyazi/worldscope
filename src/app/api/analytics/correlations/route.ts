@@ -16,7 +16,8 @@ export async function GET() {
       600 // 10 min cache
     );
     return NextResponse.json({ correlations: data, timestamp: new Date().toISOString() });
-  } catch {
+  } catch (err) {
+    console.error("[analytics/correlations]", err);
     return NextResponse.json({ correlations: [], timestamp: new Date().toISOString() });
   }
 }

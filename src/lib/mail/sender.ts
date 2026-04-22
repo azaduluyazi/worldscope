@@ -3,6 +3,8 @@
  * Sends daily briefings to all active subscribers (free).
  */
 
+import { signUnsubscribe } from "./unsubscribe-token";
+
 const RESEND_API = "https://api.resend.com/emails";
 
 export interface DigestPreferences {
@@ -45,12 +47,18 @@ export async function sendMail(params: SendMailParams): Promise<boolean> {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(
-          batch.map((email) => ({
-            from: fromEmail,
-            to: email,
-            subject: params.subject,
-            html: params.html.replace("{{EMAIL}}", encodeURIComponent(email)),
-          }))
+          batch.map((email) => {
+            const sig = signUnsubscribe(email) ?? "";
+            const html = params.html
+              .replace(/\{\{EMAIL\}\}/g, encodeURIComponent(email))
+              .replace(/\{\{SIG\}\}/g, sig);
+            return {
+              from: fromEmail,
+              to: email,
+              subject: params.subject,
+              html,
+            };
+          })
         ),
       });
 
@@ -91,6 +99,10 @@ export async function getActiveSubscribersWithPrefs(): Promise<SubscriberWithPre
 
   return data.map((r) => ({
     email: r.email,
-    preferences: r.preferences as DigestPreferences | undefined,
+    // preferences is a Json column; domain-shape is DigestPreferences.
+    // Cast via unknown because Json is a broader superset type.
+    preferences: r.preferences
+      ? (r.preferences as unknown as DigestPreferences)
+      : undefined,
   }));
 }

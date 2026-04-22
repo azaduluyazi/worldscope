@@ -26,6 +26,7 @@ import { getBulkReliability } from "@/lib/convergence/source-reliability";
 import { getCalibratedPrior } from "@/lib/convergence/calibration";
 import type { ConvergenceResponse } from "@/lib/convergence/types";
 import type { ClusterEvent } from "@/lib/convergence/types";
+import { CONVERGENCE_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -132,7 +133,7 @@ export async function GET(request: Request) {
     // /api/convergence reads this key first and falls back to
     // convergence_history on miss (both sources stay consistent via
     // the early-write in 2c).
-    await redis.set("convergence:latest", result, { ex: TTL.MEDIUM });
+    await redis.set(CONVERGENCE_KEYS.latest, result, { ex: TTL.MEDIUM });
 
     // 2c) Persist convergences to the permanent history archive.
     // Done BEFORE storylines/predictions/counter-factuals so the API
@@ -193,12 +194,12 @@ export async function GET(request: Request) {
       clusterEventsForValidation
     );
     if (counterFactuals.length > 0) {
-      await redis.set("convergence:counter-factuals", counterFactuals, {
+      await redis.set(CONVERGENCE_KEYS.counterFactuals, counterFactuals, {
         ex: TTL.STATIC,
       });
     } else {
       // Clear stale CF cache so the UI doesn't show ghosts
-      await redis.del("convergence:counter-factuals");
+      await redis.del(CONVERGENCE_KEYS.counterFactuals);
     }
 
     // 5d) Persist NEW predictions from this cycle for next run
@@ -219,14 +220,14 @@ export async function GET(request: Request) {
     // (upsert on id so the initial step-2c row is updated in place).
     if (result.convergences.length > 0) {
       await persistConvergences(result.convergences);
-      await redis.set("convergence:latest", result, { ex: TTL.MEDIUM });
+      await redis.set(CONVERGENCE_KEYS.latest, result, { ex: TTL.MEDIUM });
     }
 
     // Append high-confidence convergences to the rolling history key
     if (result.convergences.length > 0) {
       const highConf = result.convergences.filter((c) => c.confidence >= 0.7);
       if (highConf.length > 0) {
-        const historyKey = "convergence:history";
+        const historyKey = CONVERGENCE_KEYS.history;
         const existing =
           (await redis.get<ConvergenceResponse["convergences"]>(historyKey)) || [];
         const merged = [...highConf, ...existing].slice(0, 50);

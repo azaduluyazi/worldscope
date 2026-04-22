@@ -18,7 +18,8 @@ export async function GET() {
     ];
 
     return NextResponse.json({ data, total: data.length, lastUpdated: new Date().toISOString() });
-  } catch {
+  } catch (err) {
+    console.error("[fiscal]", err);
     return NextResponse.json({ data: [], total: 0 }, { status: 500 });
   }
 }

@@ -46,7 +46,8 @@ export async function POST(req: Request) {
   let payload: LemonWebhookPayload;
   try {
     payload = JSON.parse(rawBody) as LemonWebhookPayload;
-  } catch {
+  } catch (err) {
+    console.error("[webhooks/lemon-squeezy]", err);
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 
@@ -78,7 +79,10 @@ export async function POST(req: Request) {
         event_id: eventId,
         event_name: eventName,
         webhook_id: payload.meta?.webhook_id ?? null,
-        payload: payload as unknown as Record<string, unknown>,
+        // `payload` column is JSONB — cast to the Database-provided Json
+        // shape so TS accepts the write. The object is already plain
+        // JSON-compatible (parsed from the request body).
+        payload: payload as unknown as import("@/types/supabase.generated").Json,
       },
       { onConflict: "event_id" },
     )

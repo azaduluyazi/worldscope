@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { runSeeder, seedPublish } from "@/lib/seed/seed-utils";
 import { TTL } from "@/lib/cache/redis";
 import { fetchSafecastReadings } from "@/lib/api/radiation";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -23,9 +24,10 @@ export async function GET(request: Request) {
 
     try {
       const readings = await fetchSafecastReadings();
-      await seedPublish("seed:radiation:readings", readings, TTL.SLOW, "seed-radiation");
+      await seedPublish(SEED_KEYS.radiation.readings, readings, TTL.SLOW, "seed-radiation");
       results.readings = readings.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-radiation]", err);
       results.readings = 0;
     }
 

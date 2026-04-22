@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { cachedFetch } from "@/lib/cache/redis";
 import { seedRead } from "@/lib/seed/seed-utils";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 
@@ -72,7 +73,7 @@ function isExtremeWeather(code: number, temp: number, wind: number): boolean {
 export async function GET() {
   try {
     // Seed-first: try pre-populated cache
-    const seeded = await seedRead<WeatherAlert[]>("seed:natural:weather");
+    const seeded = await seedRead<WeatherAlert[]>(SEED_KEYS.natural.weather);
     if (seeded && seeded.length > 0) {
       const extreme = seeded.filter((w) => w.isExtreme);
       return NextResponse.json({ alerts: seeded, extremeCount: extreme.length, total: seeded.length, fromSeed: true });
@@ -128,7 +129,8 @@ export async function GET() {
       total: data.length,
       lastUpdated: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
+    console.error("[weather]", err);
     return NextResponse.json({ cities: [], total: 0, lastUpdated: new Date().toISOString() });
   }
 }

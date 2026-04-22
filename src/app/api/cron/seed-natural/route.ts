@@ -3,6 +3,7 @@ import { runSeeder, seedPublish } from "@/lib/seed/seed-utils";
 import { TTL } from "@/lib/cache/redis";
 import { fetchEarthquakes } from "@/lib/api/usgs";
 import { fetchFireHotspots } from "@/lib/api/nasa-firms";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -25,9 +26,10 @@ export async function GET(request: Request) {
     // Earthquakes
     try {
       const quakes = await fetchEarthquakes();
-      await seedPublish("seed:natural:earthquakes", quakes, TTL.MEDIUM, "seed-natural");
+      await seedPublish(SEED_KEYS.natural.earthquakes, quakes, TTL.MEDIUM, "seed-natural");
       results.earthquakes = quakes.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-natural]", err);
       results.earthquakes = 0;
     }
 
@@ -49,21 +51,23 @@ export async function GET(request: Request) {
       if (res.ok) {
         const weatherData = await res.json();
         const items = Array.isArray(weatherData) ? weatherData : [weatherData];
-        await seedPublish("seed:natural:weather", items, TTL.MEDIUM, "seed-natural");
+        await seedPublish(SEED_KEYS.natural.weather, items, TTL.MEDIUM, "seed-natural");
         results.weather = items.length;
       } else {
         results.weather = 0;
       }
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-natural]", err);
       results.weather = 0;
     }
 
     // Fire hotspots (NASA FIRMS)
     try {
       const fires = await fetchFireHotspots();
-      await seedPublish("seed:natural:fires", fires, TTL.MEDIUM, "seed-natural");
+      await seedPublish(SEED_KEYS.natural.fires, fires, TTL.MEDIUM, "seed-natural");
       results.fires = fires.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-natural]", err);
       results.fires = 0;
     }
 

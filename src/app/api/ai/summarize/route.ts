@@ -1,6 +1,7 @@
 import { streamText } from "ai";
 import { briefModel } from "@/lib/ai/providers";
 import { cachedFetch } from "@/lib/cache/redis";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -26,6 +27,8 @@ Keep total response under 150 words. Be factual, not editorialized.`;
  * Caches summaries by URL for 1 hour.
  */
 export async function POST(request: Request) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     const body = await request.json();
     const { url, title, content, lang } = body as {
@@ -88,7 +91,8 @@ export async function POST(request: Request) {
     });
 
     return result.toTextStreamResponse();
-  } catch {
+  } catch (err) {
+    console.error("[ai/summarize]", err);
     return new Response(JSON.stringify({ error: "Summarization failed" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

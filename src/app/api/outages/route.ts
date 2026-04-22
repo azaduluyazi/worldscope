@@ -9,7 +9,8 @@ export async function GET() {
   try {
     const outages = await cachedFetch("data:outages", () => fetchPowerOutages(30), 900);
     return NextResponse.json({ outages, total: outages.length, lastUpdated: new Date().toISOString() });
-  } catch {
+  } catch (err) {
+    console.error("[outages]", err);
     return NextResponse.json({ outages: [], total: 0 }, { status: 500 });
   }
 }

@@ -45,7 +45,8 @@ export async function GET(request: Request) {
       ...result,
       lastUpdated: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
+    console.error("[trending]", err);
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

@@ -21,7 +21,8 @@ export async function GET() {
       lastUpdated: new Date().toISOString(),
       source: "Maritime AIS Network",
     });
-  } catch {
+  } catch (err) {
+    console.error("[vessels]", err);
     return NextResponse.json(
       { vessels: [], total: 0, lastUpdated: new Date().toISOString() },
       { status: 500 }

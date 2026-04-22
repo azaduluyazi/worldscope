@@ -130,7 +130,7 @@ export async function POST(request: Request) {
     // Update preferences column on the subscriber row
     const { error: updateError } = await db
       .from("newsletter_subscribers")
-      .update({ preferences: validated })
+      .update({ preferences: validated as unknown as import("@/types/supabase.generated").Json })
       .eq("email", email.toLowerCase());
 
     if (updateError) {

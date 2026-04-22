@@ -30,12 +30,11 @@ interface Report {
 
 interface Storyline {
   id: string;
-  title: string;
-  summary: string;
+  headline: string;
   regions: string[];
-  source_count: number;
+  sourceCount: number;
   confidence: number;
-  created_at: string;
+  createdAt: string;
 }
 
 async function getLatestSundayReport(): Promise<Report | null> {
@@ -49,8 +48,16 @@ async function getLatestSundayReport(): Promise<Report | null> {
       .order("generated_at", { ascending: false })
       .limit(1)
       .single();
-    return data;
-  } catch {
+    if (!data) return null;
+    return {
+      date: data.date,
+      type: data.type,
+      content: data.content,
+      event_count: data.event_count ?? 0,
+      generated_at: data.generated_at ?? new Date().toISOString(),
+    };
+  } catch (err) {
+    console.error("[reports/sunday]", err);
     return null;
   }
 }
@@ -58,14 +65,26 @@ async function getLatestSundayReport(): Promise<Report | null> {
 async function getTopStorylines(since: string): Promise<Storyline[]> {
   try {
     const db = createServerClient();
+    // Column map vs. pre-2026-04-22 drift: title→headline, regions→
+    // affected_regions, confidence→peak_confidence, source_count→
+    // snapshots.length (JSONB array). There is no `summary` column —
+    // the UI previously crashed silently on this.
     const { data } = await db
       .from("convergence_storylines")
-      .select("id, title, summary, regions, source_count, confidence, created_at")
+      .select("id, headline, affected_regions, snapshots, peak_confidence, created_at")
       .gte("created_at", since)
-      .order("confidence", { ascending: false })
+      .order("peak_confidence", { ascending: false })
       .limit(10);
-    return (data as Storyline[]) || [];
-  } catch {
+    return (data ?? []).map((row) => ({
+      id: row.id,
+      headline: row.headline,
+      regions: row.affected_regions ?? [],
+      sourceCount: Array.isArray(row.snapshots) ? row.snapshots.length : 0,
+      confidence: row.peak_confidence,
+      createdAt: row.created_at,
+    }));
+  } catch (err) {
+    console.error("[reports/sunday]", err);
     return [];
   }
 }
@@ -90,12 +109,10 @@ function buildMarkdown(report: Report | null, stories: Storyline[]): string {
     parts.push(`## 01 · What the signals agree on`);
     parts.push(``);
     stories.slice(0, 5).forEach((s, idx) => {
-      parts.push(`### ${idx + 1}. ${s.title}`);
+      parts.push(`### ${idx + 1}. ${s.headline}`);
       parts.push(
-        `> **Regions:** ${(s.regions || []).join(", ") || "Global"} · **Sources:** ${s.source_count} · **Confidence:** ${Math.round(s.confidence * 100)}%`,
+        `> **Regions:** ${(s.regions || []).join(", ") || "Global"} · **Sources:** ${s.sourceCount} · **Confidence:** ${Math.round(s.confidence * 100)}%`,
       );
-      parts.push(``);
-      parts.push(s.summary);
       parts.push(``);
     });
   }

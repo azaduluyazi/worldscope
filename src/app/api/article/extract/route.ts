@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { extract } from "@extractus/article-extractor";
 import { cachedFetch, TTL } from "@/lib/cache/redis";
+import { articleKey } from "@/lib/cache/keys";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 15;
@@ -15,6 +17,8 @@ export const maxDuration = 15;
  * Response: { title, content, description, image, author, published, source }
  */
 export async function POST(request: NextRequest) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     const { url, lang } = await request.json();
 
@@ -28,12 +32,13 @@ export async function POST(request: NextRequest) {
     // Validate URL
     try {
       new URL(url);
-    } catch {
+    } catch (err) {
+      console.error("[article/extract]", err);
       return NextResponse.json({ error: "Invalid URL" }, { status: 400 });
     }
 
     // Cache key based on URL + language
-    const cacheKey = `article:${Buffer.from(url).toString("base64url").slice(0, 60)}:${lang || "en"}`;
+    const cacheKey = articleKey(url, lang);
 
     const result = await cachedFetch(
       cacheKey,
@@ -75,7 +80,8 @@ export async function POST(request: NextRequest) {
                     .join("");
                 }
               }
-            } catch {
+            } catch (err) {
+              console.error("[article/extract]", err);
               // Translation failed, use original content
             }
           }
@@ -89,7 +95,8 @@ export async function POST(request: NextRequest) {
             published: article.published || null,
             source: article.source || null,
           };
-        } catch {
+        } catch (err) {
+          console.error("[article/extract]", err);
           return null;
         }
       },
@@ -104,7 +111,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(result);
-  } catch {
+  } catch (err) {
+    console.error("[article/extract]", err);
     return NextResponse.json(
       { error: "Article extraction failed" },
       { status: 500 }

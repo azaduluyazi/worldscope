@@ -3,19 +3,35 @@
  * touching the entire Redis cache.
  */
 import { redis } from "./redis";
+import {
+  SEED_PREFIXES,
+  CONVERGENCE_PREFIX,
+  INTEL_PREFIX,
+} from "./keys";
 
 type CacheGroup = "market" | "economic" | "cyber" | "aviation" | "natural" | "conflict" | "radiation" | "intel" | "all";
 
 const GROUP_PREFIXES: Record<CacheGroup, string[]> = {
-  market: ["seed:market:", "market:"],
-  economic: ["seed:economic:", "economic:"],
-  cyber: ["seed:cyber:", "cyber:"],
-  aviation: ["seed:flights:", "flights:"],
-  natural: ["seed:natural:", "weather:", "earthquake:"],
-  conflict: ["seed:conflict:", "conflict:"],
-  radiation: ["seed:radiation:", "radiation:"],
-  intel: ["intel:", "convergence:"],
-  all: ["seed:", "market:", "economic:", "cyber:", "flights:", "weather:", "conflict:", "radiation:", "intel:", "convergence:"],
+  market: [SEED_PREFIXES.market, "market:"],
+  economic: [SEED_PREFIXES.economic, "economic:"],
+  cyber: [SEED_PREFIXES.cyber, "cyber:"],
+  aviation: [SEED_PREFIXES.flights, "flights:"],
+  natural: [SEED_PREFIXES.natural, "weather:", "earthquake:"],
+  conflict: [SEED_PREFIXES.conflict, "conflict:"],
+  radiation: [SEED_PREFIXES.radiation, "radiation:"],
+  intel: [INTEL_PREFIX, CONVERGENCE_PREFIX],
+  all: [
+    SEED_PREFIXES.all,
+    "market:",
+    "economic:",
+    "cyber:",
+    "flights:",
+    "weather:",
+    "conflict:",
+    "radiation:",
+    INTEL_PREFIX,
+    CONVERGENCE_PREFIX,
+  ],
 };
 
 export async function invalidateGroup(group: CacheGroup): Promise<{ deleted: number; group: string }> {

@@ -21,18 +21,22 @@ export async function GET(request: NextRequest) {
   const supabase = createServerClient();
 
   // Fetch high-confidence storylines from the last hour that haven't been
-  // posted to Telegram yet (tracked via a `posted_to_telegram_at` column).
+  // posted to Telegram yet. Column map vs. pre-2026-04-22 drift:
+  //   title        → headline
+  //   regions      → affected_regions
+  //   confidence   → peak_confidence
+  //   source_count → snapshots.length  (snapshots is a JSONB array)
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
 
   const { data: stories, error } = await supabase
     .from("convergence_storylines")
     .select(
-      "id, title, regions, source_count, confidence, created_at, posted_to_telegram_at",
+      "id, headline, affected_regions, snapshots, peak_confidence, created_at, posted_to_telegram_at",
     )
     .is("posted_to_telegram_at", null)
     .gte("created_at", oneHourAgo)
-    .gte("confidence", 0.85)
-    .order("confidence", { ascending: false })
+    .gte("peak_confidence", 0.85)
+    .order("peak_confidence", { ascending: false })
     .limit(2);
 
   if (error) {
@@ -50,13 +54,14 @@ export async function GET(request: NextRequest) {
   const failures: string[] = [];
 
   for (const story of stories) {
+    const sourceCount = Array.isArray(story.snapshots) ? story.snapshots.length : 0;
     const signal: TelegramSignal = {
       id: story.id,
       variant: "convergence",
-      headline: story.title,
-      sourceCount: story.source_count,
-      confidence: story.confidence,
-      region: (story.regions || []).join(", ") || "Global",
+      headline: story.headline,
+      sourceCount,
+      confidence: story.peak_confidence,
+      region: (story.affected_regions || []).join(", ") || "Global",
       timestamp: new Date(story.created_at).toISOString().slice(0, 16) + " UTC",
     };
 

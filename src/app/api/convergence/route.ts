@@ -3,6 +3,7 @@ import { redis } from "@/lib/cache/redis";
 import type { Convergence, ConvergenceResponse } from "@/lib/convergence/types";
 import { fetchRecentValidations } from "@/lib/convergence/predictions-store";
 import { fetchRecentHistory } from "@/lib/db/convergence-history";
+import { CONVERGENCE_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -35,7 +36,7 @@ export async function GET(request: NextRequest) {
     const region = searchParams.get("region");
 
     // Tier 1: Redis hot cache
-    let data = await redis.get<ConvergenceResponse>("convergence:latest");
+    let data = await redis.get<ConvergenceResponse>(CONVERGENCE_KEYS.latest);
     let source: "redis" | "history" = "redis";
 
     // Tier 2: DB fallback when Redis is empty. Uses a 15-minute

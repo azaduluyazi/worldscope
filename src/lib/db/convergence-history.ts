@@ -77,9 +77,13 @@ export async function persistConvergences(convergences: Convergence[]): Promise<
     const supabase = createServerClient();
     const cycleTs = new Date().toISOString();
     const rows = convergences.map((c) => toRow(c, cycleTs));
+    // `signals` / `impact_chain` / `predictions` columns are JSONB in
+    // the DB; typed as specific domain shapes in HistoryRow. Runtime-
+    // identical — single-point cast at the boundary.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error, count } = await supabase
       .from(TABLE)
-      .upsert(rows, { onConflict: "id", count: "exact" });
+      .upsert(rows as unknown as any, { onConflict: "id", count: "exact" });
     if (error) {
       console.error("[convergence-history.persist] error:", error);
       return 0;
@@ -124,7 +128,7 @@ export async function fetchRecentHistory(options: {
     if (region) query = query.contains("affected_regions", [region]);
     const { data, error } = await query;
     if (error || !data) return [];
-    return data.map((row: HistoryRow) => ({
+    return (data as unknown as HistoryRow[]).map((row: HistoryRow) => ({
       id: row.id,
       type: row.type as Convergence["type"],
       confidence: Number(row.confidence),

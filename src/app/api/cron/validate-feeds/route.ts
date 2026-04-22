@@ -84,7 +84,8 @@ export async function GET(request: Request) {
           .eq("id", feed.id);
 
         return { reachable: false, deactivated: shouldDeactivate };
-      } catch {
+      } catch (err) {
+        console.error("[cron/validate-feeds]", err);
         // Network error / timeout — increment error count
         const newErrorCount = (feed.error_count || 0) + 1;
         const shouldDeactivate = newErrorCount >= 5;

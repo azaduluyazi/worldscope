@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
     await redis.expire(TOTAL_KEY, VIEWER_TTL);
 
     return NextResponse.json({ pageId, viewers: count });
-  } catch {
+  } catch (err) {
+    console.error("[realtime/viewers]", err);
     return NextResponse.json(
       { error: "Internal error" },
       { status: 500 }
@@ -63,7 +64,8 @@ export async function GET(req: NextRequest) {
     // Total active viewers — read the total key
     const total = (await redis.get<number>(TOTAL_KEY)) ?? 0;
     return NextResponse.json({ viewers: total });
-  } catch {
+  } catch (err) {
+    console.error("[realtime/viewers]", err);
     return NextResponse.json(
       { error: "Internal error" },
       { status: 500 }

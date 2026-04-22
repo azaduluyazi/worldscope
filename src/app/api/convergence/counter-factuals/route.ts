@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { redis } from "@/lib/cache/redis";
 import type { CounterFactualSignal } from "@/lib/convergence/counter-factual";
+import { CONVERGENCE_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 export const maxDuration = 10;
@@ -18,7 +19,7 @@ export const maxDuration = 10;
 export async function GET() {
   try {
     const signals = (await redis.get<CounterFactualSignal[]>(
-      "convergence:counter-factuals"
+      CONVERGENCE_KEYS.counterFactuals
     )) ?? [];
     return NextResponse.json({
       status: "success",

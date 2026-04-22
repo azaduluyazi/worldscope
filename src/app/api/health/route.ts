@@ -31,7 +31,8 @@ export async function GET() {
       });
       const latency = Date.now() - start;
       checks.supabase = { status: res.status < 500 ? "connected" : "error", latency };
-    } catch {
+    } catch (err) {
+      console.error("[health]", err);
       checks.supabase = { status: "unreachable", latency: Date.now() - start };
     }
   } else {

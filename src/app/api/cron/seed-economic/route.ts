@@ -4,6 +4,7 @@ import { TTL } from "@/lib/cache/redis";
 import { fetchFREDData } from "@/lib/api/fred";
 import { fetchBisPolicyRates } from "@/lib/api/bis";
 import { fetchWorldBankIndicator } from "@/lib/api/world-bank";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -26,27 +27,30 @@ export async function GET(request: Request) {
     // FRED indicators
     try {
       const fred = await fetchFREDData();
-      await seedPublish("seed:economic:fred", fred, TTL.STATIC, "seed-economic");
+      await seedPublish(SEED_KEYS.economic.fred, fred, TTL.STATIC, "seed-economic");
       results.fred = Array.isArray(fred) ? fred.length : 1;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-economic]", err);
       results.fred = 0;
     }
 
     // BIS policy rates
     try {
       const bis = await fetchBisPolicyRates();
-      await seedPublish("seed:economic:bis", bis, TTL.STATIC, "seed-economic");
+      await seedPublish(SEED_KEYS.economic.bis, bis, TTL.STATIC, "seed-economic");
       results.bis = bis.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-economic]", err);
       results.bis = 0;
     }
 
     // World Bank — GDP growth indicator
     try {
       const wb = await fetchWorldBankIndicator("NY.GDP.MKTP.KD.ZG");
-      await seedPublish("seed:economic:wb", wb, TTL.STATIC, "seed-economic");
+      await seedPublish(SEED_KEYS.economic.wb, wb, TTL.STATIC, "seed-economic");
       results.wb = wb.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-economic]", err);
       results.wb = 0;
     }
 

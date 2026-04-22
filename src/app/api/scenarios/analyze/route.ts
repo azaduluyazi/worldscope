@@ -46,7 +46,8 @@ export async function POST(request: NextRequest) {
         const intelData = await intelRes.json();
         recentEvents = (intelData.items || []).slice(0, 20);
       }
-    } catch {
+    } catch (err) {
+      console.error("[scenarios/analyze]", err);
       // Continue without context — AI can still analyze the scenario
     }
 

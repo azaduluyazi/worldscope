@@ -1,7 +1,17 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/db/supabase";
 import { clusterRelatedEvents } from "@/lib/utils/event-clustering";
-import type { IntelItem } from "@/types/intel";
+import { ALL_CATEGORIES, type IntelItem, type Category, type Severity } from "@/types/intel";
+
+const CATEGORY_SET: ReadonlySet<string> = new Set(ALL_CATEGORIES);
+const SEVERITIES: ReadonlySet<Severity> = new Set(["critical", "high", "medium", "low", "info"]);
+
+function narrowCategory(raw: string | null | undefined): Category {
+  return raw && CATEGORY_SET.has(raw) ? (raw as Category) : "tech";
+}
+function narrowSeverity(raw: string | null | undefined): Severity {
+  return raw && SEVERITIES.has(raw as Severity) ? (raw as Severity) : "info";
+}
 
 export const runtime = "nodejs";
 
@@ -39,8 +49,8 @@ export async function GET(request: Request) {
       summary: r.summary || "",
       url: r.url || "",
       source: r.source || "unknown",
-      category: r.category || "tech",
-      severity: r.severity || "info",
+      category: narrowCategory(r.category),
+      severity: narrowSeverity(r.severity),
       publishedAt: r.published_at,
       lat: r.lat ?? undefined,
       lng: r.lng ?? undefined,
@@ -71,7 +81,8 @@ export async function GET(request: Request) {
       clusters: clusters.slice(0, 10),
       total: clusters.length,
     });
-  } catch {
+  } catch (err) {
+    console.error("[events/related]", err);
     return NextResponse.json(
       { error: "Failed to fetch related events" },
       { status: 500 }

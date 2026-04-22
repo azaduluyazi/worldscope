@@ -54,7 +54,7 @@ export async function GET(
   const neighborIds = new Set<number>();
   for (const co of cooccurrences ?? []) {
     const otherId = co.entity_a === root.id ? co.entity_b : co.entity_a;
-    if (otherId !== root.id) neighborIds.add(otherId);
+    if (otherId != null && otherId !== root.id) neighborIds.add(otherId);
   }
 
   // Hydrate neighbor details in a single query
@@ -82,20 +82,21 @@ export async function GET(
 
   for (const co of cooccurrences ?? []) {
     const otherId = co.entity_a === root.id ? co.entity_b : co.entity_a;
-    if (otherId === root.id) continue;
+    if (otherId == null || otherId === root.id) continue;
     const neighbor = neighborMap.get(otherId);
     if (!neighbor) continue;
+    const shared = co.shared_events ?? 0;
     nodes.push({
       id: neighbor.id,
       slug: neighbor.slug,
       name: neighbor.name,
       type: neighbor.type,
-      val: Math.log(co.shared_events + 1) * 2,
+      val: Math.log(shared + 1) * 2,
     });
     links.push({
       source: root.id,
       target: neighbor.id,
-      value: co.shared_events,
+      value: shared,
     });
   }
 

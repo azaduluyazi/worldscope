@@ -113,16 +113,17 @@ export async function GET() {
             category: feed.category || "unknown",
             variants: CATEGORY_TO_VARIANT[catLower] || ["WorldScope"],
             status,
-            enabled: !isDisabled && feed.is_active,
+            enabled: !isDisabled && (feed.is_active ?? false),
             tags: [...new Set(tags)],
             provider: new URL(feed.url).hostname.replace("www.", ""),
-            language: feed.language,
-            region: feed.region,
+            language: feed.language ?? undefined,
+            region: feed.region ?? undefined,
             errorCount: feed.error_count || 0,
           };
         });
       }
-    } catch {
+    } catch (err) {
+      console.error("[admin/sources]", err);
       // Supabase may fail — continue with API sources only
     }
 

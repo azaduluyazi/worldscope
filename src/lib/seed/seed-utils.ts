@@ -12,6 +12,7 @@
  */
 
 import { redis } from "@/lib/cache/redis";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 /* ─── Types ─── */
 
@@ -161,7 +162,7 @@ export async function seedHealth(
  * Usage in cron routes:
  *   return runSeeder("seed-market", 30_000, async () => {
  *     const data = await gatewayFetch(...);
- *     await seedPublish("seed:market:quotes", data, TTL.FAST, "seed-market");
+ *     await seedPublish(SEED_KEYS.market.quotes, data, TTL.FAST, "seed-market");
  *     return { quotes: data.length };
  *   });
  */

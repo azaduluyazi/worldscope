@@ -45,7 +45,8 @@ export async function GET() {
     );
 
     return NextResponse.json(data);
-  } catch {
+  } catch (err) {
+    console.error("[conflicts/escalation]", err);
     return NextResponse.json({
       zones: [],
       totalConflicts: 0,

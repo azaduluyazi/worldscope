@@ -127,16 +127,17 @@ export async function findSimilarEmbeddings(
     // Cosine distance in pgvector: `<=>` operator. Similarity = 1 - distance.
     // We use a raw query since supabase-js doesn't expose vector ops natively.
     const vectorLiteral = `[${queryEmbedding.join(",")}]`;
-    const { data, error } = await supabase.rpc("match_convergence_embeddings", {
+    // RPC not yet in generated types — named-cast so TS accepts the
+    // call. Silent-degrade on error covers the case where the RPC
+    // hasn't been created in the current DB.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data, error } = await (supabase.rpc as any)("match_convergence_embeddings", {
       query_embedding: vectorLiteral,
       match_provider: provider,
       match_threshold: 1 - minSimilarity, // convert similarity → distance
       match_count: topK,
     });
-    if (error) {
-      // RPC may not exist yet in older DBs — silent degrade
-      return [];
-    }
+    if (error) return [];
     return (data ?? []).map((row: { event_id: string; similarity: number }) => ({
       eventId: row.event_id,
       similarity: Number(row.similarity),

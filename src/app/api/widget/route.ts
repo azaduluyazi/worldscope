@@ -42,7 +42,8 @@ export async function GET(request: NextRequest) {
           publishedAt: item.publishedAt,
           url: item.url,
         }));
-      } catch {
+      } catch (err) {
+        console.error("[widget]", err);
         return [];
       }
     },

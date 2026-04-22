@@ -17,7 +17,8 @@ export async function GET() {
       total: markets.length,
       lastUpdated: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
+    console.error("[predictions]", err);
     return NextResponse.json({ markets: [], total: 0, lastUpdated: new Date().toISOString() });
   }
 }

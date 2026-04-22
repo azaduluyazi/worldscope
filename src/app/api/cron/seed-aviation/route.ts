@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { runSeeder, seedPublish } from "@/lib/seed/seed-utils";
 import { TTL } from "@/lib/cache/redis";
 import { fetchGlobalAircraft } from "@/lib/api/opensky";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
@@ -23,9 +24,10 @@ export async function GET(request: Request) {
 
     try {
       const aircraft = await fetchGlobalAircraft();
-      await seedPublish("seed:flights:opensky", aircraft, TTL.REALTIME, "seed-aviation");
+      await seedPublish(SEED_KEYS.flights.opensky, aircraft, TTL.REALTIME, "seed-aviation");
       results.opensky = aircraft.length;
-    } catch {
+    } catch (err) {
+      console.error("[cron/seed-aviation]", err);
       results.opensky = 0;
     }
 

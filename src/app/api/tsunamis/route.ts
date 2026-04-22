@@ -8,7 +8,8 @@ export async function GET() {
   try {
     const items = await fetchTsunamiWarnings();
     return NextResponse.json({ items, total: items.length });
-  } catch {
+  } catch (err) {
+    console.error("[tsunamis]", err);
     return NextResponse.json({ items: [], total: 0, error: "Failed to fetch tsunami warnings" }, { status: 500 });
   }
 }

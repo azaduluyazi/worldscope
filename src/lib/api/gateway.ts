@@ -10,6 +10,7 @@
  */
 
 import { redis } from "@/lib/cache/redis";
+import { circuitKey } from "@/lib/cache/keys";
 
 interface CircuitState {
   failures: number;
@@ -39,7 +40,7 @@ const CIRCUIT_REDIS_TTL = 120;   // Redis state expires after 2 min
  */
 async function restoreFromRedis(sourceId: string): Promise<CircuitState> {
   try {
-    const stored = await redis.get<CircuitState>(`circuit:${sourceId}`);
+    const stored = await redis.get<CircuitState>(circuitKey(sourceId));
     if (stored) {
       circuits.set(sourceId, stored);
       return stored;
@@ -55,7 +56,7 @@ async function restoreFromRedis(sourceId: string): Promise<CircuitState> {
  */
 function persistToRedis(sourceId: string, state: CircuitState): void {
   redis
-    .set(`circuit:${sourceId}`, state, { ex: CIRCUIT_REDIS_TTL })
+    .set(circuitKey(sourceId), state, { ex: CIRCUIT_REDIS_TTL })
     .catch(() => {
       // Non-critical — L1 still works
     });
@@ -166,5 +167,5 @@ export function getGatewayHealth(): Array<{
  */
 export function resetCircuit(sourceId: string): void {
   circuits.delete(sourceId);
-  redis.del(`circuit:${sourceId}`).catch(() => {});
+  redis.del(circuitKey(sourceId)).catch(() => {});
 }

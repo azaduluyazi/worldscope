@@ -100,7 +100,8 @@ export async function POST(req: Request) {
   let body: unknown;
   try {
     body = await req.json();
-  } catch {
+  } catch (err) {
+    console.error("[digest/test]", err);
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
   const parsed = BodySchema.safeParse(body);

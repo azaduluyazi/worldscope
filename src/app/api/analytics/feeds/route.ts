@@ -15,14 +15,14 @@ export async function GET() {
     // Get feed counts by category
     const { data: feeds, error: feedsError } = await supabase
       .from("feeds")
-      .select("id, name, category, active, last_fetched, error_count");
+      .select("id, name, category, is_active, last_fetched_at, error_count");
 
     if (feedsError) {
       return NextResponse.json({ error: feedsError.message }, { status: 500 });
     }
 
     const totalFeeds = feeds?.length || 0;
-    const activeFeeds = feeds?.filter((f) => f.active !== false).length || 0;
+    const activeFeeds = feeds?.filter((f) => f.is_active !== false).length || 0;
 
     // Category distribution
     const categories: Record<string, { total: number; active: number; errored: number }> = {};
@@ -31,7 +31,7 @@ export async function GET() {
         categories[feed.category] = { total: 0, active: 0, errored: 0 };
       }
       categories[feed.category].total++;
-      if (feed.active !== false) categories[feed.category].active++;
+      if (feed.is_active !== false) categories[feed.category].active++;
       if (feed.error_count && feed.error_count > 0) categories[feed.category].errored++;
     }
 
@@ -45,7 +45,7 @@ export async function GET() {
     // Recently fetched (last 24h)
     const oneDayAgo = new Date(Date.now() - 86400_000).toISOString();
     const recentlyFetched = (feeds || []).filter(
-      (f) => f.last_fetched && f.last_fetched > oneDayAgo
+      (f) => f.last_fetched_at && f.last_fetched_at > oneDayAgo
     ).length;
 
     // Get recent event counts

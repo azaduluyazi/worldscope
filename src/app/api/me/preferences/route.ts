@@ -88,7 +88,8 @@ export async function PUT(req: Request) {
   let body: unknown;
   try {
     body = await req.json();
-  } catch {
+  } catch (err) {
+    console.error("[me/preferences]", err);
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
   const parsed = PutSchema.safeParse(body);

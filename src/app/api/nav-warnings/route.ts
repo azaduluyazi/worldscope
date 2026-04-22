@@ -8,7 +8,8 @@ export async function GET() {
   try {
     const items = await fetchNavWarnings();
     return NextResponse.json({ items, total: items.length });
-  } catch {
+  } catch (err) {
+    console.error("[nav-warnings]", err);
     return NextResponse.json({ items: [], total: 0, error: "Failed to fetch navigational warnings" }, { status: 500 });
   }
 }

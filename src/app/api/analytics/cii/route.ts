@@ -24,7 +24,8 @@ export async function GET(req: Request) {
       1800 // 30 min cache
     );
     return NextResponse.json({ countries: data, timestamp: new Date().toISOString() });
-  } catch {
+  } catch (err) {
+    console.error("[analytics/cii]", err);
     return NextResponse.json({ countries: [], timestamp: new Date().toISOString() });
   }
 }

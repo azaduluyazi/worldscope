@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cachedFetch } from "@/lib/cache/redis";
 import { fetchGlobalAircraft } from "@/lib/api/opensky";
 import { seedRead } from "@/lib/seed/seed-utils";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -12,7 +13,7 @@ const CACHE_TTL = 30; // 30 seconds — aircraft positions change rapidly
 export async function GET() {
   try {
     // Seed-first: try pre-populated cache
-    const seeded = await seedRead<unknown[]>("seed:flights:opensky");
+    const seeded = await seedRead<unknown[]>(SEED_KEYS.flights.opensky);
     if (seeded && seeded.length > 0) {
       return NextResponse.json({ aircraft: seeded, total: seeded.length, fromSeed: true });
     }
@@ -29,7 +30,8 @@ export async function GET() {
       lastUpdated: new Date().toISOString(),
       source: "adsb.lol",
     });
-  } catch {
+  } catch (err) {
+    console.error("[flights]", err);
     return NextResponse.json(
       { aircraft: [], total: 0, lastUpdated: new Date().toISOString() },
       { status: 500 }

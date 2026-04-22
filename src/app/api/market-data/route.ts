@@ -10,7 +10,8 @@ export async function GET() {
   try {
     const data = await cachedFetch("market:yahoo", fetchAllMarketData, 120);
     return NextResponse.json({ ...data, lastUpdated: new Date().toISOString() });
-  } catch {
+  } catch (err) {
+    console.error("[market-data]", err);
     return NextResponse.json({ indices: [], commodities: [], sectors: [] }, { status: 500 });
   }
 }

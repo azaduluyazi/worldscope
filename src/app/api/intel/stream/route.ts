@@ -17,7 +17,8 @@ export async function GET() {
       const keepalive = setInterval(() => {
         try {
           controller.enqueue(encoder.encode(": keepalive\n\n"));
-        } catch {
+        } catch (err) {
+          console.error("[intel/stream]", err);
           clearInterval(keepalive);
         }
       }, 30_000);
@@ -50,7 +51,8 @@ export async function GET() {
               controller.enqueue(
                 encoder.encode(`event: intel\ndata: ${sseData}\n\n`)
               );
-            } catch {
+            } catch (err) {
+              console.error("[intel/stream]", err);
               // Ignore encoding errors
             }
           }

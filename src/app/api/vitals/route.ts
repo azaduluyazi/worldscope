@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
     vitalsBuffer.push(entry);
 
     return new NextResponse(null, { status: 204 });
-  } catch {
+  } catch (err) {
+    console.error("[vitals]", err);
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 }

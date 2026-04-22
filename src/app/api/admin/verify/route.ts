@@ -17,7 +17,8 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ verified: false, error: "Invalid key" }, { status: 401 });
-  } catch {
+  } catch (err) {
+    console.error("[admin/verify]", err);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }

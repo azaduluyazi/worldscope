@@ -15,7 +15,8 @@ export async function POST(req: NextRequest) {
 
     const result = await invalidateGroup(group);
     return NextResponse.json({ success: true, ...result });
-  } catch {
+  } catch (err) {
+    console.error("[admin/cache-invalidate]", err);
     return NextResponse.json({ error: "Invalidation failed" }, { status: 500 });
   }
 }

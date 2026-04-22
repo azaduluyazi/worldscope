@@ -47,7 +47,7 @@ export async function GET(request: Request) {
       });
     }
 
-    const persisted = await persistEvents(items);
+    const { count: persisted } = await persistEvents(items);
 
     console.log(
       `[Bluesky Cron] fetched ${items.length} posts, persisted ${persisted} new events (${Date.now() - startTime}ms)`

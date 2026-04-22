@@ -179,7 +179,8 @@ async function getApiHealthSection(): Promise<{
       checked: gw.length,
       failed: openCircuits.length,
     };
-  } catch {
+  } catch (err) {
+    console.error("[cron/unified-report]", err);
     return {
       text: "🔌 Gateway health: unavailable",
       checked: 0,

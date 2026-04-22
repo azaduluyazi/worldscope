@@ -16,11 +16,18 @@ import { extractCountryCode } from "@/lib/geo/extract-country";
  * Pass skipGeocoding: true if the caller already handled location
  * (e.g., USGS feed which has authoritative coordinates).
  */
+export interface PersistEventsResult {
+  /** Number of newly inserted rows (duplicates on `url` are skipped). */
+  count: number;
+  /** Raw DB ids of the newly inserted rows. Empty when count === 0. */
+  insertedIds: string[];
+}
+
 export async function persistEvents(
   items: IntelItem[],
   options: { skipGeocoding?: boolean } = {}
-): Promise<number> {
-  if (items.length === 0) return 0;
+): Promise<PersistEventsResult> {
+  if (items.length === 0) return { count: 0, insertedIds: [] };
 
   // AI geocoding pass (best-effort, cached, silent on failure)
   if (!options.skipGeocoding) {
@@ -64,11 +71,11 @@ export async function persistEvents(
       expires_at: expiresAt,
     }));
 
-  if (rows.length === 0) return 0;
+  if (rows.length === 0) return { count: 0, insertedIds: [] };
 
   // Batch upsert in chunks of 100 (Supabase limit)
   const CHUNK = 100;
-  let inserted = 0;
+  const insertedIds: string[] = [];
 
   for (let i = 0; i < rows.length; i += CHUNK) {
     const chunk = rows.slice(i, i + CHUNK);
@@ -84,11 +91,11 @@ export async function persistEvents(
       console.error("[DB] persistEvents upsert error:", error.message);
     }
     if (data) {
-      inserted += data.length;
+      for (const row of data) insertedIds.push(String(row.id));
     }
   }
 
-  return inserted;
+  return { count: insertedIds.length, insertedIds };
 }
 
 /**

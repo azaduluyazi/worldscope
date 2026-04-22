@@ -13,6 +13,7 @@ import { redis } from "@/lib/cache/redis";
 import type { IntelItem } from "@/types/intel";
 import type { MarketQuote } from "@/types/market";
 import type { ConvergenceResponse } from "@/lib/convergence/types";
+import { SEED_KEYS, CONVERGENCE_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -30,13 +31,13 @@ function isAuthorized(request: Request): boolean {
  */
 async function fetchEnrichmentData() {
   const [marketQuotes, cryptoQuotes, fearGreed, earthquakes, weather, convergenceData, radiationReadings] = await Promise.allSettled([
-    seedRead<MarketQuote[]>("seed:market:quotes"),
-    seedRead<MarketQuote[]>("seed:market:crypto"),
-    seedRead<{ value: number; classification: string }>("seed:market:fear-greed"),
-    seedRead<Earthquake[]>("seed:natural:earthquakes"),
-    seedRead<WeatherAlert[]>("seed:natural:weather"),
-    redis.get<ConvergenceResponse>("convergence:latest"),
-    seedRead<Array<{ value?: number; unit?: string }>>("seed:radiation:readings"),
+    seedRead<MarketQuote[]>(SEED_KEYS.market.quotes),
+    seedRead<MarketQuote[]>(SEED_KEYS.market.crypto),
+    seedRead<{ value: number; classification: string }>(SEED_KEYS.market.fearGreed),
+    seedRead<Earthquake[]>(SEED_KEYS.natural.earthquakes),
+    seedRead<WeatherAlert[]>(SEED_KEYS.natural.weather),
+    redis.get<ConvergenceResponse>(CONVERGENCE_KEYS.latest),
+    seedRead<Array<{ value?: number; unit?: string }>>(SEED_KEYS.radiation.readings),
   ]);
 
   // Count elevated radiation readings (> 0.5 µSv/h is notable)
@@ -95,7 +96,8 @@ export async function GET(request: Request) {
       if (res.ok) {
         aiSummary = await res.text();
       }
-    } catch {
+    } catch (err) {
+      console.error("[cron/send-briefing]", err);
       // AI summary optional — continue without it
     }
 

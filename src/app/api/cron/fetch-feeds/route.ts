@@ -54,6 +54,7 @@ export async function GET(request: Request) {
   let emptyFeeds = 0;
   const sampleErrors: string[] = [];
   const sampleSuccess: string[] = [];
+  const newEventIds: string[] = [];
 
   // Process feeds in batches
   for (let i = 0; i < feeds.length; i += BATCH_SIZE) {
@@ -66,24 +67,24 @@ export async function GET(request: Request) {
 
           if (items.length > 0) {
             totalParsed += items.length;
-            const persisted = await persistEvents(items);
+            const { count, insertedIds } = await persistEvents(items);
             await recordFeedSuccess(feed.url);
             if (sampleSuccess.length < 3) {
-              sampleSuccess.push(`${feed.name}: ${items.length} parsed, ${persisted} persisted`);
+              sampleSuccess.push(`${feed.name}: ${items.length} parsed, ${count} persisted`);
             }
-            return { url: feed.url, items: persisted, error: false };
+            return { url: feed.url, items: count, insertedIds, error: false };
           }
 
           emptyFeeds++;
           await recordFeedSuccess(feed.url);
-          return { url: feed.url, items: 0, error: false };
+          return { url: feed.url, items: 0, insertedIds: [], error: false };
         } catch (err) {
           const msg = err instanceof Error ? err.message : "Unknown error";
           if (sampleErrors.length < 5) {
             sampleErrors.push(`${feed.name}: ${msg.slice(0, 100)}`);
           }
           await recordFeedError(feed.url);
-          return { url: feed.url, items: 0, error: true };
+          return { url: feed.url, items: 0, insertedIds: [] as string[], error: true };
         }
       })
     );
@@ -92,6 +93,7 @@ export async function GET(request: Request) {
       feedsProcessed++;
       if (result.status === "fulfilled") {
         totalItems += result.value.items;
+        for (const id of result.value.insertedIds) newEventIds.push(id);
         if (result.value.error) totalErrors++;
       } else {
         totalErrors++;
@@ -102,9 +104,9 @@ export async function GET(request: Request) {
   console.log(`[Feeds] Processed: ${feedsProcessed}, Parsed: ${totalParsed}, Persisted: ${totalItems}, Empty: ${emptyFeeds}, Errors: ${totalErrors}`);
 
   // ── Entity extraction pipeline ────────────────────────────────────
-  // Runs on events created during this fetch window. Uses raw event IDs
-  // (not the `db-` prefixed form) so story_entities.event_id stays a
-  // direct join target for the events table.
+  // Runs strictly on rows persistEvents() just inserted (IDs collected
+  // from the upsert return). No timestamp-column query, so it's
+  // schema-drift proof — see sorunlar/entities-zero-rows-column-drift.
   let entityResult: Awaited<ReturnType<typeof runEntityPipeline>> = {
     eventsProcessed: 0,
     entitiesUpserted: 0,
@@ -112,19 +114,24 @@ export async function GET(request: Request) {
     errors: 0,
   };
   try {
-    const sinceIso = new Date(startTime).toISOString();
-    const { data: freshEvents } = await db
-      .from("events")
-      .select("id, title, summary")
-      .gte("created_at", sinceIso)
-      .limit(500);
-    if (freshEvents && freshEvents.length > 0) {
-      entityResult = await runEntityPipeline(
-        freshEvents.map((e) => ({ id: String(e.id), title: e.title, summary: e.summary }))
-      );
-      console.log(
-        `[Entities] Processed: ${entityResult.eventsProcessed}, Upserted: ${entityResult.entitiesUpserted}, Links: ${entityResult.linksCreated}, Errors: ${entityResult.errors}`
-      );
+    if (newEventIds.length > 0) {
+      // Cap at 500 to keep the pipeline within the cron's maxDuration budget.
+      const ids = newEventIds.slice(0, 500);
+      const { data: freshEvents, error: freshErr } = await db
+        .from("events")
+        .select("id, title, summary")
+        .in("id", ids);
+      if (freshErr) {
+        console.error("[Entities] fresh-event fetch failed:", freshErr);
+      }
+      if (freshEvents && freshEvents.length > 0) {
+        entityResult = await runEntityPipeline(
+          freshEvents.map((e) => ({ id: String(e.id), title: e.title, summary: e.summary }))
+        );
+        console.log(
+          `[Entities] Processed: ${entityResult.eventsProcessed}, Upserted: ${entityResult.entitiesUpserted}, Links: ${entityResult.linksCreated}, Errors: ${entityResult.errors}`
+        );
+      }
     }
   } catch (err) {
     console.error("[Entities] pipeline failed (non-fatal):", err);

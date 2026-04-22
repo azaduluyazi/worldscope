@@ -534,7 +534,7 @@ export function buildDailyBriefingEmail(params: BriefingData): { subject: string
               <div style="font-size:11px;color:#00e5ff;font-weight:600;margin-bottom:6px;">◆ WORLDSCOPE</div>
               <div style="font-size:10px;color:#4a5568;line-height:1.6;">
                 Global Intelligence Platform · <a href="https://troiamedia.com" style="color:#4a9eff;text-decoration:none;">troiamedia.com</a><br/>
-                <a href="https://troiamedia.com/api/newsletter/unsubscribe?email={{EMAIL}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
+                <a href="https://troiamedia.com/api/newsletter/unsubscribe?email={{EMAIL}}&sig={{SIG}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
               </div>
             </td></tr>
           </table>
@@ -592,7 +592,7 @@ export function buildBreakingAlertEmail(params: {
         <tr><td style="padding:16px 24px;border-top:1px solid #1a2332;text-align:center;">
           <div style="font-size:10px;color:#4a5568;">
             <a href="https://troiamedia.com" style="color:#4a9eff;text-decoration:none;">troiamedia.com</a> ·
-            <a href="https://troiamedia.com/api/newsletter/unsubscribe?email={{EMAIL}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
+            <a href="https://troiamedia.com/api/newsletter/unsubscribe?email={{EMAIL}}&sig={{SIG}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
           </div>
         </td></tr>
       </table>
@@ -671,7 +671,7 @@ export function buildWeeklyReportEmail(params: {
         <tr><td style="padding:16px 24px;border-top:1px solid #1a2332;text-align:center;">
           <div style="font-size:10px;color:#4a5568;">
             <a href="https://troiamedia.com" style="color:#4a9eff;text-decoration:none;">troiamedia.com</a> ·
-            <a href="https://troiamedia.com/api/newsletter/unsubscribe?email={{EMAIL}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
+            <a href="https://troiamedia.com/api/newsletter/unsubscribe?email={{EMAIL}}&sig={{SIG}}" style="color:#4a5568;text-decoration:underline;">Unsubscribe</a>
           </div>
         </td></tr>
       </table>

@@ -71,7 +71,8 @@ export async function GET() {
     const globalTotal = regions.reduce((sum, r) => sum + r.current24h, 0);
 
     return NextResponse.json({ regions, globalTotal, timestamp: now.toISOString() });
-  } catch {
+  } catch (err) {
+    console.error("[escalation]", err);
     return NextResponse.json({ regions: [], globalTotal: 0, error: "Failed" }, { status: 500 });
   }
 }

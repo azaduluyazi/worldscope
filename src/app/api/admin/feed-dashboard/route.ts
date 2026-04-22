@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     const total = allFeeds.length;
     const active = allFeeds.filter((f) => f.is_active).length;
     const deactivated = allFeeds.filter((f) => !f.is_active).length;
-    const withErrors = allFeeds.filter((f) => f.error_count > 0 && f.is_active).length;
+    const withErrors = allFeeds.filter((f) => (f.error_count ?? 0) > 0 && f.is_active).length;
     const healthy = active - withErrors;
 
     // Stale feeds (not fetched in 24h)
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
       }
       byCategory[f.category].total++;
       if (f.is_active) byCategory[f.category].active++;
-      if (f.error_count > 0) byCategory[f.category].errors++;
+      if ((f.error_count ?? 0) > 0) byCategory[f.category].errors++;
     });
 
     // Language breakdown
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
 
     // Top error feeds
     const topErrors = allFeeds
-      .filter((f) => f.error_count > 0)
+      .filter((f) => (f.error_count ?? 0) > 0)
       .slice(0, 15)
       .map((f) => ({
         name: f.name,

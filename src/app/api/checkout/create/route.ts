@@ -13,6 +13,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { createCheckoutUrl } from "@/lib/lemon-squeezy";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 
@@ -24,10 +25,14 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const rl = await checkStrictRateLimit(req);
+  if (rl) return rl;
+
   let body: unknown;
   try {
     body = await req.json();
-  } catch {
+  } catch (err) {
+    console.error("[checkout/create] invalid json:", err);
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 

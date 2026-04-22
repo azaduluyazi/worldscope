@@ -1,12 +1,20 @@
 import { NextResponse } from "next/server";
 import { createServerClient } from "@/lib/db/supabase";
+import { ALL_CATEGORIES } from "@/types/intel";
 
 export const runtime = "nodejs";
 
-const VALID_CATEGORIES = new Set([
-  "conflict", "finance", "cyber", "tech", "natural",
-  "aviation", "energy", "diplomacy", "protest", "health",
-]);
+const VALID_CATEGORIES: ReadonlySet<string> = new Set(ALL_CATEGORIES);
+
+function isAdmin(request: Request): boolean {
+  const adminKey = process.env.ADMIN_KEY;
+  if (!adminKey) return false;
+  return request.headers.get("authorization") === `Bearer ${adminKey}`;
+}
+
+function unauthorized() {
+  return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+}
 
 /** GET /api/feeds — list all feeds with health status */
 export async function GET(request: Request) {
@@ -35,7 +43,7 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const healthy = (data || []).filter((f) => f.error_count < 5).length;
+    const healthy = (data || []).filter((f) => (f.error_count ?? 0) < 5).length;
 
     return NextResponse.json({
       feeds: data || [],
@@ -43,13 +51,15 @@ export async function GET(request: Request) {
       healthy,
       unhealthy: (data?.length || 0) - healthy,
     });
-  } catch {
+  } catch (err) {
+    console.error("[feeds GET] unexpected:", err);
     return NextResponse.json({ feeds: [], total: 0 }, { status: 500 });
   }
 }
 
-/** POST /api/feeds — add a new feed */
+/** POST /api/feeds — add a new feed (admin only) */
 export async function POST(request: Request) {
+  if (!isAdmin(request)) return unauthorized();
   try {
     const body = await request.json();
     const { url, name, category, language } = body;
@@ -71,7 +81,8 @@ export async function POST(request: Request) {
     // Validate URL format
     try {
       new URL(url);
-    } catch {
+    } catch (err) {
+      console.error("[feeds]", err);
       return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
     }
 
@@ -90,13 +101,15 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ feed: data }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[feeds POST] unexpected:", err);
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 }
 
-/** DELETE /api/feeds?id=xxx — remove a feed */
+/** DELETE /api/feeds?id=xxx — remove a feed (admin only) */
 export async function DELETE(request: Request) {
+  if (!isAdmin(request)) return unauthorized();
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -122,13 +135,15 @@ export async function DELETE(request: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     return NextResponse.json({ deleted: 1 });
-  } catch {
+  } catch (err) {
+    console.error("[feeds DELETE] unexpected:", err);
     return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
 }
 
-/** PATCH /api/feeds?id=xxx — update feed (toggle active, reset errors) */
+/** PATCH /api/feeds?id=xxx — update feed (admin only) */
 export async function PATCH(request: Request) {
+  if (!isAdmin(request)) return unauthorized();
   try {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
@@ -162,7 +177,8 @@ export async function PATCH(request: Request) {
     }
 
     return NextResponse.json({ feed: data });
-  } catch {
+  } catch (err) {
+    console.error("[feeds PATCH] unexpected:", err);
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 }

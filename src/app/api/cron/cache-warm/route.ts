@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/cache/redis";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const dynamic = "force-dynamic";
 
 const CRITICAL_SEED_KEYS = [
-  "seed:market:quotes",
-  "seed:market:fear-greed",
-  "seed:economic:fred",
-  "seed:cyber:threats",
-  "seed:natural:earthquakes",
-  "seed:conflict:acled",
-  "seed:conflict:gdelt",
+  SEED_KEYS.market.quotes,
+  SEED_KEYS.market.fearGreed,
+  SEED_KEYS.economic.fred,
+  SEED_KEYS.cyber.threats,
+  SEED_KEYS.natural.earthquakes,
+  SEED_KEYS.conflict.acled,
+  SEED_KEYS.conflict.gdelt,
 ];
 
 function isAuthorized(request: Request): boolean {

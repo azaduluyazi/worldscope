@@ -204,7 +204,8 @@ export async function GET(request: Request) {
       emailStats.sent += dailyEmail.sent;
       emailStats.failed += dailyEmail.failed;
     }
-  } catch {
+  } catch (err) {
+    console.error("[cron/generate-reports]", err);
     // Notification failures should not break the cron
   }
 

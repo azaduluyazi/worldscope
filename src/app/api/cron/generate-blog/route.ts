@@ -180,7 +180,8 @@ Top countries: ${topCountries}`;
       const meta = JSON.parse(metaRaw);
       if (meta.title) title = meta.title;
       if (meta.excerpt) excerpt = meta.excerpt;
-    } catch {
+    } catch (err) {
+      console.error("[cron/generate-blog]", err);
       // Use defaults if JSON parsing fails
     }
 

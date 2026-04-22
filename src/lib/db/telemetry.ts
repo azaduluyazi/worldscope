@@ -90,16 +90,16 @@ export async function fetchCtrBuckets(): Promise<ConfidenceBucket[]> {
     if (error || !data) return [];
     const records: TelemetryRecord[] = data.map((r) => ({
       convergenceId: r.convergence_id,
-      event: r.event,
+      event: r.event as TelemetryRecord["event"],
       confidence: Number(r.confidence),
       type: r.type,
       categoryCount: r.category_count,
       signalCount: r.signal_count,
       hasNarrative: r.has_narrative,
       predictionsValidated: r.predictions_validated,
-      userId: r.user_id ?? undefined,
-      surface: r.surface ?? undefined,
-      timestamp: r.created_at,
+      ...(r.user_id ? { userId: r.user_id } : {}),
+      ...(r.surface ? { surface: r.surface } : {}),
+      timestamp: r.created_at ?? new Date().toISOString(),
     }));
     return computeBuckets(records);
   } catch (err) {

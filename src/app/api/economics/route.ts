@@ -43,7 +43,8 @@ export async function GET(request: Request) {
       ...result,
       lastUpdated: new Date().toISOString(),
     });
-  } catch {
+  } catch (err) {
+    console.error("[economics]", err);
     return NextResponse.json({ error: "Failed to fetch economic data" }, { status: 500 });
   }
 }

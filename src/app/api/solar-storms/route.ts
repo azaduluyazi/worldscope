@@ -8,7 +8,8 @@ export async function GET() {
   try {
     const items = await fetchSolarAlerts();
     return NextResponse.json({ items, total: items.length });
-  } catch {
+  } catch (err) {
+    console.error("[solar-storms]", err);
     return NextResponse.json({ items: [], total: 0, error: "Failed to fetch solar alerts" }, { status: 500 });
   }
 }

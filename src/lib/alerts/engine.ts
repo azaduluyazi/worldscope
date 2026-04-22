@@ -79,7 +79,9 @@ export async function runEngine(items: IntelItem[]): Promise<EngineResult> {
         rule_id: rule.id,
         event_id: (matchedItems[0].item as IntelItem & { id?: string }).id ?? null,
         item_title: matchedItems[0].item.title,
-        matched_on: matchedItems[0].reasons,
+        // Json cast — `reasons` is a plain object of matched rule
+        // conditions, JSON-compatible at runtime.
+        matched_on: matchedItems[0].reasons as unknown as import("@/types/supabase.generated").Json,
         suppressed_reason: suppressed,
       });
       continue;
@@ -114,8 +116,8 @@ export async function runEngine(items: IntelItem[]): Promise<EngineResult> {
       rule_id: rule.id,
       event_id: (matchedItems[0].item as IntelItem & { id?: string }).id ?? null,
       item_title: matchedItems[0].item.title,
-      matched_on: matchedItems[0].reasons,
-      dispatched_channels: dispatched as unknown as Record<string, unknown>[],
+      matched_on: matchedItems[0].reasons as unknown as import("@/types/supabase.generated").Json,
+      dispatched_channels: dispatched as unknown as import("@/types/supabase.generated").Json,
     });
 
     await db

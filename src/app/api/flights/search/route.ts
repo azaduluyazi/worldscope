@@ -76,7 +76,8 @@ export async function GET(request: NextRequest) {
               }
             }
           }
-        } catch {
+        } catch (err) {
+          console.error("[flights/search]", err);
           // Route lookup failed — continue without it
         }
 
@@ -105,7 +106,8 @@ export async function GET(request: NextRequest) {
               };
             }
           }
-        } catch {
+        } catch (err) {
+          console.error("[flights/search]", err);
           // Position lookup failed
         }
 
@@ -125,7 +127,8 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(result);
-  } catch {
+  } catch (err) {
+    console.error("[flights/search]", err);
     return NextResponse.json(
       { error: "Flight search failed" },
       { status: 500 }

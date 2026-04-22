@@ -40,7 +40,8 @@ async function translateLibre(
     if (!res.ok) return null;
     const data = await res.json();
     return data.translatedText || null;
-  } catch {
+  } catch (err) {
+    console.error("[translate]", err);
     return null;
   }
 }
@@ -62,7 +63,8 @@ async function translateMyMemory(
     if (!res.ok) return null;
     const data = await res.json();
     return data.responseData?.translatedText || null;
-  } catch {
+  } catch (err) {
+    console.error("[translate]", err);
     return null;
   }
 }
@@ -129,7 +131,8 @@ export async function POST(request: NextRequest) {
     );
 
     return NextResponse.json({ translations });
-  } catch {
+  } catch (err) {
+    console.error("[translate]", err);
     return NextResponse.json(
       { error: "Translation failed" },
       { status: 500 }

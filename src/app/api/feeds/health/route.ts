@@ -21,7 +21,8 @@ export async function GET() {
       timestamp: new Date().toISOString(),
       feedDatabaseSize: 536, // Total seed feeds configured (updated Faz 9+10)
     });
-  } catch {
+  } catch (err) {
+    console.error("[feeds/health]", err);
     return NextResponse.json(
       { error: "Failed to fetch feed health" },
       { status: 500 }

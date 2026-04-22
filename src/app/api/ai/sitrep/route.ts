@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { streamText } from "ai";
 import { briefModel } from "@/lib/ai/providers";
 import { fetchPersistedEvents } from "@/lib/db/events";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -24,6 +25,8 @@ export const maxDuration = 60;
  * Returns: streaming text response (SITREP markdown)
  */
 export async function POST(request: NextRequest) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     const body = await request.json().catch(() => ({}));
     const region = body.region || "";
@@ -119,7 +122,8 @@ Categories: ${Object.entries(catCount).sort(([, a], [, b]) => b - a).map(([k, v]
     });
 
     return result.toTextStreamResponse();
-  } catch {
+  } catch (err) {
+    console.error("[ai/sitrep]", err);
     return NextResponse.json(
       { error: "SITREP generation failed" },
       { status: 500 }

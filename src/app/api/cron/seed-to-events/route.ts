@@ -123,7 +123,8 @@ export async function GET(request: Request) {
 
   let inserted = 0;
   try {
-    inserted = await persistEvents(uniqueItems);
+    const result = await persistEvents(uniqueItems);
+    inserted = result.count;
   } catch (err) {
     const msg = err instanceof Error ? err.message : "persist failed";
     return NextResponse.json(

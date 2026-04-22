@@ -2,6 +2,7 @@ import { generateObject } from "ai";
 import { z } from "zod";
 import { briefModel } from "@/lib/ai/providers";
 import { NextResponse } from "next/server";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 15;
@@ -22,6 +23,8 @@ const ClassificationSchema = z.object({
  * Returns reclassified categories and severities.
  */
 export async function POST(request: Request) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     if (!briefModel) {
       return NextResponse.json({ error: "No AI provider" }, { status: 503 });
@@ -54,7 +57,8 @@ ${itemList}`,
     });
 
     return NextResponse.json(result.object);
-  } catch {
+  } catch (err) {
+    console.error("[ai/classify] unexpected:", err);
     return NextResponse.json({ items: [] }, { status: 500 });
   }
 }

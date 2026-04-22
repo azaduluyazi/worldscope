@@ -21,7 +21,8 @@ export async function GET() {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     return NextResponse.json({ webhooks: data || [] });
-  } catch {
+  } catch (err) {
+    console.error("[webhooks]", err);
     return NextResponse.json({ webhooks: [] }, { status: 500 });
   }
 }
@@ -42,7 +43,8 @@ export async function POST(request: Request) {
       if (!["http:", "https:"].includes(parsed.protocol)) {
         return NextResponse.json({ error: "URL must use http or https" }, { status: 400 });
       }
-    } catch {
+    } catch (err) {
+      console.error("[webhooks]", err);
       return NextResponse.json({ error: "Invalid URL format" }, { status: 400 });
     }
 
@@ -65,7 +67,8 @@ export async function POST(request: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     return NextResponse.json({ webhook: data }, { status: 201 });
-  } catch {
+  } catch (err) {
+    console.error("[webhooks]", err);
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 }
@@ -84,7 +87,8 @@ export async function DELETE(request: Request) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
     return NextResponse.json({ deleted: true });
-  } catch {
+  } catch (err) {
+    console.error("[webhooks]", err);
     return NextResponse.json({ error: "Delete failed" }, { status: 500 });
   }
 }

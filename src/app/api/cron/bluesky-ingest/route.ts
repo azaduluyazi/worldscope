@@ -129,7 +129,8 @@ export async function GET(request: NextRequest) {
   try {
     const { data } = await supabase.rpc("prune_bluesky_posts");
     pruned = (data as number) || 0;
-  } catch {
+  } catch (err) {
+    console.error("[cron/bluesky-ingest]", err);
     // non-fatal
   }
 

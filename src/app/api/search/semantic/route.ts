@@ -50,8 +50,11 @@ export async function GET(request: NextRequest) {
 
   // Query HNSW index via RPC
   const db = createServerClient();
+  // pgvector expects the embedding as a string literal of the form
+  // `[0.1, 0.2, ...]` — JSON.stringify of a number[] produces exactly
+  // that shape, and the generated RPC type pins this as `string`.
   const { data: matches, error } = await db.rpc("search_events_semantic", {
-    query_embedding: embedding,
+    query_embedding: JSON.stringify(embedding),
     match_threshold: threshold,
     match_count: limit,
   });

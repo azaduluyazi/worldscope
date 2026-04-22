@@ -5,6 +5,7 @@ import type { Convergence } from "@/lib/convergence/types";
 import { redis } from "@/lib/cache/redis";
 import type { ConvergenceResponse } from "@/lib/convergence/types";
 import type { CounterFactualSignal } from "@/lib/convergence/counter-factual";
+import { CONVERGENCE_KEYS } from "@/lib/cache/keys";
 
 const SEVERITY_COLORS: Record<Severity, string> = {
   critical: "#ff4757",
@@ -15,10 +16,11 @@ const SEVERITY_COLORS: Record<Severity, string> = {
 };
 
 interface Subscriber {
-  id: string;
+  id: number;
   email: string;
   frequency: string;
   categories: string[];
+  preferences: Record<string, unknown>;
 }
 
 // ── Convergence section helpers ────────────────────────────────────
@@ -110,7 +112,7 @@ function buildPredictedDevelopmentsSection(convergences: Convergence[]): string 
 
 async function fetchConvergencesFromCache(): Promise<Convergence[]> {
   try {
-    const cached = await redis.get<ConvergenceResponse>("convergence:latest");
+    const cached = await redis.get<ConvergenceResponse>(CONVERGENCE_KEYS.latest);
     return cached?.convergences ?? [];
   } catch (err) {
     console.error("[email-digest] convergence cache fetch failed:", err);
@@ -121,7 +123,7 @@ async function fetchConvergencesFromCache(): Promise<Convergence[]> {
 async function fetchCounterFactualsFromCache(): Promise<CounterFactualSignal[]> {
   try {
     return (
-      (await redis.get<CounterFactualSignal[]>("convergence:counter-factuals")) ??
+      (await redis.get<CounterFactualSignal[]>(CONVERGENCE_KEYS.counterFactuals)) ??
       []
     );
   } catch (err) {
@@ -252,13 +254,33 @@ export async function sendDigests(
   const resend = new Resend(apiKey);
   const db = createServerClient();
 
-  const { data: subscribers } = await db
-    .from("email_subscribers")
-    .select("id, email, frequency, categories")
+  // Schema: categories live inside `preferences` JSON, not a top-level
+  // column (confirmed 2026-04-22 via supabase gen types). The legacy
+  // `email_subscribers` table never existed — this was a silent no-op.
+  const { data: rawSubs } = await db
+    .from("newsletter_subscribers")
+    .select("id, email, frequency, preferences")
     .eq("is_active", true)
     .eq("frequency", frequency);
 
-  if (!subscribers || subscribers.length === 0) return { sent: 0, failed: 0 };
+  if (!rawSubs || rawSubs.length === 0) return { sent: 0, failed: 0 };
+
+  const subscribers = rawSubs.map((s) => {
+    const prefs = (s.preferences ?? {}) as {
+      categories?: unknown;
+      last_sent_at?: unknown;
+    };
+    const categories = Array.isArray(prefs.categories)
+      ? prefs.categories.filter((c): c is string => typeof c === "string")
+      : [];
+    return {
+      id: s.id,
+      email: s.email,
+      frequency: s.frequency,
+      categories,
+      preferences: prefs as Record<string, unknown>,
+    };
+  });
 
   // Phase A.11: fetch convergences once for all subscribers
   const convergences = await fetchConvergencesFromCache();
@@ -268,7 +290,24 @@ export async function sendDigests(
   let sent = 0;
   let failed = 0;
 
+  // Per-user cooldown: don't re-send if the last digest went out within
+  // one frequency period (daily = 20h guard, weekly = 6.5-day guard).
+  // Stops overlapping cron windows from double-delivering.
+  const cooldownMs =
+    frequency === "weekly"
+      ? 6.5 * 24 * 60 * 60 * 1000
+      : 20 * 60 * 60 * 1000;
+  const now = Date.now();
+
   for (const sub of subscribers as Subscriber[]) {
+    const lastSentRaw = sub.preferences.last_sent_at;
+    if (typeof lastSentRaw === "string") {
+      const lastSentMs = Date.parse(lastSentRaw);
+      if (Number.isFinite(lastSentMs) && now - lastSentMs < cooldownMs) {
+        continue;
+      }
+    }
+
     // Filter items by subscriber categories
     let filteredItems = items;
     if (sub.categories.length > 0) {
@@ -301,11 +340,20 @@ export async function sendDigests(
       });
 
       sent++;
-      await db
-        .from("email_subscribers")
-        .update({ last_sent_at: new Date().toISOString() })
+      // Stamp last-sent inside preferences JSON — `newsletter_subscribers`
+      // has no dedicated timestamp column, so we piggy-back on the
+      // existing Json column. Per-user rate limiting on digest emails
+      // reads this back to skip re-sends within a cooldown window.
+      const nextPrefs = { ...sub.preferences, last_sent_at: new Date().toISOString() };
+      const { error: updErr } = await db
+        .from("newsletter_subscribers")
+        .update({ preferences: nextPrefs as unknown as import("@/types/supabase.generated").Json })
         .eq("id", sub.id);
-    } catch {
+      if (updErr) {
+        console.error("[email-digest] last_sent stamp failed:", updErr.message);
+      }
+    } catch (err) {
+      console.error("[email-digest] send failed:", err);
       failed++;
     }
   }

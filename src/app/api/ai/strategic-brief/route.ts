@@ -57,7 +57,8 @@ export async function GET() {
       topRisks: riskLines.length > 0 ? riskLines : ["No specific risks identified"],
       generatedAt: report.generated_at,
     });
-  } catch {
+  } catch (err) {
+    console.error("[ai/strategic-brief]", err);
     return NextResponse.json({
       summary: "Strategic brief temporarily unavailable.",
       topRisks: [],

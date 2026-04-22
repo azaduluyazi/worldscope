@@ -40,7 +40,8 @@ export async function POST(request: Request) {
     }
     resetCircuit(sourceId);
     return NextResponse.json({ success: true, message: `Circuit ${sourceId} reset` });
-  } catch {
+  } catch (err) {
+    console.error("[admin/gateway]", err);
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 }

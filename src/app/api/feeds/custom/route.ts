@@ -117,7 +117,8 @@ export async function GET(request: Request) {
         "Cache-Control": "public, max-age=600",
       },
     });
-  } catch {
+  } catch (err) {
+    console.error("[feeds/custom]", err);
     return new NextResponse(
       `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Error</title><description>Failed to generate feed</description></channel></rss>`,
       {

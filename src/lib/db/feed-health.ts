@@ -72,7 +72,7 @@ export async function getFeedHealthSummary(): Promise<{
     if (feed.is_active) {
       active++;
       byCategory[feed.category].active++;
-      if (feed.error_count >= 3) unhealthy++;
+      if ((feed.error_count ?? 0) >= 3) unhealthy++;
     } else {
       deactivated++;
     }

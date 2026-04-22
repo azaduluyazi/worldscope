@@ -37,7 +37,8 @@ export async function GET(request: Request) {
     );
 
     return NextResponse.json(insights);
-  } catch {
+  } catch (err) {
+    console.error("[intel/insights]", err);
     return NextResponse.json(
       { anomalies: [], entities: [], sentiment: null, meta: { analyzedEvents: 0 } },
       { status: 500 }

@@ -4,13 +4,14 @@ import { seedRead } from "@/lib/seed/seed-utils";
 import { calculateThreatIndex } from "@/lib/utils/threat-scoring";
 import { detectTrends } from "@/lib/utils/trend-detection";
 import type { IntelItem } from "@/types/intel";
+import { SEED_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 
 export async function GET(request: Request) {
   try {
     // Seed-first: try pre-populated cyber threat cache
-    const seededThreats = await seedRead<unknown>("seed:cyber:threats");
+    const seededThreats = await seedRead<unknown>(SEED_KEYS.cyber.threats);
     if (seededThreats) {
       return NextResponse.json({ ...seededThreats as object, fromSeed: true });
     }
@@ -42,7 +43,8 @@ export async function GET(request: Request) {
     );
 
     return NextResponse.json(result);
-  } catch {
+  } catch (err) {
+    console.error("[threat]", err);
     return NextResponse.json(
       { score: 0, level: "low", categories: {}, trends: null },
       { status: 500 }

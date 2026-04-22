@@ -421,7 +421,8 @@ export async function GET(request: NextRequest) {
       lastUpdated: new Date().toISOString(),
       total: sliced.length,
     });
-  } catch {
+  } catch (err) {
+    console.error("[intel]", err);
     return NextResponse.json(
       { items: [], lastUpdated: new Date().toISOString(), total: 0 },
       { status: 500 }

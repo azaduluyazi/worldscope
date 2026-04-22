@@ -24,7 +24,8 @@ export async function GET() {
     );
 
     return NextResponse.json(data);
-  } catch {
+  } catch (err) {
+    console.error("[satellites]", err);
     return NextResponse.json({ satellites: [], total: 0, lastUpdated: new Date().toISOString() });
   }
 }

@@ -1,6 +1,7 @@
 import { createServerClient } from "./supabase";
 import type { Storyline } from "@/lib/convergence/storyline";
 import type { Convergence } from "@/lib/convergence/types";
+import type { Json } from "@/types/supabase.generated";
 
 // ═══════════════════════════════════════════════════════════════════
 //  Storylines repository (Supabase)
@@ -83,7 +84,7 @@ export async function fetchActiveStorylines(limit: number = 50): Promise<Storyli
       console.error("[storylines.fetchActive] error:", error);
       return [];
     }
-    return (data ?? []).map(rowToStoryline);
+    return (data ?? []).map((row) => rowToStoryline(row as unknown as StorylineRow));
   } catch (err) {
     console.error("[storylines.fetchActive] exception:", err);
     return [];
@@ -98,9 +99,13 @@ export async function upsertStoryline(storyline: Storyline): Promise<void> {
   try {
     const supabase = createServerClient();
     const row = storylineToRow(storyline);
+    // `snapshots` is typed as `Convergence[]` in our domain row but the
+    // generated DB schema types it as `Json` — identical at runtime
+    // (JSONB), so we cast through the DB Json type on write.
+    const dbRow = { ...row, snapshots: row.snapshots as unknown as Json };
     const { error } = await supabase
       .from(TABLE)
-      .upsert(row, { onConflict: "id" });
+      .upsert(dbRow, { onConflict: "id" });
     if (error) {
       console.error("[storylines.upsert] error:", error);
     }
@@ -141,7 +146,7 @@ export async function fetchStorylineById(id: string): Promise<Storyline | null> 
       .eq("id", id)
       .maybeSingle();
     if (error || !data) return null;
-    return rowToStoryline(data);
+    return rowToStoryline(data as unknown as StorylineRow);
   } catch (err) {
     console.error("[storylines.fetchById] exception:", err);
     return null;

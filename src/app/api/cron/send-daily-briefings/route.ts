@@ -55,7 +55,8 @@ function isQuietNow(pref: PrefRow): boolean {
       minute: "2-digit",
       hourCycle: "h23",
     }).format(now);
-  } catch {
+  } catch (err) {
+    console.error("[cron/send-daily-briefings]", err);
     localHM = new Intl.DateTimeFormat("en-GB", {
       timeZone: "UTC",
       hour: "2-digit",

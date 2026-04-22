@@ -60,7 +60,8 @@ export async function GET(request: NextRequest) {
       entities: typeFilter ? entities.slice(0, limit) : undefined,
       grouped: typeFilter ? undefined : grouped,
     });
-  } catch {
+  } catch (err) {
+    console.error("[entities]", err);
     return NextResponse.json(
       { error: "Entity extraction failed" },
       { status: 500 }

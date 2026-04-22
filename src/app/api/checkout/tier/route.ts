@@ -29,6 +29,7 @@ import {
   type TierSlug,
 } from "@/lib/subscriptions/tier-config";
 import { onExistingSubscription } from "@/lib/subscriptions/upgrade-policy";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,6 +40,9 @@ const BodySchema = z.object({
 });
 
 export async function POST(req: Request) {
+  const rl = await checkStrictRateLimit(req);
+  if (rl) return rl;
+
   // 1. Auth
   const user = await getCurrentUser();
   if (!user) {
@@ -56,7 +60,8 @@ export async function POST(req: Request) {
   let body: unknown;
   try {
     body = await req.json();
-  } catch {
+  } catch (err) {
+    console.error("[checkout/tier] invalid json:", err);
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
   const parsed = BodySchema.safeParse(body);

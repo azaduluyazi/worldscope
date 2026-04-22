@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
       userAgent: req.headers.get("user-agent") || undefined,
     });
     return new NextResponse(null, { status: 204 });
-  } catch {
+  } catch (err) {
+    console.error("[errors]", err);
     return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   }
 }

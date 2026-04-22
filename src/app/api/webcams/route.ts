@@ -17,7 +17,8 @@ export async function GET(req: NextRequest) {
   try {
     const webcams = await fetchNearbyWebcams(lat, lng, radius, limit);
     return NextResponse.json({ webcams });
-  } catch {
+  } catch (err) {
+    console.error("[webcams]", err);
     return NextResponse.json({ webcams: [] });
   }
 }

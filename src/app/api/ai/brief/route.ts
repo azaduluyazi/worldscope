@@ -1,6 +1,7 @@
 import { streamText } from "ai";
 import { briefModel } from "@/lib/ai/providers";
 import type { IntelItem } from "@/types/intel";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -46,6 +47,8 @@ Toplam yanıtı 300 kelimenin altında tut. Ciddiyet seviyeleri için kalın yaz
 };
 
 export async function POST(request: Request) {
+  const rl = await checkStrictRateLimit(request);
+  if (rl) return rl;
   try {
     // Determine language from request
     const body = await request.json().catch(() => ({}));
@@ -98,7 +101,8 @@ Total events tracked: ${intelData.total || topItems.length}`;
     });
 
     return result.toTextStreamResponse();
-  } catch {
+  } catch (err) {
+    console.error("[ai/brief] unexpected:", err);
     return new Response("AI service unavailable", { status: 503 });
   }
 }

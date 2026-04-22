@@ -3,6 +3,7 @@ import { cachedFetch } from "@/lib/cache/redis";
 import { fetchPersistedEvents } from "@/lib/db/events";
 import { detectAnomalies } from "@/lib/utils/anomaly-detection";
 import { recordBaseline, getLatestBaseline } from "@/lib/db/baselines";
+import { INTEL_KEYS } from "@/lib/cache/keys";
 
 export const runtime = "nodejs";
 
@@ -14,7 +15,7 @@ export const runtime = "nodejs";
 export async function GET() {
   try {
     const data = await cachedFetch(
-      "intel:anomalies",
+      INTEL_KEYS.anomalies,
       async () => {
         const items = await fetchPersistedEvents({ limit: 1000, hoursBack: 48 });
         const anomalies = detectAnomalies(items, 24, 6);
@@ -40,7 +41,8 @@ export async function GET() {
     );
 
     return NextResponse.json(data);
-  } catch {
+  } catch (err) {
+    console.error("[intel/anomalies]", err);
     return NextResponse.json({
       anomalies: [],
       baseline: null,

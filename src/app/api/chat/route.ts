@@ -20,6 +20,7 @@ import { getCurrentUser } from "@/lib/db/supabase-server";
 import { briefModel } from "@/lib/ai/providers";
 import { fetchPersistedEvents } from "@/lib/db/events";
 import { resolveAccess, hasAtLeast } from "@/lib/subscriptions/access";
+import { checkStrictRateLimit } from "@/lib/middleware/rate-limit";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -60,12 +61,16 @@ async function buildEventsBlock(): Promise<string> {
           }${e.countryCode ? ` (${e.countryCode})` : ""}`,
       )
       .join("\n");
-  } catch {
+  } catch (err) {
+    console.error("[chat]", err);
     return "";
   }
 }
 
 export async function POST(req: Request) {
+  const rl = await checkStrictRateLimit(req);
+  if (rl) return rl;
+
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json({ error: "sign-in required" }, { status: 401 });
@@ -83,7 +88,8 @@ export async function POST(req: Request) {
   let body: ChatBody;
   try {
     body = (await req.json()) as ChatBody;
-  } catch {
+  } catch (err) {
+    console.error("[chat]", err);
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 

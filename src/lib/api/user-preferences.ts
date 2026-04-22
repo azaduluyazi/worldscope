@@ -23,8 +23,15 @@ export async function loadPreferencesFromDB(userId: string): Promise<UserPrefere
       .select("theme_id, locale")
       .eq("id", userId)
       .single();
-    return data;
-  } catch {
+    if (!data) return null;
+    // DB returns `null` for unset prefs; our interface uses optional
+    // properties (`?: string`). Normalize at the boundary.
+    return {
+      ...(data.theme_id ? { theme_id: data.theme_id } : {}),
+      ...(data.locale ? { locale: data.locale } : {}),
+    };
+  } catch (err) {
+    console.error("[user-preferences/load]", err);
     return null;
   }
 }

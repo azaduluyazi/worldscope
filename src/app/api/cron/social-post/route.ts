@@ -38,7 +38,8 @@ async function postToTwitter(text: string): Promise<boolean> {
       body: JSON.stringify({ text }),
     });
     return res.ok;
-  } catch {
+  } catch (err) {
+    console.error("[cron/social-post]", err);
     return false;
   }
 }
@@ -82,7 +83,8 @@ async function postToBluesky(text: string): Promise<boolean> {
       }
     );
     return postRes.ok;
-  } catch {
+  } catch (err) {
+    console.error("[cron/social-post]", err);
     return false;
   }
 }

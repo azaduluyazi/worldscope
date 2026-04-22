@@ -58,7 +58,8 @@ export async function GET(req: Request) {
       60,
     );
     return NextResponse.json(data);
-  } catch {
+  } catch (err) {
+    console.error("[equity]", err);
     return NextResponse.json({
       quote: null,
       profile: null,
