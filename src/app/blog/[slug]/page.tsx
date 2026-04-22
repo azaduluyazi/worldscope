@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { createServerClient } from "@/lib/db/supabase";
 import { AdSenseUnit } from "@/components/ads";
 import { AD_PLACEMENTS } from "@/config/ads";
+import { AuthorBio } from "@/components/shared/AuthorBio";
 
 // Skip build prerender — same pattern as /blog. Supabase query has hit
 // the 60s build worker ceiling under concurrent generation; dynamic
@@ -167,6 +168,12 @@ export default async function BlogPostPage({
               <span className="text-[10px] font-mono text-hud-muted">
                 by {post.author}
               </span>
+              <span
+                className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                title="Every analysis on WorldScope is read and approved by a human editor before publication. See /methodology."
+              >
+                Human-reviewed
+              </span>
             </div>
             <h1 className="font-mono text-2xl font-bold text-hud-text leading-tight">
               {post.title}
@@ -212,6 +219,9 @@ export default async function BlogPostPage({
             format={AD_PLACEMENTS.blog[1].format as "horizontal"}
             className="mt-8"
           />
+
+          {/* Author attribution + editorial review block — E-E-A-T */}
+          <AuthorBio />
 
           {/* Back link */}
           <div className="mt-8">
