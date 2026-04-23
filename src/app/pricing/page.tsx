@@ -85,6 +85,7 @@ export default function PricingPage() {
               "Bookmarks + persistent saved events across devices",
               "Custom alert rules with quiet hours & multi-channel delivery",
               "MCP connector for Claude / GPT / custom LLMs",
+              "OSINT live threat maps — 8 embedded feeds (cyber, weather, conflict)",
               "Ad-free dashboard experience",
               "Priority support via email",
             ]}
